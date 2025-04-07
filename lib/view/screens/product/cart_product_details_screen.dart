@@ -70,6 +70,49 @@ class _CartProductDetailsScreenState extends State<CartProductDetailsScreen> {
         appBar: AppBar(
           toolbarHeight: 80,
           elevation: 0,
+          actions: [
+            SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.only(left: 8.0, top: 8, right: 8),
+                child: Align(
+                  alignment: Alignment.topRight,
+                  child: Consumer<WishListProvider>(
+                      builder: (context, wishList, child) {
+                        return Container(
+                          decoration: BoxDecoration(
+                              color: Colors.grey[200],
+                              borderRadius: BorderRadius.circular(50)),
+                          child: IconButton(
+                            onPressed: () =>
+                            wishList.wishIdList.contains(widget.product!.id)
+                                ? wishList.removeFromWishList(widget.product!,
+                                    (message) {
+                                  wishList.initWishList(context);
+                                  wishList.initWishListProductIds(context);
+                                })
+                                : wishList.addToWishList(widget.product!,
+                                    (message) {
+                                  wishList.initWishList(context);
+                                  wishList.initWishListProductIds(context);
+                                }),
+                            icon: _isLoggedIn
+                                ? Icon(
+                              wishList.wishIdList.contains(widget.product!.id)
+                                  ? Icons.favorite
+                                  : Icons.favorite_border,
+                              color: wishList.wishIdList
+                                  .contains(widget.product!.id)
+                                  ? ColorResources.getPrimaryColor(context)
+                                  : Colors.white,
+                            )
+                                : const SizedBox(),
+                          ),
+                        );
+                      }),
+                ),
+              ),
+            )
+          ],
           leading: SafeArea(
             child: Padding(
               padding: const EdgeInsets.only(left: 8.0, top: 8),
@@ -185,33 +228,6 @@ class _CartProductDetailsScreenState extends State<CartProductDetailsScreen> {
                           // ),
                           const SizedBox(
                             height: 30,
-                          ),
-                          Align(
-                            alignment: Alignment.topRight,
-                            child: Consumer<WishListProvider>(
-                                builder: (context, wishList, child) {
-                              return IconButton(
-                                onPressed: () {
-                                  wishList.wishIdList.contains(product.id)
-                                      ? wishList.removeFromWishList(
-                                          product, (message) {})
-                                      : wishList.addToWishList(
-                                          product, (message) {});
-                                },
-                                icon: _isLoggedIn
-                                    ? Icon(
-                                        wishList.wishIdList.contains(product.id)
-                                            ? Icons.favorite
-                                            : Icons.favorite_border,
-                                        color: wishList.wishIdList
-                                                .contains(product.id)
-                                            ? ColorResources.getPrimaryColor(
-                                                context)
-                                            : Colors.grey[200],
-                                      )
-                                    : const SizedBox(),
-                              );
-                            }),
                           ),
                           GestureDetector(
                             onTap: () {

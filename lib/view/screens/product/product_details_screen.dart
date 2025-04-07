@@ -69,6 +69,49 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
         appBar: AppBar(
           toolbarHeight: 80,
           elevation: 0,
+          actions: [
+            SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.only(left: 8.0, top: 8, right: 8),
+                child: Align(
+                  alignment: Alignment.topRight,
+                  child: Consumer<WishListProvider>(
+                      builder: (context, wishList, child) {
+                    return Container(
+                      decoration: BoxDecoration(
+                          color: Colors.grey[200],
+                          borderRadius: BorderRadius.circular(50)),
+                      child: IconButton(
+                        onPressed: () =>
+                            wishList.wishIdList.contains(widget.product!.id)
+                                ? wishList.removeFromWishList(widget.product!,
+                                    (message) {
+                                    wishList.initWishList(context);
+                                    wishList.initWishListProductIds(context);
+                                  })
+                                : wishList.addToWishList(widget.product!,
+                                    (message) {
+                                    wishList.initWishList(context);
+                                    wishList.initWishListProductIds(context);
+                                  }),
+                        icon: _isLoggedIn
+                            ? Icon(
+                                wishList.wishIdList.contains(widget.product!.id)
+                                    ? Icons.favorite
+                                    : Icons.favorite_border,
+                                color: wishList.wishIdList
+                                        .contains(widget.product!.id)
+                                    ? ColorResources.getPrimaryColor(context)
+                                    : Colors.white,
+                              )
+                            : const SizedBox(),
+                      ),
+                    );
+                  }),
+                ),
+              ),
+            )
+          ],
           leading: SafeArea(
             child: Padding(
               padding: const EdgeInsets.only(left: 8.0, top: 8),
@@ -82,7 +125,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                       decoration: BoxDecoration(
                           color: Colors.grey[200],
                           borderRadius: BorderRadius.circular(50)),
-                      child:  Padding(
+                      child: Padding(
                         padding: EdgeInsets.all(14),
                         child: Icon(
                           Icons.arrow_back_ios_new_outlined,
@@ -113,11 +156,15 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
               String? _url;
 
               double priceWithDiscount = PriceConverter.convertWithDiscount(
-                  context, product.price!, product.discount!, product.discountType!);
-              double price = PriceConverter.getProductFinalPrice(tiredPricing , priceWithDiscount , productProvider.quantity??1)??0.0;
+                  context,
+                  product.price!,
+                  product.discount!,
+                  product.discountType!);
+              double price = PriceConverter.getProductFinalPrice(tiredPricing,
+                      priceWithDiscount, productProvider.quantity ?? 1) ??
+                  0.0;
 
-              double priceWithQuantity =
-                  price * productProvider.quantity!;
+              double priceWithQuantity = price * productProvider.quantity!;
               double priceWithQuantityWithoutDiscount =
                   price * productProvider.quantity!;
 
@@ -157,32 +204,6 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                         children: [
                           const SizedBox(
                             height: 30,
-                          ),
-                          Align(
-                            alignment: Alignment.topRight,
-                            child: Consumer<WishListProvider>(
-                                builder: (context, wishList, child) {
-                              return IconButton(
-                                onPressed: () =>
-                                    wishList.wishIdList.contains(product.id)
-                                        ? wishList.removeFromWishList(
-                                            product, (message) {})
-                                        : wishList.addToWishList(
-                                            product, (message) {}),
-                                icon: _isLoggedIn
-                                    ? Icon(
-                                        wishList.wishIdList.contains(product.id)
-                                            ? Icons.favorite
-                                            : Icons.favorite_border,
-                                        color: wishList.wishIdList
-                                                .contains(product.id)
-                                            ? ColorResources.getPrimaryColor(
-                                                context)
-                                            : Colors.grey[200],
-                                      )
-                                    : const SizedBox(),
-                              );
-                            }),
                           ),
                           GestureDetector(
                             onTap: () {
@@ -269,15 +290,16 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                                   height: 25,
                                                   decoration: BoxDecoration(
                                                       color: ColorResources
-                                                          .getScaffoldColor(context),
+                                                          .getScaffoldColor(
+                                                              context),
                                                       borderRadius:
                                                           BorderRadius.circular(
                                                               50)),
-                                                  child:  Icon(
-                                                      Icons.remove,
+                                                  child: Icon(Icons.remove,
                                                       size: 20,
                                                       color: ColorResources
-                                                          .getScaffoldBackgroundColor(context))),
+                                                          .getScaffoldBackgroundColor(
+                                                              context))),
                                             ),
                                             Padding(
                                               padding:
@@ -303,15 +325,17 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                                 height: 25,
                                                 decoration: BoxDecoration(
                                                     color: ColorResources
-                                                        .getScaffoldColor(context),
+                                                        .getScaffoldColor(
+                                                            context),
                                                     borderRadius:
                                                         BorderRadius.circular(
                                                             50)),
-                                                child:  Icon(
+                                                child: Icon(
                                                   Icons.add,
                                                   size: 20,
                                                   color: ColorResources
-                                                      .getScaffoldBackgroundColor(context),
+                                                      .getScaffoldBackgroundColor(
+                                                          context),
                                                 ),
                                               ),
                                             ),
@@ -400,7 +424,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                               context, priceWithQuantity),
                                           style: rubikBold.copyWith(
                                             color:
-                                                ColorResources.getScaffoldColor(context),
+                                                ColorResources.getScaffoldColor(
+                                                    context),
                                             fontSize:
                                                 Dimensions.FONT_SIZE_LARGE,
                                           )),
@@ -413,7 +438,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                     cartProvider.cartLoading == true
                                         ? CustomCircularIndicator(
                                             color:
-                                                ColorResources.getScaffoldColor(context))
+                                                ColorResources.getScaffoldColor(
+                                                    context))
                                         : CustomButton(
                                             text: getTranslated(
                                                 'add_to_cart', context),
@@ -424,7 +450,12 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                                   product: product,
                                                   quantity:
                                                       productProvider.quantity,
-                                              tieredPricing: PriceConverter.getMatchedTieredPricingModel(tiredPricing,  productProvider.quantity??1));
+                                                  tieredPricing: PriceConverter
+                                                      .getMatchedTieredPricingModel(
+                                                          tiredPricing,
+                                                          productProvider
+                                                                  .quantity ??
+                                                              1));
 
                                               cartProvider
                                                   .addToCartList(
@@ -453,23 +484,23 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                       ),
                       GestureDetector(
                         onTap: () => showModalBottomSheet(
-                            useSafeArea: true,
-                            isScrollControlled: true,
-                            backgroundColor: Colors.transparent,
-                            context: context,
-                            builder: (BuildContext context) {
-                              return SingleProductDetailsBottomSheet(
-                                product: product,
-                                callback: (CartModel cartModel) {
-                                  ScaffoldMessenger.of(context!).showSnackBar(
-                                      SnackBar(
-                                          content: Text(getTranslated(
-                                              'added_to_cart', context)),
-                                          backgroundColor: Colors.green));
-                                },
-                              );
-                            },
-                          ),
+                          useSafeArea: true,
+                          isScrollControlled: true,
+                          backgroundColor: Colors.transparent,
+                          context: context,
+                          builder: (BuildContext context) {
+                            return SingleProductDetailsBottomSheet(
+                              product: product,
+                              callback: (CartModel cartModel) {
+                                ScaffoldMessenger.of(context!).showSnackBar(
+                                    SnackBar(
+                                        content: Text(getTranslated(
+                                            'added_to_cart', context)),
+                                        backgroundColor: Colors.green));
+                              },
+                            );
+                          },
+                        ),
                         child: Padding(
                           padding: const EdgeInsets.all(26),
                           child: Align(
