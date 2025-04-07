@@ -5,6 +5,7 @@ import 'package:wired_express/provider/search_provider.dart';
 import 'package:wired_express/utill/color_resources.dart';
 import 'package:wired_express/utill/dimensions.dart';
 import 'package:wired_express/utill/images.dart';
+import 'package:wired_express/view/base/circular_indicator_widget.dart';
 import 'package:wired_express/view/base/custom_text_field.dart';
 import 'package:wired_express/view/base/main_app_bar.dart';
 import 'package:provider/provider.dart';
@@ -51,14 +52,7 @@ class SearchScreen extends StatelessWidget {
                             builder:
                                 (context, searchProvider, child) =>
                                     searchProvider.brandsLoading
-                                        ? Center(
-                                            child: CircularProgressIndicator(
-                                                valueColor:
-                                                    AlwaysStoppedAnimation<
-                                                            Color>(
-                                                        ColorResources
-                                                            .getPrimaryColor(
-                                                                context))))
+                                        ? CustomCircularIndicator()
                                         : Column(
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.start,
@@ -154,7 +148,7 @@ class SearchScreen extends StatelessWidget {
                                                                       FontWeight
                                                                           .w500,
                                                                   color: ColorResources
-                                                                      .SCAFFOLD_COLOR,
+                                                                      .getScaffoldColor(context),
                                                                 )))
                                                   ],
                                                 ),
@@ -214,7 +208,7 @@ class SearchScreen extends StatelessWidget {
                                                             BouncingScrollPhysics(),
                                                         itemBuilder: (context,
                                                                 index) =>
-                                                            InkWell(
+                                                            GestureDetector(
                                                                 onTap: () {
                                                                   searchProvider.searchProduct(
                                                                       searchProvider

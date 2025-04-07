@@ -10,6 +10,7 @@ import 'package:wired_express/utill/color_resources.dart';
 import 'package:wired_express/utill/dimensions.dart';
 import 'package:wired_express/utill/images.dart';
 import 'package:wired_express/utill/styles.dart';
+import 'package:wired_express/view/base/circular_indicator_widget.dart';
 import 'package:wired_express/view/base/custom_button.dart';
 import 'package:wired_express/view/base/custom_snackbar.dart';
 import 'package:wired_express/view/base/custom_text_field.dart';
@@ -104,7 +105,7 @@ class ProductReviewWidget extends StatelessWidget {
                               shrinkWrap: true,
                               scrollDirection: Axis.horizontal,
                               itemBuilder: (context, i) {
-                                return InkWell(
+                                return GestureDetector(
                                   child: Icon(
                                     productProvider.ratingList[index] < (i + 1) ? Icons.star_border : Icons.star,
                                     size: 25,
@@ -175,7 +176,7 @@ class ProductReviewWidget extends StatelessWidget {
                                       }
                                     }
                                   },
-                                ) : Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).primaryColor))),
+                                ) : CustomCircularIndicator(),
                               ],
                             ),
                           ),

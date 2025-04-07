@@ -9,6 +9,7 @@ import 'package:wired_express/provider/auth_provider.dart';
 import 'package:wired_express/provider/location_provider.dart';
 import 'package:wired_express/provider/order_provider.dart';
 import 'package:wired_express/utill/app_constants.dart';
+import 'package:wired_express/view/base/circular_indicator_widget.dart';
 import 'package:wired_express/view/base/custom_button.dart';
 import 'package:wired_express/view/screens/address/address_screen.dart';
 import 'package:wired_express/view/screens/dashboard/dashboard_screen.dart';
@@ -31,7 +32,7 @@ class _AddressBottomSheetState extends State<AddressBottomSheet> {
   void initState() {
     super.initState();
 
-    Timer(const Duration(seconds: 1), () {
+    Timer(const Duration(seconds: 0), () {
       String? id = Provider.of<CustomAuthProvider>(context, listen: false)
           .getUserAddressId();
       print("--------------${id}");
@@ -113,7 +114,7 @@ class _AddressBottomSheetState extends State<AddressBottomSheet> {
                                                       orderProvider.addressIndex
                                                   ? Border.all(
                                                       color: ColorResources
-                                                          .SCAFFOLD_COLOR,
+                                                          .getScaffoldColor(context),
                                                       width: 2,
                                                     )
                                                   : null,
@@ -144,7 +145,7 @@ class _AddressBottomSheetState extends State<AddressBottomSheet> {
                                                               orderProvider
                                                                   .addressIndex
                                                           ? ColorResources
-                                                              .SCAFFOLD_COLOR
+                                                              .getScaffoldColor(context)
                                                           : ColorResources
                                                               .getHintColor(
                                                                   context),
@@ -196,14 +197,14 @@ class _AddressBottomSheetState extends State<AddressBottomSheet> {
                                                     index ==
                                                             orderProvider
                                                                 .addressIndex
-                                                        ? const Align(
+                                                        ?  Align(
                                                             alignment: Alignment
                                                                 .topRight,
                                                             child: Icon(
                                                               Icons
                                                                   .check_circle,
                                                               color: ColorResources
-                                                                  .SCAFFOLD_COLOR,
+                                                                  .getScaffoldColor(context),
                                                             ),
                                                           )
                                                         : const SizedBox(),
@@ -255,7 +256,7 @@ class _AddressBottomSheetState extends State<AddressBottomSheet> {
                                     },
                                   ),
                                   const SizedBox(height: 15),
-                                  InkWell(
+                                  GestureDetector(
                                     onTap: () {
                                       Navigator.push(
                                         context,
@@ -304,7 +305,7 @@ class _AddressBottomSheetState extends State<AddressBottomSheet> {
                                       ),
                                     ),
                                     const SizedBox(height: 15),
-                                    InkWell(
+                                    GestureDetector(
                                       onTap: () {
                                         Navigator.push(
                                           context,
@@ -339,13 +340,7 @@ class _AddressBottomSheetState extends State<AddressBottomSheet> {
                                   ],
                                 ),
                               )
-                        : const Center(
-                            child: CircularProgressIndicator(
-                              valueColor: AlwaysStoppedAnimation<Color>(
-                                ColorResources.SCAFFOLD_COLOR,
-                              ),
-                            ),
-                          );
+                        :  CustomCircularIndicator(color:ColorResources.getScaffoldColor(context));
                   },
                 ),
                 const SizedBox(height: 20),

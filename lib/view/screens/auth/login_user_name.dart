@@ -267,15 +267,11 @@
 //                           }
 //                         },
 //                       )
-//                           : Center(
-//                           child: CircularProgressIndicator(
-//                             valueColor: new AlwaysStoppedAnimation<Color>(
-//                                 Theme.of(context).primaryColor),
-//                           )),
+//                           : CustomCircularIndicator(),
 //
 //                       // for already an account
 //                       SizedBox(height: 11),
-//                       InkWell(
+//                       GestureDetector(
 //                         onTap: () {
 //                           Navigator.pushReplacementNamed(
 //                               context, Routes.getLoginRoute());

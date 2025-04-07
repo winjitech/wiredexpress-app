@@ -107,4 +107,14 @@ class OrderRepo {
 
     return directions;
   }
+  Future<ApiResponse> getLastDeliveryCoordinates(String orderId) async {
+    try {
+      final response =
+      await dioClient!.get('${AppConstants.GET_LAST_DELIVERY_COORDINATES_URI}$orderId');
+      return ApiResponse.withSuccess(response);
+    } catch (e) {
+      return ApiResponse.withError(ApiErrorHandler.getMessage(e));
+    }
+  }
+
 }

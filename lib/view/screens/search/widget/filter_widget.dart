@@ -74,7 +74,7 @@
 //       shape: RoundedRectangleBorder(
 //         borderRadius: BorderRadius.circular(40),
 //       ),
-//       color: isSelected ? ColorResources.SCAFFOLD_COLOR : Colors.grey[350],
+//       color: isSelected ? ColorResources.getScaffoldColor(context) : Colors.grey[350],
 //     );
 //   }
 // }
@@ -155,7 +155,7 @@ class FilterWidget extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(40),
       ),
-      color: isSelected ? ColorResources.SCAFFOLD_COLOR : Colors.grey[350],
+      color: isSelected ? ColorResources.getScaffoldColor(context) : Colors.grey[350],
     );
   }
 }

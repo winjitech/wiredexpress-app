@@ -1,4 +1,5 @@
 import 'package:wired_express/data/model/response/product_model.dart';
+import 'package:wired_express/data/model/response/tiered_pricing_model.dart';
 
 class OrderDetailsModel {
   int? _id;
@@ -6,14 +7,13 @@ class OrderDetailsModel {
   int? _orderId;
   double? _price;
   Product? _productDetails;
-  List<Variation>? _variation;
   double? _discountOnProduct;
   String? _discountType;
   int? _quantity;
   double? _taxAmount;
   String? _createdAt;
   String? _updatedAt;
-  String? _variant;
+  TiredPricingModel? _tieredPricing;
 
   OrderDetailsModel(
       {int? id,
@@ -21,27 +21,25 @@ class OrderDetailsModel {
         int? orderId,
         double? price,
         Product? productDetails,
-        List<Variation>? variation,
         double? discountOnProduct,
         String? discountType,
         int? quantity,
         double? taxAmount,
         String? createdAt,
         String? updatedAt,
-        String? variant}) {
+        TiredPricingModel? tieredPricing}) {
     this._id = id;
     this._productId = productId;
     this._orderId = orderId;
     this._price = price;
     this._productDetails = productDetails;
-    this._variation = variation;
     this._discountOnProduct = discountOnProduct;
     this._discountType = discountType;
     this._quantity = quantity;
     this._taxAmount = taxAmount;
     this._createdAt = createdAt;
     this._updatedAt = updatedAt;
-    this._variant = variant;
+    this._tieredPricing = tieredPricing;
   }
 
   int? get id => _id;
@@ -49,7 +47,6 @@ class OrderDetailsModel {
   int? get orderId => _orderId;
   double? get price => _price;
   Product? get productDetails => _productDetails;
-  List<Variation>? get variation => _variation;
   double? get discountOnProduct => _discountOnProduct;
   String? get discountType => _discountType;
   int? get quantity => _quantity;
@@ -57,7 +54,7 @@ class OrderDetailsModel {
   String? get createdAt => _createdAt;
   String? get updatedAt => _updatedAt;
 
-  String? get variant => _variant;
+  TiredPricingModel? get tieredPricing => _tieredPricing;
 
   OrderDetailsModel.fromJson(Map<String?, dynamic> json) {
     _id = json['id'];
@@ -68,19 +65,7 @@ class OrderDetailsModel {
     _productDetails = json['product_details'] != null
         ? new Product.fromJson(json['product_details'])
         : null;
-    // if (json['variation'] != null) {
-    //   _variation = [];
-    //   json['variation']!.forEach((v) {
-    //     _variation!.add(new Variation.fromJson(v));
-    //   });
-    // }
-    if (json['variations'] != null) {
-      _variation = [];
-      // List _variationsGet = jsonDecode(json['variations']);
-      json['variations']!.forEach((v) {
-        _variation!.add(new Variation.fromJson(v));
-      });
-    }
+
     _discountOnProduct = (json['discount_on_product'] as num).toDouble();
 
     _discountType = json['discount_type'];
@@ -89,8 +74,9 @@ class OrderDetailsModel {
 
     _createdAt = json['created_at'];
     _updatedAt = json['updated_at'];
-
-    _variant = json['variant'];
+    _tieredPricing = json['tiered_pricing'] != null
+        ? TiredPricingModel.fromJson(json['tiered_pricing'])
+        : null;
   }
 
   Map<String?, dynamic> toJson() {
@@ -102,17 +88,16 @@ class OrderDetailsModel {
     if (this._productDetails != null) {
       data['product_details'] = this._productDetails!.toJson();
     }
-    if (this._variation != null) {
-      data['variation'] = this._variation!.map((v) => v.toJson()).toList();
-    }
+
     data['discount_on_product'] = this._discountOnProduct;
     data['discount_type'] = this._discountType;
     data['quantity'] = this._quantity;
     data['tax_amount'] = this._taxAmount;
     data['created_at'] = this._createdAt;
     data['updated_at'] = this._updatedAt;
-
-    data['variant'] = this._variant;
+    if (_tieredPricing != null) {
+      data['tiered_pricing'] = _tieredPricing!.toJson();
+    }
     return data;
   }
 }

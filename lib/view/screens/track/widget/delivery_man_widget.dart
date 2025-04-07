@@ -80,7 +80,7 @@ class DeliveryManWidget extends StatelessWidget {
               Spacer(),
               Row(
                 children: [
-                  InkWell(
+                  GestureDetector(
                     onTap: () => launch('tel:${deliveryMan!.phone}'),
                     child: Container(
                       padding:
@@ -95,7 +95,7 @@ class DeliveryManWidget extends StatelessWidget {
                     ),
                   ),
                   SizedBox(width: 15),
-                  InkWell(
+                  GestureDetector(
                     onTap: () async {
                       print('order --id :$orderId');
                       Provider.of<DeliveryManChatProvider>(context,

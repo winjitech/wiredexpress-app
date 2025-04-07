@@ -213,12 +213,12 @@
 //   Widget build(BuildContext context) {
 //     Widget child;
 //     if (widget.builder != null) {
-//       child = InkWell(
+//       child = GestureDetector(
 //         onTap: showCountryCodePickerDialog,
 //         child: widget.builder!(selectedItem!),
 //       );
 //     } else {
-//       child = InkWell(
+//       child = GestureDetector(
 //         onTap: widget.enabled! ? showCountryCodePickerDialog : null,
 //         child: Flex(
 //           direction: Axis.horizontal,

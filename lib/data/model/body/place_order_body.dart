@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:wired_express/data/model/response/product_model.dart';
+import 'package:wired_express/data/model/response/tiered_pricing_model.dart';
 
 class PlaceOrderBody {
   List<ProductCart>? _cart;
@@ -13,6 +14,7 @@ class PlaceOrderBody {
   String? _orderNote;
   String? _couponCode;
   int? _branchId;
+  String? _deliveryDateTime;
 
   PlaceOrderBody({
     @required List<ProductCart>? cart,
@@ -26,6 +28,7 @@ class PlaceOrderBody {
     @required String? paymentMethod,
     @required int? branchId,
     @required String? orderNote,
+    @required String? deliveryDateTime,
   }) {
     this._cart = cart;
     this._couponDiscountAmount = couponDiscountAmount;
@@ -38,6 +41,7 @@ class PlaceOrderBody {
     this._orderNote = orderNote;
     this._couponCode = couponCode;
     this._branchId = branchId;
+    this._deliveryDateTime = deliveryDateTime;
   }
 
   List<ProductCart>? get cart => _cart;
@@ -51,6 +55,7 @@ class PlaceOrderBody {
   String? get orderNote => _orderNote;
   String? get couponCode => _couponCode;
   int? get branchId => _branchId;
+  String? get deliveryDateTime => _deliveryDateTime;
 
   PlaceOrderBody.fromJson(Map<String?, dynamic> json) {
     if (json['cart'] != null) {
@@ -69,6 +74,7 @@ class PlaceOrderBody {
     _orderNote = json['order_note'];
     _couponCode = json['coupon_code'];
     _branchId = json['branch_id'];
+    _deliveryDateTime = json['delivery_date_time'];
   }
 
   Map<String?, dynamic> toJson() {
@@ -86,6 +92,7 @@ class PlaceOrderBody {
     data['order_note'] = this._orderNote;
     data['coupon_code'] = this._couponCode;
     data['branch_id'] = this._branchId;
+    data['delivery_date_time'] = this._deliveryDateTime;
     return data;
   }
 }
@@ -93,64 +100,59 @@ class PlaceOrderBody {
 class ProductCart {
   String? _productId;
   String? _price;
-  String? _variant;
-  Variation? _variation;
+
   double? _discountAmount;
   int? _quantity;
   double? _taxAmount;
+  TiredPricingModel? _tieredPricing;
 
   ProductCart(
-    String? productId,
-    String? price,
-    String? variant,
-    Variation? variation,
-    double? discountAmount,
-    int? quantity,
-    double? taxAmount,
-  ) {
+      String? productId,
+      String? price,
+      double? discountAmount,
+      int? quantity,
+      double? taxAmount,
+      TiredPricingModel? tieredPricing,
+      ) {
     this._productId = productId;
     this._price = price;
-    this._variant = variant;
-    this._variation = variation;
+
     this._discountAmount = discountAmount;
     this._quantity = quantity;
     this._taxAmount = taxAmount;
+    this._tieredPricing = tieredPricing;
   }
 
   String? get productId => _productId;
   String? get price => _price;
-  String? get variant => _variant;
-  Variation? get variation => _variation;
   double? get discountAmount => _discountAmount;
   int? get quantity => _quantity;
   double? get taxAmount => _taxAmount;
+  TiredPricingModel? get tieredPricing => _tieredPricing;
 
   ProductCart.fromJson(Map<String?, dynamic> json) {
     _productId = json['product_id'];
     _price = json['price'];
-    _variant = json['variant'];
-
-    _variation = json['variation'] != null
-        ? Variation.fromJson(json['variation'])
-        : null;
 
     _discountAmount = json['discount_amount'];
     _quantity = json['quantity'];
     _taxAmount = json['tax_amount'];
+    _tieredPricing = json['tiered_pricing'] != null
+        ? TiredPricingModel.fromJson(json['tiered_pricing'])
+        : null;
   }
 
   Map<String?, dynamic> toJson() {
     final Map<String?, dynamic> data = new Map<String?, dynamic>();
     data['product_id'] = this._productId;
     data['price'] = this._price;
-    data['variant'] = this._variant;
-    if (_variation != null) {
-      data['variation'] = _variation!.toJson();
-    }
+
     data['discount_amount'] = this._discountAmount;
     data['quantity'] = this._quantity;
     data['tax_amount'] = this._taxAmount;
-
+    if (_tieredPricing != null) {
+      data['tiered_pricing'] = _tieredPricing!.toJson();
+    }
     return data;
   }
 }

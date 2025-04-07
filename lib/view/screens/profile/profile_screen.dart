@@ -140,7 +140,7 @@
 //                                           //         width: 3),
 //                                           //     shape: BoxShape.circle,
 //                                           //   ),
-//                                           //   child: InkWell(
+//                                           //   child: GestureDetector(
 //                                           //     onTap:
 //                                           //         ResponsiveHelper.isMobilePhone()
 //                                           //             ? _choose
@@ -175,7 +175,7 @@
 //                                           //         Positioned(
 //                                           //           bottom: 15,
 //                                           //           right: -10,
-//                                           //           child: InkWell(
+//                                           //           child: GestureDetector(
 //                                           //               onTap: _choose,
 //                                           //               child: Container(
 //                                           //                 alignment:
@@ -225,7 +225,7 @@
 //                                                     width: 3),
 //                                                 shape: BoxShape.circle,
 //                                               ),
-//                                               child: InkWell(
+//                                               child: GestureDetector(
 //                                                 onTap: _choose,
 //                                                 child: Stack(
 //                                                   clipBehavior: Clip.none,
@@ -292,7 +292,7 @@
 //                                                     Positioned(
 //                                                       bottom: 15,
 //                                                       right: -10,
-//                                                       child: InkWell(
+//                                                       child: GestureDetector(
 //                                                           onTap: _choose,
 //                                                           child: Container(
 //                                                             alignment: Alignment
@@ -624,19 +624,11 @@
 //                                       ),
 //                                     ),
 //                                   )
-//                                 : Center(
-//                                     child: CircularProgressIndicator(
-//                                         valueColor:
-//                                             new AlwaysStoppedAnimation<Color>(
-//                                                 ColorResources
-//                                                     .SCAFFOLD_COLOR))),
+//                                 : CustomCircularIndicator(color:ColorResources.getScaffoldColor(context)),
 //                           ],
 //                         ),
 //                       )
-//                     : Center(
-//                         child: CircularProgressIndicator(
-//                             valueColor: new AlwaysStoppedAnimation<Color>(
-//                                 ColorResources.SCAFFOLD_COLOR)));
+//                     : CustomCircularIndicator(color:ColorResources.getScaffoldColor(context));
 //               },
 //             )
 //           : NotLoggedInScreen(),
@@ -657,6 +649,7 @@ import 'package:wired_express/utill/Images.dart';
 import 'package:wired_express/utill/app_constants.dart';
 import 'package:wired_express/utill/color_resources.dart';
 import 'package:wired_express/utill/dimensions.dart';
+import 'package:wired_express/view/base/circular_indicator_widget.dart';
 import 'package:wired_express/view/base/custom_app_bar.dart';
 import 'package:wired_express/view/base/custom_button.dart';
 import 'package:wired_express/view/base/custom_snackbar.dart';
@@ -784,7 +777,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                   width: 3),
                                               shape: BoxShape.circle,
                                             ),
-                                            child: InkWell(
+                                            child: GestureDetector(
                                               onTap: _choose,
                                               child: Stack(
                                                 clipBehavior: Clip.none,
@@ -837,7 +830,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                   Positioned(
                                                     bottom: 15,
                                                     right: -10,
-                                                    child: InkWell(
+                                                    child: GestureDetector(
                                                         onTap: _choose,
                                                         child: Container(
                                                           alignment:
@@ -1126,19 +1119,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       ),
                                     ),
                                   )
-                                : Center(
-                                    child: CircularProgressIndicator(
-                                        valueColor:
-                                            new AlwaysStoppedAnimation<Color>(
-                                                ColorResources
-                                                    .SCAFFOLD_COLOR))),
+                                : CustomCircularIndicator(color:ColorResources.getScaffoldColor(context)),
                           ],
                         ),
                       )
-                    : Center(
-                        child: CircularProgressIndicator(
-                            valueColor: new AlwaysStoppedAnimation<Color>(
-                                ColorResources.SCAFFOLD_COLOR)));
+                    : CustomCircularIndicator(color:ColorResources.getScaffoldColor(context));
               },
             )
           : NotLoggedInScreen(),

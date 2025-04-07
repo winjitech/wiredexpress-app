@@ -8,7 +8,7 @@ class PaymentMethodsWiget extends StatelessWidget {
       scrollDirection: Axis.horizontal,
       child: Row(
         children: [
-          InkWell(
+          GestureDetector(
             onTap: () {},
             child: Container(
               decoration: BoxDecoration(

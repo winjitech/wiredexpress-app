@@ -13,7 +13,7 @@ class CustomCheckBox extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<OrderProvider>(
       builder: (context, order, child) {
-        return InkWell(
+        return GestureDetector(
           onTap: () => order.setPaymentMethod(index!),
           child: Row(children: [
             Checkbox(

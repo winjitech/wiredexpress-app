@@ -12,6 +12,7 @@ import 'package:wired_express/provider/splash_provider.dart';
 import 'package:wired_express/provider/theme_provider.dart';
 import 'package:wired_express/utill/Images.dart';
 import 'package:wired_express/utill/dimensions.dart';
+import 'package:wired_express/view/base/circular_indicator_widget.dart';
 import 'package:wired_express/view/base/custom_app_bar.dart';
 import 'package:wired_express/view/screens/notification/notification_details_screen.dart';
 import 'package:provider/provider.dart';
@@ -102,10 +103,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                         child: SizedBox(
                           width: MediaQuery.of(context).size.width,
                           child: notificationProvider.loading!
-                              ? Center(
-                                  child: CircularProgressIndicator(
-                                      valueColor: AlwaysStoppedAnimation<Color>(
-                                          ColorResources.SCAFFOLD_COLOR)))
+                              ? CustomCircularIndicator(color:ColorResources.getScaffoldColor(context))
                               : notificationProvider.notificationList!.length ==
                                       0
                                   ? Padding(
@@ -183,7 +181,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                                                             : DateConverter.isoStringToLocalDateOnly(
                                                                 _notification.createdAt!);
 
-                                                    return InkWell(
+                                                    return GestureDetector(
                                                       onTap: () {
                                                         Navigator.push(
                                                             context,
@@ -241,7 +239,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                                                                             width: 25,
                                                                             decoration: BoxDecoration(
                                                                               borderRadius: BorderRadius.circular(50),
-                                                                              color: ColorResources.SCAFFOLD_COLOR,
+                                                                              color: ColorResources.getScaffoldColor(context),
                                                                             ),
                                                                             child: Icon(Icons.notifications, color: ColorResources.getScaffoldBackgroundColor(context), size: 19))),
                                                                   ],
@@ -375,7 +373,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                                                             : DateConverter.isoStringToLocalDateOnly(
                                                                 _notification.createdAt!);
 
-                                                    return InkWell(
+                                                    return GestureDetector(
                                                       onTap: () {
                                                         Navigator.push(
                                                             context,
@@ -434,7 +432,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                                                                             width:
                                                                                 25,
                                                                             decoration:
-                                                                                BoxDecoration(borderRadius: BorderRadius.circular(50), color: ColorResources.SCAFFOLD_COLOR),
+                                                                                BoxDecoration(borderRadius: BorderRadius.circular(50), color: ColorResources.getScaffoldColor(context)),
                                                                             child: Icon(Icons.notifications, color: ColorResources.getScaffoldBackgroundColor(context), size: 19))),
                                                                   ],
                                                                 ),
@@ -566,7 +564,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                                                             : DateConverter.isoStringToLocalDateOnly(
                                                                 _notification.createdAt!);
 
-                                                    return InkWell(
+                                                    return GestureDetector(
                                                       onTap: () {
                                                         Navigator.push(
                                                             context,
@@ -625,7 +623,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                                                                             width:
                                                                                 25,
                                                                             decoration:
-                                                                                BoxDecoration(borderRadius: BorderRadius.circular(50), color: ColorResources.SCAFFOLD_COLOR),
+                                                                                BoxDecoration(borderRadius: BorderRadius.circular(50), color: ColorResources.getScaffoldColor(context)),
                                                                             child: Icon(Icons.notifications, color: ColorResources.getScaffoldBackgroundColor(context), size: 19))),
                                                                   ],
                                                                 ),
@@ -783,7 +781,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                                                           spreadRadius: 1,
                                                         )
                                                       ]),
-                                                  child: InkWell(
+                                                  child: GestureDetector(
                                                     onTap: () {
                                                       Navigator.push(
                                                           context,
@@ -839,7 +837,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                                                                       child: Container(
                                                                           height: 25,
                                                                           width: 25,
-                                                                          decoration: BoxDecoration(borderRadius: BorderRadius.circular(50), color: ColorResources.SCAFFOLD_COLOR),
+                                                                          decoration: BoxDecoration(borderRadius: BorderRadius.circular(50), color: ColorResources.getScaffoldColor(context)),
                                                                           child: Icon(Icons.notifications, color: ColorResources.getScaffoldBackgroundColor(context), size: 19))),
                                                                 ],
                                                               ),
@@ -910,7 +908,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                                         // Column(
                                         //   children: [
                                         //     SizedBox(height: 10),
-                                        //     Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).primaryColor))),
+                                        //     CustomCircularIndicator(),
                                         //   ],
                                         // ) :
                                         // notificationsLength < notificationsTotalSize?

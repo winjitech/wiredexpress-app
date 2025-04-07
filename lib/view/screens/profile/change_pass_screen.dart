@@ -12,6 +12,7 @@ import 'package:wired_express/provider/profile_provider.dart';
 import 'package:wired_express/utill/color_resources.dart';
 import 'package:wired_express/utill/dimensions.dart';
 import 'package:wired_express/utill/styles.dart';
+import 'package:wired_express/view/base/circular_indicator_widget.dart';
 import 'package:wired_express/view/base/custom_app_bar.dart';
 import 'package:wired_express/view/base/custom_button.dart';
 import 'package:wired_express/view/base/custom_snackbar.dart';
@@ -278,19 +279,11 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                                       ),
                                     ),
                                   )
-                                : Center(
-                                    child: CircularProgressIndicator(
-                                        valueColor:
-                                            new AlwaysStoppedAnimation<Color>(
-                                                ColorResources
-                                                    .SCAFFOLD_COLOR))),
+                                : CustomCircularIndicator(color:ColorResources.getScaffoldColor(context)),
                           ],
                         ),
                       )
-                    : Center(
-                        child: CircularProgressIndicator(
-                            valueColor: new AlwaysStoppedAnimation<Color>(
-                                ColorResources.SCAFFOLD_COLOR)));
+                    : CustomCircularIndicator(color:ColorResources.getScaffoldColor(context));
               },
             )
           : NotLoggedInScreen(),

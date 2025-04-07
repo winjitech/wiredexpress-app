@@ -1,452 +1,317 @@
-import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:wired_express/provider/auth_provider.dart';
+import 'dart:async';
 
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+import 'package:wired_express/data/helper/helpers.dart';
 import 'package:wired_express/data/model/response/cart_model.dart';
+import 'package:wired_express/data/model/response/moq_setting_model.dart';
 import 'package:wired_express/data/model/response/product_model.dart';
+import 'package:wired_express/data/model/response/tiered_pricing_model.dart';
 import 'package:wired_express/helper/price_converter.dart';
 import 'package:wired_express/localization/language_constrants.dart';
+import 'package:wired_express/provider/auth_provider.dart';
 import 'package:wired_express/provider/cart_provider.dart';
-import 'package:wired_express/provider/language_provider.dart';
-import 'package:wired_express/provider/order_provider.dart';
 import 'package:wired_express/provider/product_provider.dart';
 import 'package:wired_express/provider/splash_provider.dart';
-import 'package:wired_express/provider/theme_provider.dart';
 import 'package:wired_express/provider/wishlist_provider.dart';
-import 'package:wired_express/utill/Images.dart';
+import 'package:wired_express/utill/app_constants.dart';
 import 'package:wired_express/utill/color_resources.dart';
 import 'package:wired_express/utill/dimensions.dart';
 import 'package:wired_express/utill/styles.dart';
-import 'package:wired_express/view/base/custom_app_bar.dart';
-import 'package:provider/provider.dart';
+import 'package:wired_express/view/base/circular_indicator_widget.dart';
 import 'package:wired_express/view/base/custom_button.dart';
-import 'package:wired_express/view/screens/auth/login_screen.dart';
+import 'package:wired_express/view/base/custom_snackbar.dart';
+import 'package:wired_express/view/base/rating_bar.dart';
+import 'package:wired_express/view/base/single_product_bottom_sheet.dart';
 import 'package:wired_express/view/screens/home/widget/image_preview.dart';
-import 'package:wired_express/utill/color_resources.dart';
 
-class ProductDetailsScreen extends StatelessWidget {
+class ProductDetailsScreen extends StatefulWidget {
   final Product? product;
-  final bool? fromSetMenu;
-  final Function? callback;
   final CartModel? cart;
-  final int cartIndex;
-  ProductDetailsScreen(
-      {@required this.product,
-        this.fromSetMenu = false,
-        this.callback,
-        this.cart,
-        this.cartIndex = 0});
+  ProductDetailsScreen({@required this.product, this.cart});
+  @override
+  _ProductDetailsScreenState createState() => _ProductDetailsScreenState();
+}
+
+class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
+  final GlobalKey<ScaffoldMessengerState> _scaffoldKey =
+      GlobalKey<ScaffoldMessengerState>();
+
+  ScrollController scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    Timer(const Duration(seconds: 0), () async {
+      final productProvider =
+          Provider.of<ProductProvider>(context, listen: false);
+      await productProvider
+          .getProductDetails(context, widget.product!.id!)
+          .then((onValue) {
+        int minOrderQuantity = productProvider
+                .productDetailsModel?.moqSetting?.minimumOrderQuantity ??
+            1;
+
+        productProvider.setQuantity(minOrderQuantity);
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    bool fromCart = cart != null;
-    fromCart
-        ? Provider.of<ProductProvider>(context, listen: false)
-        .initCartData(cart!.quantity!, cart!.variationIndex!)
-        : Provider.of<ProductProvider>(context, listen: false)
-        .initData(product!);
-
-    Variation _variation = Variation();
     String? _image;
     final bool _isLoggedIn =
-    Provider.of<CustomAuthProvider>(context, listen: false).isLoggedIn()!;
+        Provider.of<CustomAuthProvider>(context, listen: false).isLoggedIn()!;
     return Scaffold(
-      backgroundColor: ColorResources.getScaffoldBackgroundColor(context!),
-      appBar: CustomAppBar(title: 'Product Details'),
-      body: Consumer<CartProvider>(
-        builder: (context, cartProvider, child) {
+        appBar: AppBar(
+          toolbarHeight: 80,
+          elevation: 0,
+          leading: SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.only(left: 8.0, top: 8),
+              child: Align(
+                alignment: Alignment.topLeft,
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                  child: Container(
+                      decoration: BoxDecoration(
+                          color: Colors.grey[200],
+                          borderRadius: BorderRadius.circular(50)),
+                      child:  Padding(
+                        padding: EdgeInsets.all(14),
+                        child: Icon(
+                          Icons.arrow_back_ios_new_outlined,
+                          color: ColorResources.getScaffoldColor(context),
+                          size: 19,
+                        ),
+                      )),
+                ),
+              ),
+            ),
+          ),
+          backgroundColor: ColorResources.getScaffoldBackgroundColor(context),
+        ),
+        backgroundColor: ColorResources.getScaffoldBackgroundColor(context),
+        key: _scaffoldKey,
+        body: Consumer<CartProvider>(builder: (context, cartProvider, child) {
           return Consumer<ProductProvider>(
-              builder: (context, productProvider, child) {
-                double? _startingPrice;
-                double? _endingPrice;
-                if (product!.choiceOptions!.length != 0) {
-                  List<double> _priceList = [];
-                  product!.variations!
-                      .forEach((variation) => _priceList.add(variation.price!));
-                  _priceList.sort((a, b) => a.compareTo(b));
-                  _startingPrice = _priceList[0];
-                  if (_priceList[0] < _priceList[_priceList.length - 1]) {
-                    _endingPrice = _priceList[_priceList.length - 1];
-                  }
-                } else {
-                  _startingPrice = product!.price!;
-                }
+            builder: (context, productProvider, child) {
+              if (productProvider.productDetailsLoading ||
+                  productProvider.productDetailsModel == null) {
+                return CustomCircularIndicator();
+              }
+              Product product = productProvider.productDetailsModel!;
+              List<TiredPricingModel> tiredPricing = product.tiredPricing ?? [];
+              MoqSettingModel? moqSetting = product.moqSetting;
+              int minOrderQuantity = moqSetting?.minimumOrderQuantity ?? 1;
 
-                List<String> _variationList = [];
-                for (int index = 0;
-                index < product!.choiceOptions!.length;
-                index++) {
-                  _variationList.add(product!.choiceOptions![index]
-                      .options![productProvider.variationIndex![index]]
-                      .replaceAll(' ', ''));
-                }
-                String variationType = '';
-                bool isFirst = true;
-                _variationList.forEach((variation) {
-                  if (isFirst) {
-                    variationType = '$variationType$variation';
-                    isFirst = false;
-                  } else {
-                    variationType = '$variationType-$variation';
-                  }
-                });
+              String? _url;
 
-                double price = product!.price!;
-                String? _url;
-                for (Variation variation in product!.variations!) {
-                  if (variation.type == variationType) {
-                    price = variation.price!;
-                    _variation = variation;
-                    _image = variation.image;
-                    _url =
-                    '${Provider.of<SplashProvider>(context, listen: false).baseUrls!.productImageUrl}/$_image!}';
-                    break;
-                  }
-                }
+              double priceWithDiscount = PriceConverter.convertWithDiscount(
+                  context, product.price!, product.discount!, product.discountType!);
+              double price = PriceConverter.getProductFinalPrice(tiredPricing , priceWithDiscount , productProvider.quantity??1)??0.0;
 
-                double priceWithDiscount = PriceConverter.convertWithDiscount(
-                    context, price, product!.discount!, product!.discountType!);
+              double priceWithQuantity =
+                  price * productProvider.quantity!;
+              double priceWithQuantityWithoutDiscount =
+                  price * productProvider.quantity!;
 
-                double priceWithQuantity =
-                    priceWithDiscount * productProvider.quantity!;
-                double priceWithQuantityWithoutDiscount =
-                    price * productProvider.quantity!;
+              DateTime _currentTime =
+                  Provider.of<SplashProvider>(context, listen: false)
+                      .currentTime;
+              DateTime _start =
+                  DateFormat('hh:mm:ss').parse(product.availableTimeStarts!);
+              DateTime _end =
+                  DateFormat('hh:mm:ss').parse(product.availableTimeEnds!);
+              DateTime _startTime = DateTime(
+                  _currentTime.year,
+                  _currentTime.month,
+                  _currentTime.day,
+                  _start.hour,
+                  _start.minute,
+                  _start.second);
+              DateTime _endTime = DateTime(
+                  _currentTime.year,
+                  _currentTime.month,
+                  _currentTime.day,
+                  _end.hour,
+                  _end.minute,
+                  _end.second);
+              if (_endTime.isBefore(_startTime)) {
+                _endTime = _endTime.add(const Duration(days: 1));
+              }
 
-                DateTime _currentTime =
-                    Provider.of<SplashProvider>(context, listen: false).currentTime;
-                DateTime _start =
-                DateFormat('hh:mm:ss').parse(product!.availableTimeStarts!);
-                DateTime _end =
-                DateFormat('hh:mm:ss').parse(product!.availableTimeEnds!);
-                DateTime _startTime = DateTime(
-                    _currentTime.year,
-                    _currentTime.month,
-                    _currentTime.day,
-                    _start.hour,
-                    _start.minute,
-                    _start.second);
-                DateTime _endTime = DateTime(_currentTime.year, _currentTime.month,
-                    _currentTime.day, _end.hour, _end.minute, _end.second);
-                if (_endTime.isBefore(_startTime)) {
-                  _endTime = _endTime.add(Duration(days: 1));
-                }
-                // bool _isAvailable = _currentTime.isAfter(_startTime) &&
-                //     _currentTime.isBefore(_endTime);
-                bool _isAvailable = true;
+              bool _isAvailable = true;
 
-                // CartModel _cartModel = CartModel(
-                //   price,
-                //   priceWithDiscount,
-                //   [_variation],
-                //   (price -
-                //       PriceConverter.convertWithDiscount(context, price,
-                //           product!.discount!, product!.discountType!)),
-                //   productProvider.quantity,
-                //   price -
-                //       PriceConverter.convertWithDiscount(
-                //           context, price, product!.tax!, product!.taxType!),
-                //
-                //   product!,
-                // );
-
-                return Column(
-                  children: [
-                    Expanded(
-                      child: Scrollbar(
-                        child: SingleChildScrollView(
-                          //  physics: BouncingScrollPhysics(),
-                          child: Center(
-                            child: SizedBox(
-                              width: MediaQuery.of(context).size.width,
+              return Scrollbar(
+                child: SingleChildScrollView(
+                  child: Center(
+                      child: Column(
+                    children: [
+                      Column(
+                        children: [
+                          const SizedBox(
+                            height: 30,
+                          ),
+                          Align(
+                            alignment: Alignment.topRight,
+                            child: Consumer<WishListProvider>(
+                                builder: (context, wishList, child) {
+                              return IconButton(
+                                onPressed: () =>
+                                    wishList.wishIdList.contains(product.id)
+                                        ? wishList.removeFromWishList(
+                                            product, (message) {})
+                                        : wishList.addToWishList(
+                                            product, (message) {}),
+                                icon: _isLoggedIn
+                                    ? Icon(
+                                        wishList.wishIdList.contains(product.id)
+                                            ? Icons.favorite
+                                            : Icons.favorite_border,
+                                        color: wishList.wishIdList
+                                                .contains(product.id)
+                                            ? ColorResources.getPrimaryColor(
+                                                context)
+                                            : Colors.grey[200],
+                                      )
+                                    : const SizedBox(),
+                              );
+                            }),
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              String url =
+                                  '${Provider.of<SplashProvider>(context, listen: false).baseUrls!.productImageUrl}/${product.image}';
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          ImagePreview(imageURL: url)));
+                            },
+                            child: Image.network(
+                              '${Provider.of<SplashProvider>(context, listen: false).baseUrls!.productImageUrl}/${product.image}',
+                              fit: BoxFit.cover,
+                              height: 300,
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 30,
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(20),
+                            child: Align(
+                              alignment: Alignment.topLeft,
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Container(
-                                    height: 300,
-                                    width: MediaQuery.of(context).size.width,
-                                    decoration: BoxDecoration(
-                                        color: ColorResources.getBackgroundColor(
-                                            context),
-                                        borderRadius: BorderRadius.only(
-                                          bottomLeft: Radius.circular(60),
-                                          bottomRight: Radius.circular(60),
-                                        ),
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color:
-                                            Provider.of<ThemeProvider>(context)
-                                                .darkTheme
-                                                ? Colors.black.withOpacity(0.4)
-                                                : Colors.grey[300]!,
-                                            blurRadius: 5,
-                                            spreadRadius: 1,
-                                          )
-                                        ]),
-                                    child: GestureDetector(
-                                      onTap: () {
-                                        String url =
-                                            '${Provider.of<SplashProvider>(context, listen: false).baseUrls!.productImageUrl}/${product!.image}';
-                                        Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    ImagePreview(imageURL: url)));
-                                      },
-                                      child: ClipRRect(
-                                        borderRadius: BorderRadius.only(
-                                          bottomLeft: Radius.circular(60),
-                                          bottomRight: Radius.circular(60),
-                                        ),
-                                        child: FadeInImage.assetNetwork(
-                                          placeholder: Images.loading,
-                                          image:
-                                          '${Provider.of<SplashProvider>(context, listen: false).baseUrls!.productImageUrl}/${product!.image}',
-                                          width: 200,
-                                          height: 200,
-                                          fit: BoxFit.cover,
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Expanded(
+                                        child: Text(
+                                          product.name!,
+                                          textAlign: TextAlign.justify,
+                                          style: const TextStyle(
+                                              color: Colors.black45,
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.w600),
                                         ),
                                       ),
-                                    ),
+                                    ],
+                                  ),
+                                  const SizedBox(
+                                    height: 15,
                                   ),
                                   Padding(
-                                    padding: const EdgeInsets.only(
-                                        left: 15, right: 15, top: 15),
-                                    child: Row(
-                                      children: [
-                                        Expanded(
-                                          child: Text('${product!.name}',
-                                              style: TextStyle(
-                                                  color:
-                                                  ColorResources.getTextColor(
-                                                      context),
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 16),
-                                              maxLines: 2,
-                                              overflow: TextOverflow.ellipsis),
-                                        ),
-                                        Consumer<WishListProvider>(
-                                            builder: (context, wishList, child) {
-                                              return IconButton(
-                                                onPressed: () {
-                                                  wishList.wishIdList
-                                                      .contains(product!.id)
-                                                      ? wishList.removeFromWishList(
-                                                      product!, (message) {})
-                                                      : wishList.addToWishList(
-                                                      product!, (message) {});
-                                                },
-                                                icon: _isLoggedIn
-                                                    ? Icon(
-                                                  wishList.wishIdList
-                                                      .contains(product!.id)
-                                                      ? Icons.favorite
-                                                      : Icons.favorite_border,
-                                                  color: wishList.wishIdList
-                                                      .contains(product!.id)
-                                                      ? ColorResources
-                                                      .getPrimaryColor(
-                                                      context)
-                                                      : ColorResources
-                                                      .getHintColor(context),
-                                                )
-                                                    : SizedBox(),
-                                              );
-                                            }),
-                                      ],
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(
-                                        left: 15, right: 15, top: 15),
-                                    child: ListView.builder(
-                                      shrinkWrap: true,
-                                      itemCount: product!.choiceOptions!.length,
-                                      physics: const NeverScrollableScrollPhysics(),
-                                      itemBuilder: (context, index) {
-                                        return Column(
-                                            crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                  product!
-                                                      .choiceOptions![index].title!,
-                                                  style: rubikMedium.copyWith(
-                                                      color: ColorResources
-                                                          .getTextColor(context),
-                                                      fontSize: Dimensions
-                                                          .FONT_SIZE_LARGE)),
-                                              const SizedBox(
-                                                  height: Dimensions
-                                                      .PADDING_SIZE_EXTRA_SMALL),
-                                              GridView.builder(
-                                                gridDelegate:
-                                                const SliverGridDelegateWithFixedCrossAxisCount(
-                                                  crossAxisCount: 3,
-                                                  crossAxisSpacing: 20,
-                                                  mainAxisSpacing: 10,
-                                                  childAspectRatio: (1 / 0.25),
-                                                ),
-                                                shrinkWrap: true,
-                                                physics:
-                                                const NeverScrollableScrollPhysics(),
-                                                itemCount: product!
-                                                    .choiceOptions![index]
-                                                    .options!
-                                                    .length,
-                                                itemBuilder: (context, i) {
-                                                  return InkWell(
-                                                    onTap: () {
-                                                      productProvider
-                                                          .setCartVariationIndex(
-                                                          index, i);
-                                                      cartProvider.isExistInCart(
-                                                          product!,
-                                                          productProvider
-                                                              .variationIndex!);
-                                                    },
-                                                    child: Container(
-                                                      alignment: Alignment.center,
-                                                      padding: const EdgeInsets
-                                                          .symmetric(
-                                                          horizontal: Dimensions
-                                                              .PADDING_SIZE_EXTRA_SMALL),
-                                                      decoration: BoxDecoration(
-                                                        color: productProvider
-                                                            .variationIndex![
-                                                        index] !=
-                                                            i
-                                                            ? ColorResources
-                                                            .getScaffoldBackgroundColor(
-                                                            context)
-                                                            : ColorResources
-                                                            .getPrimaryColor(
-                                                            context),
-                                                        borderRadius:
-                                                        BorderRadius.circular(
-                                                            5),
-                                                        border: productProvider
-                                                            .variationIndex![
-                                                        index] !=
-                                                            i
-                                                            ? Border.all(
-                                                            color: ColorResources
-                                                                .BORDER_COLOR,
-                                                            width: 2)
-                                                            : null,
-                                                      ),
-                                                      child: Text(
-                                                        product!
-                                                            .choiceOptions![index]
-                                                            .options![i]
-                                                            .trim(),
-                                                        maxLines: 1,
-                                                        overflow:
-                                                        TextOverflow.ellipsis,
-                                                        style:
-                                                        rubikRegular.copyWith(
-                                                          color: productProvider
-                                                              .variationIndex![
-                                                          index] !=
-                                                              i
-                                                              ? ColorResources
-                                                              .getTextColor(
-                                                              context)
-                                                              : ColorResources
-                                                              .getScaffoldBackgroundColor(
-                                                              context),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  );
-                                                },
-                                              ),
-                                              SizedBox(
-                                                  height: index !=
-                                                      product!.choiceOptions!
-                                                          .length -
-                                                          1
-                                                      ? Dimensions
-                                                      .PADDING_SIZE_LARGE
-                                                      : 0),
-                                            ]);
-                                      },
-                                    ),
-                                  ),
-                                  product!.choiceOptions!.length > 0
-                                      ? SizedBox(
-                                      height: Dimensions.PADDING_SIZE_LARGE)
-                                      : SizedBox(),
-                                  Padding(
-                                    padding: const EdgeInsets.only(
-                                        left: 15, right: 15, top: 15),
+                                    padding: const EdgeInsets.only(),
                                     child: Row(
                                       children: [
                                         Text(
-                                            '${Provider.of<SplashProvider>(context, listen: false).configModel!.currencySymbol}${'${PriceConverter.convertPrice(context, _startingPrice, discount: product!.discount, discountType: product!.discountType)}'
-                                                '${_endingPrice != null ? ' - ${Provider.of<SplashProvider>(context, listen: false).configModel!.currencySymbol}${PriceConverter.convertPrice(context, _endingPrice, discount: product!.discount, discountType: product!.discountType)}' : ''}'}',
+                                            '${AppConstants.CURRENCY}${Helpers.formatTextWithNum(priceWithDiscount.toString())}',
                                             style: TextStyle(
-                                                color: ColorResources.getTextColor(
-                                                    context),
+                                                color:
+                                                    ColorResources.getTextColor(
+                                                        context),
                                                 fontWeight: FontWeight.normal,
                                                 fontSize: 16),
                                             maxLines: 2,
                                             overflow: TextOverflow.ellipsis),
-                                        SizedBox(width: 20),
-                                        Spacer(),
+                                        const SizedBox(width: 20),
+                                        const Spacer(),
                                         Container(
                                           decoration: BoxDecoration(
-                                              color:
-                                              ColorResources.getBackgroundColor(
-                                                  context),
                                               borderRadius:
-                                              BorderRadius.circular(5)),
+                                                  BorderRadius.circular(5)),
                                           child: Row(children: [
-                                            InkWell(
+                                            GestureDetector(
                                               onTap: () {
-                                                if (productProvider.quantity! > 1) {
-                                                  productProvider
-                                                      .setQuantity(false);
+                                                if (productProvider.quantity! >
+                                                    minOrderQuantity) {
+                                                  productProvider.setQuantity(
+                                                      productProvider
+                                                              .quantity! -
+                                                          1);
                                                 }
                                               },
-                                              child: Padding(
-                                                padding: EdgeInsets.symmetric(
-                                                    horizontal: Dimensions
-                                                        .PADDING_SIZE_SMALL,
-                                                    vertical: Dimensions
-                                                        .PADDING_SIZE_EXTRA_SMALL),
-                                                child: Icon(
-                                                  Icons.remove,
-                                                  size: 20,
-                                                  color:
-                                                  ColorResources.getTextColor(
-                                                      context),
-                                                ),
-                                              ),
+                                              child: Container(
+                                                  width: 25,
+                                                  height: 25,
+                                                  decoration: BoxDecoration(
+                                                      color: ColorResources
+                                                          .getScaffoldColor(context),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              50)),
+                                                  child:  Icon(
+                                                      Icons.remove,
+                                                      size: 20,
+                                                      color: ColorResources
+                                                          .getScaffoldBackgroundColor(context))),
                                             ),
-                                            Text(
-                                                productProvider.quantity.toString(),
-                                                style: rubikMedium.copyWith(
-                                                  fontSize: Dimensions
-                                                      .FONT_SIZE_EXTRA_LARGE,
-                                                  color:
-                                                  ColorResources.getTextColor(
-                                                      context),
-                                                )),
-                                            InkWell(
-                                              onTap: () =>
-                                                  productProvider.setQuantity(true),
-                                              child: Padding(
-                                                padding: EdgeInsets.symmetric(
-                                                    horizontal: Dimensions
-                                                        .PADDING_SIZE_SMALL,
-                                                    vertical: Dimensions
-                                                        .PADDING_SIZE_EXTRA_SMALL),
-                                                child: Icon(
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 10),
+                                              child: Text(
+                                                  productProvider.quantity
+                                                      .toString(),
+                                                  style: rubikMedium.copyWith(
+                                                    fontSize: 25,
+                                                    fontWeight: FontWeight.w500,
+                                                    color: ColorResources
+                                                        .getTextColor(context),
+                                                  )),
+                                            ),
+                                            GestureDetector(
+                                              onTap: () => productProvider
+                                                  .setQuantity(productProvider
+                                                          .quantity! +
+                                                      1),
+                                              child: Container(
+                                                width: 25,
+                                                height: 25,
+                                                decoration: BoxDecoration(
+                                                    color: ColorResources
+                                                        .getScaffoldColor(context),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            50)),
+                                                child:  Icon(
                                                   Icons.add,
                                                   size: 20,
-                                                  color:
-                                                  ColorResources.getTextColor(
-                                                      context),
+                                                  color: ColorResources
+                                                      .getScaffoldBackgroundColor(context),
                                                 ),
                                               ),
                                             ),
@@ -455,202 +320,186 @@ class ProductDetailsScreen extends StatelessWidget {
                                       ],
                                     ),
                                   ),
-                                  price > priceWithDiscount
-                                      ? Padding(
-                                    padding: const EdgeInsets.only(
-                                        left: 15, right: 15),
-                                    child: Text(
-                                      '${Provider.of<SplashProvider>(context, listen: false).configModel!.currencySymbol}${PriceConverter.convertPrice(context, _startingPrice)}'
-                                          '${_endingPrice != null ? ' - ${Provider.of<SplashProvider>(context, listen: false).configModel!.currencySymbol}${PriceConverter.convertPrice(context, _endingPrice)}' : ''}',
-                                      style: TextStyle(
-                                          color: Provider.of<ThemeProvider>(
-                                              context,
-                                              listen: false)
-                                              .darkTheme
-                                              ? ColorResources.DISABLE_COLOR
-                                              : ColorResources.COLOR_GREY,
-                                          fontWeight: FontWeight.normal,
-                                          fontSize: 16,
-                                          decoration:
-                                          TextDecoration.lineThrough),
-                                    ),
-                                  )
-                                      : SizedBox(),
-                                  Consumer(builder: (context,
-                                      LanguageProvider languageProvider, child) {
-                                    String description = '';
-                                    description = product!.description ?? '';
-                                    return Padding(
-                                      padding: const EdgeInsets.only(
-                                          left: 15, right: 15, top: 15),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                        children: [
-                                          Text(description,
-                                              style: TextStyle(
-                                                  color:
-                                                  ColorResources.getHintColor(
-                                                      context),
-                                                  fontSize: 14),
-                                              maxLines: 4),
-                                          product!.description != null
-                                              ? product!.description!.length > 200
-                                              ? GestureDetector(
-                                              onTap: () {
-                                                showDialog(
-                                                  context: context,
-                                                  builder: (BuildContext
-                                                  context) {
-                                                    return AlertDialog(
-                                                      backgroundColor:
-                                                      ColorResources
-                                                          .getScaffoldBackgroundColor(
-                                                          context),
-                                                      content: Text(
-                                                          description,
-                                                          style: TextStyle(
-                                                              color: ColorResources
-                                                                  .getTextColor(
-                                                                  context),
-                                                              fontSize:
-                                                              10)),
-                                                    );
-                                                  },
-                                                );
-                                              },
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      price > priceWithDiscount
+                                          ? Padding(
+                                              padding: const EdgeInsets.all(0),
                                               child: Text(
-                                                  getTranslated(
-                                                      'see_more', context),
-                                                  style: TextStyle(
-                                                      color: ColorResources
-                                                          .getPrimaryColor(
-                                                          context))))
-                                              : SizedBox()
-                                              : SizedBox(),
+                                                PriceConverter.convertPrice(
+                                                    context, price),
+                                                style: const TextStyle(
+                                                    color: Colors.black45,
+                                                    fontWeight:
+                                                        FontWeight.normal,
+                                                    fontSize: 16,
+                                                    decoration: TextDecoration
+                                                        .lineThrough),
+                                              ),
+                                            )
+                                          : const SizedBox(),
+                                      Column(
+                                        children: [
+                                          const SizedBox(
+                                            height: 5,
+                                          ),
+                                          RatingBar(
+                                              rating: product.rating!.length > 0
+                                                  ? double.parse(product
+                                                      .rating![0].average!)
+                                                  : 0.0,
+                                              size: 18),
                                         ],
                                       ),
-                                    );
-                                  }),
+                                    ],
+                                  ),
+                                  const SizedBox(
+                                    height: 20,
+                                  ),
                                   Padding(
                                     padding: const EdgeInsets.only(
-                                        left: 15, right: 15, top: 15),
+                                        right: 15, top: 5),
                                     child: Row(children: [
                                       Text(
                                           '${getTranslated('total_amount', context)}:',
                                           style: rubikMedium.copyWith(
-                                              fontSize: Dimensions.FONT_SIZE_LARGE,
-                                              color: ColorResources.getTextColor(
-                                                  context))),
+                                              fontSize:
+                                                  Dimensions.FONT_SIZE_LARGE,
+                                              color:
+                                                  ColorResources.getTextColor(
+                                                      context))),
                                       const SizedBox(
-                                          width:
-                                          Dimensions.PADDING_SIZE_EXTRA_SMALL),
+                                          width: Dimensions
+                                              .PADDING_SIZE_EXTRA_SMALL),
                                       Text(
-                                         '${Provider.of<SplashProvider>(context, listen: false).configModel!.currencySymbol}${PriceConverter.convertPrice(context,
-                                             priceWithQuantityWithoutDiscount)}',
-                                          style: TextStyle(
-                                              color: Provider.of<ThemeProvider>(
+                                          PriceConverter.convertPrice(
+                                                      context, price,
+                                                      discount:
+                                                          product.discount,
+                                                      discountType: product
+                                                          .discountType) ==
+                                                  PriceConverter.convertPrice(
+                                                      context, price)
+                                              ? ""
+                                              : PriceConverter.convertPrice(
                                                   context,
-                                                  listen: false)
-                                                  .darkTheme
-                                                  ? ColorResources.DISABLE_COLOR
-                                                  : ColorResources.COLOR_GREY,
+                                                  priceWithQuantityWithoutDiscount),
+                                          style: const TextStyle(
+                                              color: Colors.black45,
                                               fontWeight: FontWeight.normal,
                                               fontSize: 14,
                                               decoration:
-                                              TextDecoration.lineThrough)),
+                                                  TextDecoration.lineThrough)),
                                       const SizedBox(width: 1),
                                       Text(
-                                          '${Provider.of<SplashProvider>(context, listen: false).configModel!.currencySymbol}${PriceConverter.convertPrice(
-                                              context, priceWithQuantity)}',
+                                          PriceConverter.convertPrice(
+                                              context, priceWithQuantity),
                                           style: rubikBold.copyWith(
-                                            color: ColorResources.getPrimaryColor(
-                                                context),
-                                            fontSize: Dimensions.FONT_SIZE_LARGE,
+                                            color:
+                                                ColorResources.getScaffoldColor(context),
+                                            fontSize:
+                                                Dimensions.FONT_SIZE_LARGE,
                                           )),
                                     ]),
                                   ),
-
-
-                                    Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      cartProvider.cartLoading == false
-                                          ? Padding(
-                                        padding: const EdgeInsets.only(
-                                            left: 15,
-                                            right: 15,
-                                            top: 30,
-                                            bottom: 30),
-                                        child: CustomButton(
-                                          text: getTranslated(
-                                              'add_to_cart', context),
-                                          backgroundColor:
-                                          ColorResources.getPrimaryColor(
-                                              context),
-                                          onTap: () {
-                                            if(_isLoggedIn){
-                                              int cartId = 0;
-
-                                              if (fromCart) {
-                                                cartId = cart!.id!;
-                                              }
-
-                                              CartModel _cartModel = CartModel(
-                                                  id: cartId,
-                                                  productId: product!.id,
+                                  const SizedBox(
+                                    height: 20,
+                                  ),
+                                  if (_isLoggedIn)
+                                    cartProvider.cartLoading == true
+                                        ? CustomCircularIndicator(
+                                            color:
+                                                ColorResources.getScaffoldColor(context))
+                                        : CustomButton(
+                                            text: getTranslated(
+                                                'add_to_cart', context),
+                                            onTap: () {
+                                              CartModel cartModel = CartModel(
+                                                  id: 0,
+                                                  productId: product.id,
                                                   product: product,
                                                   quantity:
-                                                  productProvider.quantity,
-                                                  variationIndex: productProvider
-                                                      .variationIndex);
+                                                      productProvider.quantity,
+                                              tieredPricing: PriceConverter.getMatchedTieredPricingModel(tiredPricing,  productProvider.quantity??1));
 
                                               cartProvider
                                                   .addToCartList(
-                                                  _cartModel, (message) {})
+                                                      cartModel, (message) {})
                                                   .then((value) {
-                                                cartProvider.initCartList(context);
-                                                cartProvider.initCartListProductIds(
-                                                    context);
+                                                cartProvider
+                                                    .initCartList(context);
+                                                cartProvider
+                                                    .initCartListProductIds(
+                                                        context);
+                                                showCustomSnackBar(
+                                                    getTranslated(
+                                                        'added_cart_successfully',
+                                                        context),
+                                                    context,
+                                                    isError: false);
                                                 Navigator.pop(context);
                                               });
-
-                                              // Provider.of<CartProvider>(context,
-                                              //     listen: false)
-                                              //     .addToCart(_cartModel, cartIndex, fromCart);
-                                              // callback!(_cartModel);
-                                            }else{
-                                              Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                      builder: (BuildContext context) => LoginScreen()));
-                                            }
-
-                                          },
-                                        ),
-                                      )
-                                          : Center(
-                                          child: CircularProgressIndicator(
-                                            valueColor:
-                                            new AlwaysStoppedAnimation<Color>(
-                                                ColorResources.getPrimaryColor(
-                                                    context)),
-                                          )),
-                                    ],
-                                  )
-                                  // : SizedBox(height:20)
+                                            },
+                                          )
                                 ],
                               ),
                             ),
+                          )
+                        ],
+                      ),
+                      GestureDetector(
+                        onTap: () => showModalBottomSheet(
+                            useSafeArea: true,
+                            isScrollControlled: true,
+                            backgroundColor: Colors.transparent,
+                            context: context,
+                            builder: (BuildContext context) {
+                              return SingleProductDetailsBottomSheet(
+                                product: product,
+                                callback: (CartModel cartModel) {
+                                  ScaffoldMessenger.of(context!).showSnackBar(
+                                      SnackBar(
+                                          content: Text(getTranslated(
+                                              'added_to_cart', context)),
+                                          backgroundColor: Colors.green));
+                                },
+                              );
+                            },
+                          ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(26),
+                          child: Align(
+                            alignment: Alignment.bottomCenter,
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(getTranslated('specification', context),
+                                    style: const TextStyle(
+                                        fontSize: 18, color: Colors.black45)),
+                                const SizedBox(
+                                  width: 10,
+                                ),
+                                const Icon(
+                                  Icons.arrow_forward_ios_rounded,
+                                  size: 15,
+                                  color: Colors.black45,
+                                )
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                    ),
-                  ],
-                );
-              });
-        },
-      ),
-    );
+                      )
+                    ],
+                  )),
+                ),
+              );
+            },
+          );
+        }));
   }
 }

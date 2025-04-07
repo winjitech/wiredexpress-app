@@ -4,65 +4,85 @@ import 'package:wired_express/provider/theme_provider.dart';
 
 class ColorResources {
   static Color getPrimaryColor(BuildContext context) {
-    return Provider.of<ThemeProvider>(context).darkTheme
+    return Provider.of<ThemeProvider>(context, listen: false).darkTheme
         ? Color(0xFF009401)
         : Color(0xff04B200);
   }
 
   static Color getGreyColor(BuildContext context) {
-    return Provider.of<ThemeProvider>(context).darkTheme
+    return Provider.of<ThemeProvider>(context, listen: false).darkTheme
         ? Color(0xFF6f7275)
         : Color(0xFFA0A4A8);
   }
 
   static Color getGrayColor(BuildContext context) {
-    return Provider.of<ThemeProvider>(context).darkTheme
+    return Provider.of<ThemeProvider>(context, listen: false).darkTheme
         ? Color(0xFF919191)
         : Color(0xFF6E6E6E);
   }
 
   static Color? getSearchBg(BuildContext context) {
-    return Provider.of<ThemeProvider>(context).darkTheme
+    return Provider.of<ThemeProvider>(context, listen: false).darkTheme
         ? Colors.grey[600]
         : Color(0xFFF4F7FC);
   }
 
   static Color getBackgroundColor(BuildContext context) {
-    return Provider.of<ThemeProvider>(context).darkTheme
+    return Provider.of<ThemeProvider>(context, listen: false).darkTheme
         ? Color(0xFF343636)
         : Color(0xFFF4F7FC);
   }
 
   static Color getHintColor(BuildContext context) {
-    return Provider.of<ThemeProvider>(context).darkTheme
+    return Provider.of<ThemeProvider>(context, listen: false).darkTheme
         ? Color(0xFF98a1ab)
         : Color(0xFF52575C);
   }
 
   static Color getGreyBunkerColor(BuildContext context) {
-    return Provider.of<ThemeProvider>(context).darkTheme
+    return Provider.of<ThemeProvider>(context, listen: false).darkTheme
         ? Color(0xFFE4E8EC)
         : Color(0xFF25282B);
   }
 
   static Color getScaffoldBackgroundColor(BuildContext context) {
-    return Provider.of<ThemeProvider>(context).darkTheme
-        ? Color(0xFF252525)
+    return Provider.of<ThemeProvider>(context, listen: false).darkTheme
+        ? Colors.black
         : Colors.white;
   }
 
   static Color getTextColor(BuildContext context) {
-    return Provider.of<ThemeProvider>(context).darkTheme
+    return Provider.of<ThemeProvider>(context, listen: false).darkTheme
         ? Colors.white
         : Colors.black;
   }
 
   static Color getCardColor(BuildContext context) {
-    return Provider.of<ThemeProvider>(context , listen: false).darkTheme
+    return Provider.of<ThemeProvider>(context, listen: false).darkTheme
         ? Color(0xFF191919)
         : Colors.white;
   }
 
+  static Color getScaffoldColor(BuildContext context) {
+    return Provider.of<ThemeProvider>(context, listen: false).darkTheme
+        ? Color(0xFFAAA8A8)
+        : Color(0xFF252525);
+  }
+
+  static Color getSecondaryColor(BuildContext context) {
+    return Provider.of<ThemeProvider>(context).darkTheme
+        ? Color(0xFF0055A4)
+        : Color(0xFF007BFF);
+  }
+  static Color? getTextFieldFillColor(BuildContext context) {
+    return Provider.of<ThemeProvider>(context, listen: false).darkTheme
+        ? Color(0xFF1A1A1A)
+        : Colors.grey[200];
+  }
+
+  static Color getBorderColor(BuildContext context) {
+    return getTextColor(context).withOpacity(0.2);
+  }
 
   static const Color COLOR_PRIMARY = Color(0xFF39aeb5);
   static const Color COLOR_PRIMARY_DARK = Color(0xFF288b91);
@@ -82,7 +102,6 @@ class ColorResources {
   static const Color COLOR_GREY_CHATEAU = Color(0xffA0A4A8);
   static const Color BORDER_COLOR = Color(0xFFDCDCDC);
   static const Color DISABLE_COLOR = Color(0xFF979797);
-  static const Color SCAFFOLD_COLOR = Color(0xFF252525);
 
   static const Map<int, Color> colorMap = {
     50: Color(0x10192D6B),

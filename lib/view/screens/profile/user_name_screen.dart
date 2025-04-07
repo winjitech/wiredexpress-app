@@ -227,17 +227,10 @@
 //                   ),
 //                 ),
 //               )
-//                   : Center(
-//                   child: CircularProgressIndicator(
-//                       valueColor:
-//                       new AlwaysStoppedAnimation<Color>(
-//                           Theme.of(context).primaryColor))),
+//                   : CustomCircularIndicator(),
 //             ],
 //           )
-//               : Center(
-//               child: CircularProgressIndicator(
-//                   valueColor: new AlwaysStoppedAnimation<Color>(
-//                       Theme.of(context).primaryColor)));
+//               : CustomCircularIndicator();
 //         },
 //       )
 //           : NotLoggedInScreen(),

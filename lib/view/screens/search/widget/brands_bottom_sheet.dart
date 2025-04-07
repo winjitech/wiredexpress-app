@@ -92,7 +92,7 @@ class _BrandsBottomSheetState extends State<BrandsBottomSheet> {
               Positioned(
                 right: 10,
                 top: 5,
-                child: InkWell(
+                child: GestureDetector(
                     onTap: () => Navigator.pop(context),
                     child: Icon(Icons.close)),
               ),

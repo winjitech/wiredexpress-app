@@ -86,7 +86,7 @@ class searchEdit extends StatelessWidget {
                     child: ListView.builder(
                         itemCount: searchProvider.historyList.length,
                         physics: BouncingScrollPhysics(),
-                        itemBuilder: (context, index) => InkWell(
+                        itemBuilder: (context, index) => GestureDetector(
                           onTap: () {
                             searchProvider.searchProduct(searchProvider.historyList[index], context);
                             Navigator.of(context)

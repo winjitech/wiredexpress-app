@@ -15,7 +15,8 @@ class ProductRepo {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var customer_id = await prefs.getInt('my_defined_user_id');
     try {
-      final response = await dioClient!.get('${AppConstants.POPULAR_PRODUCT_URI}?limit=10&offset=$offset&customer_id=$customer_id');
+      final response = await dioClient!.get(
+          '${AppConstants.POPULAR_PRODUCT_URI}?limit=10&offset=$offset&customer_id=$customer_id');
       return ApiResponse.withSuccess(response);
     } catch (e) {
       print('erorrr   $e');
@@ -24,9 +25,9 @@ class ProductRepo {
   }
 
   Future<ApiResponse> getProductList(String offset, int category_id) async {
-
     try {
-      final response = await dioClient!.get('${AppConstants.PRODUCTS_LIST_URI}?limit=10&offset=$offset&category_id=$category_id');
+      final response = await dioClient!.get(
+          '${AppConstants.PRODUCTS_LIST_URI}?limit=10&offset=$offset&category_id=$category_id');
       return ApiResponse.withSuccess(response);
     } catch (e) {
       print('erorrr   $e');
@@ -38,7 +39,8 @@ class ProductRepo {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var customer_id = await prefs.getInt('my_defined_user_id');
     try {
-      final response = await dioClient!.get('${AppConstants.SEARCH_PRODUCT_URI}$productId&customer_id=$customer_id');
+      final response = await dioClient!.get(
+          '${AppConstants.PRODUCT_DETAILS_URI}$productId&customer_id=$customer_id');
       return ApiResponse.withSuccess(response);
     } catch (e) {
       return ApiResponse.withError(ApiErrorHandler.getMessage(e));
@@ -47,7 +49,8 @@ class ProductRepo {
 
   Future<ApiResponse> submitReview(ReviewBody reviewBody) async {
     try {
-      final response = await dioClient!.post(AppConstants.REVIEW_URI, data: reviewBody);
+      final response =
+          await dioClient!.post(AppConstants.REVIEW_URI, data: reviewBody);
       return ApiResponse.withSuccess(response);
     } catch (e) {
       return ApiResponse.withError(ApiErrorHandler.getMessage(e));
@@ -56,7 +59,18 @@ class ProductRepo {
 
   Future<ApiResponse> submitDeliveryManReview(ReviewBody reviewBody) async {
     try {
-      final response = await dioClient!.post(AppConstants.DELIVER_MAN_REVIEW_URI, data: reviewBody);
+      final response = await dioClient!
+          .post(AppConstants.DELIVER_MAN_REVIEW_URI, data: reviewBody);
+      return ApiResponse.withSuccess(response);
+    } catch (e) {
+      return ApiResponse.withError(ApiErrorHandler.getMessage(e));
+    }
+  }
+
+  Future<ApiResponse> getProductDetails(int productId) async {
+    try {
+      final response =
+          await dioClient!.get('${AppConstants.PRODUCT_DETAILS_URI}$productId');
       return ApiResponse.withSuccess(response);
     } catch (e) {
       return ApiResponse.withError(ApiErrorHandler.getMessage(e));

@@ -5,7 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:wired_express/data/helper/helpers.dart';
 import 'package:wired_express/data/model/response/cart_model.dart';
+import 'package:wired_express/data/model/response/moq_setting_model.dart';
 import 'package:wired_express/data/model/response/product_model.dart';
+import 'package:wired_express/data/model/response/tiered_pricing_model.dart';
 import 'package:wired_express/helper/price_converter.dart';
 import 'package:wired_express/localization/language_constrants.dart';
 import 'package:wired_express/provider/auth_provider.dart';
@@ -19,11 +21,11 @@ import 'package:wired_express/provider/theme_provider.dart';
 import 'package:wired_express/utill/color_resources.dart';
 import 'package:wired_express/utill/dimensions.dart';
 import 'package:wired_express/utill/styles.dart';
+import 'package:wired_express/view/base/circular_indicator_widget.dart';
 import 'package:wired_express/view/base/custom_button.dart';
 import 'package:wired_express/view/base/custom_divider.dart';
 import 'package:wired_express/view/base/custom_snackbar.dart';
 import 'package:wired_express/view/base/rating_bar.dart';
-import 'package:wired_express/view/screens/auth/login_screen.dart';
 
 class SingleProductDetailsBottomSheet extends StatefulWidget {
   final Product? product;
@@ -48,98 +50,70 @@ class _SingleProductDetailsBottomSheetState
   @override
   void initState() {
     super.initState();
+    Timer(const Duration(seconds: 0), () async {
+      final productProvider =
+          Provider.of<ProductProvider>(context, listen: false);
 
-    Timer(Duration(seconds: 1), () {});
+      int minOrderQuantity =
+          widget.product!.moqSetting?.minimumOrderQuantity ?? 1;
+
+      productProvider.setQuantity(minOrderQuantity);
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    bool fromCart = widget.cart != null;
-    fromCart
-        ? Provider.of<ProductProvider>(context, listen: false)
-            .initCartData(widget.cart!.quantity!, widget.cart!.variationIndex!)
-        : Provider.of<ProductProvider>(context, listen: false)
-            .initData(widget.product!);
-
-    Variation _variation = Variation();
+    
     String? _image;
     final bool _isLoggedIn =
         Provider.of<CustomAuthProvider>(context, listen: false).isLoggedIn()!;
     // final String languageStr = getTranslated('set_language', context);
     return Consumer2<CartProvider, ProductProvider>(
         builder: (context, cartProvider, productProvider, child) {
-      double? _startingPrice;
-      double? _endingPrice;
-      if (widget.product!.choiceOptions!.length != 0) {
-        List<double> _priceList = [];
-        widget.product!.variations!
-            .forEach((variation) => _priceList.add(variation.price!));
-        _priceList.sort((a, b) => a.compareTo(b));
-        _startingPrice = _priceList[0];
-        if (_priceList[0] < _priceList[_priceList.length - 1]) {
-          _endingPrice = _priceList[_priceList.length - 1];
-        }
-      } else {
-        _startingPrice = widget.product!.price!;
-      }
+          Product product = productProvider.productDetailsModel!;
+          List<TiredPricingModel> tiredPricing = product.tiredPricing ?? [];
+          MoqSettingModel? moqSetting = product.moqSetting;
+          int minOrderQuantity = moqSetting?.minimumOrderQuantity ?? 1;
 
-      List<String> _variationList = [];
-      for (int index = 0;
-          index < widget.product!.choiceOptions!.length;
-          index++) {
-        _variationList.add(widget.product!.choiceOptions![index]
-            .options![productProvider.variationIndex![index]]
-            .replaceAll(' ', ''));
-      }
-      String variationType = '';
-      bool isFirst = true;
-      _variationList.forEach((variation) {
-        if (isFirst) {
-          variationType = '$variationType$variation';
-          isFirst = false;
-        } else {
-          variationType = '$variationType-$variation';
-        }
-      });
+          String? _url;
 
-      double price = widget.product!.price!;
-      String? _url;
-      for (Variation variation in widget.product!.variations!) {
-        if (variation.type == variationType) {
-          price = variation.price!;
-          _variation = variation;
-          _image = variation.image;
-          _url =
-              '${Provider.of<SplashProvider>(context, listen: false).baseUrls!.productImageUrl}/$_image!}';
-          break;
-        }
-      }
+          double priceWithDiscount = PriceConverter.convertWithDiscount(
+              context, product.price!, product.discount!, product.discountType!);
+          double price = PriceConverter.getProductFinalPrice(tiredPricing , priceWithDiscount , productProvider.quantity??1)??0.0;
 
-      double priceWithDiscount = PriceConverter.convertWithDiscount(context,
-          price, widget.product!.discount!, widget.product!.discountType!);
+          double priceWithQuantity =
+              price * productProvider.quantity!;
+          double priceWithQuantityWithoutDiscount =
+              price * productProvider.quantity!;
 
-      double priceWithQuantity = priceWithDiscount * productProvider.quantity!;
-      double priceWithQuantityWithoutDiscount =
-          price * productProvider.quantity!;
+          DateTime _currentTime =
+              Provider.of<SplashProvider>(context, listen: false)
+                  .currentTime;
+          DateTime _start =
+          DateFormat('hh:mm:ss').parse(product.availableTimeStarts!);
+          DateTime _end =
+          DateFormat('hh:mm:ss').parse(product.availableTimeEnds!);
+          DateTime _startTime = DateTime(
+              _currentTime.year,
+              _currentTime.month,
+              _currentTime.day,
+              _start.hour,
+              _start.minute,
+              _start.second);
+          DateTime _endTime = DateTime(
+              _currentTime.year,
+              _currentTime.month,
+              _currentTime.day,
+              _end.hour,
+              _end.minute,
+              _end.second);
+          if (_endTime.isBefore(_startTime)) {
+            _endTime = _endTime.add(const Duration(days: 1));
+          }
 
-      DateTime _currentTime =
-          Provider.of<SplashProvider>(context, listen: false).currentTime;
-      DateTime _start =
-          DateFormat('hh:mm:ss').parse(widget.product!.availableTimeStarts!);
-      DateTime _end =
-          DateFormat('hh:mm:ss').parse(widget.product!.availableTimeEnds!);
-      DateTime _startTime = DateTime(_currentTime.year, _currentTime.month,
-          _currentTime.day, _start.hour, _start.minute, _start.second);
-      DateTime _endTime = DateTime(_currentTime.year, _currentTime.month,
-          _currentTime.day, _end.hour, _end.minute, _end.second);
-      if (_endTime.isBefore(_startTime)) {
-        _endTime = _endTime.add(Duration(days: 1));
-      }
-      // bool _isAvailable = _currentTime.isAfter(_startTime) &&
-      //     _currentTime.isBefore(_endTime);
-      bool _isAvailable = true;
+          bool _isAvailable = true;
 
-      return Container(
+          return Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.only(
               topRight: Radius.circular(20), topLeft: Radius.circular(20)),
@@ -156,8 +130,8 @@ class _SingleProductDetailsBottomSheetState
                 child: Row(
                   children: [
                     Text(
-                        '${Provider.of<SplashProvider>(context, listen: false).configModel!.currencySymbol}${'${PriceConverter.convertPrice(context, _startingPrice, discount: widget.product!.discount, discountType: widget.product!.discountType)}'
-                            '${_endingPrice != null ? ' - ${Provider.of<SplashProvider>(context, listen: false).configModel!.currencySymbol}${PriceConverter.convertPrice(context, _endingPrice, discount: widget.product!.discount, discountType: widget.product!.discountType)}' : ''}'}',
+                        '${PriceConverter.convertPrice(context, price, discount: product.discount, discountType: product.discountType)}'
+                            '${price != null ? ' - ${PriceConverter.convertPrice(context, price, discount: product.discount, discountType: product.discountType)}' : ''}',
                         style: TextStyle(
                             color: ColorResources.getTextColor(context),
                             fontWeight: FontWeight.normal,
@@ -171,22 +145,23 @@ class _SingleProductDetailsBottomSheetState
                           // color: ColorResources.getBackgroundColor(context),
                           borderRadius: BorderRadius.circular(5)),
                       child: Row(children: [
-                        InkWell(
+                        GestureDetector(
                           onTap: () {
-                            if (productProvider.quantity! > 1) {
-                              productProvider.setQuantity(false);
+                            if (productProvider.quantity! > minOrderQuantity) {
+                              productProvider
+                                  .setQuantity(productProvider.quantity! - 1);
                             }
                           },
                           child: Container(
                             width: 25,
                             height: 25,
                             decoration: BoxDecoration(
-                                color: ColorResources.SCAFFOLD_COLOR,
+                                color: ColorResources.getScaffoldColor(context),
                                 borderRadius: BorderRadius.circular(50)),
                             child: Icon(
                               Icons.remove,
                               size: 20,
-                              color: ColorResources.COLOR_WHITE,
+                              color: ColorResources.getScaffoldBackgroundColor(context),
                             ),
                           ),
                         ),
@@ -199,18 +174,19 @@ class _SingleProductDetailsBottomSheetState
                                 color: ColorResources.getTextColor(context),
                               )),
                         ),
-                        InkWell(
-                          onTap: () => productProvider.setQuantity(true),
+                        GestureDetector(
+                          onTap: () => productProvider
+                              .setQuantity(productProvider.quantity! + 1),
                           child: Container(
                             width: 25,
                             height: 25,
                             decoration: BoxDecoration(
-                                color: ColorResources.SCAFFOLD_COLOR,
+                                color: ColorResources.getScaffoldColor(context),
                                 borderRadius: BorderRadius.circular(50)),
                             child: Icon(
                               Icons.add,
                               size: 20,
-                              color: ColorResources.COLOR_WHITE,
+                              color: ColorResources.getScaffoldBackgroundColor(context),
                             ),
                           ),
                         ),
@@ -227,8 +203,7 @@ class _SingleProductDetailsBottomSheetState
                       ? Padding(
                           padding: const EdgeInsets.all(0),
                           child: Text(
-                            '${Provider.of<SplashProvider>(context, listen: false).configModel!.currencySymbol}${Helpers.formatTextWithNum(PriceConverter.convertPrice(context, _startingPrice))}'
-                            '${_endingPrice != null ? ' - ${Provider.of<SplashProvider>(context, listen: false).configModel!.currencySymbol}${Helpers.formatTextWithNum(PriceConverter.convertPrice(context, _endingPrice))}' : ''}',
+                            Helpers.formatTextWithNum(PriceConverter.convertPrice(context, price)),
                             style: TextStyle(
                                 color: Colors.black45,
                                 fontWeight: FontWeight.normal,
@@ -243,176 +218,20 @@ class _SingleProductDetailsBottomSheetState
                         height: 5,
                       ),
                       RatingBar(
-                          rating: widget.product!.rating!.length > 0
-                              ? double.parse(
-                                  widget.product!.rating![0].average!)
+                          rating: product.rating!.length > 0
+                              ? double.parse(product.rating![0].average!)
                               : 0.0,
                           size: 18),
                     ],
                   ),
                 ],
               ),
-              widget.product!.description != null
+              product.description != null
                   ? Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Padding(
-                        //   padding: const EdgeInsets.only(
-                        //       left: 15, right: 15, top: 15),
-                        //   child: ListView.builder(
-                        //     shrinkWrap: true,
-                        //     itemCount: widget.product!.choiceOptions!.length,
-                        //     physics: const NeverScrollableScrollPhysics(),
-                        //     itemBuilder: (context, index) {
-                        //       return Column(
-                        //           crossAxisAlignment: CrossAxisAlignment.start,
-                        //           children: [
-                        //             Text(
-                        //                 widget.product!.choiceOptions![index]
-                        //                     .title!,
-                        //                 style: rubikMedium.copyWith(
-                        //                     color: ColorResources.getTextColor(
-                        //                         context),
-                        //                     fontSize:
-                        //                         Dimensions.FONT_SIZE_LARGE)),
-                        //             const SizedBox(
-                        //                 height: Dimensions
-                        //                     .PADDING_SIZE_EXTRA_SMALL),
-                        //             GridView.builder(
-                        //               gridDelegate:
-                        //                   const SliverGridDelegateWithFixedCrossAxisCount(
-                        //                 crossAxisCount: 5,
-                        //                 crossAxisSpacing: 0,
-                        //                 mainAxisSpacing: 0,
-                        //                 childAspectRatio: (0.5 / 0.50),
-                        //                 mainAxisExtent: 50,
-                        //               ),
-                        //               shrinkWrap: true,
-                        //               physics:
-                        //                   const NeverScrollableScrollPhysics(),
-                        //               itemCount: widget
-                        //                   .product!
-                        //                   .choiceOptions![index]
-                        //                   .options!
-                        //                   .length,
-                        //               itemBuilder: (context, i) {
-                        //                 ChoiceOption choiceOption = widget
-                        //                     .product!.choiceOptions![index];
-                        //                 return Stack(
-                        //                   children: [
-                        //                     InkWell(
-                        //                       onTap: () {
-                        //                         productProvider
-                        //                             .setCartVariationIndex(
-                        //                                 index, i);
-                        //                         cartProvider.isExistInCart(
-                        //                             widget.product!,
-                        //                             productProvider
-                        //                                 .variationIndex!);
-                        //                       },
-                        //                       child: Container(
-                        //                         // height: 40,
-                        //                         alignment: Alignment.center,
-                        //                         // padding: const EdgeInsets
-                        //                         //     .symmetric(
-                        //                         //     vertical: Dimensions
-                        //                         //         .PADDING_SIZE_EXTRA_SMALL,
-                        //                         //     horizontal: Dimensions
-                        //                         //         .PADDING_SIZE_EXTRA_SMALL),
-                        //                         decoration: BoxDecoration(
-                        //                           color: choiceOption.title! ==
-                        //                                       'Color' ||
-                        //                                   choiceOption.title! ==
-                        //                                       'color'
-                        //                               ? Helpers.selectColor(
-                        //                                   choiceOption
-                        //                                       .options![i]
-                        //                                       .trim())
-                        //                               : productProvider
-                        //                                               .variationIndex![
-                        //                                           index] !=
-                        //                                       i
-                        //                                   ? ColorResources
-                        //                                       .getScaffoldBackgroundColor(
-                        //                                           context)
-                        //                                   : ColorResources
-                        //                                       .SCAFFOLD_COLOR,
-                        //                           // borderRadius:
-                        //                           //     BorderRadius
-                        //                           //         .circular(
-                        //                           //             40),
-                        //                           border: Border.all(
-                        //                               color: Colors.black,
-                        //                               width: 0.5),
-                        //                           shape: BoxShape.circle,
-                        //                         ),
-                        //                         child: choiceOption.title! ==
-                        //                                 'Color'
-                        //                             ? SizedBox()
-                        //                             : Text(
-                        //                                 choiceOption.options![i]
-                        //                                     .trim(),
-                        //                                 maxLines: 1,
-                        //                                 overflow: TextOverflow
-                        //                                     .ellipsis,
-                        //                                 style: rubikRegular
-                        //                                     .copyWith(
-                        //                                   color: productProvider
-                        //                                                   .variationIndex![
-                        //                                               index] !=
-                        //                                           i
-                        //                                       ? ColorResources
-                        //                                           .getTextColor(
-                        //                                               context)
-                        //                                       : ColorResources
-                        //                                           .getScaffoldBackgroundColor(
-                        //                                               context),
-                        //                                 ),
-                        //                               ),
-                        //                       ),
-                        //                     ),
-                        //                     (choiceOption.title! == 'Color' ||
-                        //                                 choiceOption.title! ==
-                        //                                     'color') &&
-                        //                             productProvider
-                        //                                         .variationIndex![
-                        //                                     index] ==
-                        //                                 i
-                        //                         ? Positioned(
-                        //                             top: 0,
-                        //                             child: Container(
-                        //                               // width: 20,
-                        //                               // height: 20,
-                        //                               child: Center(
-                        //                                 child: Icon(
-                        //                                   Icons.done_outlined,
-                        //                                   color: Colors.white,
-                        //                                   size: 20,
-                        //                                 ),
-                        //                               ),
-                        //                               decoration: BoxDecoration(
-                        //                                   borderRadius:
-                        //                                       BorderRadius
-                        //                                           .circular(50),
-                        //                                   color: Colors.red),
-                        //                             ))
-                        //                         : SizedBox()
-                        //                   ],
-                        //                 );
-                        //               },
-                        //             ),
-                        //             SizedBox(
-                        //                 height: index !=
-                        //                         widget.product!.choiceOptions!
-                        //                                 .length -
-                        //                             1
-                        //                     ? Dimensions.PADDING_SIZE_LARGE
-                        //                     : 0),
-                        //           ]);
-                        //     },
-                        //   ),
-                        // ),
+
                         SizedBox(height: 20),
                         Divider(
                           thickness: 1,
@@ -430,7 +249,7 @@ class _SingleProductDetailsBottomSheetState
               Consumer(
                   builder: (context, LanguageProvider languageProvider, child) {
                 String description = '';
-                description = widget.product!.description ?? '';
+                description = product.description ?? '';
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.start,
@@ -442,9 +261,7 @@ class _SingleProductDetailsBottomSheetState
                           color: ColorResources.getHintColor(context),
                           fontSize: 14),
                     ),
-                    widget.product!.description != null
-                        ? SizedBox()
-                        : SizedBox(),
+                    product.description != null ? SizedBox() : SizedBox(),
                   ],
                 );
               }),
@@ -457,14 +274,14 @@ class _SingleProductDetailsBottomSheetState
                           color: ColorResources.getTextColor(context))),
                   const SizedBox(width: Dimensions.PADDING_SIZE_EXTRA_SMALL),
                   Text(
-                      PriceConverter.convertPrice(context, _startingPrice,
-                                  discount: widget.product!.discount,
-                                  discountType: widget.product!.discountType) ==
+                      PriceConverter.convertPrice(context, price,
+                                  discount: product.discount,
+                                  discountType: product.discountType) ==
                               PriceConverter.convertPrice(
-                                  context, _startingPrice)
+                                  context, price)
                           ? ""
-                          : '${Provider.of<SplashProvider>(context, listen: false).configModel!.currencySymbol}${PriceConverter.convertPrice(
-                          context, priceWithQuantityWithoutDiscount)}',
+                          : PriceConverter.convertPrice(
+                              context, priceWithQuantityWithoutDiscount),
                       style: TextStyle(
                           color:
                               Provider.of<ThemeProvider>(context, listen: false)
@@ -475,9 +292,9 @@ class _SingleProductDetailsBottomSheetState
                           fontSize: 14,
                           decoration: TextDecoration.lineThrough)),
                   const SizedBox(width: 1),
-                  Text('${Provider.of<SplashProvider>(context, listen: false).configModel!.currencySymbol}${PriceConverter.convertPrice(context, priceWithQuantity)}',
+                  Text(PriceConverter.convertPrice(context, priceWithQuantity),
                       style: rubikBold.copyWith(
-                        color: ColorResources.SCAFFOLD_COLOR,
+                        color: ColorResources.getScaffoldColor(context),
                         fontSize: Dimensions.FONT_SIZE_LARGE,
                       )),
                 ]),
@@ -485,32 +302,20 @@ class _SingleProductDetailsBottomSheetState
               SizedBox(
                 height: 20,
               ),
-
+              if (_isLoggedIn)
                 cartProvider.cartLoading == true
-                  ? Padding(
-                    padding: const EdgeInsets.all(25),
-                    child: Center(
-                        child: CircularProgressIndicator(
-                        valueColor: new AlwaysStoppedAnimation<Color>(
-                            ColorResources.SCAFFOLD_COLOR),
-                      )),
-                  )
-                  : CustomButton(
-                      text: getTranslated('add_to_cart', context),
-                      onTap: () {
-                        if(_isLoggedIn){
-                          int cartId = 0;
-
-                          if (fromCart) {
-                            cartId = widget.cart!.id!;
-                          }
-
+                    ? Padding(
+                        padding: const EdgeInsets.all(25),
+                        child: CustomCircularIndicator(
+                            color: ColorResources.getScaffoldColor(context)))
+                    : CustomButton(
+                        text: getTranslated('add_to_cart', context),
+                        onTap: () {
                           CartModel _cartModel = CartModel(
-                              id: cartId,
-                              productId: widget.product!.id,
-                              product: widget.product,
-                              quantity: productProvider.quantity,
-                              variationIndex: productProvider.variationIndex);
+                              id: 0,
+                              productId: product.id,
+                              product: product,
+                              quantity: productProvider.quantity);
 
                           cartProvider
                               .addToCartList(_cartModel, (message) {})
@@ -518,21 +323,15 @@ class _SingleProductDetailsBottomSheetState
                             cartProvider.initCartList(context);
                             cartProvider.initCartListProductIds(context);
                             showCustomSnackBar(
-                                getTranslated('added_cart_successfully', context),
+                                getTranslated(
+                                    'added_cart_successfully', context),
                                 context,
                                 isError: false);
                             Navigator.pop(context);
                             Navigator.pop(context);
                           });
-                        }else{
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (BuildContext context) => LoginScreen()));
-                        }
-
-                      },
-                    )
+                        },
+                      )
             ],
           ),
         ),

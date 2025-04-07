@@ -43,7 +43,7 @@ class OnBoardingScreen extends StatelessWidget {
       },
     ];
     return Scaffold(
-      backgroundColor: ColorResources.SCAFFOLD_COLOR,
+      backgroundColor: ColorResources.getScaffoldColor(context),
       // backgroundColor: ColorResources.getScaffoldBackgroundColor(context!),
       body: Consumer<OnBoardingProvider>(
           builder: (context, onBoardingList, child) {
@@ -169,7 +169,7 @@ class OnBoardingScreen extends StatelessWidget {
                                           width: 70,
                                           decoration: BoxDecoration(
                                               color:
-                                                  ColorResources.SCAFFOLD_COLOR,
+                                                  ColorResources.getScaffoldColor(context),
                                               borderRadius:
                                                   BorderRadius.circular(50)),
                                           child: IconButton(
@@ -325,7 +325,7 @@ class OnBoardingScreen extends StatelessWidget {
           margin: EdgeInsets.only(right: 8),
           decoration: BoxDecoration(
             color: i == Provider.of<OnBoardingProvider>(context).selectedIndex
-                ? ColorResources.SCAFFOLD_COLOR
+                ? ColorResources.getScaffoldColor(context)
                 : ColorResources.getGrayColor(context),
             borderRadius:
                 i == Provider.of<OnBoardingProvider>(context).selectedIndex

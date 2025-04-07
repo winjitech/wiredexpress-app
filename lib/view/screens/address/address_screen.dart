@@ -8,6 +8,7 @@ import 'package:wired_express/provider/location_provider.dart';
 import 'package:wired_express/utill/color_resources.dart';
 import 'package:wired_express/utill/dimensions.dart';
 import 'package:wired_express/utill/routes.dart';
+import 'package:wired_express/view/base/circular_indicator_widget.dart';
 import 'package:wired_express/view/base/custom_app_bar.dart';
 import 'package:wired_express/view/base/custom_snackbar.dart';
 import 'package:wired_express/view/base/no_data_screen.dart';
@@ -52,7 +53,7 @@ class _AddressScreenState extends State<AddressScreen> {
           ? FloatingActionButton(
               child: Icon(Icons.add,
                   color: ColorResources.getScaffoldBackgroundColor(context)),
-              backgroundColor: ColorResources.SCAFFOLD_COLOR,
+              backgroundColor: ColorResources.getScaffoldColor(context),
               onPressed: () => _checkPermission(
                   context,
                   Routes.getAddAddressRoute(
@@ -103,10 +104,7 @@ class _AddressScreenState extends State<AddressScreen> {
                             ),
                           )
                         : NoDataScreen()
-                    : Center(
-                        child: CircularProgressIndicator(
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                                Theme.of(context).primaryColor)));
+                    : CustomCircularIndicator();
               },
             )
           : NotLoggedInScreen(),

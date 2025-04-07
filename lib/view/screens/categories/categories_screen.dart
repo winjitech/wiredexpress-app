@@ -1,8 +1,6 @@
 import 'dart:async';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
 import 'package:provider/provider.dart';
 import 'package:wired_express/localization/language_constrants.dart';
@@ -10,27 +8,18 @@ import 'package:wired_express/provider/auth_provider.dart';
 import 'package:wired_express/provider/banner_provider.dart';
 import 'package:wired_express/provider/cart_provider.dart';
 import 'package:wired_express/provider/category_provider.dart';
-import 'package:wired_express/provider/notification_provider.dart';
-import 'package:wired_express/provider/product_provider.dart';
 import 'package:wired_express/provider/profile_provider.dart';
 import 'package:wired_express/provider/set_menu_provider.dart';
 import 'package:wired_express/provider/wishlist_provider.dart';
 import 'package:wired_express/utill/Images.dart';
 import 'package:wired_express/utill/color_resources.dart';
 import 'package:wired_express/utill/styles.dart';
-import 'package:wired_express/view/base/custom_app_bar.dart';
 import 'package:wired_express/view/base/custom_button.dart';
 import 'package:wired_express/view/base/custom_main_appbar.dart';
-import 'package:wired_express/view/base/discount_container_widget.dart';
-import 'package:wired_express/view/screens/categories/widget/categories_widget.dart';
 import 'package:wired_express/view/screens/dashboard/dashboard_screen.dart';
 import 'package:wired_express/view/screens/drawer/drawer_screen.dart';
-import 'package:wired_express/view/screens/home/widget/banner_view.dart';
 import 'package:wired_express/view/screens/home/widget/category_view.dart';
-import 'package:wired_express/view/screens/home/widget/set_menu_view.dart';
 import 'package:wired_express/view/screens/search/search_screen.dart';
-import 'package:wired_express/view/screens/search/widget/filter_widget.dart';
-import 'package:wired_express/view/screens/shopping/shopping_screen.dart';
 
 class CategoriesScreen extends StatefulWidget {
   @override
@@ -97,7 +86,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
       controller: advancedDrawerController,
       animationCurve: Curves.easeInOutExpo,
       animationDuration: Duration(milliseconds: 400),
-      backdropColor: ColorResources.SCAFFOLD_COLOR,
+      backdropColor: ColorResources.getScaffoldColor(context),
       drawer: DrawerScreen(),
       child: Scaffold(
         backgroundColor: ColorResources.getScaffoldBackgroundColor(context!),

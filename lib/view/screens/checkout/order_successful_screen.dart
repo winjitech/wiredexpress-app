@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:wired_express/provider/auth_provider.dart';
 import 'package:wired_express/provider/cart_provider.dart';
 import 'package:wired_express/provider/place_order_provider.dart';
+import 'package:wired_express/view/base/circular_indicator_widget.dart';
 import 'package:wired_express/view/base/custom_snackbar.dart';
 import 'package:wired_express/view/screens/dashboard/dashboard_screen.dart';
 import 'package:wired_express/view/screens/track/order_tracking_screen.dart';
@@ -33,10 +34,7 @@ class OrderSuccessfulScreen extends StatelessWidget {
             : null,
         body: Consumer<OrderProvider>(builder: (context, order, child) {
           return order.isLoading
-              ? Center(
-                  child: CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(
-                          ColorResources.getPrimaryColor(context))))
+              ? CustomCircularIndicator()
               : Center(
                   child: Container(
                     width: MediaQuery.of(context).size.width,

@@ -204,11 +204,7 @@
 //                         ),
 //                         SizedBox(height: Dimensions.PADDING_SIZE_LARGE),
 //                         authProvider.isLoading == true
-//                             ? Center(
-//                                 child: CircularProgressIndicator(
-//                                 valueColor: new AlwaysStoppedAnimation<Color>(
-//                                     Theme.of(context).primaryColor),
-//                               ))
+//                             ? CustomCircularIndicator()
 //                             : _lNameController!.text.isEmpty ||
 //                                     _fNameController!.text.isEmpty
 //                                 ? CustomButton(

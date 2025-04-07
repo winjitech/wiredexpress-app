@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "677234146606",
+    "project_id": "wiredexpress-5dc37",
+    "storage_bucket": "wiredexpress-5dc37.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:677234146606:android:41f18f6e2cf54069730ebf",
+        "android_client_info": {
+          "package_name": "com.wiredexpress.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "677234146606-edqjbd912nc43v8i82jgdopuqvnjho4q.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDqyB6_21BImyg-x5DQGzJvJqy_brwRBMI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "677234146606-edqjbd912nc43v8i82jgdopuqvnjho4q.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "677234146606-cj9rna6n57456bstv0rt37fkg9viiv49.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.wiredexpress.delivery"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

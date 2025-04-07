@@ -18,7 +18,7 @@ class StatusCartWidget extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            InkWell(
+            GestureDetector(
               onTap: () {
                 Navigator.push(
                     context,
@@ -40,7 +40,7 @@ class StatusCartWidget extends StatelessWidget {
                     // width: 80,
                     decoration: BoxDecoration(
                         color: cart == true
-                            ? ColorResources.SCAFFOLD_COLOR
+                            ? ColorResources.getScaffoldColor(context)
                             : Colors.grey[400],
                         borderRadius: BorderRadius.circular(50)),
                     child: Padding(
@@ -68,7 +68,7 @@ class StatusCartWidget extends StatelessWidget {
             //       // width: 80,
             //       decoration: BoxDecoration(
             //           color: delivery == true
-            //               ? ColorResources.SCAFFOLD_COLOR
+            //               ? ColorResources.getScaffoldColor(context)
             //               : Colors.grey[400],
             //           borderRadius: BorderRadius.circular(50)),
             //       child: Padding(
@@ -80,7 +80,7 @@ class StatusCartWidget extends StatelessWidget {
             //     )
             //   ],
             // ),
-            InkWell(
+            GestureDetector(
               onTap: () {
                 Navigator.push(
                     context,
@@ -101,7 +101,7 @@ class StatusCartWidget extends StatelessWidget {
                     // width: 80,
                     decoration: BoxDecoration(
                         color: payment == true
-                            ? ColorResources.SCAFFOLD_COLOR
+                            ? ColorResources.getScaffoldColor(context)
                             : Colors.grey[400],
                         borderRadius: BorderRadius.circular(50)),
                     child: Padding(
@@ -114,7 +114,7 @@ class StatusCartWidget extends StatelessWidget {
                 ],
               ),
             ),
-            InkWell(
+            GestureDetector(
               onTap: () {
                 Navigator.push(
                     context,
@@ -136,7 +136,7 @@ class StatusCartWidget extends StatelessWidget {
                     // width: 80,
                     decoration: BoxDecoration(
                         color: order == true
-                            ? ColorResources.SCAFFOLD_COLOR
+                            ? ColorResources.getScaffoldColor(context)
                             : Colors.grey[400],
                         borderRadius: BorderRadius.circular(50)),
                     child: Padding(

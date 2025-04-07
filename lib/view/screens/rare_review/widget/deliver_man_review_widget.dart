@@ -7,6 +7,7 @@ import 'package:wired_express/provider/theme_provider.dart';
 import 'package:wired_express/utill/color_resources.dart';
 import 'package:wired_express/utill/dimensions.dart';
 import 'package:wired_express/utill/styles.dart';
+import 'package:wired_express/view/base/circular_indicator_widget.dart';
 import 'package:wired_express/view/base/custom_button.dart';
 import 'package:wired_express/view/base/custom_snackbar.dart';
 import 'package:wired_express/view/base/custom_text_field.dart';
@@ -69,7 +70,7 @@ class DeliveryManReviewWidget extends StatelessWidget {
                               shrinkWrap: true,
                               scrollDirection: Axis.horizontal,
                               itemBuilder: (context, i) {
-                                return InkWell(
+                                return GestureDetector(
                                   child: Icon(
                                     productProvider.deliveryManRating < (i + 1)
                                         ? Icons.star_border
@@ -160,12 +161,7 @@ class DeliveryManReviewWidget extends StatelessWidget {
                                           }
                                         },
                                       )
-                                    : Center(
-                                        child: CircularProgressIndicator(
-                                            valueColor:
-                                                AlwaysStoppedAnimation<Color>(
-                                                    Theme.of(context)
-                                                        .primaryColor))),
+                                    : CustomCircularIndicator(),
                               ],
                             ),
                           ),

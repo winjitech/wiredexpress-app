@@ -230,11 +230,7 @@
 //                       // for login button
 //                       SizedBox(height: 10),
 //                       isLoading
-//                           ? Center(
-//                               child: CircularProgressIndicator(
-//                               valueColor: new AlwaysStoppedAnimation<Color>(
-//                                   Theme.of(context).primaryColor),
-//                             ))
+//                           ? CustomCircularIndicator()
 //                           : Padding(
 //                            padding: const EdgeInsets.all(15.0),
 //                            child: CustomButton(

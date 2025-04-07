@@ -7,6 +7,7 @@ import 'package:wired_express/helper/responsive_helper.dart';
 import 'package:wired_express/provider/product_provider.dart';
 import 'package:wired_express/utill/color_resources.dart';
 import 'package:wired_express/utill/dimensions.dart';
+import 'package:wired_express/view/base/circular_indicator_widget.dart';
 import 'package:wired_express/view/base/no_data_screen.dart';
 import 'package:wired_express/view/base/product_shimmer.dart';
 import 'package:wired_express/view/base/product_widget.dart';
@@ -96,9 +97,7 @@ class ProductView extends StatelessWidget {
               ? Center(
                   child: Padding(
                   padding: EdgeInsets.all(Dimensions.PADDING_SIZE_SMALL),
-                  child: CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(
-                          ColorResources.getPrimaryColor(context))),
+                  child:CustomCircularIndicator(),
                 ))
               : SizedBox(),
         ]);

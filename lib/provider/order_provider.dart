@@ -12,6 +12,7 @@ import 'package:wired_express/data/model/response/order_model.dart';
 import 'package:wired_express/data/repository/order_repo.dart';
 import 'package:wired_express/helper/api_checker.dart';
 import 'package:wired_express/view/screens/track/directions.dart';
+import 'package:wired_express/data/model/response/delivery_coordinate_history_model.dart';
 
 class OrderProvider extends ChangeNotifier {
   final OrderRepo? orderRepo;
@@ -342,5 +343,119 @@ class OrderProvider extends ChangeNotifier {
   Timer? get timer => _timer;
   void cancelTimer() {
     _timer?.cancel();
+  }
+
+  // bool _lastDeliveryCoordinatesLoading = false;
+  // bool get lastDeliveryCoordinatesLoading => _lastDeliveryCoordinatesLoading;
+  // DeliveryCoordinateHistoryModel? _lastDeliveryCoordinates;
+  // DeliveryCoordinateHistoryModel? get lastDeliveryCoordinates =>
+  //     _lastDeliveryCoordinates;
+  //
+  // Future<ResponseModel> getLastDeliveryCoordinates(
+  //     BuildContext? context, String orderId) async {
+  //   _lastDeliveryCoordinatesLoading = true;
+  //   notifyListeners();
+  //   ResponseModel _responseModel;
+  //   ApiResponse apiResponse =
+  //       await orderRepo!.getLastDeliveryCoordinates(orderId);
+  //   if (apiResponse.response != null &&
+  //       apiResponse.response!.statusCode == 200) {
+  //     _lastDeliveryCoordinates =
+  //         DeliveryCoordinateHistoryModel.fromJson(apiResponse.response!.data);
+  //
+  //     _responseModel = ResponseModel(true, 'successful');
+  //     _lastDeliveryCoordinatesLoading = false;
+  //     notifyListeners();
+  //   } else {
+  //     String _errorMessage;
+  //     if (apiResponse.error is String) {
+  //       _errorMessage = apiResponse.error.toString();
+  //     } else {
+  //       _errorMessage = apiResponse.error.errors[0].message;
+  //     }
+  //     print(_errorMessage);
+  //     _responseModel = ResponseModel(false, _errorMessage);
+  //     _lastDeliveryCoordinatesLoading = false;
+  //     notifyListeners();
+  //   }
+  //   notifyListeners();
+  //   return _responseModel;
+  // }
+  bool _lastDeliveryCoordinatesLoading = false;
+  bool get lastDeliveryCoordinatesLoading => _lastDeliveryCoordinatesLoading;
+
+  DeliveryCoordinateHistoryModel? _lastDeliveryCoordinates;
+  DeliveryCoordinateHistoryModel? get lastDeliveryCoordinates =>
+      _lastDeliveryCoordinates;
+
+  Future<ResponseModel> getLastDeliveryCoordinates(
+      BuildContext? context, String orderId) async {
+    _lastDeliveryCoordinatesLoading = true;
+    notifyListeners();
+
+    ResponseModel _responseModel;
+
+    try {
+      ApiResponse apiResponse = await orderRepo!.getLastDeliveryCoordinates(orderId);
+
+      if (apiResponse.response != null && apiResponse.response!.statusCode == 200) {
+        print("apiResponse.response!.data == ${apiResponse.response!.data}");
+        DeliveryCoordinateHistoryModel newData =
+        DeliveryCoordinateHistoryModel.fromJson(apiResponse.response!.data);
+
+
+        if (_lastDeliveryCoordinates?.lastUpdate != newData.lastUpdate) {
+          _lastDeliveryCoordinates = newData;
+          notifyListeners();
+        }
+
+
+        print("newData === ${newData.toJson()}");
+        _responseModel = ResponseModel(true, 'successful');
+      } else {
+        String _errorMessage;
+        if (apiResponse.error is String) {
+          _errorMessage = apiResponse.error.toString();
+        } else {
+          _errorMessage = apiResponse.error.errors[0].message;
+        }
+        print(_errorMessage);
+        _responseModel = ResponseModel(false, _errorMessage);
+      }
+    } catch (e) {
+      print(e.toString());
+      _responseModel = ResponseModel(false, e.toString());
+    }
+
+    _lastDeliveryCoordinatesLoading = false;
+    notifyListeners();
+
+    return _responseModel;
+  }
+
+  int? _selectedScheduledValue;
+  int? get selectedScheduledValue => _selectedScheduledValue;
+
+  void setSelectScheduledValue(int selectedScheduledValue) {
+    _selectedScheduledValue = selectedScheduledValue;
+    notifyListeners();
+  }
+
+  void clearSelectScheduledValue() {
+    _selectedScheduledValue = null;
+    notifyListeners();
+  }
+
+  DateTime? _selectedDeliveryDate;
+  DateTime? get selectedDeliveryDate => _selectedDeliveryDate;
+
+  void setSelectDeliveryDate(DateTime selectedDeliveryDate) {
+    _selectedDeliveryDate = selectedDeliveryDate;
+    notifyListeners();
+  }
+
+  void clearSelectDeliveryDate() {
+    _selectedDeliveryDate = null;
+    notifyListeners();
   }
 }

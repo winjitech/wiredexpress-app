@@ -41,7 +41,7 @@
 //             !auth.isLoading!
 //                 ? Row(children: [
 //                     Expanded(
-//                         child: InkWell(
+//                         child: GestureDetector(
 //                       onTap: () {
 //                         Provider.of<CustomAuthProvider>(context, listen: false)
 //                             .clearSharedData()
@@ -74,7 +74,7 @@
 //                       ),
 //                     )),
 //                     Expanded(
-//                         child: InkWell(
+//                         child: GestureDetector(
 //                       onTap: () => Navigator.pop(context),
 //                       child: Container(
 //                         padding: EdgeInsets.all(Dimensions.PADDING_SIZE_SMALL),
@@ -94,9 +94,7 @@
 //                   ])
 //                 : Padding(
 //                     padding: EdgeInsets.all(Dimensions.PADDING_SIZE_SMALL),
-//                     child: CircularProgressIndicator(
-//                         valueColor: AlwaysStoppedAnimation<Color>(
-//                             ColorResources.getPrimaryColor(context))),
+//                     child: CustomCircularIndicator(),
 //                   ),
 //           ]);
 //         }),
@@ -114,6 +112,7 @@ import 'package:wired_express/provider/auth_provider.dart';
 import 'package:wired_express/utill/color_resources.dart';
 import 'package:wired_express/utill/dimensions.dart';
 import 'package:wired_express/utill/styles.dart';
+import 'package:wired_express/view/base/circular_indicator_widget.dart';
 import 'package:wired_express/view/screens/splash_screen.dart';
 
 class SignOutConfirmationDialog extends StatelessWidget {
@@ -124,7 +123,7 @@ class SignOutConfirmationDialog extends StatelessWidget {
       child: Container(
         width: 300,
         decoration: BoxDecoration(
-            color: ColorResources.SCAFFOLD_COLOR,
+            color: ColorResources.getScaffoldColor(context!),
             borderRadius: BorderRadius.circular(10)),
         child: Consumer<CustomAuthProvider>(builder: (context, auth, child) {
           return Column(mainAxisSize: MainAxisSize.min, children: [
@@ -133,7 +132,7 @@ class SignOutConfirmationDialog extends StatelessWidget {
               radius: 30,
               backgroundColor: Colors.white,
               child: Icon(Icons.contact_support,
-                  color: ColorResources.SCAFFOLD_COLOR, size: 50),
+                  color: ColorResources.getScaffoldColor(context), size: 50),
             ),
             Padding(
               padding: EdgeInsets.all(Dimensions.PADDING_SIZE_LARGE),
@@ -148,7 +147,7 @@ class SignOutConfirmationDialog extends StatelessWidget {
             !auth!.isLoading!
                 ? Row(children: [
                     Expanded(
-                        child: InkWell(
+                        child: GestureDetector(
                       onTap: () {
                         Provider.of<CustomAuthProvider>(context, listen: false)
                             .clearSharedData()
@@ -173,7 +172,7 @@ class SignOutConfirmationDialog extends StatelessWidget {
                       ),
                     )),
                     Expanded(
-                        child: InkWell(
+                        child: GestureDetector(
                       onTap: () => Navigator.pop(context),
                       child: Container(
                         padding: EdgeInsets.all(Dimensions.PADDING_SIZE_SMALL),
@@ -185,15 +184,13 @@ class SignOutConfirmationDialog extends StatelessWidget {
                         ),
                         child: Text(getTranslated('no', context),
                             style: rubikBold.copyWith(
-                                color: ColorResources.SCAFFOLD_COLOR)),
+                                color: ColorResources.getScaffoldColor(context))),
                       ),
                     )),
                   ])
                 : Padding(
                     padding: EdgeInsets.all(Dimensions.PADDING_SIZE_SMALL),
-                    child: CircularProgressIndicator(
-                        valueColor:
-                            AlwaysStoppedAnimation<Color>(Colors.white)),
+                    child: CustomCircularIndicator(color:Colors.white),
                   ),
           ]);
         }),

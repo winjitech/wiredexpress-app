@@ -11,6 +11,7 @@ import 'package:wired_express/utill/color_resources.dart';
 import 'package:wired_express/utill/dimensions.dart';
 import 'package:wired_express/utill/images.dart';
 import 'package:wired_express/utill/routes.dart';
+import 'package:wired_express/view/base/circular_indicator_widget.dart';
 import 'package:wired_express/view/base/custom_app_bar.dart';
 import 'package:wired_express/view/base/custom_button.dart';
 import 'package:wired_express/view/base/custom_text_field.dart';
@@ -210,13 +211,7 @@ class _AddNewAddressScreenState extends State<AddNewAddressScreen> {
                                         },
                                       ),
                                       locationProvider.loading
-                                          ? Center(
-                                              child: CircularProgressIndicator(
-                                                  valueColor:
-                                                      AlwaysStoppedAnimation<
-                                                              Color>(
-                                                          ColorResources
-                                                              .SCAFFOLD_COLOR)))
+                                          ? CustomCircularIndicator(color:ColorResources.getScaffoldColor(context))
                                           : SizedBox(),
                                       Container(
                                           width:
@@ -233,7 +228,7 @@ class _AddNewAddressScreenState extends State<AddNewAddressScreen> {
                                       Positioned(
                                         bottom: 10,
                                         right: 0,
-                                        child: InkWell(
+                                        child: GestureDetector(
                                           onTap: () {
                                             locationProvider.getCurrentLocation(
                                                 mapController: locationProvider.mapController);
@@ -256,7 +251,7 @@ class _AddNewAddressScreenState extends State<AddNewAddressScreen> {
                                             child: Icon(
                                               Icons.my_location,
                                               color:
-                                                  ColorResources.SCAFFOLD_COLOR,
+                                                  ColorResources.getScaffoldColor(context),
                                               size: 20,
                                             ),
                                           ),
@@ -302,7 +297,7 @@ class _AddNewAddressScreenState extends State<AddNewAddressScreen> {
                                   // physics: BouncingScrollPhysics(),
                                   itemCount:
                                       locationProvider.getAllAddressType.length,
-                                  itemBuilder: (context, index) => InkWell(
+                                  itemBuilder: (context, index) => GestureDetector(
                                     onTap: () {
                                       locationProvider
                                           .updateAddressIndex(index);
@@ -323,13 +318,13 @@ class _AddNewAddressScreenState extends State<AddNewAddressScreen> {
                                                           .selectAddressIndex ==
                                                       index
                                                   ? ColorResources
-                                                      .SCAFFOLD_COLOR
+                                                      .getScaffoldColor(context)
                                                   : ColorResources
                                                       .BORDER_COLOR),
                                           color: locationProvider
                                                       .selectAddressIndex ==
                                                   index
-                                              ? ColorResources.SCAFFOLD_COLOR
+                                              ? ColorResources.getScaffoldColor(context)
                                               : ColorResources
                                                   .getScaffoldBackgroundColor(
                                                       context)),
@@ -572,11 +567,7 @@ class _AddNewAddressScreenState extends State<AddNewAddressScreen> {
                                   }
                                 },
                         )
-                      : Center(
-                          child: CircularProgressIndicator(
-                          valueColor: new AlwaysStoppedAnimation<Color>(
-                              ColorResources.SCAFFOLD_COLOR),
-                        )),
+                      : CustomCircularIndicator(color:ColorResources.getScaffoldColor(context)),
                 )
               ],
             );

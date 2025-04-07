@@ -5,6 +5,7 @@ import 'package:wired_express/helper/responsive_helper.dart';
 import 'package:wired_express/localization/language_constrants.dart';
 import 'package:wired_express/provider/search_provider.dart';
 import 'package:wired_express/utill/dimensions.dart';
+import 'package:wired_express/view/base/circular_indicator_widget.dart';
 import 'package:wired_express/view/base/no_data_screen.dart';
 import 'package:wired_express/view/base/product_shimmer.dart';
 import 'package:wired_express/view/base/product_widget.dart';
@@ -75,7 +76,7 @@ class _BrandProductsScreenState extends State<BrandProductsScreen> {
               child: SizedBox(
                 width: MediaQuery.of(context).size.width,
                 child: searchProvider.brandsLoading?
-                Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).primaryColor))):
+                CustomCircularIndicator():
                 Column(
                   crossAxisAlignment:
                   CrossAxisAlignment.start,
@@ -107,7 +108,7 @@ class _BrandProductsScreenState extends State<BrandProductsScreen> {
                     Column(
                       children: [
                         SizedBox(height: 10),
-                        Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).primaryColor))),
+                        CustomCircularIndicator(),
                         SizedBox(height: 25),
                       ],
                     ) :

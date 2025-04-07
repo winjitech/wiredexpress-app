@@ -144,7 +144,7 @@ class _DeliveryManChatScreenState extends State<DeliveryManChatScreen> {
                     child: Ink(
                   color: Colors.white,
                     child: Row(children: [
-                      // InkWell(
+                      // GestureDetector(
                       //   onTap: () async {
                       //     Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) =>
                       //         SendImageDm(orderId: widget.orderId)));
@@ -183,7 +183,7 @@ class _DeliveryManChatScreenState extends State<DeliveryManChatScreen> {
                         ),
                       ),
 
-                      InkWell(
+                      GestureDetector(
                         onTap: () async {
                           FocusScope.of(context).unfocus();
                           if(Provider.of<DeliveryManChatProvider>(context, listen: false).isSendButtonActive!){

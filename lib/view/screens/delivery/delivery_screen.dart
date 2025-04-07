@@ -101,7 +101,7 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
       controller: advancedDrawerController,
       animationCurve: Curves.easeInOutExpo,
       animationDuration: Duration(milliseconds: 400),
-      backdropColor: ColorResources.SCAFFOLD_COLOR,
+      backdropColor: ColorResources.getScaffoldColor(context),
       drawer: DrawerScreen(),
       child: Scaffold(
         backgroundColor: ColorResources.getScaffoldBackgroundColor(context!),

@@ -6,6 +6,7 @@ import 'package:wired_express/data/helper/helpers.dart';
 import 'package:wired_express/provider/splash_provider.dart';
 import 'package:wired_express/utill/Images.dart';
 import 'package:wired_express/utill/app_constants.dart';
+import 'package:wired_express/view/base/circular_indicator_widget.dart';
 import 'package:wired_express/view/base/custom_snackbar.dart';
 
 import 'package:flutter/material.dart';
@@ -72,16 +73,21 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
           double _itemsPrice = 0;
           double _discount = 0;
           double _tax = 0;
+          double _totalTieredPricingDiscount = 0;
 
           if (order.orderDetails != null) {
             // print('trackmodel -- ${jsonEncode(order.trackModel)}');
             print("delivery address -- ${jsonEncode(Provider.of<LocationProvider>(context, listen: false).addressList!)}");
             deliveryCharge = widget.orderModel!.deliveryCharge!;
             for (OrderDetailsModel orderDetails in order.orderDetails!) {
-              _itemsPrice = _itemsPrice + (orderDetails.price! * orderDetails.quantity!);
+              if(orderDetails.tieredPricing!= null && orderDetails.tieredPricing!.productId != null){
+                _totalTieredPricingDiscount = _totalTieredPricingDiscount + (double.parse(orderDetails.tieredPricing!.discountPrice!) * orderDetails.quantity!);
+              }
+              _itemsPrice = _itemsPrice + ((orderDetails.tieredPricing== null || orderDetails.tieredPricing!.productId == null?
+              orderDetails.price! :(orderDetails.price!-double.parse(orderDetails.tieredPricing!.discountPrice!)) )* orderDetails.quantity!);
               _discount = _discount +
                   (orderDetails.discountOnProduct!
-                  // * orderDetails.quantity!
+                      // * orderDetails.quantity!
                   );
               _tax = _tax + (orderDetails.taxAmount! * orderDetails.quantity!);
             }
@@ -94,7 +100,10 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
               (order.trackModel != null
                   ? widget.orderModel!.couponDiscountAmount!
                   : 0);
-
+          bool isScheduled = widget.orderModel!.deliveryType == "scheduled";
+          Color scheduledColor = isScheduled
+              ? ColorResources.getSecondaryColor(context)
+              : ColorResources.getPrimaryColor(context);
           return order.orderDetails != null
               ? Column(
                   children: [
@@ -373,6 +382,39 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                                   Divider(
                                     thickness: 1,
                                   ),
+                                  Row(
+                                    children: [
+                                      Container(
+                                        padding: const EdgeInsets.all(8),
+                                        decoration: BoxDecoration(
+                                          color: scheduledColor.withOpacity(0.1),
+                                          shape: BoxShape.circle,
+                                        ),
+                                        child: Icon(
+                                          isScheduled ? Icons.schedule : Icons.local_shipping,
+                                          color: scheduledColor,
+                                          size: 22,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 10),
+                                      Expanded(
+                                        child: Text(
+                                          getTranslated(
+                                            isScheduled ? 'scheduled' : 'immediate',
+                                            context,
+                                          ),
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: TextStyle(
+                                            color: scheduledColor,
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 15,
+                                            letterSpacing: 0.3,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                   SizedBox(height: 10),
 
                                   // Payment info
@@ -400,7 +442,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                                   //       style: rubikMedium.copyWith(color: Theme.of(context).primaryColor),
                                   //     ),
                                   //     (order.trackModel!.paymentStatus != 'paid' && order.trackModel!.paymentMethod != 'cash_on_delivery'
-                                  //         && order.trackModel!.orderStatus != 'delivered') ? InkWell(
+                                  //         && order.trackModel!.orderStatus != 'delivered') ? GestureDetector(
                                   //       onTap: () {
                                   //         showDialog(context: context, barrierDismissible: false, builder: (context) => ChangeMethodDialog(
                                   //           orderID: order.trackModel!.id.toString(), callback: (String message, bool isSuccess) {
@@ -578,7 +620,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                                                                       order.orderDetails![index].discountOnProduct!)}',
                                                               style: rubikBold.copyWith(
                                                                   color: ColorResources
-                                                                      .SCAFFOLD_COLOR),
+                                                                      .getScaffoldColor(context)),
                                                             ),
                                                           ]),
                                                           Row(
@@ -602,7 +644,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                                                                           FontWeight
                                                                               .w500,
                                                                       color: ColorResources
-                                                                          .SCAFFOLD_COLOR)),
+                                                                          .getScaffoldColor(context))),
                                                             ],
                                                           )
                                                           // Row(children: [
@@ -674,6 +716,29 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                                       ]),
 
 
+                                  SizedBox(height: 10),
+                                  Row(
+                                      mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                            getTranslated(
+                                                'tiered_pricing_discount', context),
+                                            style: rubikMedium.copyWith(
+                                                color:
+                                                ColorResources.getTextColor(
+                                                    context),
+                                                fontSize: Dimensions
+                                                    .FONT_SIZE_LARGE)),
+                                        Text(
+                                            "${AppConstants.CURRENCY}${Helpers.formatTextWithNum(_totalTieredPricingDiscount.toString())}",
+                                            style: rubikMedium.copyWith(
+                                                color:
+                                                ColorResources.getTextColor(
+                                                    context),
+                                                fontSize: Dimensions
+                                                    .FONT_SIZE_LARGE)),
+                                      ]),
 
                                   SizedBox(height: 10),
 
@@ -801,7 +866,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                                                 fontSize: 18,
                                                 fontWeight: FontWeight.w600,
                                                 color: ColorResources
-                                                    .SCAFFOLD_COLOR)),
+                                                    .getScaffoldColor(context))),
                                         Text(
                                             '${Provider.of<SplashProvider>(context, listen: false).configModel!.currencySymbol}${PriceConverter.convertPrice(
                                                 context, _total)}',
@@ -809,7 +874,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                                                 fontSize: 18,
                                                 fontWeight: FontWeight.w600,
                                                 color: ColorResources
-                                                    .SCAFFOLD_COLOR)),
+                                                    .getScaffoldColor(context))),
                                       ]),
                                   SizedBox(height: 10),
 
@@ -873,7 +938,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                                                 side: BorderSide(
                                                     width: 2,
                                                     color: ColorResources
-                                                        .SCAFFOLD_COLOR)),
+                                                        .getScaffoldColor(context))),
                                           ),
                                           onPressed: () {
                                             showDialog(
@@ -914,7 +979,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                                                   'cancel_order', context),
                                               style: TextStyle(
                                                     color: ColorResources
-                                                        .SCAFFOLD_COLOR,
+                                                        .getScaffoldColor(context),
                                                     fontSize: Dimensions
                                                         .FONT_SIZE_LARGE,
                                                   )),
@@ -954,13 +1019,13 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                               decoration: BoxDecoration(
                                 border: Border.all(
                                     width: 2,
-                                    color: ColorResources.SCAFFOLD_COLOR),
+                                    color: ColorResources.getScaffoldColor(context)),
                                 borderRadius: BorderRadius.circular(10),
                               ),
                               child: Text(
                                   getTranslated('order_cancelled', context),
                                   style: rubikBold.copyWith(
-                                      color: ColorResources.SCAFFOLD_COLOR)),
+                                      color: ColorResources.getScaffoldColor(context))),
                             ),
                           ),
                     (widget.orderModel!.orderStatus == 'confirmed' ||
@@ -1030,10 +1095,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                         : SizedBox(),
                   ],
                 )
-              : Center(
-                  child: CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(
-                          ColorResources.SCAFFOLD_COLOR)));
+              : CustomCircularIndicator(color:ColorResources.getScaffoldColor(context));
         },
       ),
     );

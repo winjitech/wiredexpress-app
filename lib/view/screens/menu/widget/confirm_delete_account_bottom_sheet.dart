@@ -7,6 +7,7 @@ import 'package:wired_express/provider/profile_provider.dart';
 import 'package:wired_express/utill/color_resources.dart';
 import 'package:wired_express/utill/dimensions.dart';
 import 'package:wired_express/view/base/Custom_button.dart';
+import 'package:wired_express/view/base/circular_indicator_widget.dart';
 import 'package:wired_express/view/base/custom_snackbar.dart';
 import 'package:wired_express/view/base/custom_text_field.dart';
 import 'package:wired_express/view/screens/splash_screen.dart';
@@ -128,9 +129,7 @@ class _ConfirmDeleteAccountBottomSheetState extends State<ConfirmDeleteAccountBo
                             Padding(
                               padding: const EdgeInsets.symmetric(horizontal: 25),
                               child: customAuthProvider.deleteAccountLoading == true
-                                  ? Center(
-                                      child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<
-                                          Color>(ColorResources.getPrimaryColor(context))))
+                                  ? CustomCircularIndicator()
                                   : Row(
                                       children: [
                                         Expanded(

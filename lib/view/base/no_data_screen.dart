@@ -30,7 +30,7 @@ class NoDataScreen extends StatelessWidget {
                         : Images.binoculars,
                 width: MediaQuery.of(context).size.height * 0.22,
                 height: MediaQuery.of(context).size.height * 0.22,
-                color: ColorResources.SCAFFOLD_COLOR),
+                color: ColorResources.getScaffoldColor(context)),
             Text(
               getTranslated(
                   isOrder
@@ -40,7 +40,7 @@ class NoDataScreen extends StatelessWidget {
                           : 'nothing_found',
                   context),
               style: rubikBold.copyWith(
-                  color: ColorResources.SCAFFOLD_COLOR,
+                  color: ColorResources.getScaffoldColor(context),
                   fontSize: MediaQuery.of(context).size.height * 0.023),
               textAlign: TextAlign.center,
             ),

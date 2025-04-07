@@ -14,6 +14,8 @@ import 'package:url_launcher/url_launcher.dart';
 import 'dart:collection';
 import 'dart:ui';
 
+import 'package:wired_express/view/base/circular_indicator_widget.dart';
+
 class TrackingMapWidget extends StatefulWidget {
   final DeliveryMan? deliveryManModel;
   final String? orderID;
@@ -83,7 +85,7 @@ class _TrackingMapWidgetState extends State<TrackingMapWidget> {
             },
           ),
 
-          _isLoading ? Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).primaryColor))) : SizedBox(),
+          _isLoading ? CustomCircularIndicator() : SizedBox(),
         ],
       ) : Text(getTranslated('no_delivery_man_data_found', context)),
     );

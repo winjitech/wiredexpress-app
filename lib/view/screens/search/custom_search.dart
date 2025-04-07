@@ -3,6 +3,7 @@ import 'package:wired_express/localization/language_constrants.dart';
 import 'package:wired_express/provider/search_provider.dart';
 import 'package:wired_express/utill/color_resources.dart';
 import 'package:wired_express/utill/dimensions.dart';
+import 'package:wired_express/view/base/circular_indicator_widget.dart';
 import 'package:wired_express/view/base/custom_app_bar.dart';
 import 'package:wired_express/view/base/custom_button.dart';
 import 'package:wired_express/view/base/custom_snackbar.dart';
@@ -270,10 +271,7 @@ class _CustomSearchScreenState extends State<CustomSearchScreen> {
                 ),
               ),
             ],
-          ) : Center(
-            child: CircularProgressIndicator(
-            valueColor: new AlwaysStoppedAnimation<Color>(Theme.of(context).primaryColor),
-          ));
+          ) : CustomCircularIndicator();
         },
       ),
     );

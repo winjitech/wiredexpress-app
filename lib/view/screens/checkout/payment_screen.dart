@@ -94,7 +94,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
       controller: advancedDrawerController,
       animationCurve: Curves.easeInOutExpo,
       animationDuration: Duration(milliseconds: 400),
-      backdropColor: ColorResources.SCAFFOLD_COLOR,
+      backdropColor: ColorResources.getScaffoldColor(context),
       drawer: DrawerScreen(),
       child: Scaffold(
         backgroundColor: ColorResources.getScaffoldBackgroundColor(context!),
@@ -192,7 +192,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                       //         style: rubikMedium.copyWith(
                       //             color: ColorResources.getTextColor(context),
                       //             fontSize: Dimensions.FONT_SIZE_LARGE)),
-                      //     activeColor: ColorResources.SCAFFOLD_COLOR),
+                      //     activeColor: ColorResources.getScaffoldColor(context)),
                       SizedBox(
                         height: 40,
                       ),

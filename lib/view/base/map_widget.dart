@@ -122,12 +122,12 @@ class _MapWidgetState extends State<MapWidget> {
                     ]),
                     Text('- ${widget.address!.contactPersonName}',
                         style: rubikMedium.copyWith(
-                          color: ColorResources.SCAFFOLD_COLOR,
+                          color: ColorResources.getScaffoldColor(context),
                           fontSize: Dimensions.FONT_SIZE_LARGE,
                         )),
                     Text('- ${widget.address!.contactPersonNumber}',
                         style: rubikRegular.copyWith(
-                          color: ColorResources.SCAFFOLD_COLOR,
+                          color: ColorResources.getScaffoldColor(context),
                           fontSize: Dimensions.FONT_SIZE_LARGE,
                         )),
                   ],

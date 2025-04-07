@@ -9,6 +9,7 @@ import 'package:wired_express/utill/dimensions.dart';
 import 'package:wired_express/utill/images.dart';
 import 'package:wired_express/utill/styles.dart';
 import 'package:wired_express/view/base/category_product_widget.dart';
+import 'package:wired_express/view/base/circular_indicator_widget.dart';
 import 'package:wired_express/view/base/custom_app_bar.dart';
 import 'package:wired_express/view/base/main_app_bar.dart';
 import 'package:wired_express/view/base/no_data_screen.dart';
@@ -138,11 +139,11 @@ class _CategoryScreenState extends State<CategoryScreen>
                                         indicatorSize:
                                             TabBarIndicatorSize.label,
                                         indicatorColor:
-                                            ColorResources.SCAFFOLD_COLOR,
+                                            ColorResources.getScaffoldColor(context),
                                         labelColor: ColorResources.getTextColor(
                                             context),
 
-                                        // indicatorColor: ColorResources.SCAFFOLD_COLOR,
+                                        // indicatorColor: ColorResources.getScaffoldColor(context),
                                         // labelColor:
                                         //     ColorResources.getTextColor(context),
                                         tabs: _tabs(category),
@@ -217,13 +218,7 @@ class _CategoryScreenState extends State<CategoryScreen>
                                                   padding:
                                                       const EdgeInsets.only(
                                                           bottom: 15),
-                                                  child: Center(
-                                                      child: CircularProgressIndicator(
-                                                          valueColor:
-                                                              AlwaysStoppedAnimation<
-                                                                      Color>(
-                                                                  ColorResources
-                                                                      .SCAFFOLD_COLOR))),
+                                                  child: CustomCircularIndicator(color:ColorResources.getScaffoldColor(context)),
                                                 )
                                               : SizedBox(),
                                         ],
@@ -260,10 +255,7 @@ class _CategoryScreenState extends State<CategoryScreen>
                     ),
                   ),
                 )
-              : Center(
-                  child: CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(
-                          ColorResources.SCAFFOLD_COLOR)));
+              : CustomCircularIndicator(color:ColorResources.getScaffoldColor(context));
         },
       ),
     );

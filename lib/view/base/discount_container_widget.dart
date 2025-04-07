@@ -18,7 +18,7 @@
 //           begin: Alignment.topLeft,
 //           end: Alignment.bottomRight,
 //           colors: [
-//             ColorResources.SCAFFOLD_COLOR,
+//             ColorResources.getScaffoldColor(context),
 //             Colors.grey.shade700,
 //           ],
 //         ),

@@ -5,6 +5,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:wired_express/provider/place_order_provider.dart';
+import 'package:wired_express/provider/subscription_provider.dart';
 import 'package:wired_express/provider/timer_provider.dart';
 import 'package:wired_express/theme/dark_theme.dart';
 import 'package:wired_express/theme/light_theme.dart';
@@ -101,6 +102,8 @@ Future<void> main() async {
       ChangeNotifierProvider(create: (context) => di.sl<PlaceOrderProvider>()),
       ChangeNotifierProvider(
           create: (context) => di.sl<DeliveryManChatProvider>()),
+      ChangeNotifierProvider(create: (context) => di.sl<SubscriptionProvider>()),
+
     ],
     child: MyApp(isWeb: !kIsWeb),
   ));

@@ -3,30 +3,20 @@ import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:wired_express/data/model/response/cart_model.dart';
 import 'package:wired_express/data/model/response/product_model.dart';
-import 'package:wired_express/data/model/response/wishlist_model.dart';
 import 'package:wired_express/helper/date_converter.dart';
 import 'package:wired_express/helper/price_converter.dart';
-import 'package:wired_express/helper/responsive_helper.dart';
-import 'package:wired_express/localization/language_constrants.dart';
 import 'package:wired_express/provider/auth_provider.dart';
 import 'package:wired_express/provider/cart_provider.dart';
 import 'package:wired_express/provider/product_provider.dart';
 import 'package:wired_express/provider/splash_provider.dart';
 import 'package:wired_express/provider/theme_provider.dart';
 import 'package:wired_express/provider/wishlist_provider.dart';
-import 'package:wired_express/utill/app_constants.dart';
 import 'package:wired_express/utill/color_resources.dart';
-import 'package:wired_express/utill/dimensions.dart';
-import 'package:wired_express/utill/images.dart';
-import 'package:wired_express/utill/styles.dart';
 import 'package:wired_express/view/base/rating_bar.dart';
-import 'package:wired_express/view/screens/home/widget/cart_bottom_sheet.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import 'package:wired_express/view/screens/product/product_details_screen.dart';
-import 'package:wired_express/view/screens/signle_product_screen/single_product_screen.dart';
 
 class CategoryProductWidget extends StatelessWidget {
   final Product? product;
@@ -39,21 +29,6 @@ class CategoryProductWidget extends StatelessWidget {
     final cart = Provider.of<CartProvider>(context, listen: false);
     final productProvider =
         Provider.of<ProductProvider>(context, listen: false);
-
-    double _startingPrice;
-    double? _endingPrice;
-    if (product!.choiceOptions!.length != 0) {
-      List<double> _priceList = [];
-      product!.variations!
-          .forEach((variation) => _priceList.add(variation.price!));
-      _priceList.sort((a, b) => a.compareTo(b));
-      _startingPrice = _priceList[0];
-      if (_priceList[0] < _priceList[_priceList.length - 1]) {
-        _endingPrice = _priceList[_priceList.length - 1];
-      }
-    } else {
-      _startingPrice = product!.price!;
-    }
 
     double _discountedPrice = PriceConverter.convertWithDiscount(
         context, product!.price!, product!.discount!, product!.discountType!);
@@ -75,41 +50,13 @@ class CategoryProductWidget extends StatelessWidget {
     _isAvailable = true;
     return Padding(
       padding: EdgeInsets.only(bottom: 5, top: 5, right: 2, left: 2),
-      child: InkWell(
-        onTap: () {
-          Provider.of<ProductProvider>(context, listen: false)
-              .initData(product!);
-
-          Provider.of<CartProvider>(context, listen: false)
-              .isExistInCart(product!, productProvider.variationIndex!);
-          ResponsiveHelper.isMobile(context)
-              ? Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (BuildContext? context) => SingleProductScreen(
-                            product: product!,
-                            callback: (CartModel cartModel) {
-                              ScaffoldMessenger.of(context!).showSnackBar(
-                                  SnackBar(
-                                      content: Text(getTranslated(
-                                          'added_to_cart', context)),
-                                      backgroundColor: Colors.green));
-                            },
-                          )))
-              : showDialog(
-                  context: context,
-                  builder: (con) => Dialog(
-                        child: CartBottomSheet(
-                          product: product!,
-                          callback: (CartModel cartModel) {
-                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                                content: Text(
-                                    getTranslated('added_to_cart', context)),
-                                backgroundColor: Colors.green));
-                          },
-                        ),
-                      ));
-        },
+      child: GestureDetector(
+        onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (BuildContext? context) => ProductDetailsScreen(
+                      product: product!,
+                    ))),
         child: Container(
             decoration: BoxDecoration(
                 color: ColorResources.getScaffoldBackgroundColor(context),
@@ -129,9 +76,7 @@ class CategoryProductWidget extends StatelessWidget {
                 Container(
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10),
-                    border: Border.all(width: 1.0, color: Colors.black12),
-                    //  color: Colors.grey[400]
-                  ),
+                      color: Colors.grey[400]),
                   width: 100,
                   height: 100,
                   child: Padding(
@@ -164,13 +109,13 @@ class CategoryProductWidget extends StatelessWidget {
                       Row(
                         children: [
                           Text(
-                            PriceConverter.convertPrice(context, _startingPrice,
+                            PriceConverter.convertPrice(context, product!.price,
                                         discount: product!.discount,
                                         discountType: product!.discountType) ==
                                     PriceConverter.convertPrice(
-                                        context, _startingPrice)
+                                        context, product!.price)
                                 ? ""
-                                : '${Provider.of<SplashProvider>(context, listen: false).configModel!.currencySymbol}${PriceConverter.convertPrice(context, _startingPrice)}',
+                                : '${PriceConverter.convertPrice(context, product!.price)}',
                             style: TextStyle(
                                 color: Colors.black45,
                                 fontWeight: FontWeight.normal,
@@ -181,10 +126,10 @@ class CategoryProductWidget extends StatelessWidget {
                             width: 5,
                           ),
                           Text(
-                            '${Provider.of<SplashProvider>(context, listen: false).configModel!.currencySymbol}${PriceConverter.convertPrice(context, _startingPrice, discount: product!.discount, discountType: product!.discountType)}',
+                            '${PriceConverter.convertPrice(context, product!.price, discount: product!.discount, discountType: product!.discountType)}',
                             style: TextStyle(
                                 fontSize: 16,
-                                color: ColorResources.SCAFFOLD_COLOR,
+                                color: ColorResources.getScaffoldColor(context),
                                 fontWeight: FontWeight.w500),
                           ),
                         ],
@@ -234,45 +179,6 @@ class CategoryProductWidget extends StatelessWidget {
                 ),
               ]),
             )),
-
-        //     SizedBox(
-        //       height: 5,
-        //     ),
-        //     Row(
-        //       crossAxisAlignment: CrossAxisAlignment.start,
-        //       children: [
-        //         Expanded(
-        //           child: Text(
-        //             product!.name!,
-        //             maxLines: 2,
-        //             overflow: TextOverflow.ellipsis,
-        //             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-        //           ),
-        //         ),
-        //         SizedBox(
-        //           width: 5,
-        //         ),
-        //         Column(
-        //           children: [
-        //             Text(
-        //               '${PriceConverter.convertPrice(context, _startingPrice, discount: product!.discount, discountType: product!.discountType)}',
-        //               style: TextStyle(
-        //                   color: Colors.black38, fontWeight: FontWeight.w500),
-        //             ),
-        //             Text(
-        //               '${PriceConverter.convertPrice(context, _startingPrice)}',
-        //               style: TextStyle(
-        //                   color: Colors.black45,
-        //                   fontWeight: FontWeight.normal,
-        //                   fontSize: 16,
-        //                   decoration: TextDecoration.lineThrough),
-        //             )
-        //           ],
-        //         )
-        //       ],
-        //     ),
-        //   ]),
-        // ),
       ),
     );
   }

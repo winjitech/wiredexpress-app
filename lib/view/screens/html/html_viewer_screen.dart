@@ -8,6 +8,7 @@ import 'package:wired_express/helper/html_type.dart';
 import 'package:wired_express/localization/language_constrants.dart';
 import 'package:wired_express/provider/splash_provider.dart';
 import 'package:wired_express/utill/color_resources.dart';
+import 'package:wired_express/view/base/circular_indicator_widget.dart';
 import 'package:wired_express/view/base/custom_app_bar.dart';
 import 'package:provider/provider.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -76,7 +77,7 @@ class _HtmlViewerScreenState extends State<HtmlViewerScreen> {
                 //   ),
                 //   ),
                 // ),
-                _isLoading ? Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(ColorResources.getPrimaryColor(context)))) : SizedBox(),
+                _isLoading ? CustomCircularIndicator(): SizedBox(),
               ],
             ),
           ),

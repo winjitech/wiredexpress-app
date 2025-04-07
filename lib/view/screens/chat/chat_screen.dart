@@ -167,7 +167,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                     ColorResources.getScaffoldBackgroundColor(
                                         context),
                                 child: Row(children: [
-                                  // InkWell(
+                                  // GestureDetector(
                                   //   onTap: () async {
                                   //     Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) =>
                                   //         SendImage()));
@@ -230,7 +230,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                     ),
                                   ),
 
-                                  InkWell(
+                                  GestureDetector(
                                     onTap: () async {
                                       FocusScope.of(context).unfocus();
                                       if (Provider.of<ChatProvider>(context,

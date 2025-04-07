@@ -66,7 +66,7 @@ class SupportScreen extends StatelessWidget {
                             borderRadius: BorderRadius.circular(40),
                             side: BorderSide(
                               width: 2,
-                              color: ColorResources.SCAFFOLD_COLOR,
+                              color: ColorResources.getScaffoldColor(context),
                             )),
                         minimumSize: Size(1, 50),
                       ),
@@ -77,7 +77,7 @@ class SupportScreen extends StatelessWidget {
                       child: Text(getTranslated('call_now', context),
                           style:
                           TextStyle(
-                                    color: ColorResources.SCAFFOLD_COLOR,
+                                    color: ColorResources.getScaffoldColor(context),
                                     fontSize: Dimensions.FONT_SIZE_LARGE,
                                   )),
                     )),

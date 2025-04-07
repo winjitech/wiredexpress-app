@@ -315,7 +315,7 @@
 //       );
 //     }
 //
-//     return InkWell(
+//     return GestureDetector(
 //       onTap: () async {
 //         if (menu._hasChildren) {
 //           MenuItem selectedMenu = await _getSelectedMenu(menu);

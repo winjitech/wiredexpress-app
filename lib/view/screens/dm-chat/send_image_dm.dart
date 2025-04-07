@@ -9,6 +9,7 @@ import 'package:wired_express/utill/color_resources.dart';
 import 'package:wired_express/utill/dimensions.dart';
 import 'package:wired_express/utill/images.dart';
 import 'package:wired_express/utill/styles.dart';
+import 'package:wired_express/view/base/circular_indicator_widget.dart';
 import 'package:wired_express/view/base/custom_app_bar.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
@@ -72,10 +73,7 @@ class _SendImageDmState extends State<SendImageDm> {
                           style:
                               TextStyle(color: Colors.black87, fontSize: 15)),
                       SizedBox(height: 10),
-                      Center(
-                          child: CircularProgressIndicator(
-                              valueColor: AlwaysStoppedAnimation<Color>(
-                                  Theme.of(context).primaryColor)))
+                      CustomCircularIndicator()
                     ],
                   )
                 : Column(
@@ -112,7 +110,7 @@ class _SendImageDmState extends State<SendImageDm> {
                                 Positioned(
                                   bottom: 15,
                                   right: -10,
-                                  child: InkWell(
+                                  child: GestureDetector(
                                       onTap: _choose,
                                       child: Container(
                                         alignment: Alignment.center,
@@ -155,7 +153,7 @@ class _SendImageDmState extends State<SendImageDm> {
                               ),
                             ),
                           ),
-                          InkWell(
+                          GestureDetector(
                             onTap: () async {
                               FocusScope.of(context).unfocus();
                               if (file == null) {

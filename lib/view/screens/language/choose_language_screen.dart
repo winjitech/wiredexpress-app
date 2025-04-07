@@ -113,7 +113,7 @@
 //       LanguageModel? languageModel,
 //       LanguageProvider? languageProvider,
 //       int? index}) {
-//     return InkWell(
+//     return GestureDetector(
 //       onTap: () {
 //         languageProvider.setSelectIndex(index!);
 //       },
@@ -237,7 +237,7 @@ class ChooseLanguageScreen extends StatelessWidget {
                       padding: const EdgeInsets.only(
                           left: 15, right: 15, bottom: 15),
                       child: CustomButton(
-                        backgroundColor: ColorResources.SCAFFOLD_COLOR,
+                        backgroundColor: ColorResources.getScaffoldColor(context),
                         text: getTranslated('save', context),
                         onTap: () {
                           if (languageProvider.languages.isNotEmpty &&
@@ -285,7 +285,7 @@ class ChooseLanguageScreen extends StatelessWidget {
       required LanguageModel languageModel,
       required LanguageProvider languageProvider,
       int? index}) {
-    return InkWell(
+    return GestureDetector(
       onTap: () {
         languageProvider.changeSelectIndex(index);
       },
@@ -293,18 +293,18 @@ class ChooseLanguageScreen extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 20),
         decoration: BoxDecoration(
           color: languageProvider.selectIndex == index
-              ? ColorResources.SCAFFOLD_COLOR.withOpacity(.15)
+              ? ColorResources.getScaffoldColor(context).withOpacity(.15)
               : null,
           border: Border(
               top: BorderSide(
                   width: languageProvider.selectIndex == index ? 1.0 : 0.0,
                   color: languageProvider.selectIndex == index
-                      ? ColorResources.SCAFFOLD_COLOR
+                      ? ColorResources.getScaffoldColor(context)
                       : Colors.transparent),
               bottom: BorderSide(
                   width: languageProvider.selectIndex == index ? 1.0 : 0.0,
                   color: languageProvider.selectIndex == index
-                      ? ColorResources.SCAFFOLD_COLOR
+                      ? ColorResources.getScaffoldColor(context)
                       : Colors.transparent)),
         ),
         child: Container(
@@ -317,7 +317,7 @@ class ChooseLanguageScreen extends StatelessWidget {
                         ? Colors.transparent
                         : (languageProvider.selectIndex! - 1) == (index! - 1)
                             ? Colors.transparent
-                            : ColorResources.SCAFFOLD_COLOR)),
+                            : ColorResources.getScaffoldColor(context))),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -339,7 +339,7 @@ class ChooseLanguageScreen extends StatelessWidget {
                       Images.done,
                       width: 17,
                       height: 17,
-                      color: ColorResources.SCAFFOLD_COLOR,
+                      color: ColorResources.getScaffoldColor(context),
                     )
                   : const SizedBox.shrink()
             ],

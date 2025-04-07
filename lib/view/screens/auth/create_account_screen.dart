@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:wired_express/provider/cart_provider.dart';
+import 'package:wired_express/view/base/circular_indicator_widget.dart';
 import 'package:wired_express/view/screens/address/add_new_address_screen.dart';
 import 'package:wired_express/view/screens/dashboard/dashboard_screen.dart';
 import 'package:wired_express/view/screens/splash_screen.dart';
@@ -321,15 +322,11 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                                 }
                               },
                             )
-                          : Center(
-                              child: CircularProgressIndicator(
-                              valueColor: new AlwaysStoppedAnimation<Color>(
-                                  ColorResources.getPrimaryColor(context)),
-                            )),
+                          : CustomCircularIndicator(),
 
                       // for already an account
                       SizedBox(height: 11),
-                      InkWell(
+                      GestureDetector(
                         onTap: () {
                           Navigator.pushReplacementNamed(
                               context, Routes.getLoginByEmailRoute());

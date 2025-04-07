@@ -3,9 +3,11 @@ import 'package:wired_express/utill/images.dart';
 
 class AppConstants {
   static const String APP_NAME = 'Wired Express';
-// 192.168.1.3 or 172.18.128.1
+  // 192.168.1.3 or 172.18.128.1
   //192.168.0.112
-  static const String BASE_URL = 'https://wiredexpress01.com';
+  static const String BASE_URL = 'https://192.168.1.7/wired_express';
+
+  // static const String BASE_URL = 'https://wiredexpress01.com';
   static const String CATEGORY_URI = '/api/v1/categories';
   static const String CATEGORY_FEATURED_URI = '/api/v1/categories/featured';
   static const String CATEGORY_URI_FUlL = '/api/v1/categories/full';
@@ -13,9 +15,7 @@ class AppConstants {
 
   static const String POPULAR_PRODUCT_URI = '/api/v1/products/latest';
   static const String PRODUCTS_LIST_URI = '/api/v1/products/category';
-  static const String SEARCH_PRODUCT_URI = '/api/v1/products/details/';
   static const String SUB_CATEGORY_URI = '/api/v1/categories/childes/';
-  //static const String CATEGORY_URI = '/api/v1/categories/childes/';
   static const String CATEGORY_PRODUCT_URI = '/api/v1/categories/products/';
   static const String CONFIG_URI = '/api/v1/config';
   static const String TRACK_URI = '/api/v1/customer/order/track';
@@ -82,12 +82,19 @@ class AppConstants {
   static const String GET_ZONE_URI = '/api/v1/customer/order/get-zone';
   static const String API_KEY = 'AIzaSyDittP8hJ4T6bhdHQv601p0RVlYHN-D_hc'; // TEMPORARY
 
-//// deliveryman chat
+  /// deliveryman chat
   static const String DM_MESSAGE_URI = '/api/v1/customer/dm-message/get';
   static const String DM_SEND_MESSAGE_URI = '/api/v1/customer/dm-message/send';
   static const String DM_SEND_IMAGE_URI = '/api/v1/customer/dm-message/send-image';
 
-  // Shared Key
+  /// subscription
+  static const String GET_SUBSCRIPTION_PLANS_URI = '/api/v1/customer/subscription/subscription-plans';
+  static const String SUBSCRIBE_USER_URI = '/api/v1/customer/subscription/subscribe-user';
+  static const String CANCEL_SUBSCRIPTION_URI = '/api/v1/customer/subscription/cancel-subscription';
+
+  static const String GET_LAST_DELIVERY_COORDINATES_URI = '/api/v1/delivery-man/get-last-delivery-coordinates?order_id=';
+
+  /// Shared Key
   static const String THEME = 'theme';
   static const String TOKEN = 'token';
   static const String COUNTRY_CODE = 'country_code';
@@ -106,6 +113,7 @@ class AppConstants {
 
   static const String countryCode = 'country_code';
   static const String languageCode = 'language_code';
+
   static List<LanguageModel> languages = [
     LanguageModel(
         imageUrl: Images.united_kindom,

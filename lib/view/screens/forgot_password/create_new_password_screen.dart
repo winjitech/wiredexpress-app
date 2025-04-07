@@ -7,6 +7,7 @@ import 'package:wired_express/utill/color_resources.dart';
 import 'package:wired_express/utill/dimensions.dart';
 import 'package:wired_express/utill/images.dart';
 import 'package:wired_express/utill/routes.dart';
+import 'package:wired_express/view/base/circular_indicator_widget.dart';
 import 'package:wired_express/view/base/custom_app_bar.dart';
 import 'package:wired_express/view/base/custom_button.dart';
 import 'package:wired_express/view/base/custom_snackbar.dart';
@@ -125,7 +126,7 @@ import 'package:provider/provider.dart';
 //                                   });
 //                                 }
 //                               },
-//                             ) : Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).primaryColor))),
+//                             ) : CustomCircularIndicator(),
 //                           ],
 //                         ),
 //                       )
@@ -301,11 +302,7 @@ class CreateNewPasswordScreen extends StatelessWidget {
                                       }
                                     },
                                   )
-                                : Center(
-                                    child: CircularProgressIndicator(
-                                        valueColor: AlwaysStoppedAnimation<
-                                                Color>(
-                                            ColorResources.SCAFFOLD_COLOR))),
+                                : CustomCircularIndicator(color:ColorResources.getScaffoldColor(context)),
                           ],
                         ),
                       )

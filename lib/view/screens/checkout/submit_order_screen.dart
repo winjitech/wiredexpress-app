@@ -20,6 +20,7 @@ import 'package:flutter/material.dart';
 import 'package:wired_express/localization/language_constrants.dart';
 import 'package:wired_express/utill/app_constants.dart';
 import 'package:wired_express/utill/dimensions.dart';
+import 'package:wired_express/view/base/circular_indicator_widget.dart';
 import 'package:wired_express/view/base/custom_button.dart';
 import 'package:wired_express/view/base/custom_main_appbar.dart';
 import 'package:wired_express/view/base/custom_snackbar.dart';
@@ -63,7 +64,7 @@ class _SubmitOrderScreenState extends State<SubmitOrderScreen> {
         controller: advancedDrawerController,
         animationCurve: Curves.easeInOutExpo,
         animationDuration: Duration(milliseconds: 400),
-        backdropColor: ColorResources.SCAFFOLD_COLOR,
+        backdropColor: ColorResources.getScaffoldColor(context),
         drawer: DrawerScreen(),
         child: Scaffold(
             backgroundColor:
@@ -87,8 +88,6 @@ class _SubmitOrderScreenState extends State<SubmitOrderScreen> {
               double _totalDiscount = 0;
 
               cartProvider.cartList.forEach((cart) {
-                String variationType = Helpers.getVariationType(
-                    cart.product!, cart.variationIndex!);
 
                 double price = cart.product!.price!;
                 double discountAmount = 0;
@@ -97,20 +96,6 @@ class _SubmitOrderScreenState extends State<SubmitOrderScreen> {
                 } else {
                   discountAmount =
                       (cart.product!.price! * cart.product!.discount!) / 100;
-                }
-                for (Variation variation in cart.product!.variations!) {
-                  if (variation.type == variationType) {
-                    price = variation.price!;
-
-                    if (cart.product!.discountType == 'amount') {
-                      discountAmount = cart.product!.discount!;
-                    } else {
-                      discountAmount =
-                          (variation.price! * cart.product!.discount!) / 100;
-                    }
-
-                    break;
-                  }
                 }
 
                 _totalPrice = _totalPrice + (price * cart.quantity!);
@@ -310,10 +295,7 @@ class _SubmitOrderScreenState extends State<SubmitOrderScreen> {
                                         child: Padding(
                                         padding: EdgeInsets.all(
                                             Dimensions.PADDING_SIZE_SMALL),
-                                        child: CircularProgressIndicator(
-                                            valueColor: AlwaysStoppedAnimation<
-                                                    Color>(
-                                                ColorResources.SCAFFOLD_COLOR)),
+                                        child: CustomCircularIndicator(color:ColorResources.getScaffoldColor(context)),
                                       ))
                                     : CustomButton(
                                         text: getTranslated(
@@ -322,73 +304,36 @@ class _SubmitOrderScreenState extends State<SubmitOrderScreen> {
                                           print(
                                               'placeOrderProvider.deliveryId ${placeOrderProvider.deliveryId}');
                                           _cartList = Provider.of<CartProvider>(
-                                                  context,
-                                                  listen: false)
+                                              context,
+                                              listen: false)
                                               .cartList;
                                           List<ProductCart> carts = [];
                                           for (int index = 0;
-                                              index < _cartList!.length;
-                                              index++) {
+                                          index < _cartList!.length;
+                                          index++) {
                                             CartModel cart = _cartList![index];
-
-                                            String variationType =
-                                                Helpers.getVariationType(
-                                                    cart.product!,
-                                                    cart.variationIndex!);
 
                                             double price = cart.product!.price!;
                                             double discountAmount = 0;
                                             if (cart.product!.discountType ==
                                                 'amount') {
                                               discountAmount =
-                                                  cart.product!.discount!;
+                                              cart.product!.discount!;
                                             } else {
                                               discountAmount = (cart
-                                                          .product!.price! *
-                                                      cart.product!.discount!) /
+                                                  .product!.price! *
+                                                  cart.product!.discount!) /
                                                   100;
                                             }
-
-                                            for (Variation variation
-                                                in cart.product!.variations!) {
-                                              if (variation.type ==
-                                                  variationType) {
-                                                price = variation.price!;
-
-                                                if (cart.product!
-                                                        .discountType ==
-                                                    'amount') {
-                                                  discountAmount =
-                                                      cart.product!.discount!;
-                                                } else {
-                                                  discountAmount =
-                                                      (variation.price! *
-                                                              cart.product!
-                                                                  .discount!) /
-                                                          100;
-                                                }
-
-                                                break;
-                                              }
-                                            }
-
-                                            Variation _variation =
-                                                Provider.of<ProductProvider>(
-                                                        context,
-                                                        listen: false)
-                                                    .getVariation(cart.product!,
-                                                        cart.variationIndex!);
-
                                             carts.add(ProductCart(
                                                 cart.product!.id.toString(),
                                                 price.toString(),
-                                                '',
-                                                _variation,
                                                 discountAmount,
                                                 cart.quantity,
-                                                cart.product!.tax));
+                                                cart.product!.tax ,
+                                                cart.tieredPricing
+                                            ));
                                           }
-
                                           PlaceOrderBody _orderModel =
                                               PlaceOrderBody(
                                             cart: carts,

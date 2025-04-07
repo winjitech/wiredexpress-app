@@ -1,5 +1,8 @@
 import 'dart:convert';
 
+import 'package:wired_express/data/model/response/moq_setting_model.dart';
+import 'package:wired_express/data/model/response/tiered_pricing_model.dart';
+
 class ProductModel {
   int? _totalSize;
   String? _limit;
@@ -8,9 +11,9 @@ class ProductModel {
 
   ProductModel(
       {int? totalSize,
-      String? limit,
-      String? offset,
-      List<Product>? products}) {
+        String? limit,
+        String? offset,
+        List<Product>? products}) {
     this._totalSize = totalSize;
     this._limit = limit;
     this._offset = offset;
@@ -57,7 +60,7 @@ class Product {
   String? _description;
   String? _image;
   double? _price;
-  List<Variation>? _variations;
+  List<TiredPricingModel>? _tiredPricing;
 
   double? _tax;
   String? _availableTimeStarts;
@@ -65,9 +68,7 @@ class Product {
   int? _status;
   String? _createdAt;
   String? _updatedAt;
-  List<dynamic>? _attributes;
   List<CategoryId>? _categoryIds;
-  List<ChoiceOption>? _choiceOptions;
   double? _discount;
   String? _discountType;
   String? _taxType;
@@ -75,45 +76,44 @@ class Product {
   List<Rating>? _rating;
   String? _matchedTag;
   String? _availability;
+  MoqSettingModel? _moqSetting;
 
   Product(
       {int? id,
-      String? name,
-      String? description,
-      String? image,
-      double? price,
-      List<Variation>? variations,
-      double? tax,
-      String? availableTimeStarts,
-      String? availableTimeEnds,
-      int? status,
-      String? createdAt,
-      String? updatedAt,
-      List<dynamic>? attributes,
-      List<CategoryId>? categoryIds,
-      List<ChoiceOption>? choiceOptions,
-      double? discount,
-      String? discountType,
-      String? taxType,
-      int? setMenu,
-      List<Rating>? rating,
-      String? matchedTag,
-      String? availability}) {
+        String? name,
+        String? description,
+        String? image,
+        double? price,
+        List<TiredPricingModel>? tiredPricing,
+        double? tax,
+        String? availableTimeStarts,
+        String? availableTimeEnds,
+        int? status,
+        String? createdAt,
+        String? updatedAt,
+        List<CategoryId>? categoryIds,
+        double? discount,
+        String? discountType,
+        String? taxType,
+        int? setMenu,
+        List<Rating>? rating,
+        String? matchedTag,
+        String? availability,
+        MoqSettingModel? moqSetting}) {
     this._id = id;
     this._name = name;
     this._description = description;
     this._image = image;
     this._price = price;
-    this._variations = variations;
+    this._tiredPricing = tiredPricing;
+
     this._tax = tax;
     this._availableTimeStarts = availableTimeStarts;
     this._availableTimeEnds = availableTimeEnds;
     this._status = status;
     this._createdAt = createdAt;
     this._updatedAt = updatedAt;
-    this._attributes = attributes;
     this._categoryIds = categoryIds;
-    this._choiceOptions = choiceOptions;
     this._discount = discount;
     this._discountType = discountType;
     this._taxType = taxType;
@@ -121,6 +121,7 @@ class Product {
     this._rating = rating;
     this._matchedTag = matchedTag;
     this._availability = availability;
+    this._moqSetting = moqSetting;
   }
 
   int? get id => _id;
@@ -128,16 +129,15 @@ class Product {
   String? get description => _description;
   String? get image => _image;
   double? get price => _price;
-  List<Variation>? get variations => _variations;
+  List<TiredPricingModel>? get tiredPricing => _tiredPricing;
+
   double? get tax => _tax;
   String? get availableTimeStarts => _availableTimeStarts;
   String? get availableTimeEnds => _availableTimeEnds;
   int? get status => _status;
   String? get createdAt => _createdAt;
   String? get updatedAt => _updatedAt;
-  List<dynamic>? get attributes => _attributes;
   List<CategoryId>? get categoryIds => _categoryIds;
-  List<ChoiceOption>? get choiceOptions => _choiceOptions;
   double? get discount => _discount;
   String? get discountType => _discountType;
   String? get taxType => _taxType;
@@ -145,6 +145,7 @@ class Product {
   int? get setMenu => _setMenu;
   List<Rating>? get rating => _rating;
   String? get availability => _availability;
+  MoqSettingModel? get moqSetting => _moqSetting;
 
   Product.fromJson(Map<String?, dynamic> json) {
     _id = json['id'];
@@ -153,11 +154,11 @@ class Product {
     _image = json['image'];
 
     _price = (json['price'] as num).toDouble();
-    if (json['variations'] != null) {
-      _variations = [];
-      // List _variationsGet = jsonDecode(json['variations']);
-      json['variations']!.forEach((v) {
-        _variations!.add(new Variation.fromJson(v));
+
+    if (json['tired_pricing'] != null) {
+      _tiredPricing = [];
+      json['tired_pricing']!.forEach((v) {
+        _tiredPricing!.add(new TiredPricingModel.fromJson(v));
       });
     }
 
@@ -167,18 +168,10 @@ class Product {
     _status = json['status'];
     _createdAt = json['created_at'];
     _updatedAt = json['updated_at'];
-    //_attributes = json['attributes'].cast<String?>();
-    _attributes = json['attributes'];
     if (json['category_ids'] != null) {
       _categoryIds = [];
       json['category_ids']!.forEach((v) {
         _categoryIds!.add(new CategoryId.fromJson(v));
-      });
-    }
-    if (json['choice_options'] != null) {
-      _choiceOptions = [];
-      json['choice_options']!.forEach((v) {
-        _choiceOptions!.add(new ChoiceOption.fromJson(v));
       });
     }
 
@@ -196,6 +189,9 @@ class Product {
     } else {
       _rating = [];
     }
+    _moqSetting = json['moq_setting'] != null
+        ? MoqSettingModel.fromJson(json['moq_setting'])
+        : null;
   }
 
   Map<String?, dynamic> toJson() {
@@ -206,8 +202,10 @@ class Product {
     data['description'] = this._description;
     data['image'] = this._image;
     data['price'] = this._price;
-    if (this._variations != null) {
-      data['variations'] = this._variations!.map((v) => v.toJson()).toList();
+
+    if (this._tiredPricing != null) {
+      data['tired_pricing'] =
+          this._tiredPricing!.map((v) => v.toJson()).toList();
     }
 
     data['tax'] = this._tax;
@@ -216,14 +214,10 @@ class Product {
     data['status'] = this._status;
     data['created_at'] = this._createdAt;
     data['updated_at'] = this._updatedAt;
-    data['attributes'] = this._attributes;
     if (this._categoryIds != null) {
       data['category_ids'] = this._categoryIds!.map((v) => v.toJson()).toList();
     }
-    if (this._choiceOptions != null) {
-      data['choice_options'] =
-          this._choiceOptions!.map((v) => v.toJson()).toList();
-    }
+
     data['discount'] = this._discount;
     data['discount_type'] = this._discountType;
     data['tax_type'] = this._taxType;
@@ -233,41 +227,13 @@ class Product {
     if (this._rating != null) {
       data['rating'] = this._rating!.map((v) => v.toJson()).toList();
     }
-    return data;
-  }
-}
-
-class Variation {
-  String? _type;
-  String? _image;
-  double? _price;
-
-  Variation({String? type, double? price}) {
-    this._type = type;
-    this._image = image;
-    this._price = price;
-  }
-
-  String? get type => _type;
-  String? get image => _image;
-  double? get price => _price;
-
-  Variation.fromJson(Map<String?, dynamic> json) {
-    _type = json['type'];
-    _image = json['image'];
-    if (json['price'] != null) {
-      _price = (json['price'] as num).toDouble();
+    if (this._moqSetting != null) {
+      data['moq_setting'] = this._moqSetting!.toJson();
     }
-  }
-
-  Map<String?, dynamic> toJson() {
-    final Map<String?, dynamic> data = new Map<String?, dynamic>();
-    data['type'] = this._type;
-    data['image'] = this._image;
-    data['price'] = this._price;
     return data;
   }
 }
+
 
 class CategoryId {
   String? _id;

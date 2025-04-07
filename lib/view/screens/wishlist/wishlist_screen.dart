@@ -46,10 +46,7 @@
 //           ? Consumer<WishListProvider>(
 //               builder: (context, wishlistProvider, child) {
 //                 return wishlistProvider.loading
-//                     ? Center(
-//                         child: CircularProgressIndicator(
-//                             valueColor: new AlwaysStoppedAnimation<Color>(
-//                                 ColorResources.SCAFFOLD_COLOR)))
+//                     ? CustomCircularIndicator(color:ColorResources.getScaffoldColor(context))
 //                     : wishlistProvider.wishList != null &&
 //                             wishlistProvider.wishList!.isNotEmpty
 //                         ? RefreshIndicator(
@@ -198,6 +195,7 @@ import 'package:flutter/material.dart';
 import 'package:wired_express/localization/language_constrants.dart';
 import 'package:wired_express/provider/auth_provider.dart';
 import 'package:wired_express/provider/wishlist_provider.dart';
+import 'package:wired_express/view/base/circular_indicator_widget.dart';
 import 'package:wired_express/view/base/custom_app_bar.dart';
 import 'package:wired_express/view/base/custom_main_appbar.dart';
 import 'package:wired_express/view/base/no_data_screen.dart';
@@ -274,7 +272,7 @@ class _WishListScreenState extends State<WishListScreen> {
         controller: advancedDrawerController,
         animationCurve: Curves.easeInOutExpo,
         animationDuration: Duration(milliseconds: 400),
-        backdropColor: ColorResources.SCAFFOLD_COLOR,
+        backdropColor: ColorResources.getScaffoldColor(context),
         drawer: DrawerScreen(),
         child: Scaffold(
           backgroundColor: ColorResources.getScaffoldBackgroundColor(context!),
@@ -286,10 +284,7 @@ class _WishListScreenState extends State<WishListScreen> {
               ? Consumer<WishListProvider>(
                   builder: (context, wishlistProvider, child) {
                     return wishlistProvider.loading
-                        ? Center(
-                            child: CircularProgressIndicator(
-                                valueColor: new AlwaysStoppedAnimation<Color>(
-                                    ColorResources.SCAFFOLD_COLOR)))
+                        ? CustomCircularIndicator(color:ColorResources.getScaffoldColor(context))
                         : wishlistProvider.wishList != null &&
                                 wishlistProvider.wishList!.isNotEmpty
                             ? RefreshIndicator(

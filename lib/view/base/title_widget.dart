@@ -18,7 +18,7 @@ class TitleWidget extends StatelessWidget {
           style: rubikMedium.copyWith(
               color: ColorResources.getTextColor(context))),
       onTap != null && !ResponsiveHelper.isDesktop(context)
-          ? InkWell(
+          ? GestureDetector(
               onTap: onTap,
               child: Padding(
                 padding: EdgeInsets.fromLTRB(10, 5, 0, 5),

@@ -13,24 +13,25 @@ class UserInfoModel {
   String? cmFirebaseToken;
   int? updateVersion;
   int? approved;
+  bool? hasActiveSubscription;
 
-
-  UserInfoModel(
-      {this.id,
-        this.fName,
-        this.lName,
-        this.email,
-        this.image,
-        this.isPhoneVerified,
-        this.emailVerifiedAt,
-        this.createdAt,
-        this.updatedAt,
-        this.emailVerificationToken,
-        this.phone,
-        this.cmFirebaseToken,
-        this.updateVersion,
-        this.approved,
-      });
+  UserInfoModel({
+    this.id,
+    this.fName,
+    this.lName,
+    this.email,
+    this.image,
+    this.isPhoneVerified,
+    this.emailVerifiedAt,
+    this.createdAt,
+    this.updatedAt,
+    this.emailVerificationToken,
+    this.phone,
+    this.cmFirebaseToken,
+    this.updateVersion,
+    this.approved,
+    this.hasActiveSubscription,
+  });
 
   UserInfoModel.fromJson(Map<String?, dynamic> json) {
     id = json['id'];
@@ -47,25 +48,26 @@ class UserInfoModel {
     cmFirebaseToken = json['cm_firebase_token'];
     updateVersion = json['update_version'];
     approved = json['approved'];
+    hasActiveSubscription = json['has_active_subscription'];
   }
 
   Map<String?, dynamic> toJson() {
-    final Map<String?, dynamic> data = new Map<String?, dynamic>();
-    data['id'] = this.id;
-    data['f_name'] = this.fName;
-    data['l_name'] = this.lName;
-    data['email'] = this.email;
-    data['image'] = this.image;
-    data['is_phone_verified'] = this.isPhoneVerified;
-    data['email_verified_at'] = this.emailVerifiedAt;
-    data['created_at'] = this.createdAt;
-    data['updated_at'] = this.updatedAt;
-    data['email_verification_token'] = this.emailVerificationToken;
-    data['phone'] = this.phone;
-    data['cm_firebase_token'] = this.cmFirebaseToken;
-    data['update_version'] = this.updateVersion;
-    data['approved'] = this.approved;
-
+    final Map<String?, dynamic> data = <String?, dynamic>{};
+    data['id'] = id;
+    data['f_name'] = fName;
+    data['l_name'] = lName;
+    data['email'] = email;
+    data['image'] = image;
+    data['is_phone_verified'] = isPhoneVerified;
+    data['email_verified_at'] = emailVerifiedAt;
+    data['created_at'] = createdAt;
+    data['updated_at'] = updatedAt;
+    data['email_verification_token'] = emailVerificationToken;
+    data['phone'] = phone;
+    data['cm_firebase_token'] = cmFirebaseToken;
+    data['update_version'] = updateVersion;
+    data['approved'] = approved;
+    data['has_active_subscription'] = hasActiveSubscription;
     return data;
   }
 }

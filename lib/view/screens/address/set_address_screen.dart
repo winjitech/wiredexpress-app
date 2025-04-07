@@ -124,7 +124,7 @@
 //                                           itemBuilder: (context, index) {
 //                                             return Padding(
 //                                               padding: const EdgeInsets.all(5),
-//                                               child: InkWell(
+//                                               child: GestureDetector(
 //                                                 onTap: () {
 //                                                   order.setAddressIndex(index);
 //                                                 },
@@ -254,14 +254,7 @@
 //                                             ),
 //                                           ),
 //                                         )
-//                                   : Center(
-//                                       child: CircularProgressIndicator(
-//                                         valueColor:
-//                                             AlwaysStoppedAnimation<Color>(
-//                                           Theme.of(context).primaryColor,
-//                                         ),
-//                                       ),
-//                                     ),
+//                                   : CustomCircularIndicator(),
 //                             ),
 //                           ],
 //                         ),

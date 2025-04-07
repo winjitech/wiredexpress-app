@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
 import 'package:wired_express/data/helper/helpers.dart';
 import 'package:wired_express/data/model/response/product_model.dart';
+import 'package:wired_express/data/model/response/tiered_pricing_model.dart';
+import 'package:wired_express/helper/price_converter.dart';
 import 'package:wired_express/localization/language_constrants.dart';
 import 'package:wired_express/provider/auth_provider.dart';
 import 'package:wired_express/provider/cart_provider.dart';
@@ -17,6 +19,7 @@ import 'package:wired_express/utill/color_resources.dart';
 import 'package:wired_express/utill/dimensions.dart';
 import 'package:wired_express/utill/styles.dart';
 import 'package:wired_express/view/base/address_bottom_sheet.dart';
+import 'package:wired_express/view/base/circular_indicator_widget.dart';
 import 'package:wired_express/view/base/custom_button.dart';
 import 'package:wired_express/view/base/custom_main_appbar.dart';
 import 'package:wired_express/view/base/custom_snackbar.dart';
@@ -41,43 +44,68 @@ class _CartScreenState extends State<CartScreen> {
     super.initState();
     Timer(const Duration(seconds: 0), () {
       final bool _isLoggedIn =
-      Provider.of<CustomAuthProvider>(context, listen: false).isLoggedIn()!;
-      if(_isLoggedIn){
+          Provider.of<CustomAuthProvider>(context, listen: false).isLoggedIn()!;
+      if (_isLoggedIn) {
+        String? id = Provider.of<CustomAuthProvider>(context, listen: false)
+            .getUserAddressId();
+        print("--------------${id}");
+        if (id != null) {
+          final locationProvider =
+              Provider.of<LocationProvider>(context, listen: false);
+          int addressIndex = locationProvider.addressList
+                  ?.indexWhere((address) => address.id.toString() == id) ??
+              -1;
+          if (addressIndex >= 0) {
+            Provider.of<OrderProvider>(context, listen: false)
+                .setAddressIndex(addressIndex);
+          }
+        } else {
+          final locationProvider =
+              Provider.of<LocationProvider>(context, listen: false);
+          locationProvider.initAddressList(context);
+          locationProvider.addressList;
+          if ((locationProvider.addressList == null ||
+              locationProvider.addressList!.length == 0 ||
+              Provider.of<OrderProvider>(context, listen: false).addressIndex <
+                  0)) {
+            Provider.of<OrderProvider>(context, listen: false)
+                .setAddressIndex(0);
+          }
+        }
         Provider.of<CartProvider>(context, listen: false).initCartList(context);
         Provider.of<LocationProvider>(context, listen: false)
             .initAddressList(context);
         ('cart' != 'take_away' &&
-            (Provider.of<LocationProvider>(context, listen: false).addressList == null ||
-                Provider.of<LocationProvider>(context, listen: false)
-                    .addressList!
-                    .length ==
-                    0 ||
-                Provider.of<OrderProvider>(context, listen: false).addressIndex <
-                    0))
+                (Provider.of<LocationProvider>(context, listen: false).addressList ==
+                        null ||
+                    Provider.of<LocationProvider>(context, listen: false)
+                            .addressList!
+                            .length ==
+                        0 ||
+                    Provider.of<OrderProvider>(context, listen: false).addressIndex <
+                        0))
             ? Provider.of<LocationProvider>(context, listen: false).getZone(
-            context,
-            Provider.of<LocationProvider>(context, listen: false)
-                .addressList![0]
-                .latitude
-                .toString(),
-            Provider.of<LocationProvider>(context, listen: false)
-                .addressList![0]
-                .longitude
-                .toString())
+                context,
+                Provider.of<LocationProvider>(context, listen: false)
+                    .addressList![0]
+                    .latitude
+                    .toString(),
+                Provider.of<LocationProvider>(context, listen: false)
+                    .addressList![0]
+                    .longitude
+                    .toString())
             : Provider.of<LocationProvider>(context, listen: false).getZone(
-            context,
-            Provider.of<LocationProvider>(context, listen: false)
-                .addressList![
-            Provider.of<OrderProvider>(context, listen: false)
-                .addressIndex]
-                .latitude
-                .toString(),
-            Provider.of<LocationProvider>(context, listen: false)
-                .addressList![Provider.of<OrderProvider>(context, listen: false).addressIndex]
-                .longitude
-                .toString());
+                context,
+                Provider.of<LocationProvider>(context, listen: false)
+                    .addressList![Provider.of<OrderProvider>(context, listen: false)
+                        .addressIndex]
+                    .latitude
+                    .toString(),
+                Provider.of<LocationProvider>(context, listen: false)
+                    .addressList![Provider.of<OrderProvider>(context, listen: false).addressIndex]
+                    .longitude
+                    .toString());
       }
-
     });
   }
 
@@ -111,7 +139,7 @@ class _CartScreenState extends State<CartScreen> {
       controller: advancedDrawerController,
       animationCurve: Curves.easeInOutExpo,
       animationDuration: const Duration(milliseconds: 400),
-      backdropColor: ColorResources.SCAFFOLD_COLOR,
+      backdropColor: ColorResources.getScaffoldColor(context),
       drawer: DrawerScreen(),
       child: Scaffold(
         backgroundColor: ColorResources.getScaffoldBackgroundColor(context!),
@@ -129,54 +157,50 @@ class _CartScreenState extends State<CartScreen> {
                     double _totalPrice = 0;
                     double _totalDiscount = 0;
                     double _totalTax = 0;
-
                     cartProvider.cartList.forEach((cart) {
-                      String variationType = Helpers.getVariationType(
-                          cart.product!, cart.variationIndex!);
+                      List<TiredPricingModel> tiredPricing =
+                          cart.product!.tiredPricing ?? [];
 
-                      double price = cart.product!.price!;
+                      double priceWithDiscount =
+                          PriceConverter.convertWithDiscount(
+                              context,
+                              cart.product!.price!,
+                              cart.product!.discount!,
+                              cart.product!.discountType!);
+                      double price = PriceConverter.getProductFinalPrice(
+                              tiredPricing,
+                              priceWithDiscount,
+                              cart.quantity ?? 1) ??
+                          0.0;
+                      print("pricepricepriceprice == $price");
+                      double priceWithQuantity = price * cart.quantity!;
+
                       double discountAmount = 0;
-                      if (cart.product!.discountType == 'amount') {
-                        discountAmount = cart.product!.discount!;
-                      } else {
-                        discountAmount =
-                            (cart.product!.price! * cart.product!.discount!) /
-                                100;
-                      }
-                      for (Variation variation in cart.product!.variations!) {
-                        if (variation.type == variationType) {
-                          price = variation.price!;
+                      double taxAmount = double.parse(Helpers.formatTextWithNum(
+                          PriceConverter.convertPercentageToAmount(
+                                  priceWithQuantity, cart.product!.tax!)
+                              .toString()));
+                      // if (cart.product!.discountType == 'amount') {
+                      //   discountAmount = cart.product!.discount!;
+                      // } else {
+                      //   discountAmount =
+                      //       (cart.product!.price! * cart.product!.discount!) /
+                      //           100;
+                      // }
 
-                          if (cart.product!.discountType == 'amount') {
-                            discountAmount = cart.product!.discount!;
-                          } else {
-                            discountAmount =
-                                (variation.price! * cart.product!.discount!) /
-                                    100;
-                          }
-
-                          break;
-                        }
-                      }
-
-                      _totalPrice = _totalPrice + (price * cart.quantity!);
-
-                      double taxAmount =
-                          (cart.product!.tax! * price) /
-                              100;
-                      _totalTax = _totalTax + taxAmount;
-
+                      _totalPrice = _totalPrice + priceWithQuantity;
                       _totalDiscount =
                           _totalDiscount + (discountAmount * cart.quantity!);
+                      _totalTax = _totalTax + (taxAmount * cart.quantity!);
                     });
 
-                    double deliveryCharge = double.parse(Provider.of<SplashProvider>(context, listen: false).configModel!.deliveryCharge!);
+                    double deliveryCharge = locationProvider.deliveryFee;
 
                     _finalPrice = _totalPrice -
                         _totalDiscount -
                         Provider.of<CouponProvider>(context).discount! +
-                         _totalTax +
-                        deliveryCharge;
+                        deliveryCharge +
+                        _totalTax;
 
                     double _priceWithDiscount = _totalPrice - _totalDiscount;
 
@@ -250,7 +274,7 @@ class _CartScreenState extends State<CartScreen> {
                                                           spreadRadius: 1)
                                                     ]),
                                                 height: 50,
-                                                child: InkWell(
+                                                child: GestureDetector(
                                                   onTap: () {
                                                     showModalBottomSheet(
                                                       backgroundColor:
@@ -290,7 +314,7 @@ class _CartScreenState extends State<CartScreen> {
                                                                         ? Colors
                                                                             .white54
                                                                         : ColorResources
-                                                                            .SCAFFOLD_COLOR,
+                                                                            .getScaffoldColor(context),
                                                                     fontSize:
                                                                         16,
                                                                     fontWeight:
@@ -307,7 +331,7 @@ class _CartScreenState extends State<CartScreen> {
                                                                         ? Colors
                                                                             .white54
                                                                         : ColorResources
-                                                                            .SCAFFOLD_COLOR,
+                                                                            .getScaffoldColor(context),
                                                                     fontSize:
                                                                         16,
                                                                     fontWeight:
@@ -327,17 +351,17 @@ class _CartScreenState extends State<CartScreen> {
                                                                                 listen: false)
                                                                             .addressIndex <
                                                                         0))
-                                                            ? const Icon(
+                                                            ?  Icon(
                                                                 Icons
                                                                     .not_listed_location_outlined,
                                                                 color: ColorResources
-                                                                    .SCAFFOLD_COLOR,
+                                                                    .getScaffoldColor(context),
                                                               )
-                                                            : const Icon(
+                                                            :  Icon(
                                                                 Icons
                                                                     .published_with_changes_sharp,
                                                                 color: ColorResources
-                                                                    .SCAFFOLD_COLOR,
+                                                                    .getScaffoldColor(context),
                                                               ),
                                                       ],
                                                     ),
@@ -447,8 +471,9 @@ class _CartScreenState extends State<CartScreen> {
                                                           }
                                                         },
                                                         color: ColorResources
-                                                            .SCAFFOLD_COLOR,
-                                                        child: coupon.discount! <=
+                                                            .getScaffoldColor(context),
+                                                        child: coupon
+                                                                    .discount! <=
                                                                 0
                                                             ? !coupon.isLoading!
                                                                 ? Text(
@@ -458,11 +483,9 @@ class _CartScreenState extends State<CartScreen> {
                                                                     style: rubikMedium.copyWith(
                                                                         color: Colors
                                                                             .white))
-                                                                : const CircularProgressIndicator(
-                                                                    valueColor: AlwaysStoppedAnimation<
-                                                                            Color>(
-                                                                        Colors
-                                                                            .white))
+                                                                : CustomCircularIndicator(
+                                                                    color: Colors
+                                                                        .white)
                                                             : const Icon(
                                                                 Icons.clear,
                                                                 color: Colors
@@ -501,23 +524,22 @@ class _CartScreenState extends State<CartScreen> {
 
                                               Row(
                                                   mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
                                                   children: [
                                                     Text(
                                                         getTranslated(
-                                                            'tax',
-                                                            context),
+                                                            'tax', context),
                                                         style: const TextStyle(
                                                           fontWeight:
-                                                          FontWeight.bold,
+                                                              FontWeight.bold,
                                                           fontSize: 16,
                                                         )),
                                                     Text(
                                                         '${Provider.of<SplashProvider>(context, listen: false).configModel!.currencySymbol}${Helpers.formatTextWithNum(_totalTax.toString())}',
                                                         style: const TextStyle(
                                                           fontWeight:
-                                                          FontWeight.bold,
+                                                              FontWeight.bold,
                                                           fontSize: 16,
                                                         )),
                                                   ]),
@@ -588,40 +610,40 @@ class _CartScreenState extends State<CartScreen> {
                                                     const SizedBox(height: 10),
                                                   ],
                                                 ),
-                                               // if (deliveryCharge != 0.0)
-                                                Column(
-                                                  children: [
-                                                    Row(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .spaceBetween,
-                                                        children: [
-                                                          Text(
-                                                              getTranslated(
-                                                                  'delivery_fee',
-                                                                  context),
-                                                              style:
-                                                                  const TextStyle(
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold,
-                                                                fontSize: 16,
-                                                              )),
-                                                          Text(
-                                                              '(+) ${Provider.of<SplashProvider>(context, listen: false).configModel!.currencySymbol}${deliveryCharge}',
-                                                              style:
-                                                                  const TextStyle(
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold,
-                                                                fontSize: 16,
-                                                              )),
-                                                        ]),
-                                                    const SizedBox(
-                                                      height: 10,
-                                                    ),
-                                                  ],
-                                                ),
+                                              // if (deliveryCharge != 0.0)
+                                              Column(
+                                                children: [
+                                                  Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .spaceBetween,
+                                                      children: [
+                                                        Text(
+                                                            getTranslated(
+                                                                'delivery_fee',
+                                                                context),
+                                                            style:
+                                                                const TextStyle(
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                              fontSize: 16,
+                                                            )),
+                                                        Text(
+                                                            '(+) ${Provider.of<SplashProvider>(context, listen: false).configModel!.currencySymbol}${deliveryCharge}',
+                                                            style:
+                                                                const TextStyle(
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                              fontSize: 16,
+                                                            )),
+                                                      ]),
+                                                  const SizedBox(
+                                                    height: 10,
+                                                  ),
+                                                ],
+                                              ),
 
                                               const Divider(
                                                 thickness: 1,
@@ -694,7 +716,6 @@ class _CartScreenState extends State<CartScreen> {
                                         amount: _finalPrice,
                                         orderType: 'cart',
                                         fromCart: true,
-
                                         cartList: cartProvider.cartList,
                                         deliveryId: locationProvider
                                             .addressList![
@@ -710,15 +731,17 @@ class _CartScreenState extends State<CartScreen> {
                                                   amount: _finalPrice,
                                                   orderType: 'cart',
                                                   fromCart: true,
-                                                  cartList: cartProvider.cartList,
-                                                  deliveryAddressId:locationProvider
-                                                      .addressList![
-                                                  orderProvider.addressIndex]
-                                                      .id!,
+                                                  cartList:
+                                                      cartProvider.cartList,
+                                                  deliveryAddressId:
+                                                      locationProvider
+                                                          .addressList![
+                                                              orderProvider
+                                                                  .addressIndex]
+                                                          .id!,
                                                   totalTax: _totalTax,
                                                 )),
                                       );
-
                                     }
                                   },
                                 ),

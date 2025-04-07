@@ -5,6 +5,7 @@ import 'package:wired_express/utill/color_resources.dart';
 import 'package:wired_express/utill/dimensions.dart';
 import 'package:wired_express/utill/images.dart';
 import 'package:wired_express/utill/routes.dart';
+import 'package:wired_express/view/base/circular_indicator_widget.dart';
 import 'package:wired_express/view/base/custom_app_bar.dart';
 import 'package:wired_express/view/base/custom_button.dart';
 import 'package:wired_express/view/base/custom_snackbar.dart';
@@ -12,7 +13,6 @@ import 'package:wired_express/view/screens/auth/create_account_screen.dart';
 import 'package:wired_express/view/screens/forgot_password/create_new_password_screen.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:provider/provider.dart';
-import 'package:wired_express/view/screens/shopping/shopping_screen.dart';
 
 class VerificationScreen extends StatelessWidget {
   final String? emailAddress;
@@ -71,11 +71,11 @@ class VerificationScreen extends StatelessWidget {
                             fieldWidth: 55,
                             borderWidth: 1,
                             borderRadius: BorderRadius.circular(50),
-                            selectedColor: ColorResources.SCAFFOLD_COLOR,
+                            selectedColor: ColorResources.getScaffoldColor(context),
                             selectedFillColor: Colors.white,
                             inactiveFillColor: Colors.white,
                             inactiveColor: Colors.grey[300],
-                            activeColor: ColorResources.SCAFFOLD_COLOR,
+                            activeColor: ColorResources.getScaffoldColor(context),
                             activeFillColor: ColorResources.COLOR_WHITE,
                           ),
                           animationDuration: Duration(milliseconds: 300),
@@ -144,16 +144,13 @@ class VerificationScreen extends StatelessWidget {
                                     },
                                   ),
                                 )
-                              : Center(
-                                  child: CircularProgressIndicator(
-                                      valueColor: AlwaysStoppedAnimation<Color>(
-                                          ColorResources.SCAFFOLD_COLOR)))
+                              : CustomCircularIndicator(color:ColorResources.getScaffoldColor(context))
                           : SizedBox.shrink(),
                       SizedBox(
                         height: 30,
                       ),
                       Center(
-                        child: InkWell(
+                        child: GestureDetector(
                           onTap: () {
                             if (fromSignUp!) {
                               Provider.of<CustomAuthProvider>(context,

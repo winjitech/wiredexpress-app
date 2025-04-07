@@ -7,6 +7,7 @@ import 'package:wired_express/utill/color_resources.dart';
 import 'package:wired_express/utill/dimensions.dart';
 import 'package:wired_express/utill/styles.dart';
 import 'package:provider/provider.dart';
+import 'package:wired_express/view/base/circular_indicator_widget.dart';
 import 'package:wired_express/view/base/custom_snackbar.dart';
 
 class OrderCancelDialog extends StatelessWidget {
@@ -17,7 +18,7 @@ class OrderCancelDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      backgroundColor: ColorResources.SCAFFOLD_COLOR,
+      backgroundColor: ColorResources.getScaffoldColor(context),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       child: Container(
         width: 300,
@@ -37,7 +38,7 @@ class OrderCancelDialog extends StatelessWidget {
               !order.isLoading
                   ? Row(children: [
                       Expanded(
-                          child: InkWell(
+                          child: GestureDetector(
                         onTap: () {
                           // Provider.of<OrderProvider>(context, listen: false)
                           //     .cancelOrder(orderID!, () {Navigator.of(context);});
@@ -74,7 +75,7 @@ class OrderCancelDialog extends StatelessWidget {
                         ),
                       )),
                       Expanded(
-                          child: InkWell(
+                          child: GestureDetector(
                         onTap: () => Navigator.pop(context),
                         child: Container(
                           padding:
@@ -87,16 +88,14 @@ class OrderCancelDialog extends StatelessWidget {
                                   bottomRight: Radius.circular(10))),
                           child: Text(getTranslated('no', context),
                               style: rubikBold.copyWith(
-                                  color: ColorResources.SCAFFOLD_COLOR)),
+                                  color: ColorResources.getScaffoldColor(context))),
                         ),
                       )),
                     ])
                   : Center(
                       child: Padding(
                       padding: EdgeInsets.all(Dimensions.PADDING_SIZE_SMALL),
-                      child: CircularProgressIndicator(
-                          valueColor: AlwaysStoppedAnimation<Color>(
-                              ColorResources.COLOR_WHITE)),
+                      child: CustomCircularIndicator(color:Colors.white),
                     )),
             ]);
           },

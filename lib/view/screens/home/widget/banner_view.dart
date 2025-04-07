@@ -13,7 +13,6 @@ import 'package:wired_express/utill/color_resources.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer_animation/shimmer_animation.dart';
 import 'package:wired_express/view/screens/category/category_screen.dart';
-import 'package:wired_express/view/screens/home/widget/cart_bottom_sheet.dart';
 import 'package:wired_express/view/screens/product/product_details_screen.dart';
 
 class BannerView extends StatefulWidget {
@@ -48,7 +47,7 @@ class _BannerViewState extends State<BannerView> {
             itemCount: banner.bannerList!.length,
             itemBuilder: (context, index, _) {
               return Center(
-                child: InkWell(
+                child: GestureDetector(
                   onTap: () {
                     if (banner.bannerList![index].productId != null) {
                       Product? product;
@@ -59,45 +58,14 @@ class _BannerViewState extends State<BannerView> {
                           break;
                         }
                       }
-                      ResponsiveHelper.isMobile(context)
-                          ? Navigator.push(
+                      Navigator.push(
                           context,
                           MaterialPageRoute(
                               builder: (BuildContext? context) =>
                                   ProductDetailsScreen(
                                     product: product!,
-                                    callback:
-                                        (CartModel cartModel) {
-                                      ScaffoldMessenger.of(
-                                          context!)
-                                          .showSnackBar(SnackBar(
-                                        content: Text(
-                                            getTranslated(
-                                                'added_to_cart',
-                                                context)),
-                                        backgroundColor:
-                                        Colors.green,
-                                      ));
-                                    },
-                                  )))
-                          : showDialog(
-                          context: context,
-                          builder: (con) => Dialog(
-                            child: CartBottomSheet(
-                              product: product!,
-                              callback:
-                                  (CartModel cartModel) {
-                                ScaffoldMessenger.of(context)
-                                    .showSnackBar(SnackBar(
-                                  content: Text(getTranslated(
-                                      'added_to_cart',
-                                      context)),
-                                  backgroundColor:
-                                  Colors.green,
-                                ));
-                              },
-                            ),
-                          ));
+
+                                  )));
                     } else if (banner.bannerList![index].categoryId !=
                         null) {
                       CategoryModel? category;
@@ -256,7 +224,7 @@ class BannerShimmer extends StatelessWidget {
             itemBuilder: (context, index, _) {
               return Row(children: [
                 Center(
-                    child: InkWell(
+                    child: GestureDetector(
                         child: Stack(children: [
                           Center(
                             child: Container(

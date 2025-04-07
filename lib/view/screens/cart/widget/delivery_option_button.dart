@@ -16,7 +16,7 @@ class DeliveryOptionButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<OrderProvider>(
       builder: (context, order, child) {
-        return InkWell(
+        return GestureDetector(
           onTap: () => order.setOrderType(value!),
           child: Row(
             children: [

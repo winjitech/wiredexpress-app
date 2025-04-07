@@ -67,7 +67,7 @@
 //   @override
 //   Widget build(BuildContext context) {
 //     return Scaffold(
-//       backgroundColor: ColorResources.SCAFFOLD_COLOR,
+//       backgroundColor: ColorResources.getScaffoldColor(context),
 //       // backgroundColor: ColorResources.getScaffoldBackgroundColor(context!),
 //       // key: _scaffoldKey,
 //
@@ -100,7 +100,7 @@
 //                         alignment: Alignment.topLeft,
 //                         child: Padding(
 //                           padding: const EdgeInsets.only(top: 10, left: 15),
-//                           child: InkWell(
+//                           child: GestureDetector(
 //                             onTap: () {
 //                               Navigator.pop(context);
 //                             },
@@ -112,7 +112,7 @@
 //                                   padding: const EdgeInsets.all(14),
 //                                   child: Icon(
 //                                     Icons.arrow_back_ios_new_outlined,
-//                                     color: ColorResources.SCAFFOLD_COLOR,
+//                                     color: ColorResources.getScaffoldColor(context),
 //                                     size: 19,
 //                                   ),
 //                                 )),
@@ -207,11 +207,7 @@
 //                                 height: 20,
 //                               ),
 //                               authProvider.isLoading == true
-//                                   ? Center(
-//                                       child: CircularProgressIndicator(
-//                                           valueColor: AlwaysStoppedAnimation<
-//                                                   Color>(
-//                                               ColorResources.SCAFFOLD_COLOR)))
+//                                   ? CustomCircularIndicator(color:ColorResources.getScaffoldColor(context))
 //                                   : CustomButton(
 //                                       text: getTranslated('signup', context),
 //                                       onTap: () {
@@ -379,6 +375,7 @@ import 'package:wired_express/provider/cart_provider.dart';
 import 'package:wired_express/provider/notification_provider.dart';
 import 'package:wired_express/provider/wishlist_provider.dart';
 import 'package:wired_express/utill/color_resources.dart';
+import 'package:wired_express/view/base/circular_indicator_widget.dart';
 import 'package:wired_express/view/base/custom_app_bar.dart';
 import 'package:wired_express/view/base/custom_button.dart';
 import 'package:wired_express/view/base/custom_snackbar.dart';
@@ -457,7 +454,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     SafeArea(
                       child: Align(
                         alignment: Alignment.topLeft,
-                        child: InkWell(
+                        child: GestureDetector(
                           onTap: () {
                             Navigator.pop(context);
                           },
@@ -469,7 +466,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 padding: const EdgeInsets.all(14),
                                 child: Icon(
                                   Icons.arrow_back_ios_new_outlined,
-                                  color: ColorResources.SCAFFOLD_COLOR,
+                                  color: ColorResources.getScaffoldColor(context),
                                   size: 19,
                                 ),
                               )),
@@ -552,11 +549,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                   height: 20,
                                 ),
                                 authProvider.isLoading == true
-                                    ? Center(
-                                    child: CircularProgressIndicator(
-                                        valueColor: AlwaysStoppedAnimation<
-                                            Color>(
-                                            ColorResources.SCAFFOLD_COLOR)))
+                                    ? CustomCircularIndicator(color:ColorResources.getScaffoldColor(context))
                                     : CustomButton(
                                     text: getTranslated('signup', context),
                                     onTap: () {
@@ -669,7 +662,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                     }),
                                 SizedBox(height: 15),
                                 Center(
-                                  child: InkWell(
+                                  child: GestureDetector(
                                     onTap: () async {
                                       final pref =
                                       await SharedPreferences.getInstance();

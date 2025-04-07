@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:wired_express/data/model/response/product_model.dart';
+import 'package:wired_express/data/model/response/tiered_pricing_model.dart';
 
 class CartModel {
   int? _id;
@@ -10,7 +11,7 @@ class CartModel {
   String? _createdAt;
   String? _updatedAt;
   Product? _product;
-  List<dynamic>? _variationIndex;
+  TiredPricingModel? _tieredPricing;
 
   CartModel({
     int? id,
@@ -20,16 +21,16 @@ class CartModel {
     String? createdAt,
     String? updatedAt,
     Product? product,
-    List<dynamic>? variationIndex,
+    TiredPricingModel? tieredPricing,
   }) {
-    this._id = id;
-    this._userId = userId;
-    this._productId = productId;
-    this._quantity = quantity;
-    this._createdAt = createdAt;
-    this._updatedAt = updatedAt;
-    this._product = product;
-    this._variationIndex = variationIndex;
+    _id = id;
+    _userId = userId;
+    _productId = productId;
+    _quantity = quantity;
+    _createdAt = createdAt;
+    _updatedAt = updatedAt;
+    _product = product;
+    _tieredPricing = tieredPricing;
   }
 
   int? get id => _id;
@@ -39,7 +40,7 @@ class CartModel {
   String? get createdAt => _createdAt;
   String? get updatedAt => _updatedAt;
   Product? get product => _product;
-  List<dynamic>? get variationIndex => _variationIndex;
+  TiredPricingModel? get tieredPricing => _tieredPricing;
   set quantity(int? value) {
     _quantity = value;
   }
@@ -52,29 +53,26 @@ class CartModel {
     _createdAt = json['created_at'];
     _updatedAt = json['updated_at'];
     _product =
-        json['product'] != null ? Product.fromJson(json['product']) : null;
-
-    if (json.containsKey('variation_index') &&
-        json['variation_index'] != null) {
-      _variationIndex = jsonDecode(json['variation_index']);
-    } else {
-      _variationIndex = [];
-    }
+    json['product'] != null ? Product.fromJson(json['product']) : null;
+    _tieredPricing = json['tiered_pricing'] != null
+        ? TiredPricingModel.fromJson(json['tiered_pricing'])
+        : null;
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this._id;
-    data['user_id'] = this._userId;
-    data['product_id'] = this._productId;
-    data['quantity'] = this._quantity;
-    data['created_at'] = this._createdAt;
-    data['updated_at'] = this._updatedAt;
-    data['variation_index'] = this._variationIndex;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = _id;
+    data['user_id'] = _userId;
+    data['product_id'] = _productId;
+    data['quantity'] = _quantity;
+    data['created_at'] = _createdAt;
+    data['updated_at'] = _updatedAt;
     if (_product != null) {
       data['product'] = _product!.toJson();
     }
-    data['variation_index'] = _variationIndex;
+    if (_tieredPricing != null) {
+      data['tiered_pricing'] = _tieredPricing!.toJson();
+    }
     return data;
   }
 }

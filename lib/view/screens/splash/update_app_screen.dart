@@ -6,6 +6,7 @@ import 'package:wired_express/provider/auth_provider.dart';
 import 'package:wired_express/provider/profile_provider.dart';
 import 'package:wired_express/utill/color_resources.dart';
 import 'package:wired_express/utill/dimensions.dart';
+import 'package:wired_express/view/base/circular_indicator_widget.dart';
 import 'package:wired_express/view/base/custom_button.dart';
 import 'package:wired_express/view/base/not_logged_in_screen.dart';
 import 'package:provider/provider.dart';
@@ -103,17 +104,10 @@ class _UpdateAppScreenState extends State<UpdateAppScreen> {
                   ),
                 ),
               )
-                  : Center(
-                  child: CircularProgressIndicator(
-                      valueColor:
-                      new AlwaysStoppedAnimation<Color>(
-                          Theme.of(context).primaryColor))),
+                  : CustomCircularIndicator(),
             ],
           )
-              : Center(
-              child: CircularProgressIndicator(
-                  valueColor: new AlwaysStoppedAnimation<Color>(
-                      Theme.of(context).primaryColor)));
+              : CustomCircularIndicator();
         },
       )
           : NotLoggedInScreen(),

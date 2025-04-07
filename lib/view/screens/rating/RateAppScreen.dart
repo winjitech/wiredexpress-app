@@ -7,6 +7,7 @@ import 'package:wired_express/utill/color_resources.dart';
 import 'package:wired_express/utill/dimensions.dart';
 import 'package:wired_express/utill/routes.dart';
 import 'package:wired_express/utill/styles.dart';
+import 'package:wired_express/view/base/circular_indicator_widget.dart';
 import 'package:wired_express/view/base/custom_app_bar.dart';
 import 'package:wired_express/view/base/custom_button.dart';
 import 'package:wired_express/view/base/custom_snackbar.dart';
@@ -57,9 +58,7 @@ class _RateAppScreenState extends State<RateAppScreen> {
                           padding:
                               EdgeInsets.all(Dimensions.PADDING_SIZE_SMALL),
                           child: profileProvider.loadingAppReview
-                              ? CircularProgressIndicator(
-                                  valueColor: AlwaysStoppedAnimation<Color>(
-                                      ColorResources.SCAFFOLD_COLOR))
+                              ? CustomCircularIndicator(color:ColorResources.getScaffoldColor(context))
                               : Center(
                                   child: SizedBox(
                                     width: MediaQuery.of(context).size.width,
@@ -80,7 +79,7 @@ class _RateAppScreenState extends State<RateAppScreen> {
                                                   scrollDirection:
                                                       Axis.horizontal,
                                                   itemBuilder: (context, i) {
-                                                    return InkWell(
+                                                    return GestureDetector(
                                                       child: Icon(
                                                         profileProvider
                                                                     .appRating <

@@ -11,6 +11,7 @@ import 'package:wired_express/utill/Images.dart';
 import 'package:wired_express/utill/app_constants.dart';
 import 'package:wired_express/utill/color_resources.dart';
 import 'package:wired_express/utill/dimensions.dart';
+import 'package:wired_express/view/base/circular_indicator_widget.dart';
 import 'package:wired_express/view/base/custom_button.dart';
 import 'package:wired_express/view/base/main_app_bar.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -64,7 +65,7 @@ class _SelectLocationScreenState extends State<SelectLocationScreen> {
           ? PreferredSize(
               child: MainAppBar(), preferredSize: Size.fromHeight(80))
           : AppBar(
-              backgroundColor: ColorResources.SCAFFOLD_COLOR,
+              backgroundColor: ColorResources.getScaffoldColor(context),
               elevation: 0,
               leading: IconButton(
                   onPressed: () => Navigator.pop(context),
@@ -124,7 +125,7 @@ class _SelectLocationScreenState extends State<SelectLocationScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      InkWell(
+                      GestureDetector(
                         onTap: () {
                           // locationProvider.getCurrentLocation(
                           //     mapController: _controller);
@@ -145,7 +146,7 @@ class _SelectLocationScreenState extends State<SelectLocationScreen> {
                           ),
                           child: Icon(
                             Icons.my_location,
-                            color: ColorResources.SCAFFOLD_COLOR,
+                            color: ColorResources.getScaffoldColor(context),
                             size: 35,
                           ),
                         ),
@@ -177,10 +178,7 @@ class _SelectLocationScreenState extends State<SelectLocationScreen> {
                       height: 35,
                     )),
                 locationProvider.loading
-                    ? Center(
-                        child: CircularProgressIndicator(
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                              ColorResources.SCAFFOLD_COLOR,)))
+                    ? CustomCircularIndicator(color:ColorResources.getScaffoldColor(context))
                     : SizedBox(),
               ],
             ),
@@ -229,7 +227,7 @@ class _SelectLocationScreenState extends State<SelectLocationScreen> {
                         },
                         child: Icon(
                           Icons.close,
-                          color: ColorResources.SCAFFOLD_COLOR,
+                          color: ColorResources.getScaffoldColor(context),
                         ),
                       ),
                     ),
@@ -245,7 +243,7 @@ class _SelectLocationScreenState extends State<SelectLocationScreen> {
                         },
                         child: Icon(
                           Icons.my_location,
-                          color:ColorResources.SCAFFOLD_COLOR,
+                          color:ColorResources.getScaffoldColor(context),
                         ),
                       ),
                     ),
@@ -264,20 +262,20 @@ class _SelectLocationScreenState extends State<SelectLocationScreen> {
         height: 80,
         padding: const EdgeInsets.only(left: 20, right: 20, top: 30),
         child: GooglePlaceAutoCompleteTextField(
-          textStyle: TextStyle(color: ColorResources.SCAFFOLD_COLOR),
+          textStyle: TextStyle(color: ColorResources.getScaffoldColor(context)),
           boxDecoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
             color: ColorResources.getScaffoldBackgroundColor(context),
             border: Border.all(
                 width: 1,
-                color:ColorResources.SCAFFOLD_COLOR,),
+                color:ColorResources.getScaffoldColor(context),),
           ),
           textEditingController: _addressController,
           googleAPIKey: AppConstants.API_KEY,
           inputDecoration: InputDecoration(
               hintText: 'Search your location',
               hintStyle:
-                  TextStyle(color: ColorResources.SCAFFOLD_COLOR,),
+                  TextStyle(color: ColorResources.getScaffoldColor(context),),
               border: InputBorder.none,
               enabledBorder: InputBorder.none),
           debounceTime: 400,
