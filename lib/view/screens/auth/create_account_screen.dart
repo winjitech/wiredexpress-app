@@ -3,13 +3,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:wired_express/provider/cart_provider.dart';
 import 'package:wired_express/view/base/circular_indicator_widget.dart';
 import 'package:wired_express/view/screens/address/add_new_address_screen.dart';
-import 'package:wired_express/view/screens/dashboard/dashboard_screen.dart';
-import 'package:wired_express/view/screens/splash_screen.dart';
-import 'package:wired_express/provider/theme_provider.dart';
-import 'package:wired_express/theme/dark_theme.dart';
-import 'package:wired_express/theme/light_theme.dart';
 import 'package:provider/provider.dart';
-import 'package:numberpicker/numberpicker.dart';
 import 'package:wired_express/data/model/response/signup_model.dart';
 import 'package:wired_express/helper/responsive_helper.dart';
 import 'package:wired_express/localization/language_constrants.dart';
@@ -22,7 +16,6 @@ import 'package:wired_express/view/base/custom_button.dart';
 import 'package:wired_express/view/base/custom_snackbar.dart';
 import 'package:wired_express/view/base/custom_text_field.dart';
 import 'package:wired_express/view/base/main_app_bar.dart';
-import 'package:provider/provider.dart';
 import 'package:country_code_picker/country_code_picker.dart';
 
 class CreateAccountScreen extends StatefulWidget {

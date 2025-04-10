@@ -9,7 +9,6 @@ import 'package:wired_express/data/model/response/product_model.dart';
 import 'package:wired_express/utill/app_constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-
 class CartRepo {
   final SharedPreferences? sharedPreferences;
   final DioClient? dioClient;
@@ -29,8 +28,6 @@ class CartRepo {
   Future<ApiResponse> addCartList(CartModel cart) async {
     print('cart=> ${cart.toJson()}');
     try {
-      // final response = await dioClient!
-      //     .post('${AppConstants.ADD_CART_URI}?product_id=${cart.productId}&quantity=$quantity&variation=${variation.toJson()}');
       Response response = await dioClient!.post(
         AppConstants.ADD_CART_URI,
         data: cart.toJson(),
@@ -76,11 +73,5 @@ class CartRepo {
     List<String> carts = [];
     cartProductList.forEach((cartModel) => carts.add(jsonEncode(cartModel)));
     sharedPreferences!.setStringList(AppConstants.CART_LIST, carts);
-  }
-
-  void addGiftToCartList(Product product) {
-    String gift = jsonEncode(product);
-    sharedPreferences!.setString(AppConstants.GIFT_PRODUCT, gift);
-    //   sharedPreferences.setString(AppConstants.GIFT_CHECK, '1');
   }
 }

@@ -66,13 +66,5 @@ class LocationRepo {
     ];
   }
 
-  Future<ApiResponse> getZone(String latitude, String longitude) async {
-    try {
-      Response response = await dioClient!.get(
-          '${AppConstants.GET_ZONE_URI}?latitude=$latitude&longitude=$longitude');
-      return ApiResponse.withSuccess(response);
-    } catch (e) {
-      return ApiResponse.withError(ApiErrorHandler.getMessage(e));
-    }
-  }
+
 }

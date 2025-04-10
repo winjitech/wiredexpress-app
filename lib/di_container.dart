@@ -13,9 +13,7 @@ import 'package:wired_express/data/repository/order_repo.dart';
 import 'package:wired_express/data/repository/place_order_repo.dart';
 import 'package:wired_express/data/repository/product_repo.dart';
 import 'package:wired_express/data/repository/language_repo.dart';
-import 'package:wired_express/data/repository/onboarding_repo.dart';
 import 'package:wired_express/data/repository/search_repo.dart';
-import 'package:wired_express/data/repository/set_menu_repo.dart';
 import 'package:wired_express/data/repository/profile_repo.dart';
 import 'package:wired_express/data/repository/splash_repo.dart';
 import 'package:wired_express/data/repository/subscription_repo.dart';
@@ -35,9 +33,7 @@ import 'package:wired_express/provider/location_provider.dart';
 import 'package:wired_express/provider/place_order_provider.dart';
 import 'package:wired_express/provider/product_provider.dart';
 import 'package:wired_express/provider/language_provider.dart';
-import 'package:wired_express/provider/onboarding_provider.dart';
 import 'package:wired_express/provider/search_provider.dart';
-import 'package:wired_express/provider/set_menu_provider.dart';
 import 'package:wired_express/provider/profile_provider.dart';
 import 'package:wired_express/provider/splash_provider.dart';
 import 'package:wired_express/provider/subscription_provider.dart';
@@ -64,7 +60,6 @@ Future<void> init() async {
   sl.registerLazySingleton(() => BannerRepo(dioClient: sl()));
   sl.registerLazySingleton(() => ProductRepo(dioClient: sl()));
   sl.registerLazySingleton(() => LanguageRepo());
-  sl.registerLazySingleton(() => OnBoardingRepo(dioClient: sl()));
   sl.registerLazySingleton(
       () => CartRepo(sharedPreferences: sl(), dioClient: sl()));
   sl.registerLazySingleton(
@@ -76,7 +71,6 @@ Future<void> init() async {
       () => AuthRepo(dioClient: sl(), sharedPreferences: sl()));
   sl.registerLazySingleton(
       () => LocationRepo(dioClient: sl(), sharedPreferences: sl()));
-  sl.registerLazySingleton(() => SetMenuRepo(dioClient: sl()));
   sl.registerLazySingleton(
       () => ProfileRepo(dioClient: sl(), sharedPreferences: sl()));
   sl.registerLazySingleton(
@@ -96,7 +90,6 @@ Future<void> init() async {
   sl.registerFactory(() => SplashProvider(splashRepo: sl()));
   sl.registerFactory(() => LocalizationProvider(sharedPreferences: sl()));
   sl.registerFactory(() => LanguageProvider(languageRepo: sl()));
-  sl.registerFactory(() => OnBoardingProvider(onboardingRepo: sl()));
   sl.registerFactory(() => CategoryProvider(categoryRepo: sl()));
   sl.registerFactory(() => BannerProvider(bannerRepo: sl()));
   sl.registerFactory(() => ProductProvider(productRepo: sl()));
@@ -108,7 +101,6 @@ Future<void> init() async {
       () => LocationProvider(sharedPreferences: sl(), locationRepo: sl()));
   sl.registerFactory(() => ProfileProvider(profileRepo: sl()));
   sl.registerFactory(() => NotificationProvider(notificationRepo: sl()));
-  sl.registerFactory(() => SetMenuProvider(setMenuRepo: sl()));
   sl.registerFactory(
       () => WishListProvider(wishListRepo: sl(), productRepo: sl()));
   sl.registerFactory(() => CouponProvider(couponRepo: sl()));

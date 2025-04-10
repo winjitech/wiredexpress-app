@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
 import 'package:wired_express/data/helper/helpers.dart';
-import 'package:wired_express/data/model/response/product_model.dart';
 import 'package:wired_express/data/model/response/tiered_pricing_model.dart';
 import 'package:wired_express/helper/price_converter.dart';
 import 'package:wired_express/localization/language_constrants.dart';
@@ -14,7 +13,6 @@ import 'package:wired_express/provider/order_provider.dart';
 import 'package:wired_express/provider/place_order_provider.dart';
 import 'package:wired_express/provider/splash_provider.dart';
 import 'package:wired_express/provider/theme_provider.dart';
-import 'package:wired_express/utill/app_constants.dart';
 import 'package:wired_express/utill/color_resources.dart';
 import 'package:wired_express/utill/dimensions.dart';
 import 'package:wired_express/utill/styles.dart';
@@ -43,80 +41,27 @@ class _CartScreenState extends State<CartScreen> {
   void initState() {
     super.initState();
     Timer(const Duration(seconds: 0), () {
-      final bool _isLoggedIn =
+      final bool isLoggedIn =
           Provider.of<CustomAuthProvider>(context, listen: false).isLoggedIn()!;
-      if (_isLoggedIn) {
-        String? id = Provider.of<CustomAuthProvider>(context, listen: false)
+      if (isLoggedIn) {
+        int? id = Provider.of<CustomAuthProvider>(context, listen: false)
             .getUserAddressId();
-        print("--------------${id}");
-        if (id != null) {
-          final locationProvider =
-              Provider.of<LocationProvider>(context, listen: false);
-          int addressIndex = locationProvider.addressList
-                  ?.indexWhere((address) => address.id.toString() == id) ??
-              -1;
-          if (addressIndex >= 0) {
-            Provider.of<OrderProvider>(context, listen: false)
-                .setAddressIndex(addressIndex);
-          }
-        } else {
-          final locationProvider =
-              Provider.of<LocationProvider>(context, listen: false);
-          locationProvider.initAddressList(context);
-          locationProvider.addressList;
-          if ((locationProvider.addressList == null ||
-              locationProvider.addressList!.length == 0 ||
-              Provider.of<OrderProvider>(context, listen: false).addressIndex <
-                  0)) {
-            Provider.of<OrderProvider>(context, listen: false)
-                .setAddressIndex(0);
-          }
-        }
+        print("--------------$id");
+
         Provider.of<CartProvider>(context, listen: false).initCartList(context);
         Provider.of<LocationProvider>(context, listen: false)
             .initAddressList(context);
-        ('cart' != 'take_away' &&
-                (Provider.of<LocationProvider>(context, listen: false).addressList ==
-                        null ||
-                    Provider.of<LocationProvider>(context, listen: false)
-                            .addressList!
-                            .length ==
-                        0 ||
-                    Provider.of<OrderProvider>(context, listen: false).addressIndex <
-                        0))
-            ? Provider.of<LocationProvider>(context, listen: false).getZone(
-                context,
-                Provider.of<LocationProvider>(context, listen: false)
-                    .addressList![0]
-                    .latitude
-                    .toString(),
-                Provider.of<LocationProvider>(context, listen: false)
-                    .addressList![0]
-                    .longitude
-                    .toString())
-            : Provider.of<LocationProvider>(context, listen: false).getZone(
-                context,
-                Provider.of<LocationProvider>(context, listen: false)
-                    .addressList![Provider.of<OrderProvider>(context, listen: false)
-                        .addressIndex]
-                    .latitude
-                    .toString(),
-                Provider.of<LocationProvider>(context, listen: false)
-                    .addressList![Provider.of<OrderProvider>(context, listen: false).addressIndex]
-                    .longitude
-                    .toString());
       }
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    // Provider.of<CouponProvider>(context, listen: false).removeCouponData(false);
     Provider.of<OrderProvider>(context, listen: false)
         .setOrderType('delivery', notify: false);
-    final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-    final TextEditingController _couponController = TextEditingController();
-    final bool _isLoggedIn =
+    final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
+    final TextEditingController couponController = TextEditingController();
+    final bool isLoggedIn =
         Provider.of<CustomAuthProvider>(context, listen: false).isLoggedIn()!;
     return AdvancedDrawer(
       rtlOpening: false,
@@ -143,23 +88,30 @@ class _CartScreenState extends State<CartScreen> {
       drawer: DrawerScreen(),
       child: Scaffold(
         backgroundColor: ColorResources.getScaffoldBackgroundColor(context!),
-        key: _scaffoldKey,
+        key: scaffoldKey,
         appBar: CustomMainAppBar(
           onMenuPressed: () => showDrawer(),
           title: getTranslated('shopping_cart', context),
         ),
-        body: _isLoggedIn
+        body: isLoggedIn
             ? Padding(
                 padding: const EdgeInsets.all(5),
-                child: Consumer2<CartProvider, LocationProvider>(
-                  builder: (context, cartProvider, locationProvider, child) {
-                    double _finalPrice = 0;
-                    double _totalPrice = 0;
-                    double _totalDiscount = 0;
-                    double _totalTax = 0;
+                child: Consumer4<CartProvider, LocationProvider, SplashProvider,
+                    CustomAuthProvider>(
+                  builder: (context, cartProvider, locationProvider,
+                      splashProvider, authProvider, child) {
+                    double finalPrice = 0;
+                    double totalPrice = 0;
+                    double totalDiscount = 0;
+                    double totalTax = 0;
+                    double totalTiredPricing = 0;
                     cartProvider.cartList.forEach((cart) {
-                      List<TiredPricingModel> tiredPricing =
-                          cart.product!.tiredPricing ?? [];
+                      TiredPricingModel? tiredPricing =
+                          cart.tieredPricing ?? TiredPricingModel();
+                      totalTiredPricing = totalTiredPricing +
+                          (double.parse(tiredPricing.discountPrice ?? "0.0") *
+                              cart.quantity!);
+                      print("totalTiredPricing == $totalTiredPricing");
 
                       double priceWithDiscount =
                           PriceConverter.convertWithDiscount(
@@ -167,11 +119,12 @@ class _CartScreenState extends State<CartScreen> {
                               cart.product!.price!,
                               cart.product!.discount!,
                               cart.product!.discountType!);
-                      double price = PriceConverter.getProductFinalPrice(
-                              tiredPricing,
-                              priceWithDiscount,
-                              cart.quantity ?? 1) ??
-                          0.0;
+                      double price =
+                          PriceConverter.getProductFinalPriceWithTieredPricing(
+                                  tiredPricing,
+                                  priceWithDiscount,
+                                  cart.quantity ?? 1) ??
+                              0.0;
                       print("pricepricepriceprice == $price");
                       double priceWithQuantity = price * cart.quantity!;
 
@@ -180,35 +133,29 @@ class _CartScreenState extends State<CartScreen> {
                           PriceConverter.convertPercentageToAmount(
                                   priceWithQuantity, cart.product!.tax!)
                               .toString()));
-                      // if (cart.product!.discountType == 'amount') {
-                      //   discountAmount = cart.product!.discount!;
-                      // } else {
-                      //   discountAmount =
-                      //       (cart.product!.price! * cart.product!.discount!) /
-                      //           100;
-                      // }
 
-                      _totalPrice = _totalPrice + priceWithQuantity;
-                      _totalDiscount =
-                          _totalDiscount + (discountAmount * cart.quantity!);
-                      _totalTax = _totalTax + (taxAmount * cart.quantity!);
+                      totalPrice = totalPrice + priceWithQuantity;
+                      totalDiscount =
+                          totalDiscount + (discountAmount * cart.quantity!);
+                      totalTax = totalTax + (taxAmount * cart.quantity!);
                     });
 
-                    double deliveryCharge = locationProvider.deliveryFee;
+                    double deliveryCharge = double.parse(
+                        splashProvider.configModel!.deliveryCharge ?? "0.0");
 
-                    _finalPrice = _totalPrice -
-                        _totalDiscount -
+                    finalPrice = totalPrice -
+                        totalDiscount -
                         Provider.of<CouponProvider>(context).discount! +
                         deliveryCharge +
-                        _totalTax;
+                        totalTax;
 
-                    double _priceWithDiscount = _totalPrice - _totalDiscount;
+                    double priceWithDiscount0 = totalPrice - totalDiscount;
 
-                    double _couponDiscountAmount = 0;
+                    double couponDiscountAmount = 0;
                     if (Provider.of<CouponProvider>(context).coupon != null) {
-                      _couponDiscountAmount = Helpers.applyDiscount(
+                      couponDiscountAmount = Helpers.applyDiscount(
                           Provider.of<CouponProvider>(context).coupon!,
-                          (_totalPrice - _totalDiscount));
+                          (totalPrice - totalDiscount));
                     }
 
                     return cartProvider.cartList.isNotEmpty
@@ -228,9 +175,6 @@ class _CartScreenState extends State<CartScreen> {
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.start,
                                             children: [
-                                              // const StatusCartWidget(
-                                              //   cart: true,
-                                              // ),
                                               const SizedBox(
                                                 height: 15,
                                               ),
@@ -275,17 +219,13 @@ class _CartScreenState extends State<CartScreen> {
                                                     ]),
                                                 height: 50,
                                                 child: GestureDetector(
-                                                  onTap: () {
-                                                    showModalBottomSheet(
+                                                  onTap: () => showModalBottomSheet(
                                                       backgroundColor:
                                                           Colors.transparent,
                                                       context: context,
                                                       builder: (BuildContext
-                                                          context) {
-                                                        return const AddressBottomSheet();
-                                                      },
-                                                    );
-                                                  },
+                                                          context) => AddressBottomSheet(),
+                                                    ),
                                                   child: Padding(
                                                     padding:
                                                         const EdgeInsets.all(
@@ -300,9 +240,8 @@ class _CartScreenState extends State<CartScreen> {
                                                                             .addressList!
                                                                             .length ==
                                                                         0 ||
-                                                                    Provider.of<OrderProvider>(context,
-                                                                                listen: false)
-                                                                            .addressIndex <
+                                                                    authProvider
+                                                                            .getUserAddressId() ==
                                                                         0))
                                                             ? Text(
                                                                 'Select Delivery Location',
@@ -313,8 +252,8 @@ class _CartScreenState extends State<CartScreen> {
                                                                             .darkTheme
                                                                         ? Colors
                                                                             .white54
-                                                                        : ColorResources
-                                                                            .getScaffoldColor(context),
+                                                                        : ColorResources.getScaffoldColor(
+                                                                            context),
                                                                     fontSize:
                                                                         16,
                                                                     fontWeight:
@@ -330,8 +269,8 @@ class _CartScreenState extends State<CartScreen> {
                                                                             .darkTheme
                                                                         ? Colors
                                                                             .white54
-                                                                        : ColorResources
-                                                                            .getScaffoldColor(context),
+                                                                        : ColorResources.getScaffoldColor(
+                                                                            context),
                                                                     fontSize:
                                                                         16,
                                                                     fontWeight:
@@ -347,21 +286,22 @@ class _CartScreenState extends State<CartScreen> {
                                                                             .addressList!
                                                                             .length ==
                                                                         0 ||
-                                                                    Provider.of<OrderProvider>(context,
-                                                                                listen: false)
-                                                                            .addressIndex <
+                                                                    authProvider
+                                                                            .getUserAddressId() ==
                                                                         0))
-                                                            ?  Icon(
+                                                            ? Icon(
                                                                 Icons
                                                                     .not_listed_location_outlined,
                                                                 color: ColorResources
-                                                                    .getScaffoldColor(context),
+                                                                    .getScaffoldColor(
+                                                                        context),
                                                               )
-                                                            :  Icon(
+                                                            : Icon(
                                                                 Icons
                                                                     .published_with_changes_sharp,
                                                                 color: ColorResources
-                                                                    .getScaffoldColor(context),
+                                                                    .getScaffoldColor(
+                                                                        context),
                                                               ),
                                                       ],
                                                     ),
@@ -395,7 +335,7 @@ class _CartScreenState extends State<CartScreen> {
                                                               'enter_promo_code',
                                                               context),
                                                           controller:
-                                                              _couponController,
+                                                              couponController,
                                                           inputType:
                                                               TextInputType
                                                                   .text,
@@ -414,22 +354,22 @@ class _CartScreenState extends State<CartScreen> {
                                                         onPressed: () {
                                                           FocusScope.of(context)
                                                               .unfocus();
-                                                          if (_couponController
+                                                          if (couponController
                                                                   .text
                                                                   .isNotEmpty &&
                                                               !coupon
                                                                   .isLoading!) {
                                                             print(
-                                                                'couponDiscountAmount 1=> ${_couponDiscountAmount}');
-                                                            if (_couponDiscountAmount <
+                                                                'couponDiscountAmount 1=> ${couponDiscountAmount}');
+                                                            if (couponDiscountAmount <
                                                                 1) {
                                                               print(
-                                                                  'couponDiscountAmount 2=> ${_couponDiscountAmount}');
+                                                                  'couponDiscountAmount 2=> ${couponDiscountAmount}');
                                                               coupon
                                                                   .applyCoupon(
-                                                                      _couponController
+                                                                      couponController
                                                                           .text,
-                                                                      _priceWithDiscount)
+                                                                      priceWithDiscount0)
                                                                   .then(
                                                                       (discount) {
                                                                 if (discount >
@@ -456,12 +396,12 @@ class _CartScreenState extends State<CartScreen> {
                                                               });
                                                             } else {
                                                               print(
-                                                                  'couponDiscountAmount 3=> ${_couponDiscountAmount}');
+                                                                  'couponDiscountAmount 3=> ${couponDiscountAmount}');
                                                               coupon
                                                                   .removeCouponData(
                                                                       true);
                                                             }
-                                                          } else if (_couponController
+                                                          } else if (couponController
                                                               .text.isEmpty) {
                                                             showCustomSnackBar(
                                                                 getTranslated(
@@ -471,7 +411,8 @@ class _CartScreenState extends State<CartScreen> {
                                                           }
                                                         },
                                                         color: ColorResources
-                                                            .getScaffoldColor(context),
+                                                            .getScaffoldColor(
+                                                                context),
                                                         child: coupon
                                                                     .discount! <=
                                                                 0
@@ -512,10 +453,34 @@ class _CartScreenState extends State<CartScreen> {
                                                           fontSize: 16,
                                                         )),
                                                     Text(
-                                                        '${Provider.of<SplashProvider>(context, listen: false).configModel!.currencySymbol}${Helpers.formatTextWithNum(_totalPrice.toString())}',
+                                                        '${Provider.of<SplashProvider>(context, listen: false).configModel!.currencySymbol}${Helpers.formatTextWithNum(totalPrice.toString())}',
                                                         style: const TextStyle(
                                                           fontWeight:
                                                               FontWeight.bold,
+                                                          fontSize: 16,
+                                                        )),
+                                                  ]),
+
+                                              const SizedBox(height: 10),
+                                              Row(
+                                                  mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                                  children: [
+                                                    Text(
+                                                        getTranslated(
+                                                            'tiered_pricing_discount',
+                                                            context),
+                                                        style: const TextStyle(
+                                                          fontWeight:
+                                                          FontWeight.bold,
+                                                          fontSize: 16,
+                                                        )),
+                                                    Text(
+                                                        '${Provider.of<SplashProvider>(context, listen: false).configModel!.currencySymbol}${Helpers.formatTextWithNum(totalTiredPricing.toString())}',
+                                                        style: const TextStyle(
+                                                          fontWeight:
+                                                          FontWeight.bold,
                                                           fontSize: 16,
                                                         )),
                                                   ]),
@@ -536,7 +501,7 @@ class _CartScreenState extends State<CartScreen> {
                                                           fontSize: 16,
                                                         )),
                                                     Text(
-                                                        '${Provider.of<SplashProvider>(context, listen: false).configModel!.currencySymbol}${Helpers.formatTextWithNum(_totalTax.toString())}',
+                                                        '${Provider.of<SplashProvider>(context, listen: false).configModel!.currencySymbol}${Helpers.formatTextWithNum(totalTax.toString())}',
                                                         style: const TextStyle(
                                                           fontWeight:
                                                               FontWeight.bold,
@@ -546,7 +511,7 @@ class _CartScreenState extends State<CartScreen> {
 
                                               const SizedBox(height: 10),
 
-                                              if (_couponDiscountAmount != 0.0)
+                                              if (couponDiscountAmount != 0.0)
                                                 Column(
                                                   children: [
                                                     Row(
@@ -566,7 +531,7 @@ class _CartScreenState extends State<CartScreen> {
                                                                 fontSize: 16,
                                                               )),
                                                           Text(
-                                                              '(-)  ${Provider.of<SplashProvider>(context, listen: false).configModel!.currencySymbol}${Helpers.formatTextWithNum(_couponDiscountAmount.toString())}',
+                                                              '(-)  ${Provider.of<SplashProvider>(context, listen: false).configModel!.currencySymbol}${Helpers.formatTextWithNum(couponDiscountAmount.toString())}',
                                                               style:
                                                                   const TextStyle(
                                                                 fontWeight:
@@ -579,7 +544,7 @@ class _CartScreenState extends State<CartScreen> {
                                                   ],
                                                 ),
 
-                                              if (_totalDiscount != 0.0)
+                                              if (totalDiscount != 0.0)
                                                 Column(
                                                   children: [
                                                     Row(
@@ -597,7 +562,7 @@ class _CartScreenState extends State<CartScreen> {
                                                               fontSize: 16,
                                                             )),
                                                         Text(
-                                                            '(-) ${Provider.of<SplashProvider>(context, listen: false).configModel!.currencySymbol}${Helpers.formatTextWithNum(_totalDiscount.toString())}',
+                                                            '(-) ${Provider.of<SplashProvider>(context, listen: false).configModel!.currencySymbol}${Helpers.formatTextWithNum(totalDiscount.toString())}',
                                                             style:
                                                                 const TextStyle(
                                                               fontWeight:
@@ -664,7 +629,7 @@ class _CartScreenState extends State<CartScreen> {
                                                           fontSize: 18,
                                                         )),
                                                     Text(
-                                                        '${Provider.of<SplashProvider>(context, listen: false).configModel!.currencySymbol}${Helpers.formatTextWithNum(_finalPrice.toString())}',
+                                                        '${Provider.of<SplashProvider>(context, listen: false).configModel!.currencySymbol}${Helpers.formatTextWithNum(finalPrice.toString())}',
                                                         style: const TextStyle(
                                                           fontWeight:
                                                               FontWeight.bold,
@@ -684,26 +649,7 @@ class _CartScreenState extends State<CartScreen> {
                                 child: CustomButton(
                                   text: getTranslated('place_order', context),
                                   onTap: () {
-                                    var orderProvider =
-                                        Provider.of<OrderProvider>(context,
-                                            listen: false);
-                                    var locationProvider =
-                                        Provider.of<LocationProvider>(context,
-                                            listen: false);
-
-                                    if (locationProvider.addressList!.isEmpty) {
-                                      showCustomSnackBar(
-                                        getTranslated(
-                                            'select_address_required', context),
-                                        context,
-                                      );
-                                    } else if (orderProvider.addressIndex ==
-                                            -1 ||
-                                        locationProvider
-                                                .addressList![
-                                                    orderProvider.addressIndex]
-                                                .id ==
-                                            null) {
+                                    if (authProvider.getUserAddressId() == 0) {
                                       showCustomSnackBar(
                                         getTranslated(
                                             'select_address_required', context),
@@ -713,14 +659,12 @@ class _CartScreenState extends State<CartScreen> {
                                       Provider.of<PlaceOrderProvider>(context,
                                               listen: false)
                                           .orderDetails(
-                                        amount: _finalPrice,
+                                        amount: finalPrice,
                                         orderType: 'cart',
                                         fromCart: true,
                                         cartList: cartProvider.cartList,
-                                        deliveryId: locationProvider
-                                            .addressList![
-                                                orderProvider.addressIndex]
-                                            .id!,
+                                        deliveryId:
+                                            authProvider.getUserAddressId()!,
                                       );
 
                                       Navigator.push(
@@ -728,18 +672,15 @@ class _CartScreenState extends State<CartScreen> {
                                         MaterialPageRoute(
                                             builder: (BuildContext context) =>
                                                 CheckoutScreen(
-                                                  amount: _finalPrice,
+                                                  amount: finalPrice,
                                                   orderType: 'cart',
                                                   fromCart: true,
                                                   cartList:
                                                       cartProvider.cartList,
                                                   deliveryAddressId:
-                                                      locationProvider
-                                                          .addressList![
-                                                              orderProvider
-                                                                  .addressIndex]
-                                                          .id!,
-                                                  totalTax: _totalTax,
+                                                      authProvider
+                                                          .getUserAddressId(),
+                                                  totalTax: totalTax,
                                                 )),
                                       );
                                     }

@@ -1,14 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:wired_express/helper/responsive_helper.dart';
 import 'package:wired_express/localization/language_constrants.dart';
 import 'package:wired_express/provider/category_provider.dart';
 import 'package:wired_express/provider/splash_provider.dart';
 import 'package:wired_express/provider/theme_provider.dart';
 import 'package:wired_express/utill/color_resources.dart';
 import 'package:wired_express/utill/dimensions.dart';
-import 'package:wired_express/utill/images.dart';
-import 'package:wired_express/utill/styles.dart';
-import 'package:wired_express/view/base/title_widget.dart';
 import 'package:wired_express/view/screens/category/category_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer_animation/shimmer_animation.dart';
@@ -20,11 +16,6 @@ class CategoryView extends StatelessWidget {
       builder: (context, category, child) {
         return Column(
           children: [
-            // Padding(
-            //   padding: EdgeInsets.fromLTRB(10, 20, 0, 10),
-            //   child:
-            //       TitleWidget(title: getTranslated('all_categories', context)),
-            // ),
             Row(
               children: [
                 Expanded(
@@ -84,7 +75,9 @@ class CategoryView extends StatelessWidget {
                                             ),
                                             Text(
                                               '${category.categoryList![index].name}',
-                                              maxLines: 2,
+                                              textAlign: TextAlign.center,
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
                                                   fontSize: 19),

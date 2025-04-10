@@ -29,9 +29,9 @@ import 'package:wired_express/view/base/single_product_bottom_sheet.dart';
 import 'package:wired_express/view/screens/home/widget/image_preview.dart';
 
 class ProductDetailsScreen extends StatefulWidget {
-  final Product? product;
+  final int? productId;
   final CartModel? cart;
-  ProductDetailsScreen({@required this.product, this.cart});
+  ProductDetailsScreen({@required this.productId, this.cart});
   @override
   _ProductDetailsScreenState createState() => _ProductDetailsScreenState();
 }
@@ -49,7 +49,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
       final productProvider =
           Provider.of<ProductProvider>(context, listen: false);
       await productProvider
-          .getProductDetails(context, widget.product!.id!)
+          .getProductDetails(context, widget.productId!)
           .then((onValue) {
         int minOrderQuantity = productProvider
                 .productDetailsModel?.moqSetting?.minimumOrderQuantity ??
@@ -75,32 +75,33 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                 padding: const EdgeInsets.only(left: 8.0, top: 8, right: 8),
                 child: Align(
                   alignment: Alignment.topRight,
-                  child: Consumer<WishListProvider>(
-                      builder: (context, wishList, child) {
-                    return Container(
+                  child: Consumer2<WishListProvider , ProductProvider>(
+                      builder: (context, wishList, productProvider , child) {
+                    return productProvider.productDetailsModel == null?SizedBox():
+                    Container(
                       decoration: BoxDecoration(
                           color: Colors.grey[200],
                           borderRadius: BorderRadius.circular(50)),
                       child: IconButton(
                         onPressed: () =>
-                            wishList.wishIdList.contains(widget.product!.id)
-                                ? wishList.removeFromWishList(widget.product!,
+                            wishList.wishIdList.contains(productProvider.productDetailsModel!.id)
+                                ? wishList.removeFromWishList(productProvider.productDetailsModel!,
                                     (message) {
                                     wishList.initWishList(context);
                                     wishList.initWishListProductIds(context);
                                   })
-                                : wishList.addToWishList(widget.product!,
+                                : wishList.addToWishList(productProvider.productDetailsModel!,
                                     (message) {
                                     wishList.initWishList(context);
                                     wishList.initWishListProductIds(context);
                                   }),
                         icon: _isLoggedIn
                             ? Icon(
-                                wishList.wishIdList.contains(widget.product!.id)
+                                wishList.wishIdList.contains(productProvider.productDetailsModel!.id)
                                     ? Icons.favorite
                                     : Icons.favorite_border,
                                 color: wishList.wishIdList
-                                        .contains(widget.product!.id)
+                                        .contains(productProvider.productDetailsModel!.id)
                                     ? ColorResources.getPrimaryColor(context)
                                     : Colors.white,
                               )

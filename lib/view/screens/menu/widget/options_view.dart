@@ -6,8 +6,8 @@ import 'package:wired_express/provider/splash_provider.dart';
 import 'package:wired_express/utill/color_resources.dart';
 import 'package:wired_express/view/base/circular_indicator_widget.dart';
 import 'package:wired_express/view/base/custom_button.dart';
+import 'package:wired_express/view/base/not_logged_in_screen.dart';
 import 'package:wired_express/view/screens/address/address_screen.dart';
-import 'package:wired_express/view/screens/auth/guest_screen.dart';
 import 'package:wired_express/view/screens/auth/login_screen.dart';
 import 'package:wired_express/view/screens/chat/chat_screen.dart';
 import 'package:wired_express/view/screens/coupon/coupon_screen.dart';
@@ -238,7 +238,7 @@ class OptionsView extends StatelessWidget {
                                       context,
                                       MaterialPageRoute(
                                           builder: (BuildContext? context) =>
-                                              GuestScreen()));
+                                              NotLoggedInScreen()));
                             },
                             leading: Image.asset(Images.message,
                                 width: 20,
@@ -338,28 +338,7 @@ class OptionsView extends StatelessWidget {
                           SizedBox(
                             height: 10,
                           ),
-                          // ListTile(
-                          //   onTap: () {
-                          //     // Navigator.push(
-                          //     //     context,
-                          //     //     MaterialPageRoute(
-                          //     //         builder: (_) =>
-                          //     //             RateAppScreen(fromHome: false)));
-                          //   },
-                          //   leading: Icon(
-                          //     Icons.star_border,
-                          //     color: Colors.black,
-                          //   ),
-                          //   trailing: Icon(
-                          //     Icons.arrow_forward_ios_rounded,
-                          //     size: 17,
-                          //     color: Colors.black,
-                          //   ),
-                          //   title: Text(
-                          //       getTranslated('rate_review_app', context),
-                          //       style: TextStyle(
-                          //           fontSize: 16, fontWeight: FontWeight.w500)),
-                          // ),
+
                           ListTile(
                             onTap: () {
                               Navigator.push(

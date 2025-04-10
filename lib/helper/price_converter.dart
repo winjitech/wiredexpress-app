@@ -13,7 +13,7 @@ class PriceConverter {
         price = price! - ((discount / 100) * price);
       }
     }
-    return '€${Helpers.formatTextWithNum((price)!.toStringAsFixed(asFixed).replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},'))} ';
+    return '\$${Helpers.formatTextWithNum((price)!.toStringAsFixed(asFixed).replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},'))} ';
 
     //   return '${getTranslated('description', context!) == "Description" ? 'LE' : 'ج.م'} '
     //       '${(price)!.toStringAsFixed(asFixed).replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}';
@@ -94,9 +94,23 @@ class PriceConverter {
         ? basePrice - double.parse(matchedPricing.discountPrice ?? '0.0')
         : basePrice;
 
-    print("finalPrice == ${finalPrice}");
+    print("finalPrice == $finalPrice");
     return finalPrice ?? 0.0;
   }
 
+  static double? getProductFinalPriceWithTieredPricing(
+      TiredPricingModel? tieredPricing, double? price, int quantity) {
+    double basePrice = price ?? 0.0;
 
+
+      print('Matched Pricing: minQuantity=${tieredPricing!.minQuantity}, '
+          'discountPrice=${tieredPricing.discountPrice}');
+
+    double? finalPrice = tieredPricing != null
+        ? basePrice - double.parse(tieredPricing.discountPrice ?? '0.0')
+        : basePrice;
+
+    print("finalPrice == $finalPrice");
+    return finalPrice ?? 0.0;
+  }
 }

@@ -168,7 +168,7 @@ class ChatProvider extends ChangeNotifier {
     }else {
       getChatList(context);
     }
-    Timer(Duration(seconds: 2), () {
+    Timer(Duration(seconds: 0), () {
 
     });
     return chatList!;

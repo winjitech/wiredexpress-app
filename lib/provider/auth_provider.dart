@@ -88,7 +88,7 @@ class CustomAuthProvider with ChangeNotifier {
     _loginErrorMessage = '';
     notifyListeners();
     ApiResponse apiResponse =
-    await authRepo!.login(email: email, password: password);
+        await authRepo!.login(email: email, password: password);
     ResponseModel responseModel;
     if (apiResponse.response != null &&
         apiResponse.response!.statusCode == 200) {
@@ -166,7 +166,7 @@ class CustomAuthProvider with ChangeNotifier {
     _isPhoneNumberVerificationButtonLoading = true;
     notifyListeners();
     ApiResponse apiResponse =
-    await authRepo!.verifyToken(email!, _verificationCode!);
+        await authRepo!.verifyToken(email!, _verificationCode!);
     _isPhoneNumberVerificationButtonLoading = false;
     notifyListeners();
     ResponseModel responseModel;
@@ -194,7 +194,7 @@ class CustomAuthProvider with ChangeNotifier {
     _isForgotPasswordLoading = true;
     notifyListeners();
     ApiResponse apiResponse =
-    await authRepo!.resetPassword(resetToken!, password!, confirmPassword!);
+        await authRepo!.resetPassword(resetToken!, password!, confirmPassword!);
     _isForgotPasswordLoading = false;
     notifyListeners();
     ResponseModel responseModel;
@@ -271,7 +271,7 @@ class CustomAuthProvider with ChangeNotifier {
     _verificationMsg = '';
     notifyListeners();
     ApiResponse apiResponse =
-    await authRepo!.verifyEmail(email!, _verificationCode!);
+        await authRepo!.verifyEmail(email!, _verificationCode!);
     _isPhoneNumberVerificationButtonLoading = false;
     notifyListeners();
     ResponseModel responseModel;
@@ -451,7 +451,7 @@ class CustomAuthProvider with ChangeNotifier {
         smsCode: smsCode,
       );
       UserCredential userCredential =
-      await _firebaseAuth.signInWithCredential(credential);
+          await _firebaseAuth.signInWithCredential(credential);
       _user = _firebaseAuth.currentUser;
       String? firebaseToken = await userCredential.user!.getIdToken();
       _firebaseToken = firebaseToken;
@@ -461,9 +461,9 @@ class CustomAuthProvider with ChangeNotifier {
 
       await Provider.of<CustomAuthProvider>(context, listen: false)
           .loginByPhone(
-          context,
-          Provider.of<CustomAuthProvider>(context, listen: false)
-              .firebaseToken);
+              context,
+              Provider.of<CustomAuthProvider>(context, listen: false)
+                  .firebaseToken);
       //     .then((value) async {
       //   final location = Provider.of<LocationProvider>(context, listen: false);
       //
@@ -496,7 +496,7 @@ class CustomAuthProvider with ChangeNotifier {
     _loginErrorMessage = '';
     notifyListeners();
     ApiResponse apiResponse =
-    await authRepo!.loginByPhone(firebaseToken: firebaseToken);
+        await authRepo!.loginByPhone(firebaseToken: firebaseToken);
     ResponseModel responseModel;
     if (apiResponse.response != null &&
         apiResponse.response!.statusCode == 200) {
@@ -508,17 +508,17 @@ class CustomAuthProvider with ChangeNotifier {
         final location = Provider.of<LocationProvider>(context, listen: false);
 
         await location.initAddressList(context).then((value) =>
-        location.addressList!.isEmpty
-            ? Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (BuildContext? context) =>
-                    AddNewAddressScreen(fromSplash: true)))
-            : Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (BuildContext? context) =>
-                    DashboardScreen(pageIndex: 0))));
+            location.addressList!.isEmpty
+                ? Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (BuildContext? context) =>
+                            AddNewAddressScreen(fromSplash: true)))
+                : Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (BuildContext? context) =>
+                            DashboardScreen(pageIndex: 0))));
         _isLoading = false;
       });
       responseModel = ResponseModel(true, 'successful');
@@ -540,47 +540,33 @@ class CustomAuthProvider with ChangeNotifier {
     return responseModel;
   }
 
-  Future<ResponseModel> signByPhone(
-      String fName, String lName, String phone) async {
-    _isLoading = true;
-    _signErrorMessage = '';
-    notifyListeners();
-    ApiResponse apiResponse = await authRepo!.signByPhone(fName, lName, phone);
-    ResponseModel responseModel;
-    if (apiResponse.response != null &&
-        apiResponse.response!.statusCode == 200) {
-      Map map = apiResponse.response!.data;
-      String? token = map["token"];
-      authRepo!.saveUserToken(token!);
-      await authRepo!.updateToken();
-      responseModel = ResponseModel(true, 'successful');
-    } else {
-      String? errorMessage;
-      if (apiResponse.error is String?) {
-        errorMessage = apiResponse.error.toString();
-      } else {
-        errorMessage = apiResponse.error.errors[0].message;
-      }
-      print(errorMessage);
-      _signErrorMessage = errorMessage;
-      responseModel = ResponseModel(false, errorMessage!);
+  Future<void> saveUserAddressId(int id) async {
+    try {
+      await authRepo?.saveUserAddressId(id);
+      notifyListeners();
+    } catch (e) {
+      print('Error saving user address ID: $e');
     }
-    _isLoading = false;
-    notifyListeners();
-    return responseModel;
   }
 
-  void saveUserAddressId(String? Id) {
-    authRepo!.saveUserAddressId(Id!);
-    notifyListeners();
+  Future<bool> clearUserAddressId() async {
+    try {
+      bool? result = await authRepo?.clearUserAddressId();
+      notifyListeners();
+      return result!;
+    } catch (e) {
+      print('Error clearing user address ID: $e');
+      return false;
+    }
   }
 
-  Future<bool?> clearUserAddressId() async {
-    return authRepo!.clearUserAddressId();
-  }
-
-  String? getUserAddressId() {
-    return authRepo!.getUserAddressId();
+  int? getUserAddressId() {
+    try {
+      return authRepo?.getUserAddressId();
+    } catch (e) {
+      print('Error retrieving user address ID: $e');
+      return 0;
+    }
   }
 
   String? _confirmPasswordErrorText;

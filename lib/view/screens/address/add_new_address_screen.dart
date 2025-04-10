@@ -1,28 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:wired_express/data/model/response/address_model.dart';
-import 'package:wired_express/data/model/response/config_model.dart';
 import 'package:wired_express/helper/responsive_helper.dart';
 import 'package:wired_express/localization/language_constrants.dart';
 import 'package:wired_express/provider/location_provider.dart';
-import 'package:wired_express/provider/order_provider.dart';
-import 'package:wired_express/provider/splash_provider.dart';
 import 'package:wired_express/utill/color_resources.dart';
 import 'package:wired_express/utill/dimensions.dart';
 import 'package:wired_express/utill/images.dart';
-import 'package:wired_express/utill/routes.dart';
 import 'package:wired_express/view/base/circular_indicator_widget.dart';
 import 'package:wired_express/view/base/custom_app_bar.dart';
 import 'package:wired_express/view/base/custom_button.dart';
 import 'package:wired_express/view/base/custom_text_field.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:wired_express/view/screens/address/select_location_screen.dart';
 import 'package:wired_express/view/screens/dashboard/dashboard_screen.dart';
-import 'package:provider/provider.dart';
-import 'package:wired_express/provider/theme_provider.dart';
-import 'package:wired_express/theme/dark_theme.dart';
-import 'package:wired_express/theme/light_theme.dart';
 import 'package:provider/provider.dart';
 
 class AddNewAddressScreen extends StatefulWidget {
@@ -130,7 +121,6 @@ class _AddNewAddressScreenState extends State<AddNewAddressScreen> {
                       child: Center(
                         child: SizedBox(
                           width: MediaQuery.of(context).size.width,
-
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             //   physics: BouncingScrollPhysics(),
@@ -192,14 +182,17 @@ class _AddNewAddressScreenState extends State<AddNewAddressScreen> {
                                                 .updatePosition(_position)),
                                         onMapCreated:
                                             (GoogleMapController controller) {
-                                          locationProvider.updateMapController(controller);
+                                          locationProvider
+                                              .updateMapController(controller);
                                           if (!widget.isEnableUpdate! &&
                                               _controller != null) {
                                             Provider.of<LocationProvider>(
                                                     context,
                                                     listen: false)
                                                 .getCurrentLocation(
-                                                    mapController: locationProvider.mapController);
+                                                    mapController:
+                                                        locationProvider
+                                                            .mapController);
                                           }
                                           // controller.setMapStyle(
                                           //     Provider.of<ThemeProvider>(
@@ -211,7 +204,9 @@ class _AddNewAddressScreenState extends State<AddNewAddressScreen> {
                                         },
                                       ),
                                       locationProvider.loading
-                                          ? CustomCircularIndicator(color:ColorResources.getScaffoldColor(context))
+                                          ? CustomCircularIndicator(
+                                              color: ColorResources
+                                                  .getScaffoldColor(context))
                                           : SizedBox(),
                                       Container(
                                           width:
@@ -231,7 +226,8 @@ class _AddNewAddressScreenState extends State<AddNewAddressScreen> {
                                         child: GestureDetector(
                                           onTap: () {
                                             locationProvider.getCurrentLocation(
-                                                mapController: locationProvider.mapController);
+                                                mapController: locationProvider
+                                                    .mapController);
                                           },
                                           child: Container(
                                             width: 30,
@@ -250,8 +246,8 @@ class _AddNewAddressScreenState extends State<AddNewAddressScreen> {
                                             ),
                                             child: Icon(
                                               Icons.my_location,
-                                              color:
-                                                  ColorResources.getScaffoldColor(context),
+                                              color: ColorResources
+                                                  .getScaffoldColor(context),
                                               size: 20,
                                             ),
                                           ),
@@ -267,11 +263,10 @@ class _AddNewAddressScreenState extends State<AddNewAddressScreen> {
                                     child: Text(
                                   getTranslated(
                                       'add_the_location_correctly', context),
-                                  style:TextStyle(
-                                          color:
-                                              ColorResources.getGreyBunkerColor(
-                                                  context),
-                                          fontSize: Dimensions.FONT_SIZE_SMALL),
+                                  style: TextStyle(
+                                      color: ColorResources.getGreyBunkerColor(
+                                          context),
+                                      fontSize: Dimensions.FONT_SIZE_SMALL),
                                 )),
                               ),
 
@@ -282,10 +277,9 @@ class _AddNewAddressScreenState extends State<AddNewAddressScreen> {
                                 child: Text(
                                   getTranslated('label_us', context),
                                   style: TextStyle(
-                                          color:
-                                              ColorResources.getGreyBunkerColor(
-                                                  context),
-                                          fontSize: Dimensions.FONT_SIZE_LARGE),
+                                      color: ColorResources.getGreyBunkerColor(
+                                          context),
+                                      fontSize: Dimensions.FONT_SIZE_LARGE),
                                 ),
                               ),
 
@@ -297,7 +291,8 @@ class _AddNewAddressScreenState extends State<AddNewAddressScreen> {
                                   // physics: BouncingScrollPhysics(),
                                   itemCount:
                                       locationProvider.getAllAddressType.length,
-                                  itemBuilder: (context, index) => GestureDetector(
+                                  itemBuilder: (context, index) =>
+                                      GestureDetector(
                                     onTap: () {
                                       locationProvider
                                           .updateAddressIndex(index);
@@ -324,7 +319,8 @@ class _AddNewAddressScreenState extends State<AddNewAddressScreen> {
                                           color: locationProvider
                                                       .selectAddressIndex ==
                                                   index
-                                              ? ColorResources.getScaffoldColor(context)
+                                              ? ColorResources.getScaffoldColor(
+                                                  context)
                                               : ColorResources
                                                   .getScaffoldBackgroundColor(
                                                       context)),
@@ -355,10 +351,9 @@ class _AddNewAddressScreenState extends State<AddNewAddressScreen> {
                                 child: Text(
                                   getTranslated('delivery_address', context),
                                   style: TextStyle(
-                                          color:
-                                              ColorResources.getGreyBunkerColor(
-                                                  context),
-                                          fontSize: Dimensions.FONT_SIZE_LARGE),
+                                      color: ColorResources.getGreyBunkerColor(
+                                          context),
+                                      fontSize: Dimensions.FONT_SIZE_LARGE),
                                 ),
                               ),
 
@@ -454,9 +449,9 @@ class _AddNewAddressScreenState extends State<AddNewAddressScreen> {
                             child: Text(
                               locationProvider.addressStatusMessage ?? "",
                               style: TextStyle(
-                                      fontSize: Dimensions.FONT_SIZE_SMALL,
-                                      color: Colors.green,
-                                      height: 1),
+                                  fontSize: Dimensions.FONT_SIZE_SMALL,
+                                  color: Colors.green,
+                                  height: 1),
                             ),
                           )
                         ],
@@ -475,10 +470,10 @@ class _AddNewAddressScreenState extends State<AddNewAddressScreen> {
                             child: Text(
                               locationProvider.errorMessage ?? "",
                               style: TextStyle(
-                                      fontSize: Dimensions.FONT_SIZE_SMALL,
-                                      color: ColorResources.getPrimaryColor(
-                                          context),
-                                      height: 1),
+                                  fontSize: Dimensions.FONT_SIZE_SMALL,
+                                  color:
+                                      ColorResources.getPrimaryColor(context),
+                                  height: 1),
                             ),
                           )
                         ],
@@ -537,9 +532,7 @@ class _AddNewAddressScreenState extends State<AddNewAddressScreen> {
                                           Provider.of<LocationProvider>(context,
                                                   listen: false)
                                               .initAddressList(context);
-                                          Provider.of<OrderProvider>(context,
-                                                  listen: false)
-                                              .setAddressIndex(-1);
+
                                           FocusScope.of(context).unfocus();
                                         } else {
                                           widget.fromSplash == true
@@ -567,7 +560,8 @@ class _AddNewAddressScreenState extends State<AddNewAddressScreen> {
                                   }
                                 },
                         )
-                      : CustomCircularIndicator(color:ColorResources.getScaffoldColor(context)),
+                      : CustomCircularIndicator(
+                          color: ColorResources.getScaffoldColor(context)),
                 )
               ],
             );

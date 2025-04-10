@@ -1,9 +1,6 @@
 import 'dart:async';
 import 'dart:collection';
-import 'dart:typed_data';
-import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:wired_express/data/model/body/place_order_body.dart';
 import 'package:wired_express/data/model/response/cart_model.dart';
 import 'package:wired_express/helper/date_converter.dart';
@@ -27,7 +24,6 @@ import 'package:wired_express/view/base/custom_text_field.dart';
 import 'package:wired_express/view/base/not_logged_in_screen.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
-import 'package:wired_express/view/screens/payment/payment_success_screen.dart';
 import 'package:wired_express/view/screens/payment/payment_webview.dart';
 
 class CheckoutScreen extends StatefulWidget {
@@ -67,7 +63,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   List<CartModel>? _cartList;
 
   bool _isCashActive = true;
-  bool _isDigitalActive = false;
 
   @override
   void initState() {
@@ -109,7 +104,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: ColorResources.getScaffoldBackgroundColor(context!),
+      backgroundColor: ColorResources.getScaffoldBackgroundColor(context),
       key: _scaffoldKey,
       appBar: CustomAppBar(title: getTranslated('checkout', context)),
       body: _isLoggedIn!
@@ -131,217 +126,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
-                                        // Padding(
-                                        //   padding: const EdgeInsets.all(15.0),
-                                        //   child: Row(
-                                        //     children: [
-                                        //       Text('Add Note ',
-                                        //           style: rubikMedium.copyWith(
-                                        //               color: ColorResources
-                                        //                   .getTextColor(
-                                        //                       context),
-                                        //               fontSize: Dimensions
-                                        //                   .FONT_SIZE_LARGE)),
-                                        //       Text(
-                                        //         '(${getTranslated('optional', context).toLowerCase()})',
-                                        //         style: rubikMedium.copyWith(
-                                        //             fontSize: Dimensions
-                                        //                 .FONT_SIZE_LARGE,
-                                        //             color: ColorResources
-                                        //                 .getHintColor(context)),
-                                        //       )
-                                        //     ],
-                                        //   ),
-                                        // ),
-                                        // // Address
-                                        // widget.orderType != 'take_away'
-                                        //     ? Column(children: [
-                                        //   Padding(
-                                        //     padding: EdgeInsets.symmetric(
-                                        //         horizontal: Dimensions
-                                        //             .PADDING_SIZE_SMALL),
-                                        //     child: Row(children: [
-                                        //       Text(
-                                        //           getTranslated(
-                                        //               'delivery_address',
-                                        //               context),
-                                        //           style: rubikMedium.copyWith(
-                                        //               fontSize: Dimensions
-                                        //                   .FONT_SIZE_LARGE)),
-                                        //       Expanded(child: SizedBox()),
-                                        //       TextButton.icon(
-                                        //         onPressed: () {
-                                        //           Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) =>
-                                        //               AddressScreen()));
-                                        //
-                                        //           // Navigator.pushNamed(
-                                        //           //     context,
-                                        //           //     Routes
-                                        //           //         .getAddAddressRoute(
-                                        //           //         'checkout',
-                                        //           //         'add',
-                                        //           //         '',
-                                        //           //         '',
-                                        //           //         '',
-                                        //           //         '',
-                                        //           //         '',
-                                        //           //         '',
-                                        //           //         0,
-                                        //           //         0));
-                                        //         },
-                                        //         icon: Icon(Icons.add),
-                                        //         label: Text(
-                                        //             getTranslated(
-                                        //                 'add', context),
-                                        //             style: rubikRegular),
-                                        //       ),
-                                        //     ]),
-                                        //   ),
-                                        //   SizedBox(
-                                        //     height: 60,
-                                        //     child: address.addressList !=
-                                        //         null
-                                        //         ? address.addressList!
-                                        //         .length >
-                                        //         0
-                                        //         ? ListView.builder(
-                                        //       physics:
-                                        //       BouncingScrollPhysics(),
-                                        //       scrollDirection:
-                                        //       Axis.horizontal,
-                                        //       padding: EdgeInsets.only(
-                                        //           left: Dimensions
-                                        //               .PADDING_SIZE_SMALL),
-                                        //       itemCount: address
-                                        //           .addressList
-                                        //           !.length,
-                                        //       itemBuilder:
-                                        //           (context,
-                                        //           index) {
-                                        //         return Padding(
-                                        //           padding: EdgeInsets.only(
-                                        //               right: Dimensions
-                                        //                   .PADDING_SIZE_LARGE),
-                                        //           child:
-                                        //           GestureDetector(
-                                        //             onTap: () {
-                                        //               order.setAddressIndex(
-                                        //                   index);
-                                        //             },
-                                        //             child: Stack(
-                                        //                 children: [
-                                        //                   Container(
-                                        //                     height:
-                                        //                     60,
-                                        //                     width:
-                                        //                     200,
-                                        //                     decoration:
-                                        //                     BoxDecoration(
-                                        //                       color: index == order.addressIndex ? Colors.white : ColorResources.getBackgroundColor(context),
-                                        //                       borderRadius: BorderRadius.circular(10),
-                                        //                       border: index == order.addressIndex ? Border.all(color: Theme.of(context).primaryColor, width: 2) : null,
-                                        //                     ),
-                                        //                     child:
-                                        //                     Row(children: [
-                                        //                       Padding(
-                                        //                         padding: EdgeInsets.symmetric(horizontal: Dimensions.PADDING_SIZE_EXTRA_SMALL),
-                                        //                         child: Icon(
-                                        //                           address.addressList![index].addressType == 'Home'
-                                        //                               ? Icons.home_outlined
-                                        //                               : address.addressList![index].addressType == 'Workplace'
-                                        //                               ? Icons.work_outline
-                                        //                               : Icons.list_alt_outlined,
-                                        //                           color: index == order.addressIndex ? Theme.of(context).primaryColor : Theme.of(context).textTheme.bodyText1!.color,
-                                        //                           size: 30,
-                                        //                         ),
-                                        //                       ),
-                                        //                       Expanded(
-                                        //                         child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.center, children: [
-                                        //                           Text(address.addressList![index].addressType!,
-                                        //                               style: rubikRegular.copyWith(
-                                        //                                 fontSize: Dimensions.FONT_SIZE_SMALL,
-                                        //                                 color: ColorResources.getGreyBunkerColor(context),
-                                        //                               )),
-                                        //                           Text(address.addressList![index].address!, style: rubikRegular, maxLines: 1, overflow: TextOverflow.ellipsis),
-                                        //                         ]),
-                                        //                       ),
-                                        //                       index == order.addressIndex
-                                        //                           ? Align(
-                                        //                         alignment: Alignment.topRight,
-                                        //                         child: Icon(Icons.check_circle, color: Theme.of(context).primaryColor),
-                                        //                       )
-                                        //                           : SizedBox(),
-                                        //                     ]),
-                                        //                   ),
-                                        //
-                                        //                 ]),
-                                        //           ),
-                                        //         );
-                                        //       },
-                                        //     )
-                                        //         : Center(
-                                        //         child: Text(
-                                        //             getTranslated(
-                                        //                 'no_address_available',
-                                        //                 context)))
-                                        //         : CustomCircularIndicator(),
-                                        //   ),
-                                        //   SizedBox(height: 20),
-                                        // ])
-                                        //     : SizedBox(),
 
-                                        // Padding(
-                                        //   padding: EdgeInsets.symmetric(
-                                        //       horizontal: Dimensions
-                                        //           .PADDING_SIZE_SMALL),
-                                        //   child: Text(
-                                        //       getTranslated(
-                                        //           'payment_method', context),
-                                        //       style: rubikMedium.copyWith(
-                                        //           fontSize: Dimensions
-                                        //               .FONT_SIZE_LARGE)),
-                                        // ),
-                                        //
-                                        // Row(
-                                        //   children: [
-                                        //     Checkbox(
-                                        //       fillColor:  MaterialStateProperty.all<Color>(Theme.of(context).primaryColor),
-                                        //       value: _isCashActive,
-                                        //       onChanged: (value) {
-                                        //         setState(() {
-                                        //           _isCashActive = true;
-                                        //           _isDigitalActive = false;
-                                        //         });
-                                        //       },
-                                        //     ),
-                                        //     Text(getTranslated(
-                                        //         'cash_on_delivery', context),
-                                        //
-                                        //     )
-                                        //   ],
-                                        // ),
-                                        //
-                                        //
-                                        // Row(
-                                        //   children: [
-                                        //     Checkbox(
-                                        //       fillColor:  MaterialStateProperty.all<Color>(Theme.of(context).primaryColor),
-                                        //       value: _isDigitalActive,
-                                        //       onChanged: (value) {
-                                        //         setState(() {
-                                        //           _isCashActive = false;
-                                        //           _isDigitalActive = true;
-                                        //         });
-                                        //       },
-                                        //     ),
-                                        //
-                                        //     Text(getTranslated(
-                                        //         'digital_payment', context),
-                                        //
-                                        //     )
-                                        //   ],
-                                        // ),
-                                        //
                                         Row(
                                           children: [
                                             Text(
@@ -576,8 +361,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                                       .coupon!
                                                       .code
                                                   : "",
-                                              totalTaxAmount: widget.vatTaxPercentage
-                                                  .toString(),
+                                              totalTaxAmount: widget.vatTaxPercentage == null?
+                                              "0.0":
+                                              widget.vatTaxPercentage.toString(),
                                               orderType: 'cart',
                                               deliveryDateTime:
                                                   orderProvider.selectedScheduledValue == 1
@@ -586,8 +372,10 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                                           .toString()
                                                       : null);
 
-                                          print("placeOrder == ${placeOrder.toJson()}");
-                                          orderProvider.placeOrder(placeOrder, _callback);
+                                          print(
+                                              "placeOrder == ${placeOrder.toJson()}");
+                                          orderProvider.placeOrder(
+                                              placeOrder, _callback);
                                         }
                                       }),
                                 )
@@ -646,11 +434,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   void _callback(
       bool isSuccess, String message, String orderID, int addressID) async {
     if (isSuccess) {
-      Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-              builder: (BuildContext? context) =>
-                  PaymentSuccessScreen(success: true)));
       // Navigator.push(
       //     context,
       //     MaterialPageRoute(
@@ -661,89 +444,5 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(message), backgroundColor: Colors.red));
     }
-  }
-
-  // void _callback(
-  //     bool isSuccess, String message, String orderID, int addressID) async {
-  //   if (isSuccess) {
-  //     if (widget.fromCart!) {
-  //       Provider.of<CartProvider>(context, listen: false).clearCartList();
-  //     }
-  //     Provider.of<OrderProvider>(context, listen: false).stopLoader();
-  //     if (_isCashOnDeliveryActive! &&
-  //         Provider.of<OrderProvider>(context, listen: false)
-  //                 .paymentMethodIndex ==
-  //             0) {
-  //       Navigator.push(
-  //           context,
-  //           MaterialPageRoute(
-  //               builder: (_) => OrderSuccessfulScreen(
-  //                     orderID: orderID,
-  //                     status: 0,
-  //                   )));
-  //       // Navigator.pushReplacementNamed(
-  //       //     context, '${Routes.ORDER_SUCCESS_SCREEN}/$orderID/success');
-  //     } else {
-  //       //  Navigator.pushReplacementNamed(context, Routes.getPaymentRoute('checkout', orderID,
-  //       //    Provider.of<ProfileProvider>(context, listen: false).userInfoModel.id));
-  //
-  //       // Navigator.pushReplacementNamed(
-  //       //     context, '${Routes.ORDER_SUCCESS_SCREEN}/$orderID/success');
-  //       Navigator.push(
-  //           context,
-  //           MaterialPageRoute(
-  //               builder: (_) => OrderSuccessfulScreen(
-  //                     orderID: orderID,
-  //                     status: 0,
-  //                   )));
-  //     }
-  //   } else {
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //         SnackBar(content: Text(message), backgroundColor: Colors.red));
-  //   }
-  // }
-
-  // void _setMarkers(int selectedIndex) async {
-  //   Uint8List activeImageData = await convertAssetToUnit8List(
-  //       Images.store_marker,
-  //       width: ResponsiveHelper.isMobilePhone() ? 70 : 20);
-  //   Uint8List inactiveImageData = await convertAssetToUnit8List(
-  //       Images.unselected_store_marker,
-  //       width: ResponsiveHelper.isMobilePhone() ? 70 : 20);
-  //
-  //   // Marker
-  //   _markers = HashSet<Marker>();
-  //   for (int index = 0; index < _branches.length; index++) {
-  //     _markers.add(Marker(
-  //       markerId: MarkerId('branch_$index'),
-  //       position: LatLng(double.parse(_branches[index].latitude),
-  //           double.parse(_branches[index].longitude)),
-  //       infoWindow: InfoWindow(
-  //           title: _branches[index].name, snippet: _branches[index].address),
-  //       icon: BitmapDescriptor.fromBytes(
-  //         selectedIndex == index ? activeImageData : inactiveImageData,
-  //       ),
-  //     ));
-  //   }
-  //
-  //   _mapController.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
-  //       target: LatLng(
-  //         double.parse(_branches[selectedIndex].latitude),
-  //         double.parse(_branches[selectedIndex].longitude),
-  //       ),
-  //       zoom: ResponsiveHelper.isMobile(context) ? 18 : 8)));
-  //
-  //   setState(() {});
-  // }
-
-  Future<Uint8List> convertAssetToUnit8List(String imagePath,
-      {int width = 50}) async {
-    ByteData data = await rootBundle.load(imagePath);
-    Codec codec = await instantiateImageCodec(data.buffer.asUint8List(),
-        targetWidth: width);
-    FrameInfo fi = await codec.getNextFrame();
-    return (await fi.image.toByteData(format: ImageByteFormat.png))!
-        .buffer
-        .asUint8List();
   }
 }

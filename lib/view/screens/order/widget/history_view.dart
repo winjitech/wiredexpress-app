@@ -707,7 +707,7 @@ class _HistoryViewState extends State<HistoryView> {
   @override
   void initState() {
     super.initState();
-    Timer(Duration(seconds: 1), () async {
+    Timer(Duration(seconds: 0), () async {
       Provider.of<OrderProvider>(context, listen: false)
           .getHistoryOrdersList(context, '1');
     });

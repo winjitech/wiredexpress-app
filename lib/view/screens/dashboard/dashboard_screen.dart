@@ -8,7 +8,7 @@ import 'package:wired_express/provider/cart_provider.dart';
 import 'package:wired_express/provider/theme_provider.dart';
 import 'package:wired_express/utill/color_resources.dart';
 import 'package:wired_express/utill/styles.dart';
-import 'package:wired_express/view/screens/auth/guest_screen.dart';
+import 'package:wired_express/view/base/not_logged_in_screen.dart';
 import 'package:wired_express/view/screens/cart/cart_screen.dart';
 import 'package:wired_express/view/screens/home/home_screen.dart';
 import 'package:wired_express/view/screens/menu/menu_screen.dart';
@@ -43,9 +43,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
     _screens = [
       HomeScreen(),
-      _isLoggedIn ? CartScreen() : GuestScreen(),
-      _isLoggedIn ? OrderScreen() : GuestScreen(),
-      _isLoggedIn ? WishListScreen() : GuestScreen(),
+      _isLoggedIn ? CartScreen() : NotLoggedInScreen(),
+      _isLoggedIn ? OrderScreen() : NotLoggedInScreen(),
+      _isLoggedIn ? WishListScreen() : NotLoggedInScreen(),
       MenuScreen(onTap: (int pageIndex) {
         _setPage(pageIndex);
       }),

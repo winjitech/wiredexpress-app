@@ -27,29 +27,10 @@ class CategoryRepo {
       return ApiResponse.withError(ApiErrorHandler.getMessage(e));
     }
   }
+
   Future<ApiResponse> getCategoryFeaturedList() async {
     try {
       final response = await dioClient!.get(AppConstants.CATEGORY_FEATURED_URI);
-      return ApiResponse.withSuccess(response);
-    } catch (e) {
-      return ApiResponse.withError(ApiErrorHandler.getMessage(e));
-    }
-  }
-
-  Future<ApiResponse> getCategoryListFull() async {
-    try {
-      final response = await dioClient!.get(AppConstants.CATEGORY_URI_FUlL);
-
-      return ApiResponse.withSuccess(response);
-    } catch (e) {
-      return ApiResponse.withError(ApiErrorHandler.getMessage(e));
-    }
-  }
-
-  Future<ApiResponse> getSubCategoryList(String parentID) async {
-    try {
-      final response =
-          await dioClient!.get('${AppConstants.SUB_CATEGORY_URI}$parentID');
       return ApiResponse.withSuccess(response);
     } catch (e) {
       return ApiResponse.withError(ApiErrorHandler.getMessage(e));

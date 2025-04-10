@@ -17,17 +17,17 @@ class OrderDetailsModel {
 
   OrderDetailsModel(
       {int? id,
-        int? productId,
-        int? orderId,
-        double? price,
-        Product? productDetails,
-        double? discountOnProduct,
-        String? discountType,
-        int? quantity,
-        double? taxAmount,
-        String? createdAt,
-        String? updatedAt,
-        TiredPricingModel? tieredPricing}) {
+      int? productId,
+      int? orderId,
+      double? price,
+      Product? productDetails,
+      double? discountOnProduct,
+      String? discountType,
+      int? quantity,
+      double? taxAmount,
+      String? createdAt,
+      String? updatedAt,
+      TiredPricingModel? tieredPricing}) {
     this._id = id;
     this._productId = productId;
     this._orderId = orderId;

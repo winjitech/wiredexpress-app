@@ -1,28 +1,17 @@
-
 import 'dart:async';
 
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:wired_express/data/model/response/address_model.dart';
 import 'package:wired_express/provider/auth_provider.dart';
 import 'package:wired_express/provider/location_provider.dart';
 import 'package:wired_express/provider/order_provider.dart';
-import 'package:wired_express/utill/app_constants.dart';
 import 'package:wired_express/view/base/circular_indicator_widget.dart';
 import 'package:wired_express/view/base/custom_button.dart';
 import 'package:wired_express/view/screens/address/address_screen.dart';
-import 'package:wired_express/view/screens/dashboard/dashboard_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:wired_express/localization/language_constrants.dart';
 import 'package:wired_express/utill/color_resources.dart';
 
 class AddressBottomSheet extends StatefulWidget {
-  final bool? fromOutAreaScreen;
-
-  const AddressBottomSheet({Key? key, this.fromOutAreaScreen})
-      : super(key: key);
-
   @override
   State<AddressBottomSheet> createState() => _AddressBottomSheetState();
 }
@@ -33,38 +22,17 @@ class _AddressBottomSheetState extends State<AddressBottomSheet> {
     super.initState();
 
     Timer(const Duration(seconds: 0), () {
-      String? id = Provider.of<CustomAuthProvider>(context, listen: false)
-          .getUserAddressId();
-      print("--------------${id}");
-      if (id != null) {
-        final locationProvider =
-            Provider.of<LocationProvider>(context, listen: false);
-        int addressIndex = locationProvider.addressList
-                ?.indexWhere((address) => address.id.toString() == id) ??
-            -1;
-        if (addressIndex >= 0) {
-          Provider.of<OrderProvider>(context, listen: false)
-              .setAddressIndex(addressIndex);
-        }
-      } else {
-        final locationProvider =
-            Provider.of<LocationProvider>(context, listen: false);
-        locationProvider.initAddressList(context);
-        locationProvider.addressList;
-        if ((locationProvider.addressList == null ||
-            locationProvider.addressList!.length == 0 ||
-            Provider.of<OrderProvider>(context, listen: false).addressIndex <
-                0)) {
-          Provider.of<OrderProvider>(context, listen: false).setAddressIndex(0);
-        }
-      }
+      CustomAuthProvider authProvider =
+          Provider.of<CustomAuthProvider>(context, listen: false);
+
+      int? id = authProvider.getUserAddressId();
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<LocationProvider>(
-      builder: (context, locationProvider, child) {
+    return Consumer2<LocationProvider, CustomAuthProvider>(
+      builder: (context, locationProvider, authProvider, child) {
         return Container(
           decoration: BoxDecoration(
             borderRadius: const BorderRadius.only(
@@ -106,31 +74,28 @@ class _AddressBottomSheetState extends State<AddressBottomSheet> {
                                                 .size
                                                 .width,
                                             decoration: BoxDecoration(
-                                              color: ColorResources
-                                                  .getBackgroundColor(context),
-                                              borderRadius:
-                                                  BorderRadius.circular(10),
-                                              border: index ==
-                                                      orderProvider.addressIndex
-                                                  ? Border.all(
-                                                      color: ColorResources
-                                                          .getScaffoldColor(context),
-                                                      width: 2,
-                                                    )
-                                                  : null,
-                                            ),
+                                                color:
+                                                    ColorResources
+                                                        .getBackgroundColor(
+                                                            context),
+                                                borderRadius:
+                                                    BorderRadius.circular(10),
+                                                border: addressModel.id ==
+                                                        authProvider
+                                                            .getUserAddressId()
+                                                    ? Border.all(
+                                                        color: ColorResources
+                                                            .getScaffoldColor(
+                                                                context),
+                                                        width: 2)
+                                                    : null),
                                             child: MaterialButton(
                                               minWidth: MediaQuery.of(context)
                                                   .size
                                                   .width,
                                               onPressed: () {
-                                                orderProvider
-                                                    .setAddressIndex(index);
-                                                final selectedAddress =
-                                                locationProvider.addressList![
-                                                orderProvider.addressIndex];
-                                                Provider.of<CustomAuthProvider>(context, listen: false)
-                                                    .saveUserAddressId(selectedAddress.id.toString());
+                                                authProvider.saveUserAddressId(
+                                                    addressModel.id!);
                                               },
                                               child: Padding(
                                                 padding:
@@ -141,11 +106,12 @@ class _AddressBottomSheetState extends State<AddressBottomSheet> {
                                                       getAddressIcon(
                                                           addressModel
                                                               .addressType),
-                                                      color: index ==
-                                                              orderProvider
-                                                                  .addressIndex
+                                                      color: addressModel.id ==
+                                                              authProvider
+                                                                  .getUserAddressId()
                                                           ? ColorResources
-                                                              .getScaffoldColor(context)
+                                                              .getScaffoldColor(
+                                                                  context)
                                                           : ColorResources
                                                               .getHintColor(
                                                                   context),
@@ -194,17 +160,18 @@ class _AddressBottomSheetState extends State<AddressBottomSheet> {
                                                       ),
                                                     ),
                                                     const Spacer(),
-                                                    index ==
-                                                            orderProvider
-                                                                .addressIndex
-                                                        ?  Align(
+                                                    addressModel.id ==
+                                                            authProvider
+                                                                .getUserAddressId()
+                                                        ? Align(
                                                             alignment: Alignment
                                                                 .topRight,
                                                             child: Icon(
                                                               Icons
                                                                   .check_circle,
                                                               color: ColorResources
-                                                                  .getScaffoldColor(context),
+                                                                  .getScaffoldColor(
+                                                                      context),
                                                             ),
                                                           )
                                                         : const SizedBox(),
@@ -219,42 +186,13 @@ class _AddressBottomSheetState extends State<AddressBottomSheet> {
                                     },
                                   ),
                                   const SizedBox(height: 20),
-                                  CustomButton(
-                                    text: getTranslated('confirm', context),
-                                    onTap: () {
-                                      final selectedAddress =
-                                          locationProvider.addressList![
-                                              orderProvider.addressIndex];
-                                      locationProvider
-                                          .getZone(
-                                        context,
-                                        selectedAddress.latitude!,
-                                        selectedAddress.longitude!,
-                                      )
-                                          .then((value) {
-                                        if (locationProvider.outOfArea ==
-                                                false &&
-                                            widget.fromOutAreaScreen == true) {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (BuildContext context) =>
-                                                  DashboardScreen(pageIndex: 0),
-                                            ),
-                                          );
-
-                                          Provider.of<CustomAuthProvider>(context, listen: false)
-                                              .saveUserAddressId(selectedAddress.id.toString());
-                                          print('selectedAddress.id ${selectedAddress.id}');
-                                        } else {
-                                          Provider.of<CustomAuthProvider>(context, listen: false)
-                                              .saveUserAddressId(selectedAddress.id.toString());
-                                          print('selectedAddress.id ${selectedAddress.id}');
-                                          Navigator.pop(context);
-                                        }
-                                      });
-                                    },
-                                  ),
+                                  if (authProvider.getUserAddressId() != 0)
+                                    CustomButton(
+                                      text: getTranslated('confirm', context),
+                                      onTap: () {
+                                        Navigator.pop(context);
+                                      },
+                                    ),
                                   const SizedBox(height: 15),
                                   GestureDetector(
                                     onTap: () {
@@ -340,7 +278,8 @@ class _AddressBottomSheetState extends State<AddressBottomSheet> {
                                   ],
                                 ),
                               )
-                        :  CustomCircularIndicator(color:ColorResources.getScaffoldColor(context));
+                        : CustomCircularIndicator(
+                            color: ColorResources.getScaffoldColor(context));
                   },
                 ),
                 const SizedBox(height: 20),

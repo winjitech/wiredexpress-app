@@ -56,10 +56,7 @@ class ProductWidget extends StatelessWidget {
                 context,
                 MaterialPageRoute(
                     builder: (BuildContext? context) =>
-                        ProductDetailsScreen(
-                          product: product!,
-
-                        ))),
+                        ProductDetailsScreen(productId: product!.id))),
             child: Container(
                 decoration: BoxDecoration(
                   color: ColorResources.getScaffoldBackgroundColor(context),

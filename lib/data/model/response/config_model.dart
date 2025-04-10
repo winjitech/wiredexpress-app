@@ -41,7 +41,6 @@ class ConfigModel {
       String? termsAndConditions,
       String? privacyPolicy,
       String? aboutUs,
-      //  Map<String?, dynamic>? storeLocationCoverage,
       double? minimumOrderValue,
       String? appVersion,
       String? phoneOTP,
@@ -62,7 +61,6 @@ class ConfigModel {
     this._termsAndConditions = termsAndConditions;
     this._aboutUs = aboutUs;
     this._privacyPolicy = privacyPolicy;
-//    this._storeLocationCoverage = storeLocationCoverage;
     this._minimumOrderValue = minimumOrderValue;
     this._appVersion = appVersion;
     this._phoneOTP = phoneOTP;
@@ -85,7 +83,6 @@ class ConfigModel {
   String? get termsAndConditions => _termsAndConditions;
   String? get aboutUs => _aboutUs;
   String? get privacyPolicy => _privacyPolicy;
-//  Map<String?, dynamic>? get storeLocationCoverage => _storeLocationCoverage;
   double? get minimumOrderValue => _minimumOrderValue;
   String? get appVersion => _appVersion;
   String? get phoneOTP => _phoneOTP;
@@ -109,7 +106,6 @@ class ConfigModel {
     _termsAndConditions = json['terms_and_conditions'];
     _privacyPolicy = json['privacy_policy'];
     _aboutUs = json['about_us'];
-    //  _storeLocationCoverage = jsonDecode(json['store_location_coverage']);
 
     _minimumOrderValue = (json['minimum_order_value'] as num).toDouble();
 
@@ -143,7 +139,6 @@ class ConfigModel {
     data['terms_and_conditions'] = this._termsAndConditions;
     data['privacy_policy'] = this.privacyPolicy;
     data['about_us'] = this.aboutUs;
-    //  data['store_location_coverage'] = this.storeLocationCoverage;
 
     data['minimum_order_value'] = this._minimumOrderValue;
 

@@ -169,7 +169,7 @@ class DeliveryManChatProvider extends ChangeNotifier {
       print('chat test -23');
       getChatList(context, orderId);
     }
-    Timer(Duration(seconds: 2), () {
+    Timer(Duration(seconds: 0), () {
 
     });
     return chatList!;

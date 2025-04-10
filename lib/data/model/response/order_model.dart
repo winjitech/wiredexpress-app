@@ -75,7 +75,6 @@ class OrderModel {
   DeliveryAddress? _deliveryAddress;
   int? _detailsCount;
 
-  // New fields
   String? _deliveryType;
   String? _deliveryDate;
   String? _deliveryTime;
@@ -102,7 +101,6 @@ class OrderModel {
     DeliveryAddress? deliveryAddress,
     int? detailsCount,
 
-    // New fields
     String? deliveryType,
     String? deliveryDate,
     String? deliveryTime,
@@ -156,7 +154,6 @@ class OrderModel {
   DeliveryAddress? get deliveryAddress => _deliveryAddress;
   int? get detailsCount => _detailsCount;
 
-  // New getters
   String? get deliveryType => _deliveryType;
   String? get deliveryDate => _deliveryDate;
   String? get deliveryTime => _deliveryTime;
@@ -378,19 +375,7 @@ class DeliveryAddress {
   String? get updatedAt => _updatedAt;
   String? get contactPersonNumber => _contactPersonNumber;
   String? get contactPersonName => _contactPersonName;
-// "delivery_address": {
-// "id": 1,
-// "address_type": "Home",
-// "contact_person_number": "6666666",
-// "address": "1650, Santa Clara County, US",
-// "latitude": "37.42209351379723",
-// "longitude": "-122.08392206579445",
-// "is_current": 0,
-// "created_at": "2024-03-03T21:23:06.000000Z",
-// "updated_at": "2024-03-03T21:23:06.000000Z",
-// "user_id": 8,
-// "contact_person_name": "Address One"
-// }
+
 
   DeliveryAddress.fromJson(Map<String?, dynamic> json) {
     _id = json['id'];

@@ -64,7 +64,7 @@ class AddressWidget extends StatelessWidget {
                               : Icons.list_alt_outlined,
                       color: Provider.of<ThemeProvider>(context).darkTheme
                           ? Colors.white54
-                          :ColorResources.getTextColor(context)
+                          : ColorResources.getTextColor(context)
                               .withOpacity(.45),
                       size: 25,
                     ),
@@ -97,7 +97,8 @@ class AddressWidget extends StatelessWidget {
                                       color: Provider.of<ThemeProvider>(context)
                                               .darkTheme
                                           ? Colors.white
-                                          : ColorResources.getTextColor(context)),
+                                          : ColorResources.getTextColor(
+                                              context)),
                             ),
                           ]),
                     ),
@@ -115,13 +116,13 @@ class AddressWidget extends StatelessWidget {
                         return IconButton(
                           onPressed: () {
                             print(addressModel!.id!);
-                            customAuthProvider.saveUserAddressId(
-                                addressModel!.id!.toString());
+                            customAuthProvider
+                                .saveUserAddressId(addressModel!.id!);
                             print('selectedAddress.id ${addressModel!.id!}');
                           },
                           icon: Icon(
                             customAuthProvider.getUserAddressId() ==
-                                    addressModel!.id.toString()
+                                    addressModel!.id
                                 ? Icons.favorite
                                 : Icons.favorite_border,
                             color: Provider.of<ThemeProvider>(context).darkTheme
@@ -175,7 +176,9 @@ class AddressWidget extends StatelessWidget {
                           showDialog(
                               context: context,
                               barrierDismissible: false,
-                              builder: (context) => CustomCircularIndicator(color:ColorResources.getScaffoldColor(context)));
+                              builder: (context) => CustomCircularIndicator(
+                                  color: ColorResources.getScaffoldColor(
+                                      context)));
                           Provider.of<LocationProvider>(context, listen: false)
                               .deleteUserAddressByID(addressModel!.id!, index!,
                                   (bool isSuccessful, String message) {

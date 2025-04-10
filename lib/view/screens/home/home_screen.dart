@@ -10,7 +10,6 @@ import 'package:wired_express/provider/cart_provider.dart';
 import 'package:wired_express/provider/category_provider.dart';
 import 'package:wired_express/provider/place_order_provider.dart';
 import 'package:wired_express/provider/profile_provider.dart';
-import 'package:wired_express/provider/set_menu_provider.dart';
 import 'package:wired_express/provider/subscription_provider.dart';
 import 'package:wired_express/provider/wishlist_provider.dart';
 import 'package:wired_express/utill/color_resources.dart';
@@ -34,57 +33,38 @@ class _HomeScreenState extends State<HomeScreen> {
 
   ScrollController scrollController = ScrollController();
   Future<void> _loadData(BuildContext context, bool reload) async {
-    if (Provider.of<CustomAuthProvider>(context, listen: false).isLoggedIn()!) {
-      await Provider.of<SubscriptionProvider>(context, listen: false).getSubscriptionPlans(context);
-      await Provider.of<ProfileProvider>(context, listen: false)
-          .getUserInfo(context);
+    CustomAuthProvider authProvider = Provider.of<CustomAuthProvider>(context, listen: false);
+    SubscriptionProvider subscriptionProvider = Provider.of<SubscriptionProvider>(context, listen: false);
+    ProfileProvider profileProvider = Provider.of<ProfileProvider>(context, listen: false);
+    WishListProvider wishListProvider = Provider.of<WishListProvider>(context, listen: false);
+    CartProvider cartProvider = Provider.of<CartProvider>(context, listen: false);
+    CategoryProvider categoryProvider = Provider.of<CategoryProvider>(context, listen: false);
+    BannerProvider bannerProvider = Provider.of<BannerProvider>(context, listen: false);
+    PlaceOrderProvider placeOrderProvider = Provider.of<PlaceOrderProvider>(context, listen: false);
+
+    if (authProvider.isLoggedIn() ?? false) {
+      await subscriptionProvider.getSubscriptionPlans(context);
+      await profileProvider.getUserInfo(context);
+      wishListProvider.initWishListProductIds(context);
+      cartProvider.initCartList(context);
+      cartProvider.initCartListProductIds(context);
+
     }
-    await Provider.of<WishListProvider>(context, listen: false)
-        .initWishListProductIds(context);
-    await Provider.of<CartProvider>(context, listen: false)
-        .initCartList(context);
 
-    await Provider.of<CartProvider>(context, listen: false)
-        .initCartListProductIds(context);
-    await Provider.of<CategoryProvider>(context, listen: false)
-        .getCategoryListFull(context, reload);
-    await Provider.of<CategoryProvider>(context, listen: false)
-        .getCategoryList(context, reload);
-    await Provider.of<SetMenuProvider>(context, listen: false)
-        .getSetMenuList(context, reload);
-    await Provider.of<BannerProvider>(context, listen: false)
-        .getBannerList(context, reload);
+      categoryProvider.getCategoryList(context, reload);
+      bannerProvider.getBannerList(context, reload);
+      placeOrderProvider.getRunningOrderList(context);
 
-    await Provider.of<PlaceOrderProvider>(context, listen: false)
-        .getRunningOrderList(context);
-    Provider.of<PlaceOrderProvider>(context, listen: false).runningOrderList ==
-        null ||
-        Provider.of<PlaceOrderProvider>(context, listen: false)
-            .runningOrderList!
-            .isEmpty
-        ? null
-        : await Provider.of<PlaceOrderProvider>(context, listen: false)
-        .runningOrderList![0];
+    if (placeOrderProvider.runningOrderList?.isNotEmpty ?? false) {
+      await placeOrderProvider.runningOrderList!.first;
+    }
 
-    await Provider.of<CategoryProvider>(context, listen: false)
-        .getCategoryFeaturedList(context, reload)
-        .then((value) {
-      if (Provider.of<CategoryProvider>(context, listen: false)
-          .categoryFeaturedList!
-          .length !=
-          0) {
-        Provider.of<CategoryProvider>(context, listen: false).setCategory(
-            Provider.of<CategoryProvider>(context, listen: false)
-                .categoryFeaturedList![0]
-                .name!);
-
-        Provider.of<CategoryProvider>(context, listen: false)
-            .getCategoryProductList(
-            context,
-            Provider.of<CategoryProvider>(context, listen: false)
-                .categoryFeaturedList![0]
-                .id
-                .toString());
+    await categoryProvider.getCategoryFeaturedList(context, reload).then((_) {
+      final featuredList = categoryProvider.categoryFeaturedList;
+      if (featuredList?.isNotEmpty ?? false) {
+        final firstCategory = featuredList!.first;
+        categoryProvider.setCategory(firstCategory.name!);
+        categoryProvider.getCategoryProductList(context, firstCategory.id.toString());
       }
     });
   }

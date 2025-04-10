@@ -54,9 +54,8 @@ class CategoryProductWidget extends StatelessWidget {
         onTap: () => Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (BuildContext? context) => ProductDetailsScreen(
-                      product: product!,
-                    ))),
+                builder: (BuildContext? context) =>
+                    ProductDetailsScreen(productId: product!.id))),
         child: Container(
             decoration: BoxDecoration(
                 color: ColorResources.getScaffoldBackgroundColor(context),

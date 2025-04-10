@@ -55,18 +55,6 @@ class AuthRepo {
     }
   }
 
-  Future<ApiResponse> signByPhone(
-      String fName, String lName, String phone) async {
-    try {
-      Response response = await dioClient!.post(
-          '${AppConstants.SIGN_BY_PHONE_URI}?f_name=$fName&l_name=$lName&phone=$phone');
-      return ApiResponse.withSuccess(response);
-    } catch (e) {
-      print(e.toString());
-      return ApiResponse.withError(ApiErrorHandler.getMessage(e));
-    }
-  }
-
   Future<ApiResponse> updateToken() async {
     try {
       String? _deviceToken;
@@ -250,19 +238,36 @@ class AuthRepo {
     return await sharedPreferences!.remove(AppConstants.USER_EMAIL);
   }
 
-  Future<void> saveUserAddressId(String Id) async {
+  Future<void> saveUserAddressId(int id) async {
     try {
-      await sharedPreferences!.setString(AppConstants.SAVE_ADDRESS_ID, Id);
+      await sharedPreferences!.setInt(AppConstants.SAVE_ADDRESS_ID, id);
     } catch (e) {
-      throw e;
+      print('Error saving address ID: $e');
+      rethrow;
     }
   }
 
   Future<bool> clearUserAddressId() async {
-    return await sharedPreferences!.remove(AppConstants.SAVE_ADDRESS_ID);
+    try {
+      return await sharedPreferences!.remove(AppConstants.SAVE_ADDRESS_ID);
+    } catch (e) {
+      print('Error clearing address ID: $e');
+      rethrow;
+    }
   }
 
-  String getUserAddressId() {
-    return sharedPreferences!.getString(AppConstants.SAVE_ADDRESS_ID) ?? "";
+  int? getUserAddressId() {
+    try {
+      final addressId = sharedPreferences!.get(AppConstants.SAVE_ADDRESS_ID);
+      if (addressId is String) {
+        return int.tryParse(addressId) ?? 0;
+      } else if (addressId is int) {
+        return addressId;
+      }
+      return 0;
+    } catch (e) {
+      print('Error retrieving address ID: $e');
+      return 0;
+    }
   }
 }

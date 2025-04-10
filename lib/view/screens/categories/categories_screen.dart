@@ -9,7 +9,6 @@ import 'package:wired_express/provider/banner_provider.dart';
 import 'package:wired_express/provider/cart_provider.dart';
 import 'package:wired_express/provider/category_provider.dart';
 import 'package:wired_express/provider/profile_provider.dart';
-import 'package:wired_express/provider/set_menu_provider.dart';
 import 'package:wired_express/provider/wishlist_provider.dart';
 import 'package:wired_express/utill/Images.dart';
 import 'package:wired_express/utill/color_resources.dart';
@@ -35,22 +34,20 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
     if (Provider.of<CustomAuthProvider>(context, listen: false).isLoggedIn()!) {
       await Provider.of<ProfileProvider>(context, listen: false)
           .getUserInfo(context);
-    }
-    await Provider.of<WishListProvider>(context, listen: false)
-        .initWishListProductIds(context);
-    await Provider.of<CartProvider>(context, listen: false)
-        .initCartList(context);
+      await Provider.of<WishListProvider>(context, listen: false)
+          .initWishListProductIds(context);
+      await Provider.of<CartProvider>(context, listen: false)
+          .initCartList(context);
 
-    await Provider.of<CartProvider>(context, listen: false)
-        .initCartListProductIds(context);
-    await Provider.of<CategoryProvider>(context, listen: false)
-        .getCategoryListFull(context, reload);
+      await Provider.of<CartProvider>(context, listen: false)
+          .initCartListProductIds(context);
+    }
+
     await Provider.of<CategoryProvider>(context, listen: false)
         .getCategoryList(context, reload);
     await Provider.of<CategoryProvider>(context, listen: false)
         .getCategoryFeaturedList(context, reload);
-    await Provider.of<SetMenuProvider>(context, listen: false)
-        .getSetMenuList(context, reload);
+
     await Provider.of<BannerProvider>(context, listen: false)
         .getBannerList(context, reload);
   }
@@ -58,8 +55,9 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
   @override
   void initState() {
     super.initState();
-    Timer(Duration(seconds: 1), () async {});
-    _loadData(context, false);
+    Timer(Duration(seconds: 0), () async {
+      _loadData(context, false);
+    });
   }
 
   final advancedDrawerController = AdvancedDrawerController();
@@ -93,101 +91,101 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
         key: _scaffoldKey,
         appBar: CustomMainAppBar(
           fromCategory: true,
-          onMenuPressed: () {
-            showDrawer();
-          },
+          onMenuPressed: () => showDrawer(),
           title: 'Categories',
         ),
         body: Consumer<CustomAuthProvider>(
-          builder: (context, customAuthProvider, child) {
-            return Scrollbar(
-              child: SingleChildScrollView(
-                controller: scrollController,
-                physics: const BouncingScrollPhysics(),
-                //  padding: const EdgeInsets.all(Dimensions.PADDING_SIZE_SMALL),
-                child: Center(
-                    child: Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: Column(
-                    children: [
-                      Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(16),
-                          image: DecorationImage(
-                            image: AssetImage(Images.categoryBox),
-                            fit: BoxFit.cover,
-                            colorFilter: ColorFilter.mode(
-                                Colors.black.withOpacity(0.7),
-                                BlendMode.darken),
-                          ),
-                        ),
-                        width: MediaQuery.of(context).size.width,
-                        height: 170,
-                        child: Center(
-                            child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              getTranslated('find_perfect', context),
-                              textAlign: TextAlign.justify,
-                              style: rubikMedium.copyWith(
-                                  fontSize: 30, color: Colors.white),
-                            ),
-                            SizedBox(
-                              height: 10,
-                            ),
-                            MaterialButton(
-                              minWidth: 120,
-                              onPressed: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (BuildContext context) =>
-                                            DashboardScreen(pageIndex: 0)));
-                              },
-                              color: Colors.white,
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(40)),
-                              child: Text(
-                                getTranslated('shop_now', context),
-                                style: TextStyle(fontWeight: FontWeight.bold),
+          builder: (context, customAuthProvider, child) => Column(
+            children: [
+              Expanded(
+                child: Scrollbar(
+                  child: SingleChildScrollView(
+                    controller: scrollController,
+                    physics: const BouncingScrollPhysics(),
+                    //  padding: const EdgeInsets.all(Dimensions.PADDING_SIZE_SMALL),
+                    child: Center(
+                        child: Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: Column(
+                        children: [
+                          Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(16),
+                              image: DecorationImage(
+                                image: AssetImage(Images.categoryBox),
+                                fit: BoxFit.cover,
+                                colorFilter: ColorFilter.mode(
+                                    Colors.black.withOpacity(0.7),
+                                    BlendMode.darken),
                               ),
-                            )
-                          ],
-                        )),
+                            ),
+                            width: MediaQuery.of(context).size.width,
+                            height: 170,
+                            child: Center(
+                                child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  getTranslated('find_perfect', context),
+                                  textAlign: TextAlign.justify,
+                                  style: rubikMedium.copyWith(
+                                      fontSize: 30, color: Colors.white),
+                                ),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                MaterialButton(
+                                  minWidth: 120,
+                                  onPressed: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (BuildContext context) =>
+                                                DashboardScreen(pageIndex: 0)));
+                                  },
+                                  color: Colors.white,
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(40)),
+                                  child: Text(
+                                    getTranslated('shop_now', context),
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold),
+                                  ),
+                                )
+                              ],
+                            )),
+                          ),
+                          SizedBox(
+                            height: 20,
+                          ),
+                          Consumer<CategoryProvider>(
+                            builder: (context, category, child) {
+                              return category.categoryList == null
+                                  ? CategoryView()
+                                  : category.categoryList!.length == 0
+                                      ? SizedBox()
+                                      : CategoryView();
+                            },
+                          ),
+                        ],
                       ),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      Consumer<CategoryProvider>(
-                        builder: (context, category, child) {
-                          return category.categoryList == null
-                              ? CategoryView()
-                              : category.categoryList!.length == 0
-                                  ? SizedBox()
-                                  : CategoryView();
-                        },
-                      ),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      CustomButton(
-                        text: getTranslated('search_product', context),
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (BuildContext? context) =>
-                                      SearchScreen()));
-                        },
-                      )
-                    ],
+                    )),
                   ),
-                )),
+                ),
               ),
-            );
-          },
+              Padding(
+                padding: const EdgeInsets.all(15),
+                child: CustomButton(
+                  text: getTranslated('search_product', context),
+                  onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (BuildContext? context) => SearchScreen())),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -9,7 +9,6 @@ import 'package:wired_express/utill/dimensions.dart';
 import 'package:wired_express/utill/styles.dart';
 import 'package:wired_express/view/base/custom_app_bar.dart';
 import 'package:wired_express/view/base/main_app_bar.dart';
-import 'package:wired_express/view/screens/rare_review/widget/deliver_man_review_widget.dart';
 import 'package:wired_express/view/screens/rare_review/widget/product_review_widget.dart';
 import 'package:provider/provider.dart';
 

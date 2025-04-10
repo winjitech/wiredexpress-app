@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:flutter/cupertino.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:wired_express/data/helper/helpers.dart';
 import 'package:wired_express/provider/splash_provider.dart';
@@ -24,9 +23,7 @@ import 'package:wired_express/utill/routes.dart';
 import 'package:wired_express/utill/styles.dart';
 import 'package:wired_express/view/base/custom_app_bar.dart';
 import 'package:wired_express/view/base/custom_button.dart';
-import 'package:wired_express/view/base/custom_divider.dart';
 import 'package:wired_express/view/base/map_widget.dart';
-import 'package:wired_express/view/screens/order/widget/change_method_dialog.dart';
 import 'package:wired_express/view/screens/order/widget/order_cancel_dialog.dart';
 import 'package:wired_express/view/screens/rare_review/rate_review_screen.dart';
 import 'package:wired_express/view/screens/track/order_tracking_screen.dart';
@@ -49,20 +46,18 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
   @override
   void initState() {
     super.initState();
-    Timer(Duration(seconds: 1), () async {
+    Timer(Duration(seconds: 0), () async {
       await Provider.of<LocationProvider>(context, listen: false)
           .initAddressList(context);
-
       await Provider.of<OrderProvider>(context, listen: false)
           .getOrderDetails(widget.orderId.toString(), context);
-      // await Provider.of<OrderProvider>(context, listen: false).trackOrder(widget.orderId.toString(), widget.orderModel!, context, true) ;
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: ColorResources.getScaffoldBackgroundColor(context!),
+      backgroundColor: ColorResources.getScaffoldBackgroundColor(context),
       key: _scaffold,
       appBar: CustomAppBar(
           title:
@@ -70,36 +65,34 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
       body: Consumer<OrderProvider>(
         builder: (context, order, child) {
           double deliveryCharge = 0;
-          double _itemsPrice = 0;
-          double _discount = 0;
-          double _tax = 0;
-          double _totalTieredPricingDiscount = 0;
+          double itemsPrice = 0;
+          double discount = 0;
+          double tax = 0;
+          double totalTieredPricingDiscount = 0;
 
           if (order.orderDetails != null) {
-            // print('trackmodel -- ${jsonEncode(order.trackModel)}');
-            print("delivery address -- ${jsonEncode(Provider.of<LocationProvider>(context, listen: false).addressList!)}");
+            print(
+                "delivery address -- ${jsonEncode(Provider.of<LocationProvider>(context, listen: false).addressList!)}");
             deliveryCharge = widget.orderModel!.deliveryCharge!;
             for (OrderDetailsModel orderDetails in order.orderDetails!) {
-              if(orderDetails.tieredPricing!= null && orderDetails.tieredPricing!.productId != null){
-                _totalTieredPricingDiscount = _totalTieredPricingDiscount + (double.parse(orderDetails.tieredPricing!.discountPrice!) * orderDetails.quantity!);
+              if (orderDetails.tieredPricing != null &&
+                  orderDetails.tieredPricing!.productId != null) {
+                totalTieredPricingDiscount = totalTieredPricingDiscount +
+                    (double.parse(orderDetails.tieredPricing!.discountPrice!) *
+                        orderDetails.quantity!);
               }
-              _itemsPrice = _itemsPrice + ((orderDetails.tieredPricing== null || orderDetails.tieredPricing!.productId == null?
-              orderDetails.price! :(orderDetails.price!-double.parse(orderDetails.tieredPricing!.discountPrice!)) )* orderDetails.quantity!);
-              _discount = _discount +
+              itemsPrice = itemsPrice +
+                  ((orderDetails.price! - orderDetails.discountOnProduct!) *
+                      orderDetails.quantity!);
+              print("itemsPrice == ${itemsPrice}");
+              discount = discount +
                   (orderDetails.discountOnProduct!
-                      // * orderDetails.quantity!
+                  // * orderDetails.quantity!
                   );
-              _tax = _tax + (orderDetails.taxAmount! * orderDetails.quantity!);
+              tax = tax + (orderDetails.taxAmount! * orderDetails.quantity!);
             }
           }
-          double _subTotal = _itemsPrice + _tax;
-          double _total = _itemsPrice -
-              _discount +
-              widget.orderModel!.totalTaxAmount! +
-              deliveryCharge -
-              (order.trackModel != null
-                  ? widget.orderModel!.couponDiscountAmount!
-                  : 0);
+          double subTotal = itemsPrice + tax;
           bool isScheduled = widget.orderModel!.deliveryType == "scheduled";
           Color scheduledColor = isScheduled
               ? ColorResources.getSecondaryColor(context)
@@ -120,22 +113,6 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Row(children: [
-                                    // Text(
-                                    //     '${getTranslated('order_id', context)}:',
-                                    //     style: rubikRegular.copyWith(
-                                    //         color: ColorResources.getTextColor(
-                                    //             context))),
-                                    // SizedBox(
-                                    //     width: Dimensions
-                                    //         .PADDING_SIZE_EXTRA_SMALL),
-                                    // Text(widget.orderModel!.id.toString(),
-                                    //     style: rubikRegular.copyWith(
-                                    //         color: ColorResources.getTextColor(
-                                    //             context))),
-                                    // SizedBox(
-                                    //     width: Dimensions
-                                    //         .PADDING_SIZE_EXTRA_SMALL),
-                                    // Expanded(child: SizedBox()),
                                     Icon(
                                       Icons.watch_later,
                                       size: 17,
@@ -154,43 +131,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                                     Expanded(child: SizedBox()),
                                     TextButton.icon(
                                       onPressed: () {
-                                        //  final address =
-                                        //  Provider.of<LocationProvider>(
-                                        //      context,
-                                        //      listen: false)
-                                        //      .addressList!;
-                                        // AddressModel? filteredAddresses =
-                                        //  address
-                                        //      .where((address) =>
-                                        //  address.id ==
-                                        //      order.trackModel!
-                                        //          .deliveryAddressId)
-                                        //      .toList();
-                                        //
-                                        //  if (filteredAddresses.isNotEmpty) {
-                                        //    Navigator.push(
-                                        //        context,
-                                        //        MaterialPageRoute(
-                                        //            builder:
-                                        //                (BuildContext? context) =>
-                                        //                MapWidget(
-                                        //                  address:
-                                        //                  filteredAddresses
-                                        //                 ,
-                                        //                )));
-                                        //  } else {}
-
-                                        //
-                                        // Navigator.push(
-                                        //       context,
-                                        //       MaterialPageRoute(
-                                        //           builder:
-                                        //               (BuildContext? context) =>
-                                        //                   MapWidget(
-                                        //                     address: _address,
-                                        //                   )));
-
-                                        AddressModel? _address;
+                                        AddressModel? address;
                                         for (AddressModel address
                                             in Provider.of<LocationProvider>(
                                                     context,
@@ -199,27 +140,24 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                                           if (address.id ==
                                               widget.orderModel!
                                                   .deliveryAddressId) {
-                                            _address = address;
+                                            address = address;
                                             break;
                                           }
                                         }
-                                        if (_address != null) {
+                                        if (address != null) {
                                           Navigator.push(
                                               context,
                                               MaterialPageRoute(
                                                   builder:
                                                       (BuildContext? context) =>
                                                           MapWidget(
-                                                            address: _address,
-                                                          )));
-                                          //
-                                          // Navigator.pushNamed(context, Routes.getMapRoute(
-                                          //   _address.address!, _address.addressType!, _address.latitude!, _address.longitude!, _address.contactPersonName!,
-                                          //   _address.contactPersonNumber!, _address.id!, _address.userId!,
-                                          // ));
+                                                              address:
+                                                                  address)));
                                         } else {
                                           showCustomSnackBar(
-                                              getTranslated('no_address_found', context), context);
+                                              getTranslated(
+                                                  'no_address_found', context),
+                                              context);
                                         }
                                       },
                                       icon: Icon(Icons.map, size: 18),
@@ -242,143 +180,6 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                                           minimumSize: Size(1, 30)),
                                     )
                                   ]),
-                                  // SizedBox(
-                                  //     height: Dimensions.PADDING_SIZE_LARGE),
-                                  //
-                                  // Row(children: [
-                                  //   Text('${getTranslated('item', context)}:',
-                                  //       style: rubikRegular.copyWith(
-                                  //           color: ColorResources.getTextColor(
-                                  //               context))),
-                                  //   SizedBox(
-                                  //       width: Dimensions
-                                  //           .PADDING_SIZE_EXTRA_SMALL),
-                                  //   Text(
-                                  //       widget.orderModel!.detailsCount
-                                  //           .toString(),
-                                  //       style: rubikMedium.copyWith(
-                                  //           color:
-                                  //               ColorResources.getPrimaryColor(
-                                  //                   context))),
-                                  //   Expanded(child: SizedBox()),
-                                  //   TextButton.icon(
-                                  //     onPressed: () {
-                                  //       //  final address =
-                                  //       //  Provider.of<LocationProvider>(
-                                  //       //      context,
-                                  //       //      listen: false)
-                                  //       //      .addressList!;
-                                  //       // AddressModel? filteredAddresses =
-                                  //       //  address
-                                  //       //      .where((address) =>
-                                  //       //  address.id ==
-                                  //       //      order.trackModel!
-                                  //       //          .deliveryAddressId)
-                                  //       //      .toList();
-                                  //       //
-                                  //       //  if (filteredAddresses.isNotEmpty) {
-                                  //       //    Navigator.push(
-                                  //       //        context,
-                                  //       //        MaterialPageRoute(
-                                  //       //            builder:
-                                  //       //                (BuildContext? context) =>
-                                  //       //                MapWidget(
-                                  //       //                  address:
-                                  //       //                  filteredAddresses
-                                  //       //                 ,
-                                  //       //                )));
-                                  //       //  } else {}
-                                  //
-                                  //       //
-                                  //       // Navigator.push(
-                                  //       //       context,
-                                  //       //       MaterialPageRoute(
-                                  //       //           builder:
-                                  //       //               (BuildContext? context) =>
-                                  //       //                   MapWidget(
-                                  //       //                     address: _address,
-                                  //       //                   )));
-                                  //
-                                  //       AddressModel? _address;
-                                  //       for (AddressModel address
-                                  //           in Provider.of<LocationProvider>(
-                                  //                   context,
-                                  //                   listen: false)
-                                  //               .addressList!) {
-                                  //         if (address.id ==
-                                  //             widget.orderModel!
-                                  //                 .deliveryAddressId) {
-                                  //           _address = address;
-                                  //           break;
-                                  //         }
-                                  //       }
-                                  //       if (_address != null) {
-                                  //         Navigator.push(
-                                  //             context,
-                                  //             MaterialPageRoute(
-                                  //                 builder:
-                                  //                     (BuildContext? context) =>
-                                  //                         MapWidget(
-                                  //                           address: _address,
-                                  //                         )));
-                                  //         //
-                                  //         // Navigator.pushNamed(context, Routes.getMapRoute(
-                                  //         //   _address.address!, _address.addressType!, _address.latitude!, _address.longitude!, _address.contactPersonName!,
-                                  //         //   _address.contactPersonNumber!, _address.id!, _address.userId!,
-                                  //         // ));
-                                  //       } else {
-                                  //         showCustomSnackBar(
-                                  //             "No address found", context);
-                                  //       }
-                                  //     },
-                                  //     icon: Icon(Icons.map, size: 18),
-                                  //     label: Text(
-                                  //         getTranslated(
-                                  //             'delivery_address', context),
-                                  //         style: rubikMedium.copyWith(
-                                  //             fontSize:
-                                  //                 Dimensions.FONT_SIZE_SMALL)),
-                                  //     style: TextButton.styleFrom(
-                                  //         shape: RoundedRectangleBorder(
-                                  //             borderRadius:
-                                  //                 BorderRadius.circular(5),
-                                  //             side: BorderSide(
-                                  //                 width: 1,
-                                  //                 color: ColorResources
-                                  //                     .getTextColor(context))),
-                                  //         padding: EdgeInsets.all(Dimensions
-                                  //             .PADDING_SIZE_EXTRA_SMALL),
-                                  //         minimumSize: Size(1, 30)),
-                                  //   )
-                                  //   // TextButton.icon(
-                                  //   //   onPressed: () {
-                                  //   //     AddressModel? _address;
-                                  //   //     List<AddressModel>? addressList = Provider.of<LocationProvider>(context, listen: false).addressList;
-                                  //   //
-                                  //   //     if (addressList != null) {
-                                  //   //       for (AddressModel address in addressList) {
-                                  //   //         if (address.id == order.trackModel!.deliveryAddressId) {
-                                  //   //           _address = address;
-                                  //   //           break;
-                                  //   //         }
-                                  //   //       }
-                                  //   //     }
-                                  //   //
-                                  //   //     if (_address != null) {
-                                  //   //       Navigator.push(context, MaterialPageRoute(builder: (BuildContext? context) => MapWidget(address: _address,)));
-                                  //   //     } else {
-                                  //   //       print("null address");
-                                  //   //     }
-                                  //   //   },
-                                  //   //   icon: Icon(Icons.map, size: 18),
-                                  //   //   label: Text(getTranslated('delivery_address', context), style: rubikMedium.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL)),
-                                  //   //   style: TextButton.styleFrom(
-                                  //   //     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5), side: BorderSide(width: 1)),
-                                  //   //     padding: EdgeInsets.all(Dimensions.PADDING_SIZE_EXTRA_SMALL),
-                                  //   //     minimumSize: Size(1, 30),
-                                  //   //   ),
-                                  //   // )
-                                  // ]),
                                   Divider(
                                     thickness: 1,
                                   ),
@@ -387,11 +188,14 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                                       Container(
                                         padding: const EdgeInsets.all(8),
                                         decoration: BoxDecoration(
-                                          color: scheduledColor.withOpacity(0.1),
+                                          color:
+                                              scheduledColor.withOpacity(0.1),
                                           shape: BoxShape.circle,
                                         ),
                                         child: Icon(
-                                          isScheduled ? Icons.schedule : Icons.local_shipping,
+                                          isScheduled
+                                              ? Icons.schedule
+                                              : Icons.local_shipping,
                                           color: scheduledColor,
                                           size: 22,
                                         ),
@@ -400,7 +204,9 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                                       Expanded(
                                         child: Text(
                                           getTranslated(
-                                            isScheduled ? 'scheduled' : 'immediate',
+                                            isScheduled
+                                                ? 'scheduled'
+                                                : 'immediate',
                                             context,
                                           ),
                                           maxLines: 1,
@@ -416,66 +222,39 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                                     ],
                                   ),
                                   SizedBox(height: 10),
-
-                                  // Payment info
-                                  // Align(
-                                  //   alignment: Alignment.center,
-                                  //   child: Text(getTranslated('payment_info', context), style: rubikMedium.copyWith(fontSize: Dimensions.FONT_SIZE_LARGE)),
-                                  // ),
-                                  // SizedBox(height: 10),
-                                  // Row(children: [
-                                  //   Expanded(flex: 2, child: Text(getTranslated('status', context), style: rubikRegular)),
-                                  //   Expanded(flex: 8, child: Text(
-                                  //     getTranslated(order.trackModel!.paymentStatus!, context),
-                                  //     style: rubikMedium.copyWith(color: Theme.of(context).primaryColor),
-                                  //   )),
-                                  // ]),
-                                  // SizedBox(height: 5),
-                                  // Row(children: [
-                                  //   Expanded(flex: 2, child: Text(getTranslated('method', context), style: rubikRegular)),
-                                  //   Expanded(flex: 8, child: Row(children: [
-                                  //     Text(
-                                  //       (order.trackModel!.paymentMethod! != null && order.trackModel!.paymentMethod!.length > 0)
-                                  //           ? order.trackModel!.paymentMethod == 'cash_on_delivery' ? getTranslated('cash_on_delivery', context)
-                                  //           : '${order.trackModel!.paymentMethod![0].toUpperCase()}${order.trackModel!.paymentMethod!.substring(1).replaceAll('_', ' ')}'
-                                  //           : getTranslated('digital_payment', context),
-                                  //       style: rubikMedium.copyWith(color: Theme.of(context).primaryColor),
-                                  //     ),
-                                  //     (order.trackModel!.paymentStatus != 'paid' && order.trackModel!.paymentMethod != 'cash_on_delivery'
-                                  //         && order.trackModel!.orderStatus != 'delivered') ? GestureDetector(
-                                  //       onTap: () {
-                                  //         showDialog(context: context, barrierDismissible: false, builder: (context) => ChangeMethodDialog(
-                                  //           orderID: order.trackModel!.id.toString(), callback: (String message, bool isSuccess) {
-                                  //           ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message), backgroundColor: isSuccess ? Colors.green : Colors.red));
-                                  //         },
-                                  //         ));
-                                  //       },
-                                  //       child: Container(
-                                  //         alignment: Alignment.center,
-                                  //         margin: EdgeInsets.symmetric(horizontal: Dimensions.PADDING_SIZE_SMALL, vertical: Dimensions.PADDING_SIZE_EXTRA_SMALL),
-                                  //         padding: EdgeInsets.symmetric(horizontal: Dimensions.PADDING_SIZE_EXTRA_SMALL, vertical: 2),
-                                  //         decoration: BoxDecoration(borderRadius: BorderRadius.circular(10), color: Theme.of(context).primaryColor.withOpacity(0.5)),
-                                  //         child: Text(getTranslated('change', context), style: rubikRegular.copyWith(fontSize: 10, color: Colors.black)),
-                                  //       ),
-                                  //     ) : SizedBox(),
-                                  //   ])),
-                                  // ]),
-                                  // Divider(height: 40),
-                                  //
-
                                   ListView.builder(
                                     shrinkWrap: true,
                                     physics: NeverScrollableScrollPhysics(),
                                     itemCount: order.orderDetails!.length,
                                     itemBuilder: (context, index) {
+                                      double priceWithProductDis =
+                                          order.orderDetails![index].price! -
+                                              order.orderDetails![index]
+                                                  .discountOnProduct!;
+                                      double totalProductPrice = ((order
+                                                          .orderDetails![index]
+                                                          .tieredPricing ==
+                                                      null ||
+                                                  order
+                                                          .orderDetails![index]
+                                                          .tieredPricing!
+                                                          .productId ==
+                                                      null
+                                              ? priceWithProductDis
+                                              : (priceWithProductDis -
+                                                  double.parse(order
+                                                      .orderDetails![index]
+                                                      .tieredPricing!
+                                                      .discountPrice!))) *
+                                          order.orderDetails![index].quantity!);
                                       return Column(
                                           crossAxisAlignment:
                                               CrossAxisAlignment.start,
                                           children: [
-                                            SizedBox(height: 10),
                                             Container(
-                                              height: 100,
-                                              width: MediaQuery.of(context).size.width,
+                                              width: MediaQuery.of(context)
+                                                  .size
+                                                  .width,
                                               decoration: BoxDecoration(
                                                   borderRadius:
                                                       BorderRadius.circular(10),
@@ -500,8 +279,8 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                                                     const EdgeInsets.all(10),
                                                 child: Row(children: [
                                                   Container(
-                                                      height: 90,
-                                                      width: 90,
+                                                      height: 80,
+                                                      width: 80,
                                                       decoration: BoxDecoration(
                                                           borderRadius:
                                                               BorderRadius
@@ -525,8 +304,8 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                                                                       stackTrace) {
                                                             return Image.asset(
                                                                 Images.loading,
-                                                                height: 70,
-                                                                width: 85,
+                                                                height: 80,
+                                                                width: 80,
                                                                 fit: BoxFit
                                                                     .cover);
                                                           },
@@ -539,16 +318,16 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                                                                       stackTrace) {
                                                             return Image.asset(
                                                                 Images.loading,
-                                                                height: 70,
-                                                                width: 85,
+                                                                height: 80,
+                                                                width: 80,
                                                                 fit: BoxFit
                                                                     .cover);
                                                           },
                                                           image:
                                                               '${Provider.of<SplashProvider>(context, listen: false).baseUrls!.productImageUrl}/'
                                                               '${order.orderDetails![index].productDetails!.image}',
-                                                          height: 90,
-                                                          width: 90,
+                                                          height: 80,
+                                                          width: 80,
                                                         ),
                                                       )),
                                                   SizedBox(
@@ -585,44 +364,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                                                               ),
                                                             ],
                                                           ),
-
-                                                          Row(children: [
-                                                            order.orderDetails![index]
-                                                                        .discountOnProduct! >
-                                                                    0
-                                                                ? Text(
-                                                                    '${Provider.of<SplashProvider>(context, listen: false).configModel!.currencySymbol}${PriceConverter.convertPrice(
-                                                                        context,
-                                                                        order
-                                                                            .orderDetails![index]
-                                                                            .price)}',
-                                                                    style: rubikBold
-                                                                        .copyWith(
-                                                                      decoration:
-                                                                          TextDecoration
-                                                                              .lineThrough,
-                                                                      fontSize:
-                                                                          Dimensions
-                                                                              .FONT_SIZE_SMALL,
-                                                                      color: Provider.of<ThemeProvider>(context, listen: false).darkTheme
-                                                                          ? ColorResources
-                                                                              .DISABLE_COLOR
-                                                                          : ColorResources
-                                                                              .COLOR_GREY,
-                                                                    ),
-                                                                  )
-                                                                : SizedBox(),
-                                                            SizedBox(width: 5),
-                                                            Text(
-                                                              '${Provider.of<SplashProvider>(context, listen: false).configModel!.currencySymbol}${PriceConverter.convertPrice(
-                                                                  context,
-                                                                  order.orderDetails![index].price! -
-                                                                      order.orderDetails![index].discountOnProduct!)}',
-                                                              style: rubikBold.copyWith(
-                                                                  color: ColorResources
-                                                                      .getScaffoldColor(context)),
-                                                            ),
-                                                          ]),
+                                                          SizedBox(height: 10),
                                                           Row(
                                                             children: [
                                                               Text(
@@ -644,53 +386,36 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                                                                           FontWeight
                                                                               .w500,
                                                                       color: ColorResources
-                                                                          .getScaffoldColor(context))),
+                                                                          .getScaffoldColor(
+                                                                              context))),
                                                             ],
                                                           )
-                                                          // Row(children: [
-                                                          //   Container(
-                                                          //       height: 10,
-                                                          //       width: 10,
-                                                          //       decoration:
-                                                          //           BoxDecoration(
-                                                          //         shape: BoxShape
-                                                          //             .circle,
-                                                          //         color: Theme.of(
-                                                          //                 context)
-                                                          //             .textTheme
-                                                          //             .bodyText1!
-                                                          //             .color,
-                                                          //       )),
-                                                          //   SizedBox(
-                                                          //       width: Dimensions
-                                                          //           .PADDING_SIZE_EXTRA_SMALL),
-                                                          // Text(
-                                                          //   '${getTranslated(widget.orderModel!.orderStatus == 'delivered' ? 'delivered_at' : 'ordered_at', context)} '
-                                                          //   '${DateConverter.isoStringToLocalDateOnly(widget.orderModel!.orderStatus! == 'delivered' ? order.orderDetails![index].updatedAt! : order.orderDetails![index].createdAt!)}',
-                                                          //   style: rubikRegular.copyWith(
-                                                          //       color: ColorResources
-                                                          //           .getTextColor(
-                                                          //               context),
-                                                          //       fontSize:
-                                                          //           Dimensions
-                                                          //               .FONT_SIZE_SMALL),
-                                                          // ),
-                                                          // ]),
                                                         ]),
+                                                  ),
+                                                  SizedBox(
+                                                    width: 15,
+                                                  ),
+                                                  Text(
+                                                    PriceConverter.convertPrice(
+                                                        context,
+                                                        totalProductPrice),
+                                                    style: rubikMedium.copyWith(
+                                                        color: ColorResources
+                                                            .getPrimaryColor(
+                                                                context)),
                                                   ),
                                                 ]),
                                               ),
                                             ),
+                                            SizedBox(height: 10),
                                           ]);
                                     },
                                   ),
                                   SizedBox(height: 10),
-
                                   Divider(
                                     thickness: 1,
                                   ),
                                   SizedBox(height: 10),
-
                                   Row(
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceBetween,
@@ -705,8 +430,8 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                                                 fontSize: Dimensions
                                                     .FONT_SIZE_LARGE)),
                                         Text(
-                                            '${Provider.of<SplashProvider>(context, listen: false).configModel!.currencySymbol}${PriceConverter.convertPrice(context,
-                                                _itemsPrice - _discount)}',
+                                            PriceConverter.convertPrice(
+                                                context, itemsPrice),
                                             style: rubikMedium.copyWith(
                                                 color:
                                                     ColorResources.getTextColor(
@@ -714,90 +439,88 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                                                 fontSize: Dimensions
                                                     .FONT_SIZE_LARGE)),
                                       ]),
-
-
                                   SizedBox(height: 10),
                                   Row(
                                       mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
+                                          MainAxisAlignment.spaceBetween,
                                       children: [
                                         Text(
                                             getTranslated(
-                                                'tiered_pricing_discount', context),
+                                                'tiered_pricing_discount',
+                                                context),
                                             style: rubikMedium.copyWith(
                                                 color:
-                                                ColorResources.getTextColor(
-                                                    context),
+                                                    ColorResources.getTextColor(
+                                                        context),
                                                 fontSize: Dimensions
                                                     .FONT_SIZE_LARGE)),
                                         Text(
-                                            "${AppConstants.CURRENCY}${Helpers.formatTextWithNum(_totalTieredPricingDiscount.toString())}",
+                                            "(-) ${AppConstants.CURRENCY}${Helpers.formatTextWithNum(totalTieredPricingDiscount.toString())}",
                                             style: rubikMedium.copyWith(
                                                 color:
-                                                ColorResources.getTextColor(
-                                                    context),
+                                                    ColorResources.getTextColor(
+                                                        context),
                                                 fontSize: Dimensions
                                                     .FONT_SIZE_LARGE)),
                                       ]),
-
                                   SizedBox(height: 10),
-
-                                 if(widget.orderModel!.couponDiscountAmount!=0.0)
-                                   Column(children: [
-                                     Row(
-                                         mainAxisAlignment:
-                                         MainAxisAlignment.spaceBetween,
-                                         children: [
-                                           Text(
-                                               getTranslated(
-                                                   'coupon_discount', context),
-                                               style: rubikMedium.copyWith(
-                                                   color:
-                                                   ColorResources.getTextColor(
-                                                       context),
-                                                   fontSize: Dimensions
-                                                       .FONT_SIZE_LARGE)),
-                                           Text(
-                                               '${Provider.of<SplashProvider>(context, listen: false).configModel!.currencySymbol} ${Helpers.formatTextWithNum(widget.orderModel!.couponDiscountAmount!.toString())}',
-                                               style: rubikMedium.copyWith(
-                                                   color:
-                                                   ColorResources.getTextColor(
-                                                       context),
-                                                   fontSize: Dimensions
-                                                       .FONT_SIZE_LARGE)),
-                                         ]),
-
-                                     SizedBox(height: 10),
-                                   ],) ,
-                                  if(widget.orderModel!.totalTaxAmount!=0.0)
-                                    Column(children: [
-                                      Row(
-                                          mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Text(
-                                                getTranslated(
-                                                    'tax', context),
-                                                style: rubikMedium.copyWith(
-                                                    color:
-                                                    ColorResources.getTextColor(
-                                                        context),
-                                                    fontSize: Dimensions
-                                                        .FONT_SIZE_LARGE)),
-                                            Text(
-                                                '${Provider.of<SplashProvider>(context, listen: false).configModel!.currencySymbol} ${Helpers.formatTextWithNum(widget.orderModel!.totalTaxAmount!.toString())}',
-                                                style: rubikMedium.copyWith(
-                                                    color:
-                                                    ColorResources.getTextColor(
-                                                        context),
-                                                    fontSize: Dimensions
-                                                        .FONT_SIZE_LARGE)),
-                                          ]),
-
-                                      SizedBox(height: 10),
-                                    ],) ,
-
-
+                                  if (widget.orderModel!.couponDiscountAmount !=
+                                      0.0)
+                                    Column(
+                                      children: [
+                                        Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Text(
+                                                  getTranslated(
+                                                      'coupon_discount',
+                                                      context),
+                                                  style: rubikMedium.copyWith(
+                                                      color: ColorResources
+                                                          .getTextColor(
+                                                              context),
+                                                      fontSize: Dimensions
+                                                          .FONT_SIZE_LARGE)),
+                                              Text(
+                                                  '${Provider.of<SplashProvider>(context, listen: false).configModel!.currencySymbol} ${Helpers.formatTextWithNum(widget.orderModel!.couponDiscountAmount!.toString())}',
+                                                  style: rubikMedium.copyWith(
+                                                      color: ColorResources
+                                                          .getTextColor(
+                                                              context),
+                                                      fontSize: Dimensions
+                                                          .FONT_SIZE_LARGE)),
+                                            ]),
+                                        SizedBox(height: 10),
+                                      ],
+                                    ),
+                                  if (widget.orderModel!.totalTaxAmount != 0.0)
+                                    Column(
+                                      children: [
+                                        Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Text(
+                                                  getTranslated('tax', context),
+                                                  style: rubikMedium.copyWith(
+                                                      color: ColorResources
+                                                          .getTextColor(
+                                                              context),
+                                                      fontSize: Dimensions
+                                                          .FONT_SIZE_LARGE)),
+                                              Text(
+                                                  '${Provider.of<SplashProvider>(context, listen: false).configModel!.currencySymbol} ${Helpers.formatTextWithNum(widget.orderModel!.totalTaxAmount!.toString())}',
+                                                  style: rubikMedium.copyWith(
+                                                      color: ColorResources
+                                                          .getTextColor(
+                                                              context),
+                                                      fontSize: Dimensions
+                                                          .FONT_SIZE_LARGE)),
+                                            ]),
+                                        SizedBox(height: 10),
+                                      ],
+                                    ),
                                   widget.orderModel!.couponDiscountAmount == 0
                                       ? SizedBox()
                                       : Row(
@@ -815,7 +538,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                                                       fontSize: Dimensions
                                                           .FONT_SIZE_LARGE)),
                                               Text(
-                                                '(-) ${Provider.of<SplashProvider>(context, listen: false).configModel!.currencySymbol}${PriceConverter.convertPrice(context, widget.orderModel!.couponDiscountAmount)}',
+                                                '(-) ${PriceConverter.convertPrice(context, widget.orderModel!.couponDiscountAmount)}',
                                                 style: rubikMedium.copyWith(
                                                     color: ColorResources
                                                         .getTextColor(context),
@@ -824,7 +547,6 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                                               ),
                                             ]),
                                   SizedBox(height: 10),
-
                                   Row(
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceBetween,
@@ -839,7 +561,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                                                 fontSize: Dimensions
                                                     .FONT_SIZE_LARGE)),
                                         Text(
-                                            '(+) ${Provider.of<SplashProvider>(context, listen: false).configModel!.currencySymbol}${PriceConverter.convertPrice(context, deliveryCharge)}',
+                                            '(+) ${PriceConverter.convertPrice(context, deliveryCharge)}',
                                             style: rubikMedium.copyWith(
                                                 color:
                                                     ColorResources.getTextColor(
@@ -847,14 +569,11 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                                                 fontSize: Dimensions
                                                     .FONT_SIZE_LARGE)),
                                       ]),
-
                                   SizedBox(height: 10),
-
                                   Divider(
                                     thickness: 1,
                                   ),
                                   SizedBox(height: 10),
-
                                   Row(
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceBetween,
@@ -866,28 +585,27 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                                                 fontSize: 18,
                                                 fontWeight: FontWeight.w600,
                                                 color: ColorResources
-                                                    .getScaffoldColor(context))),
+                                                    .getScaffoldColor(
+                                                        context))),
                                         Text(
-                                            '${Provider.of<SplashProvider>(context, listen: false).configModel!.currencySymbol}${PriceConverter.convertPrice(
-                                                context, _total)}',
+                                            PriceConverter.convertPrice(context,
+                                                widget.orderModel!.orderAmount),
                                             style: rubikMedium.copyWith(
                                                 fontSize: 18,
                                                 fontWeight: FontWeight.w600,
                                                 color: ColorResources
-                                                    .getScaffoldColor(context))),
+                                                    .getScaffoldColor(
+                                                        context))),
                                       ]),
                                   SizedBox(height: 10),
-
-                                  Divider(
-                                    thickness: 1,
-                                  ),
+                                  Divider(thickness: 1),
                                   SizedBox(height: 10),
-
                                   (widget.orderModel!.orderNote != null &&
                                           widget.orderModel!.orderNote!
                                               .isNotEmpty)
                                       ? Container(
-                                          width: MediaQuery.of(context).size.width,
+                                          width:
+                                              MediaQuery.of(context).size.width,
                                           padding: EdgeInsets.all(10),
                                           margin: EdgeInsets.only(
                                               top: Dimensions
@@ -938,7 +656,8 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                                                 side: BorderSide(
                                                     width: 2,
                                                     color: ColorResources
-                                                        .getScaffoldColor(context))),
+                                                        .getScaffoldColor(
+                                                            context))),
                                           ),
                                           onPressed: () {
                                             showDialog(
@@ -978,34 +697,14 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                                               getTranslated(
                                                   'cancel_order', context),
                                               style: TextStyle(
-                                                    color: ColorResources
-                                                        .getScaffoldColor(context),
-                                                    fontSize: Dimensions
-                                                        .FONT_SIZE_LARGE,
-                                                  )),
+                                                color: ColorResources
+                                                    .getScaffoldColor(context),
+                                                fontSize:
+                                                    Dimensions.FONT_SIZE_LARGE,
+                                              )),
                                         ),
                                       ))
                                     : SizedBox(),
-
-                                /*
-                    (order.trackModel.paymentStatus == 'unpaid' && order.trackModel.paymentMethod != 'cash_on_delivery' && order.trackModel.orderStatus
-                        != 'delivered') ? Expanded(child: Container(
-                      height: 50,
-                      padding: EdgeInsets.symmetric(horizontal: Dimensions.PADDING_SIZE_SMALL),
-                      child: CustomButton(
-                        text: getTranslated('pay_now', context),
-                        onTap: () async {
-                          if(ResponsiveHelper.isWeb()) {
-                            String hostname = html.window.location.hostname;
-                            String selectedUrl = '${AppConstants.BASE_URL}/payment-mobile?order_id=${order.trackModel.id}&&customer_id=${Provider.of<ProfileProvider>(context, listen: false).userInfoModel.id}'
-                                '&&callback=http://$hostname${Routes.ORDER_SUCCESS_SCREEN}/${order.trackModel.id}';
-                            html.window.open(selectedUrl, "_self");
-                          }else {
-                            Navigator.pushReplacementNamed(context, Routes.getPaymentRoute('order', order.trackModel.id.toString(), order.trackModel.userId));
-                          }
-                        },
-                      ),
-                    )) : SizedBox(),*/
                               ]),
                             ),
                           )
@@ -1019,13 +718,15 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                               decoration: BoxDecoration(
                                 border: Border.all(
                                     width: 2,
-                                    color: ColorResources.getScaffoldColor(context)),
+                                    color: ColorResources.getScaffoldColor(
+                                        context)),
                                 borderRadius: BorderRadius.circular(10),
                               ),
                               child: Text(
                                   getTranslated('order_cancelled', context),
                                   style: rubikBold.copyWith(
-                                      color: ColorResources.getScaffoldColor(context))),
+                                      color: ColorResources.getScaffoldColor(
+                                          context))),
                             ),
                           ),
                     (widget.orderModel!.orderStatus == 'confirmed' ||
@@ -1063,11 +764,6 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                                                       .latitude!),
                                                   double.parse(widget.orderModel!.deliveryAddress!.longitude!)))
                                           .then((value) => Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => OrderTrackingScreen(orderID: widget.orderModel!.id.toString(), track: widget.orderModel!))));
-
-                                  // Navigator.pushNamed(
-                                  //     context,
-                                  //     Routes.getOrderTrackingRoute(
-                                  //         order.trackModel!.id!));
                                 },
                               ),
                             ),
@@ -1095,7 +791,8 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                         : SizedBox(),
                   ],
                 )
-              : CustomCircularIndicator(color:ColorResources.getScaffoldColor(context));
+              : CustomCircularIndicator(
+                  color: ColorResources.getScaffoldColor(context));
         },
       ),
     );

@@ -21,30 +21,7 @@ class SearchRepo {
       return ApiResponse.withError(ApiErrorHandler.getMessage(e));
     }
   }
-  Future<ApiResponse> getBrands() async {
-    try {
-      final response = await dioClient!.get(AppConstants.BRANDS_URI);
-      return ApiResponse.withSuccess(response);
-    } catch (e) {
-      return ApiResponse.withError(ApiErrorHandler.getMessage(e));
-    }
-  }
-  Future<ApiResponse> getBrandProducts(String offset, String brandId, String categoryId) async {
-    try {
-      final response = await dioClient!.get('${AppConstants.BRAND_PRODUCTS_URI}?offset=$offset&brand_id=$brandId&category_id=$categoryId');
-      return ApiResponse.withSuccess(response);
-    } catch (e) {
-      return ApiResponse.withError(ApiErrorHandler.getMessage(e));
-    }
-  }
-  Future<ApiResponse> getBrandsCategories(String brandId) async {
-    try {
-      final response = await dioClient!.get('${AppConstants.BRANDS_CATEGORIES_URI}?brand_id=$brandId');
-      return ApiResponse.withSuccess(response);
-    } catch (e) {
-      return ApiResponse.withError(ApiErrorHandler.getMessage(e));
-    }
-  }
+
   Future<ApiResponse> filteredProducts(String type,String problem, String serviceId) async {
     try {
       print('parameters----------- ${type + ' '+ problem + ' '+ serviceId}');

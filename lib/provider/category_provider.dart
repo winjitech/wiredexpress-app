@@ -9,18 +9,13 @@ class CategoryProvider extends ChangeNotifier {
 
   CategoryProvider({@required this.categoryRepo});
 
-  List<CategoryModel>? _categoryListFull;
-
-  List<CategoryModel>? _subCategoryList;
   List<Product>? _categoryProductList;
   CategoryModel? _category;
   List<CategoryModel>? _categoryList;
   List<CategoryModel>? get categoryList => _categoryList;
   List<CategoryModel>? _categoryFeaturedList;
   List<CategoryModel>? get categoryFeaturedList => _categoryFeaturedList;
-  List<CategoryModel>? get categoryListFull => _categoryListFull;
 
-  List<CategoryModel>? get subCategoryList => _subCategoryList;
   List<Product>? get categoryProductList => _categoryProductList;
   CategoryModel? get category => _category;
 
@@ -62,23 +57,7 @@ class CategoryProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> getCategoryListFull(BuildContext? context, bool reload) async {
-    if (_categoryListFull == null || reload) {
-      ApiResponse apiResponse = await categoryRepo!.getCategoryListFull();
-      if (apiResponse.response != null &&
-          apiResponse.response!.statusCode == 200) {
-        _categoryListFull = [];
-        apiResponse.response!.data!.forEach((category) =>
-            _categoryListFull!.add(CategoryModel.fromJson(category)));
-      } else {
-        //  ApiChecker.checkApi(context, apiResponse);
-      }
-      notifyListeners();
-    }
-  }
-
   void getCategory(BuildContext? context, String categoryID) async {
-    _subCategoryList = null;
     ApiResponse apiResponse = await categoryRepo!.getCategory(categoryID);
     if (apiResponse.response != null &&
         apiResponse.response!.statusCode == 200) {
@@ -91,7 +70,6 @@ class CategoryProvider extends ChangeNotifier {
 
   Future<CategoryModel> getCategoryByID(
       BuildContext? context, String categoryID) async {
-    _subCategoryList = null;
     ApiResponse apiResponse = await categoryRepo!.getCategory(categoryID);
     if (apiResponse.response != null &&
         apiResponse.response!.statusCode == 200) {
@@ -100,22 +78,6 @@ class CategoryProvider extends ChangeNotifier {
     } else {
       return CategoryModel();
     }
-  }
-
-  void getSubCategoryList(BuildContext? context, String categoryID) async {
-    _subCategoryList = null;
-    ApiResponse apiResponse =
-        await categoryRepo!.getSubCategoryList(categoryID);
-    if (apiResponse.response != null &&
-        apiResponse.response!.statusCode == 200) {
-      _subCategoryList = [];
-      apiResponse.response!.data.forEach((category) =>
-          _subCategoryList!.add(CategoryModel.fromJson(category)));
-      getCategoryProductList(context, categoryID);
-    } else {
-      // ApiChecker.checkApi(context, apiResponse);
-    }
-    notifyListeners();
   }
 
   bool? _getCategoryLoading = false;
@@ -135,7 +97,6 @@ class CategoryProvider extends ChangeNotifier {
       _getCategoryLoading = false;
 
       notifyListeners();
-
     } else {
       _getCategoryLoading = false;
 
