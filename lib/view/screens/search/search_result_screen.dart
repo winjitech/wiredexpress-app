@@ -42,8 +42,7 @@ class SearchResultScreen extends StatelessWidget {
                 children: [
                   SizedBox(height: 15),
                   isServiceSearch == 0
-                      ?
-                  GestureDetector(
+                      ? GestureDetector(
                           onTap: () async {
                             Navigator.of(context).pop();
                           },
@@ -82,8 +81,7 @@ class SearchResultScreen extends StatelessWidget {
                                     ),
                                     SizedBox(
                                       width: 10,
-                                    ) ,
-
+                                    ),
                                   ],
                                 ),
                                 height: 45,
@@ -149,28 +147,28 @@ class SearchResultScreen extends StatelessWidget {
                         ? searchProvider.searchProductList!.length > 0
                             ? Scrollbar(
                                 child: SingleChildScrollView(
+                                  padding: EdgeInsets.zero,
                                   physics: BouncingScrollPhysics(),
                                   child: Center(
-                                    child: SizedBox(
-                                      // macbook
-                                      width: MediaQuery.of(context).size.width,
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(10),
                                       child: GridView.builder(
-                                        physics: NeverScrollableScrollPhysics(),
-                                        shrinkWrap: true,
-                                        itemCount: searchProvider
-                                            .searchProductList!.length,
                                         gridDelegate:
                                             SliverGridDelegateWithFixedCrossAxisCount(
-                                                crossAxisSpacing: 5,
-                                                mainAxisSpacing: 5,
-                                                childAspectRatio: 3,
-                                                crossAxisCount: ResponsiveHelper
-                                                        .isDesktop(context)
-                                                    ? 4
-                                                    : ResponsiveHelper.isTab(
-                                                            context)
-                                                        ? 3
-                                                        : 1),
+                                          crossAxisSpacing: 10,
+                                          mainAxisSpacing: 10,
+                                          mainAxisExtent: 100,
+                                          childAspectRatio: 4,
+                                          crossAxisCount:
+                                              ResponsiveHelper.isTab(context)
+                                                  ? 2
+                                                  : 1,
+                                        ),
+                                        itemCount: searchProvider
+                                            .searchProductList!.length,
+                                        shrinkWrap: true,
+                                        physics: NeverScrollableScrollPhysics(),
+                                        padding: EdgeInsets.zero,
                                         itemBuilder: (context, index) =>
                                             CategoryProductWidget(
                                                 product: searchProvider

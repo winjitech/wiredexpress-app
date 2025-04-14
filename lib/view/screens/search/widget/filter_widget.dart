@@ -41,7 +41,8 @@ class FilterWidget extends StatelessWidget {
 
   Widget _categoryText(
       BuildContext context, String text, CategoryProvider categoryProvider) {
-    bool isSelected = categoryProvider.selectedCategory == text;
+    bool isSelected = categoryProvider.selectedCategory?.name!.toLowerCase() ==
+        text.toLowerCase();
 
     var featuredElement = categoryProvider.categoryFeaturedList
         ?.firstWhere((element) => element.name == text);
@@ -50,9 +51,12 @@ class FilterWidget extends StatelessWidget {
 
     return MaterialButton(
       onPressed: () {
-        categoryProvider.setCategory(text);
+        categoryProvider.setCategory(featuredElement!);
         if (getId != null) {
-          categoryProvider.getCategoryProductList(context, getId.toString());
+          categoryProvider.clearCategoryProductListOffset();
+
+          categoryProvider.getCategoryProductList(
+              context, "1", getId.toString());
         }
       },
       child: Text(

@@ -14,7 +14,11 @@ class ColorResources {
         ? Color(0xFF6f7275)
         : Color(0xFFA0A4A8);
   }
-
+  static Color getBoxShadow(BuildContext context) {
+    return Provider.of<ThemeProvider>(context, listen: false).darkTheme
+        ? Colors.black.withOpacity(0.4)
+        : Colors.grey[300]!;
+  }
   static Color getGrayColor(BuildContext context) {
     return Provider.of<ThemeProvider>(context, listen: false).darkTheme
         ? Color(0xFF919191)

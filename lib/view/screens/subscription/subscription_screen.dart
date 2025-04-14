@@ -1,6 +1,7 @@
 import 'package:wired_express/data/helper/helpers.dart';
 import 'package:wired_express/data/model/response/subscription_model.dart';
 import 'package:wired_express/localization/language_constrants.dart';
+import 'package:wired_express/provider/splash_provider.dart';
 import 'package:wired_express/provider/subscription_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -25,8 +26,8 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
           children: [
             CustomAppBar(title: 'subscriptions', isBackButtonExist: true),
             Expanded(
-              child: Consumer<SubscriptionProvider>(
-                builder: (context, subscriptionProvider, child) {
+              child: Consumer2<SubscriptionProvider , SplashProvider>(
+                builder: (context, subscriptionProvider, splashProvider , child) {
                   if (subscriptionProvider.subscriptionListLoading!|| subscriptionProvider.subscriptionList == null) {
                     return const CustomCircularIndicator();
                   }
@@ -39,6 +40,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                       ),
                     );
                   }
+                  String currency = splashProvider.configModel!.currencySymbol ?? '\$';
 
                   return Scrollbar(
                     child: SingleChildScrollView(
@@ -131,7 +133,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                                                       ),
                                                     ),
                                                     Text(
-                                                      "${AppConstants.CURRENCY}${Helpers.formatTextWithNum(subscription.price ?? "0.0")}",
+                                                      "$currency${Helpers.formatTextWithNum(subscription.price ?? "0.0")}",
                                                       maxLines: 1,
                                                       overflow:
                                                           TextOverflow.ellipsis,

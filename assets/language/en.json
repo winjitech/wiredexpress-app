@@ -427,6 +427,20 @@
   "subscribe" : "Subscribe",
   "unsubscribe" : "Unsubscribe",
   "tiered_pricing_discount": "Tiered pricing discount",
-  "you_have_active_subscription": "You are currently subscribed to a plan. When you choose the new plan, we will cancel your old subscription."
-
+  "you_have_active_subscription": "You are currently subscribed to a plan. When you choose the new plan, we will cancel your old subscription.",
+  "email_already_registered_before" : "Email already registered before!",
+  "your_active_subscription_plan_place" : "Your active subscription plan is in place",
+  "want_use_loyalty_points" : "Use loyalty points",
+  "you_have" : "You have",
+  "points" : "Points",
+  "off" : "Off",
+  "remaining_points:" : "Remaining points: ",
+  "change_delivery_location" : "Change Delivery Location",
+  "you_got" : "You got",
+  "loyalty_points_discount": "Loyalty points discount",
+  "nearby_electricians" : "Nearby electricians",
+  "navigate": "Navigate",
+  "you_have_free_delivery" : "You have free delivery",
+  "free_delivery" : "Free delivery",
+  "no_any_product_available" : "No any product available!"
 }

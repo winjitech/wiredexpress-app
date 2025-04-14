@@ -58,7 +58,8 @@ class _DrawerScreenState extends State<DrawerScreen> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      profileProvider.userInfoModel!.image == null
+                      profileProvider.userInfoModel != null &&
+                          profileProvider.userInfoModel!.image == null
                           ? const SizedBox(
                               height: 70,
                               width: 70,

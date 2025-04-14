@@ -1,14 +1,16 @@
 import 'dart:convert';
-
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:wired_express/data/helper/helpers.dart';
 import 'package:wired_express/data/model/response/cart_model.dart';
-import 'package:wired_express/data/model/response/moq_setting_model.dart';
 import 'package:wired_express/data/model/response/product_model.dart';
+import 'package:wired_express/data/model/response/product_plan_discount_model.dart';
 import 'package:wired_express/data/model/response/tiered_pricing_model.dart';
 import 'package:wired_express/helper/price_converter.dart';
 import 'package:wired_express/localization/language_constrants.dart';
 import 'package:wired_express/provider/cart_provider.dart';
 import 'package:wired_express/provider/product_provider.dart';
+import 'package:wired_express/provider/profile_provider.dart';
 import 'package:wired_express/provider/splash_provider.dart';
 import 'package:wired_express/provider/theme_provider.dart';
 import 'package:wired_express/utill/color_resources.dart';
@@ -21,331 +23,268 @@ import 'package:wired_express/view/screens/product/cart_product_details_screen.d
 class CartProductWidget extends StatelessWidget {
   final CartModel? cart;
   final int? cartIndex;
-  final bool? isAvailable;
-  final bool? fromSubmitOrder;
 
   CartProductWidget({
     @required this.cart,
     @required this.cartIndex,
-    @required this.isAvailable,
-    this.fromSubmitOrder = false,
   });
 
   @override
   Widget build(BuildContext context) {
-    print('cart here -- ${jsonEncode(cart)}');
+    return Consumer4<ProductProvider, CartProvider, SplashProvider,
+        ProfileProvider>(
+      builder: (context, productProvider, cartProvider, splashProvider,
+          profileProvider, child) {
+        print('cart here -- ${jsonEncode(cart)}');
 
-    Product product = cart!.product!;
-    MoqSettingModel? moqSetting = product.moqSetting;
-    int minOrderQuantity = moqSetting?.minimumOrderQuantity ?? 1;
-    List<TiredPricingModel> tiredPricing = product.tiredPricing ?? [];
+        ProductModel product = cart!.product!;
+        int quantity = cart!.quantity!;
+        TiredPricingModel? tiredPricing =
+            cart!.tieredPricing ?? TiredPricingModel();
+        double priceBeforeDisc = product.price!;
+        ProductPlanDiscountModel? productPlanDiscountModel;
+        if (profileProvider.userInfoModel != null &&
+            profileProvider.userInfoModel!.exclusiveDiscounts == 1) {
+          List<ProductPlanDiscountModel> productPlanDiscount =
+              product.productPlanDiscount ?? [];
 
-    double priceWithDiscount = PriceConverter.convertWithDiscount(
-        context, product.price!, product.discount!, product.discountType!);
-    double price = PriceConverter.getProductFinalPrice(
-            tiredPricing, priceWithDiscount, cart!.quantity ?? 1) ??
-        0.0;
-    print("pricepricepriceprice == $price");
-    double priceWithQuantity = price * cart!.quantity!;
-    double priceWithQuantityWithoutDiscount = price * cart!.quantity!;
+          try {
+            productPlanDiscountModel = productPlanDiscount.firstWhere(
+                  (discount) =>
+              discount.planId ==
+                  profileProvider.userInfoModel!.userSubscription!.planId,
+              orElse: () => ProductPlanDiscountModel(),
+            );
+          } catch (e) {
+            print("Error finding discount: $e");
+            productPlanDiscountModel = ProductPlanDiscountModel();
+          }
+        }
 
-    return Consumer<CartProvider>(
-      builder: (context, cartProvider, child) {
-        return Consumer<ProductProvider>(
-          builder: (context, productProvider, child) {
-            return fromSubmitOrder == true
-                ? GestureDetector(
-                    child: Container(
-                      margin: EdgeInsets.only(
-                          bottom: Dimensions.PADDING_SIZE_DEFAULT),
-                      child: Container(
-                        padding: EdgeInsets.symmetric(
-                          vertical: Dimensions.PADDING_SIZE_EXTRA_SMALL,
-                          horizontal: Dimensions.PADDING_SIZE_SMALL,
+        double discountedOnProductPrice = productPlanDiscountModel != null &&
+            productPlanDiscountModel.planId != null
+            ? PriceConverter.convertWithDiscount(
+            context,
+            product.price!,
+            productPlanDiscountModel.discount!,
+            productPlanDiscountModel.discountType!)
+            : PriceConverter.convertWithDiscount(context, product.price!,
+            product.discount!, product.discountType!);
+
+        double priceAfterTieredPricing =
+            PriceConverter.getProductFinalPriceWithTieredPricing(
+                tiredPricing, discountedOnProductPrice) ??
+                0.0;
+        double finalProductPrice = priceAfterTieredPricing * quantity;
+
+        String currency = splashProvider.configModel!.currencySymbol ?? '\$';
+        bool haveDiscount = (priceBeforeDisc * quantity) != finalProductPrice;
+
+        return GestureDetector(
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (BuildContext? context) => CartProductDetailsScreen(
+                  product: cart!.product!, cart: cart!),
+            ),
+          ),
+          child: Container(
+            margin:
+            const EdgeInsets.only(bottom: Dimensions.PADDING_SIZE_DEFAULT),
+            child: Container(
+              padding: const EdgeInsets.symmetric(
+                vertical: Dimensions.PADDING_SIZE_EXTRA_SMALL,
+                horizontal: Dimensions.PADDING_SIZE_SMALL,
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: CachedNetworkImage(
+                      height: 100,
+                      width: 100,
+                      fit: BoxFit.cover,
+                      imageUrl:
+                      '${splashProvider.baseUrls!.productImageUrl}/${product.image}',
+                      cacheKey:
+                      '${splashProvider.baseUrls!.productImageUrl}/${product.image}',
+                    ),
+                  ),
+                  const SizedBox(width: 20),
+                  // Product Details
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Text(
+                          product.name!,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 18,
+                          ),
                         ),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10),
-                                // color: Colors.grey[400],
-                              ),
-                              width: 100,
-                              height: 100,
-                              child: Padding(
-                                padding: const EdgeInsets.all(10),
-                                child: Image.network(
-                                  '${Provider.of<SplashProvider>(context, listen: false).baseUrls!.productImageUrl}/${product.image}',
-                                ),
-                              ),
-                            ),
-                            SizedBox(width: 20),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    product.name!,
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 18,
-                                    ),
-                                  ),
-                                  SizedBox(height: 30),
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
+                        const SizedBox(height: 30),
+                        Align(
+                          alignment: Alignment.bottomLeft,
+                          child: Row(
+                            children: [
+                              Expanded(
+                                  child: Row(
                                     children: [
-                                      Align(
-                                        alignment: Alignment.bottomLeft,
-                                        child: Text(
-                                          '${cart!.quantity!} items',
+                                      if (haveDiscount)
+                                        Text(
+                                          '$currency${Helpers.formatTextWithNum((priceBeforeDisc * quantity).toString())}',
                                           style: TextStyle(
-                                            color: Colors.black38,
-                                            fontSize: 18,
+                                            color:
+                                            ColorResources.getTextColor(context)
+                                                .withOpacity(0.4),
+                                            fontSize: 16,
+                                            decoration: TextDecoration.lineThrough,
+                                            decorationColor:
+                                            ColorResources.getTextColor(context)
+                                                .withOpacity(0.4),
                                           ),
                                         ),
+                                      SizedBox(
+                                        width: 5,
                                       ),
                                       Text(
-                                        '${Provider.of<SplashProvider>(context, listen: false).configModel!.currencySymbol}${priceWithQuantity}',
+                                        '$currency${Helpers.formatTextWithNum(finalProductPrice.toString())}',
                                         style: TextStyle(
-                                          color: Colors.black38,
+                                          color:
+                                          ColorResources.getTextColor(context),
+                                          fontWeight: FontWeight.w500,
                                           fontSize: 18,
                                         ),
                                       ),
                                     ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  )
-                : GestureDetector(
-                    onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (BuildContext? context) =>
-                            CartProductDetailsScreen(
-                          product: cart!.product!,
-                          cartIndex: cartIndex!,
-                          cart: cart!,
-                          callback: (CartModel cartModel) {
-                            ScaffoldMessenger.of(context!).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                    getTranslated('updated_in_cart', context)),
-                                backgroundColor: Colors.green,
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                    ),
-                    child: Container(
-                      margin: EdgeInsets.only(
-                          bottom: Dimensions.PADDING_SIZE_DEFAULT),
-                      child: Container(
-                        padding: EdgeInsets.symmetric(
-                          vertical: Dimensions.PADDING_SIZE_EXTRA_SMALL,
-                          horizontal: Dimensions.PADDING_SIZE_SMALL,
-                        ),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Provider.of<ThemeProvider>(context)
-                                            .darkTheme
-                                        ? Colors.black.withOpacity(0.4)
-                                        : Colors.grey[300]!,
-                                    blurRadius: 5,
-                                    spreadRadius: 1,
-                                  )
-                                ],
-                                color: Colors.white,
-                              ),
-                              width: 100,
-                              height: 100,
-                              child: Padding(
-                                padding: const EdgeInsets.all(10),
-                                child: Image.network(
-                                  '${Provider.of<SplashProvider>(context, listen: false).baseUrls!.productImageUrl}/${product!.image}',
+                                  )),
+                              // Quantity Controls
+                              Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(5),
                                 ),
-                              ),
-                            ),
-                            SizedBox(width: 20),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    product.name!,
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 18,
-                                    ),
-                                  ),
-                                  SizedBox(height: 30),
-                                  Align(
-                                    alignment: Alignment.bottomLeft,
-                                    child: Text(
-                                      '${cart!.quantity!} items',
-                                      style: TextStyle(
-                                        color: Colors.black38,
-                                        fontSize: 18,
+                                child: Row(
+                                  children: [
+                                    quantity == 1
+                                        ? GestureDetector(
+                                      onTap: () {
+                                        Provider.of<CartProvider>(context,
+                                            listen: false)
+                                            .removeFromCart(cart!);
+                                        Provider.of<CartProvider>(context,
+                                            listen: false)
+                                            .removeFromCartList(
+                                            cart!.id!,
+                                            cart!.productId!,
+                                                (message) {});
+                                        showCustomSnackBar(
+                                            getTranslated(
+                                                'removed_cart_successfully',
+                                                context),
+                                            context,
+                                            isError: false);
+                                      },
+                                      child: Container(
+                                        width: 25,
+                                        height: 25,
+                                        decoration: BoxDecoration(
+                                            color: ColorResources
+                                                .getScaffoldColor(
+                                                context),
+                                            borderRadius:
+                                            BorderRadius.circular(
+                                                50)),
+                                        child: const Icon(
+                                          Icons.delete,
+                                          size: 20,
+                                          color:
+                                          ColorResources.COLOR_WHITE,
+                                        ),
+                                      ),
+                                    )
+                                        : GestureDetector(
+                                      onTap: () {
+                                        if (quantity > 1) {
+                                          Provider.of<CartProvider>(
+                                              context,
+                                              listen: false)
+                                              .updateQuantity(cartIndex!,
+                                              quantity - 1);
+                                        }
+                                      },
+                                      child: Container(
+                                        width: 25,
+                                        height: 25,
+                                        decoration: BoxDecoration(
+                                            color: ColorResources
+                                                .getScaffoldColor(
+                                                context),
+                                            borderRadius:
+                                            BorderRadius.circular(
+                                                50)),
+                                        child: const Icon(
+                                          Icons.remove,
+                                          size: 20,
+                                          color:
+                                          ColorResources.COLOR_WHITE,
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            SizedBox(width: 20),
-                            Expanded(
-                              child: Column(
-                                children: [
-                                  Text(
-                                    '${Provider.of<SplashProvider>(context, listen: false).configModel!.currencySymbol}${priceWithQuantity}',
-                                    style: TextStyle(
-                                      color: Colors.black38,
-                                      fontSize: 18,
-                                    ),
-                                  ),
-                                  SizedBox(height: 40),
-                                  Container(
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(5),
-                                    ),
-                                    child: Row(
-                                      children: [
-                                        cart!.quantity! == 1
-                                            ? GestureDetector(
-                                                onTap: () {
-                                                  Provider.of<CartProvider>(
-                                                          context,
-                                                          listen: false)
-                                                      .removeFromCart(cart!);
-                                                  Provider.of<CartProvider>(
-                                                          context,
-                                                          listen: false)
-                                                      .removeFromCartList(
-                                                          cart!.id!,
-                                                          cart!.productId!,
-                                                          (message) {});
-                                                  showCustomSnackBar(
-                                                      getTranslated(
-                                                          'removed_cart_successfully',
-                                                          context),
-                                                      context,
-                                                      isError: false);
-                                                },
-                                                child: Container(
-                                                  width: 25,
-                                                  height: 25,
-                                                  decoration: BoxDecoration(
-                                                      color: ColorResources
-                                                          .getScaffoldColor(context),
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              50)),
-                                                  child: Icon(
-                                                    Icons.delete,
-                                                    size: 20,
-                                                    color: ColorResources
-                                                        .COLOR_WHITE,
-                                                  ),
-                                                ),
-                                              )
-                                            : GestureDetector(
-                                                onTap: () {
-                                                  if (cart!.quantity! > 1) {
-                                                    Provider.of<CartProvider>(
-                                                            context,
-                                                            listen: false)
-                                                        .updateQuantity(
-                                                            cartIndex!,
-                                                            cart!.quantity! -
-                                                                1);
-                                                  }
-                                                },
-                                                child: Container(
-                                                  width: 25,
-                                                  height: 25,
-                                                  decoration: BoxDecoration(
-                                                      color: ColorResources
-                                                          .getScaffoldColor(context),
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              50)),
-                                                  child: Icon(
-                                                    Icons.remove,
-                                                    size: 20,
-                                                    color: ColorResources
-                                                        .COLOR_WHITE,
-                                                  ),
-                                                ),
-                                              ),
-                                        Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 10),
-                                          child: Text(
-                                            cart!.quantity.toString(),
-                                            style: rubikMedium.copyWith(
-                                              fontSize: 25,
-                                              fontWeight: FontWeight.w500,
-                                              color:
-                                                  ColorResources.getTextColor(
-                                                      context),
-                                            ),
-                                          ),
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 10),
+                                      child: Text(
+                                        quantity.toString(),
+                                        style: rubikMedium.copyWith(
+                                          fontSize: 25,
+                                          fontWeight: FontWeight.w500,
+                                          color: ColorResources.getTextColor(
+                                              context),
                                         ),
-                                        GestureDetector(
-                                          onTap: () {
-                                            Provider.of<CartProvider>(context,
-                                                    listen: false)
-                                                .updateQuantity(cartIndex!,
-                                                    cart!.quantity! + 1);
-                                          },
-                                          child: Container(
-                                            width: 25,
-                                            height: 25,
-                                            decoration: BoxDecoration(
-                                              color:
-                                                  ColorResources.getScaffoldColor(context),
-                                              borderRadius:
-                                                  BorderRadius.circular(50),
-                                            ),
-                                            child: Icon(
-                                              Icons.add,
-                                              size: 20,
-                                              color: ColorResources.COLOR_WHITE,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
+                                      ),
                                     ),
-                                  ),
-                                ],
+                                    GestureDetector(
+                                      onTap: () {
+                                        Provider.of<CartProvider>(context,
+                                            listen: false)
+                                            .updateQuantity(
+                                            cartIndex!, quantity + 1);
+                                      },
+                                      child: Container(
+                                        width: 25,
+                                        height: 25,
+                                        decoration: BoxDecoration(
+                                          color:
+                                          ColorResources.getScaffoldColor(
+                                              context),
+                                          borderRadius:
+                                          BorderRadius.circular(50),
+                                        ),
+                                        child: const Icon(
+                                          Icons.add,
+                                          size: 20,
+                                          color: ColorResources.COLOR_WHITE,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
+                      ],
                     ),
-                  );
-          },
+                  ),
+                ],
+              ),
+            ),
+          ),
         );
       },
     );

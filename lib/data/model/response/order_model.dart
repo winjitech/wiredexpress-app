@@ -74,10 +74,10 @@ class OrderModel {
   DeliveryMan? _deliveryMan;
   DeliveryAddress? _deliveryAddress;
   int? _detailsCount;
-
   String? _deliveryType;
   String? _deliveryDate;
   String? _deliveryTime;
+  int? _usePoints;
 
   OrderModel({
     int? id,
@@ -100,10 +100,10 @@ class OrderModel {
     DeliveryMan? deliveryMan,
     DeliveryAddress? deliveryAddress,
     int? detailsCount,
-
     String? deliveryType,
     String? deliveryDate,
     String? deliveryTime,
+    int? usePoints,
   }) {
     _id = id;
     _userId = userId;
@@ -125,10 +125,10 @@ class OrderModel {
     _deliveryMan = deliveryMan;
     _deliveryAddress = deliveryAddress;
     _detailsCount = detailsCount;
-
     _deliveryType = deliveryType;
     _deliveryDate = deliveryDate;
     _deliveryTime = deliveryTime;
+    _usePoints = usePoints;
   }
 
   int? get id => _id;
@@ -148,15 +148,14 @@ class OrderModel {
   int? get deliveryManId => _deliveryManId;
   double? get deliveryCharge => _deliveryCharge;
   String? get orderNote => _orderNote;
-
   List<Details>? get details => _details;
   DeliveryMan? get deliveryMan => _deliveryMan;
   DeliveryAddress? get deliveryAddress => _deliveryAddress;
   int? get detailsCount => _detailsCount;
-
   String? get deliveryType => _deliveryType;
   String? get deliveryDate => _deliveryDate;
   String? get deliveryTime => _deliveryTime;
+  int? get usePoints => _usePoints;
 
   OrderModel.fromJson(Map<String?, dynamic> json) {
     _id = json['id'];
@@ -176,10 +175,10 @@ class OrderModel {
     _deliveryCharge = (json['delivery_charge'] as num).toDouble();
     _orderNote = json['order_note'];
     _detailsCount = json['details_count'] as int? ?? 0;
-
     _deliveryType = json['delivery_type'];
     _deliveryDate = json['delivery_date'];
     _deliveryTime = json['delivery_time'];
+    _usePoints = json['use_points'];
 
     if (json['details'] != null) {
       _details = [];
@@ -214,10 +213,10 @@ class OrderModel {
     data['delivery_charge'] = _deliveryCharge;
     data['order_note'] = _orderNote;
     data['details_count'] = _detailsCount;
-
     data['delivery_type'] = _deliveryType;
     data['delivery_date'] = _deliveryDate;
     data['delivery_time'] = _deliveryTime;
+    data['use_points'] = _usePoints;
 
     if (_details != null) {
       data['details'] = _details!.map((v) => v.toJson()).toList();
@@ -237,7 +236,7 @@ class Details {
   int? _productId;
   int? _orderId;
   double? _price;
-  Product? _productDetails;
+  ProductModel? _productDetails;
   double? _discountOnProduct;
   String? _discountType;
   int? _quantity;
@@ -250,7 +249,7 @@ class Details {
         int? productId,
         int? orderId,
         double? price,
-        Product? productDetails,
+        ProductModel? productDetails,
         double? discountOnProduct,
         String? discountType,
         int? quantity,
@@ -277,7 +276,7 @@ class Details {
   int? get productId => _productId;
   int? get orderId => _orderId;
   double? get price => _price;
-  Product? get productDetails => _productDetails;
+  ProductModel? get productDetails => _productDetails;
   double? get discountOnProduct => _discountOnProduct;
   String? get discountType => _discountType;
   int? get quantity => _quantity;
@@ -300,7 +299,7 @@ class Details {
     _taxAmount = (json['tax_amount'] as num).toDouble();
     _createdAt = json['created_at'];
     _productDetails = json['product_details'] != null
-        ? Product.fromJson(json['product_details'])
+        ? ProductModel.fromJson(json['product_details'])
         : null;
   }
 

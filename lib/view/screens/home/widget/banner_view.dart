@@ -197,143 +197,28 @@ class BannerShimmer extends StatelessWidget {
               onPageChanged: (index, reason) {},
             ),
             itemCount: 10,
-            itemBuilder: (context, index, _) {
-              return Row(children: [
-                Center(
-                    child: GestureDetector(
-                        child: Stack(children: [
-                  Center(
-                    child: Container(
-                      height: 175,
-                      width: double.infinity,
-                      margin: EdgeInsets.only(right: 0),
-                      decoration: BoxDecoration(
-                          color: ColorResources.getScaffoldBackgroundColor(
-                              context),
-                          borderRadius: BorderRadius.circular(10),
-                          boxShadow: [
-                            BoxShadow(
-                              color:
-                                  Provider.of<ThemeProvider>(context).darkTheme
-                                      ? Colors.black.withOpacity(0.4)
-                                      : Colors.grey[300]!,
-                              blurRadius: 5,
-                              spreadRadius: 1,
-                            )
-                          ]),
-                    ),
-                  ),
-                  Positioned(
-                      child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 10, vertical: 20),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(16),
-                              color: Colors.white,
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 15, vertical: 5),
-                              child: Container(
-                                height: 25,
-                                width: 100,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10),
-                                  color: Colors.grey[
-                                      Provider.of<ThemeProvider>(context)
-                                              .darkTheme
-                                          ? 900
-                                          : 300]!,
-                                ),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Container(
-                                    height: 25,
-                                    width: 100,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(10),
-                                      color: Colors.grey[
-                                          Provider.of<ThemeProvider>(context)
-                                                  .darkTheme
-                                              ? 700
-                                              : 300]!,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            )),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 15),
-                          child: Container(
-                            height: 20,
-                            width: 60,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              color: Colors.grey[
-                                  Provider.of<ThemeProvider>(context).darkTheme
-                                      ? 900
-                                      : 300]!,
-                            ),
-                          ),
-                        ),
-                        SizedBox(
-                          height: 5,
-                        ),
-                        Row(
-                          children: [
-                            Container(
-                              height: 40,
-                              width: 100,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10),
-                                color: Colors.grey[
-                                    Provider.of<ThemeProvider>(context)
-                                            .darkTheme
-                                        ? 900
-                                        : 300]!,
-                              ),
-                            ),
-                            SizedBox(width: 10),
-                            Container(
-                              height: 25,
-                              width: 20,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10),
-                                color: Colors.grey[
-                                    Provider.of<ThemeProvider>(context)
-                                            .darkTheme
-                                        ? 900
-                                        : 300]!,
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(
-                          height: 5,
-                        ),
-                        Container(
-                          height: 25,
-                          width: 150,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            color: Colors.grey[
-                                Provider.of<ThemeProvider>(context).darkTheme
-                                    ? 900
-                                    : 300]!,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ))
-                ])))
-              ]);
-            }));
+            itemBuilder: (context, index, _) => Row(children: [
+              Expanded(
+                child: Container(
+                  height: 175,
+                  width: double.infinity,
+                  margin: EdgeInsets.only(right: 0),
+                  decoration: BoxDecoration(
+                      color: ColorResources.getScaffoldBackgroundColor(
+                          context),
+                      borderRadius: BorderRadius.circular(10),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Provider.of<ThemeProvider>(context)
+                              .darkTheme
+                              ? Colors.black.withOpacity(0.4)
+                              : Colors.grey[300]!,
+                          blurRadius: 5,
+                          spreadRadius: 1,
+                        )
+                      ]),
+                ),
+              ),
+                ])));
   }
 }

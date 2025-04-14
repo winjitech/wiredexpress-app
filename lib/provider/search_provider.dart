@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:wired_express/data/model/response/base/api_response.dart';
 import 'package:wired_express/data/model/response/category_model.dart';
 import 'package:wired_express/data/model/response/product_model.dart';
+import 'package:wired_express/data/model/response/userinfo_model.dart';
 import 'package:wired_express/data/repository/search_repo.dart';
+import 'package:wired_express/provider/auth_provider.dart';
+import 'package:wired_express/provider/profile_provider.dart';
 
 class SearchProvider with ChangeNotifier {
   final SearchRepo? searchRepo;
   SearchProvider({@required this.searchRepo});
 
   List<String> _historyList = [];
-
 
   List<String> get historyList => _historyList;
 
@@ -19,14 +22,14 @@ class SearchProvider with ChangeNotifier {
   CategoryModel? _selectedCategory;
   CategoryModel? get selectedCategory => _selectedCategory;
 
-  List<Product>? _searchProductList;
-  List<Product>? _filterProductList;
+  List<ProductModel>? _searchProductList;
+  List<ProductModel>? _filterProductList;
   bool _isClear = true;
   String _searchText = '';
 
-  List<Product>? get searchProductList => _searchProductList;
+  List<ProductModel>? get searchProductList => _searchProductList;
 
-  List<Product>? get filterProductList => _filterProductList;
+  List<ProductModel>? get filterProductList => _filterProductList;
 
   bool get isClear => _isClear;
 
@@ -45,6 +48,18 @@ class SearchProvider with ChangeNotifier {
   }
 
   void searchProduct(String query, BuildContext? context) async {
+    int showProductsEarlyAccess = 0;
+    final authProvider =
+        Provider.of<CustomAuthProvider>(context!, listen: false);
+    final profileProvider =
+        Provider.of<ProfileProvider>(context, listen: false);
+    bool isLoggedIn = authProvider.isLoggedIn() ?? false;
+    UserInfoModel? userInfo = profileProvider.userInfoModel;
+
+    if (isLoggedIn && userInfo != null && userInfo.productsEarlyAccess == 1) {
+      print("productsEarlyAccess === ${userInfo.productsEarlyAccess == 1}");
+      showProductsEarlyAccess = 1;
+    }
     _searchText = query;
     _isClear = false;
     _searchProductList = null;
@@ -52,17 +67,20 @@ class SearchProvider with ChangeNotifier {
     _rating = -1;
     notifyListeners();
 
-    ApiResponse apiResponse = await searchRepo!.getSearchProductList(query);
+    ApiResponse apiResponse = await searchRepo!.getSearchProductList(query,
+        planId: showProductsEarlyAccess == 1
+            ? userInfo!.userSubscription!.planId
+            : null);
     if (apiResponse.response != null &&
         apiResponse.response!.statusCode == 200) {
       if (query.isEmpty) {
         _searchProductList = [];
       } else {
         _searchProductList = [];
-        _searchProductList!.addAll(
-            ProductModel.fromJson(apiResponse.response!.data).products!);
+        _searchProductList!
+            .addAll(ProductBody.fromJson(apiResponse.response!.data).products!);
         // _filterProductList = [];
-        // _filterProductList.addAll(ProductModel.fromJson(apiResponse.response!.data).products);
+        // _filterProductList.addAll(ProductBody.fromJson(apiResponse.response!.data).products);
       }
       notifyListeners();
     } else {
@@ -83,7 +101,7 @@ class SearchProvider with ChangeNotifier {
         apiResponse.response!.statusCode == 200) {
       _filterProductList = [];
       _filterProductList!
-          .addAll(ProductModel.fromJson(apiResponse.response!.data).products!);
+          .addAll(ProductBody.fromJson(apiResponse.response!.data).products!);
     } else {
       //  ApiChecker.checkApi(context, apiResponse);
     }

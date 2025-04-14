@@ -1,3 +1,5 @@
+import 'package:wired_express/data/model/response/user_subscription_model.dart';
+
 class UserInfoModel {
   int? id;
   String? fName;
@@ -14,24 +16,39 @@ class UserInfoModel {
   int? updateVersion;
   int? approved;
   bool? hasActiveSubscription;
+  String? purchasesPoints;
+  int? scheduledDelivery;
+  int? bulkOrderDiscounts;
+  int? exclusiveDiscounts;
+  int? freeDelivery;
+  int? nearbyElectricians;
+  int? productsEarlyAccess;
+  UserSubscriptionModel? userSubscription;
 
-  UserInfoModel({
-    this.id,
-    this.fName,
-    this.lName,
-    this.email,
-    this.image,
-    this.isPhoneVerified,
-    this.emailVerifiedAt,
-    this.createdAt,
-    this.updatedAt,
-    this.emailVerificationToken,
-    this.phone,
-    this.cmFirebaseToken,
-    this.updateVersion,
-    this.approved,
-    this.hasActiveSubscription,
-  });
+  UserInfoModel(
+      {this.id,
+      this.fName,
+      this.lName,
+      this.email,
+      this.image,
+      this.isPhoneVerified,
+      this.emailVerifiedAt,
+      this.createdAt,
+      this.updatedAt,
+      this.emailVerificationToken,
+      this.phone,
+      this.cmFirebaseToken,
+      this.updateVersion,
+      this.approved,
+      this.hasActiveSubscription,
+      this.purchasesPoints,
+      this.scheduledDelivery,
+      this.bulkOrderDiscounts,
+      this.exclusiveDiscounts,
+      this.freeDelivery,
+      this.nearbyElectricians,
+      this.userSubscription,
+      this.productsEarlyAccess});
 
   UserInfoModel.fromJson(Map<String?, dynamic> json) {
     id = json['id'];
@@ -49,6 +66,19 @@ class UserInfoModel {
     updateVersion = json['update_version'];
     approved = json['approved'];
     hasActiveSubscription = json['has_active_subscription'];
+    purchasesPoints = json['purchases_points'] == null
+        ? "0.0"
+        : json['purchases_points'].toString();
+    scheduledDelivery = json['scheduled_delivery'];
+    bulkOrderDiscounts = json['bulk_order_discounts'];
+    exclusiveDiscounts = json['exclusive_discounts'];
+    freeDelivery = json['free_delivery'];
+    nearbyElectricians = json['nearby_electricians'];
+    productsEarlyAccess = json['products_early_access'];
+
+    userSubscription = json['user_subscription'] != null
+        ? UserSubscriptionModel.fromJson(json['user_subscription'])
+        : null;
   }
 
   Map<String?, dynamic> toJson() {
@@ -68,6 +98,16 @@ class UserInfoModel {
     data['update_version'] = updateVersion;
     data['approved'] = approved;
     data['has_active_subscription'] = hasActiveSubscription;
+    data['purchases_points'] = purchasesPoints;
+    data['scheduled_delivery'] = scheduledDelivery;
+    data['bulk_order_discounts'] = bulkOrderDiscounts;
+    data['exclusive_discounts'] = exclusiveDiscounts;
+    data['free_delivery'] = freeDelivery;
+    data['nearby_electricians'] = nearbyElectricians;
+    data['products_early_access'] = productsEarlyAccess;
+    if (userSubscription != null) {
+      data['user_subscription'] = userSubscription?.toJson();
+    }
     return data;
   }
 }

@@ -1,13 +1,10 @@
 import 'dart:async';
-import 'dart:collection';
 import 'package:flutter/material.dart';
 import 'package:wired_express/data/model/body/place_order_body.dart';
-import 'package:wired_express/data/model/response/cart_model.dart';
 import 'package:wired_express/helper/date_converter.dart';
 import 'package:wired_express/localization/language_constrants.dart';
 import 'package:wired_express/provider/auth_provider.dart';
 import 'package:wired_express/provider/cart_provider.dart';
-import 'package:wired_express/provider/coupon_provider.dart';
 import 'package:wired_express/provider/location_provider.dart';
 import 'package:wired_express/provider/order_provider.dart';
 import 'package:wired_express/provider/profile_provider.dart';
@@ -27,23 +24,9 @@ import 'package:provider/provider.dart';
 import 'package:wired_express/view/screens/payment/payment_webview.dart';
 
 class CheckoutScreen extends StatefulWidget {
-  final double? amount;
-  final String? orderType;
-  final List<CartModel>? cartList;
-  final bool? fromCart;
-  final int? deliveryAddressId;
-  final double? totalTax;
-  final double? vatTaxPercentage;
+  final PlaceOrderBody? orderBody;
 
-  CheckoutScreen({
-    @required this.amount,
-    @required this.orderType,
-    @required this.fromCart,
-    @required this.cartList,
-    @required this.deliveryAddressId,
-    @required this.totalTax,
-    this.vatTaxPercentage,
-  });
+  const CheckoutScreen({super.key, this.orderBody});
 
   @override
   _CheckoutScreenState createState() => _CheckoutScreenState();
@@ -57,10 +40,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   bool? _isCashOnDeliveryActive;
   bool? _isDigitalPaymentActive;
 
-  bool _loading = true;
-  Set<Marker> _markers = HashSet<Marker>();
   bool? _isLoggedIn;
-  List<CartModel>? _cartList;
 
   bool _isCashActive = true;
 
@@ -79,8 +59,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           Provider.of<ProfileProvider>(context, listen: false)
               .getUserInfo(context);
         }
-        Provider.of<LocationProvider>(context, listen: false)
-            .initAddressList(context);
+
         orderProvider.clearPrevData();
         _isCashOnDeliveryActive =
             Provider.of<SplashProvider>(context, listen: false)
@@ -92,11 +71,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                     .configModel!
                     .digitalPayment ==
                 'true';
-        _cartList = [];
-        widget.fromCart!
-            ? _cartList!.addAll(
-                Provider.of<CartProvider>(context, listen: false).cartList)
-            : _cartList!.addAll(widget.cartList!);
       }
     });
   }
@@ -108,8 +82,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       key: _scaffoldKey,
       appBar: CustomAppBar(title: getTranslated('checkout', context)),
       body: _isLoggedIn!
-          ? Consumer2<OrderProvider, CartProvider>(
-              builder: (context, orderProvider, cartProvider, child) {
+          ? Consumer3<OrderProvider, CartProvider, ProfileProvider>(
+              builder: (context, orderProvider, cartProvider, profileProvider,
+                  child) {
                 return Consumer<LocationProvider>(
                   builder: (context, address, child) {
                     return Column(
@@ -126,7 +101,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
-
                                         Row(
                                           children: [
                                             Text(
@@ -160,127 +134,140 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                           capitalization:
                                               TextCapitalization.sentences,
                                         ),
-
                                         SizedBox(height: 20),
-                                        Text(
-                                            getTranslated(
-                                                'delivery_type', context),
-                                            style: rubikMedium.copyWith(
-                                                color:
-                                                    ColorResources.getTextColor(
-                                                        context),
-                                                fontSize: Dimensions
-                                                    .FONT_SIZE_LARGE)),
-                                        SizedBox(
-                                          height: 15,
-                                        ),
-                                        Row(
-                                          children: [
-                                            Expanded(
-                                                child: _buildSchedulingOption(
-                                                    context: context,
-                                                    orderProvider:
-                                                        orderProvider,
-                                                    value: 0,
-                                                    textKey: 'same_day')),
-                                            const SizedBox(width: 15),
-                                            Expanded(
-                                                child: _buildSchedulingOption(
-                                                    context: context,
-                                                    orderProvider:
-                                                        orderProvider,
-                                                    value: 1,
-                                                    textKey: 'schedule'))
-                                          ],
-                                        ),
-                                        if (orderProvider
-                                                .selectedScheduledValue ==
+                                        if (profileProvider.userInfoModel!
+                                                .scheduledDelivery ==
                                             1)
                                           Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
                                             children: [
-                                              SizedBox(height: 20),
+                                              Text(
+                                                  getTranslated(
+                                                      'delivery_type', context),
+                                                  style: rubikMedium.copyWith(
+                                                      color: ColorResources
+                                                          .getTextColor(
+                                                              context),
+                                                      fontSize: Dimensions
+                                                          .FONT_SIZE_LARGE)),
+                                              SizedBox(
+                                                height: 15,
+                                              ),
                                               Row(
                                                 children: [
-                                                  Text(
-                                                    getTranslated(
-                                                        'delivery_date',
-                                                        context),
-                                                    style: TextStyle(
-                                                      color: ColorResources
-                                                              .getTextColor(
-                                                                  context)
-                                                          .withOpacity(0.9),
-                                                      fontWeight:
-                                                          FontWeight.w500,
-                                                      fontSize: 16,
-                                                    ),
-                                                  ),
+                                                  Expanded(
+                                                      child:
+                                                          _buildSchedulingOption(
+                                                              context: context,
+                                                              orderProvider:
+                                                                  orderProvider,
+                                                              value: 0,
+                                                              textKey:
+                                                                  'same_day')),
+                                                  const SizedBox(width: 15),
+                                                  Expanded(
+                                                      child:
+                                                          _buildSchedulingOption(
+                                                              context: context,
+                                                              orderProvider:
+                                                                  orderProvider,
+                                                              value: 1,
+                                                              textKey:
+                                                                  'schedule'))
                                                 ],
                                               ),
-                                              SizedBox(height: 15),
-                                              GestureDetector(
-                                                onTap: () => DateConverter
-                                                    .deliveryDateTime(
-                                                        context, orderProvider),
-                                                child: Container(
-                                                    padding: const EdgeInsets
-                                                        .symmetric(
-                                                        horizontal: 10,
-                                                        vertical: 15),
-                                                    decoration: BoxDecoration(
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(15),
-                                                        border: Border.all(
-                                                            color: ColorResources
-                                                                .getBorderColor(
-                                                                    context),
-                                                            width: 0.5)),
-                                                    child: Row(
+                                              if (orderProvider
+                                                      .selectedScheduledValue ==
+                                                  1)
+                                                Column(
+                                                  children: [
+                                                    SizedBox(height: 20),
+                                                    Row(
                                                       children: [
-                                                        Icon(
-                                                          Icons.date_range,
-                                                          color: ColorResources
-                                                                  .getTextColor(
-                                                                      context)
-                                                              .withOpacity(0.6),
-                                                        ),
-                                                        const SizedBox(
-                                                            width: 15),
-                                                        Expanded(
-                                                            child: Text(
-                                                          orderProvider
-                                                                      .selectedDeliveryDate ==
-                                                                  null
-                                                              ? getTranslated(
-                                                                  'select_date',
-                                                                  context)
-                                                              : DateConverter.formatDateTime(
-                                                                  context,
-                                                                  orderProvider
-                                                                      .selectedDeliveryDate!
-                                                                      .toString()),
+                                                        Text(
+                                                          getTranslated(
+                                                              'delivery_date',
+                                                              context),
                                                           style: TextStyle(
-                                                              color: orderProvider
-                                                                          .selectedDeliveryDate ==
-                                                                      null
-                                                                  ? ColorResources
-                                                                          .getTextColor(
-                                                                              context)
-                                                                      .withOpacity(
-                                                                          0.6)
-                                                                  : ColorResources
-                                                                      .getTextColor(
-                                                                          context),
-                                                              fontSize: 15,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w500),
-                                                        )),
+                                                            color: ColorResources
+                                                                    .getTextColor(
+                                                                        context)
+                                                                .withOpacity(
+                                                                    0.9),
+                                                            fontWeight:
+                                                                FontWeight.w500,
+                                                            fontSize: 16,
+                                                          ),
+                                                        ),
                                                       ],
-                                                    )),
-                                              ),
-                                              SizedBox(height: 20),
+                                                    ),
+                                                    SizedBox(height: 15),
+                                                    GestureDetector(
+                                                      onTap: () => DateConverter
+                                                          .deliveryDateTime(
+                                                              context,
+                                                              orderProvider),
+                                                      child: Container(
+                                                          padding: const EdgeInsets
+                                                              .symmetric(
+                                                              horizontal: 10,
+                                                              vertical: 15),
+                                                          decoration: BoxDecoration(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          15),
+                                                              border: Border.all(
+                                                                  color: ColorResources
+                                                                      .getBorderColor(
+                                                                          context),
+                                                                  width: 0.5)),
+                                                          child: Row(
+                                                            children: [
+                                                              Icon(
+                                                                Icons
+                                                                    .date_range,
+                                                                color: ColorResources
+                                                                        .getTextColor(
+                                                                            context)
+                                                                    .withOpacity(
+                                                                        0.6),
+                                                              ),
+                                                              const SizedBox(
+                                                                  width: 15),
+                                                              Expanded(
+                                                                  child: Text(
+                                                                orderProvider
+                                                                            .selectedDeliveryDate ==
+                                                                        null
+                                                                    ? getTranslated(
+                                                                        'select_date',
+                                                                        context)
+                                                                    : DateConverter.formatDateTime(
+                                                                        context,
+                                                                        orderProvider
+                                                                            .selectedDeliveryDate!
+                                                                            .toString()),
+                                                                style: TextStyle(
+                                                                    color: orderProvider.selectedDeliveryDate ==
+                                                                            null
+                                                                        ? ColorResources.getTextColor(context).withOpacity(
+                                                                            0.6)
+                                                                        : ColorResources.getTextColor(
+                                                                            context),
+                                                                    fontSize:
+                                                                        15,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w500),
+                                                              )),
+                                                            ],
+                                                          )),
+                                                    ),
+                                                    SizedBox(height: 20),
+                                                  ],
+                                                )
                                             ],
                                           )
                                       ]),
@@ -312,65 +299,50 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                                   context),
                                               context);
                                         } else {
-                                          _cartList = cartProvider.cartList;
-                                          List<ProductCart> carts = [];
-                                          for (int index = 0;
-                                              index < _cartList!.length;
-                                              index++) {
-                                            CartModel cart = _cartList![index];
-
-                                            double price = cart.product!.price!;
-                                            double discountAmount = 0;
-                                            if (cart.product!.discountType ==
-                                                'amount') {
-                                              discountAmount =
-                                                  cart.product!.discount!;
-                                            } else {
-                                              discountAmount = (cart
-                                                          .product!.price! *
-                                                      cart.product!.discount!) /
-                                                  100;
-                                            }
-
-                                            carts.add(ProductCart(
-                                                cart.product!.id.toString(),
-                                                price.toString(),
-                                                discountAmount,
-                                                cart.quantity,
-                                                cart.product!.tax,
-                                                cart.tieredPricing));
-                                          }
-                                          PlaceOrderBody placeOrder = PlaceOrderBody(
-                                              cart: carts,
-                                              couponDiscountAmount:
-                                                  Provider.of<CouponProvider>(context, listen: false)
-                                                      .discount,
-                                              couponDiscountTitle: '',
-                                              deliveryAddressId:
-                                                  widget.deliveryAddressId,
-                                              orderAmount: widget.amount,
-                                              orderNote:
-                                                  _noteController.text ?? '',
-                                              paymentMethod: _isCashActive
-                                                  ? 'cash_on_delivery'
-                                                  : 'credit_card',
-                                              couponCode: Provider.of<CouponProvider>(context, listen: false).coupon != null
-                                                  ? Provider.of<CouponProvider>(
-                                                          context,
-                                                          listen: false)
-                                                      .coupon!
-                                                      .code
-                                                  : "",
-                                              totalTaxAmount: widget.vatTaxPercentage == null?
-                                              "0.0":
-                                              widget.vatTaxPercentage.toString(),
-                                              orderType: 'cart',
-                                              deliveryDateTime:
-                                                  orderProvider.selectedScheduledValue == 1
-                                                      ? orderProvider
-                                                          .selectedDeliveryDate
-                                                          .toString()
-                                                      : null);
+                                          PlaceOrderBody placeOrder =
+                                              PlaceOrderBody(
+                                                  cart: widget.orderBody!.cart!,
+                                                  couponDiscountAmount: widget
+                                                      .orderBody!
+                                                      .couponDiscountAmount!,
+                                                  usePointsDiscountAmount: widget
+                                                      .orderBody!
+                                                      .usePointsDiscountAmount!,
+                                                  couponDiscountTitle: '',
+                                                  couponCode: widget
+                                                      .orderBody!.couponCode!,
+                                                  totalTaxAmount: widget
+                                                      .orderBody!
+                                                      .totalTaxAmount!,
+                                                  orderAmount: widget
+                                                      .orderBody!.orderAmount!,
+                                                  deliveryAddressId: widget
+                                                      .orderBody!
+                                                      .deliveryAddressId!,
+                                                  orderType: widget
+                                                      .orderBody!.orderType!,
+                                                  paymentMethod: _isCashActive
+                                                      ? 'cash_on_delivery'
+                                                      : 'credit_card',
+                                                  orderNote: _noteController.text ??
+                                                      '',
+                                                  deliveryDateTime: profileProvider
+                                                              .userInfoModel!
+                                                              .scheduledDelivery ==
+                                                          1
+                                                      ? orderProvider.selectedScheduledValue ==
+                                                              1
+                                                          ? orderProvider
+                                                              .selectedDeliveryDate
+                                                              .toString()
+                                                          : ''
+                                                      : '',
+                                                  usePoints: widget
+                                                      .orderBody!.usePoints!,
+                                                  remainingUserPoints: widget
+                                                      .orderBody!
+                                                      .remainingUserPoints!,
+                                                  deliveryCharge: widget.orderBody!.deliveryCharge!);
 
                                           print(
                                               "placeOrder == ${placeOrder.toJson()}");
@@ -434,12 +406,14 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   void _callback(
       bool isSuccess, String message, String orderID, int addressID) async {
     if (isSuccess) {
-      // Navigator.push(
-      //     context,
-      //     MaterialPageRoute(
-      //         builder: (BuildContext context) => PaymentWebView(
-      //               url: '${AppConstants.BASE_URL}/paypal/create/${orderID}',
-      //             )));
+      Provider.of<ProfileProvider>(context, listen: false).getUserInfo(context);
+
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (BuildContext context) => PaymentWebView(
+                    url: '${AppConstants.BASE_URL}/paypal/create/${orderID}',
+                  )));
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(message), backgroundColor: Colors.red));

@@ -33,7 +33,7 @@ class CouponScreen extends StatelessWidget {
       body: _isLoggedIn
           ? Consumer<CouponProvider>(
               builder: (context, coupon, child) {
-                return coupon.isLoading != true
+                return coupon.couponListLoading != true
                     ? coupon.couponList != null
                         ? coupon.couponList!.length > 0
                             ? RefreshIndicator(

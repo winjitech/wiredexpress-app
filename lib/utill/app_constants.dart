@@ -12,6 +12,8 @@ class AppConstants {
   static const String CATEGORY_FEATURED_URI = '/api/v1/categories/featured';
   static const String BANNER_URI = '/api/v1/banners';
 
+  static const String ELECTRICIANS_URI = '/api/v1/nearby-electricians';
+
   static const String POPULAR_PRODUCT_URI = '/api/v1/products/latest';
   static const String PRODUCTS_LIST_URI = '/api/v1/products/category';
   static const String CATEGORY_PRODUCT_URI = '/api/v1/categories/products/';
@@ -53,7 +55,7 @@ class AppConstants {
   static const String UPDATE_PROFILE_URI = '/api/v1/customer/update-profile';
 
 
-  static const String SEARCH_URI = '/api/v1/products/search?name=';
+  static const String SEARCH_URI = '/api/v1/products/search';
   static const String SEND_SEARCH_URI = '/api/v1/customer/search';
   static const String REVIEW_URI = '/api/v1/products/reviews/submit';
   static const String PRODUCT_DETAILS_URI = '/api/v1/products/details/';
@@ -95,7 +97,6 @@ class AppConstants {
   static const String SEARCH_ADDRESS = 'search_address';
   static const String TOPIC = 'notify';
   static const String Specific_TOPIC = 'notify_specific';
-  static const String CURRENCY = '\$';
   static const String SAVE_ADDRESS_ID = 'address_id';
 
   static const String countryCode = 'country_code';

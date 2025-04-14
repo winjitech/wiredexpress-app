@@ -135,15 +135,12 @@ class AuthRepo {
     }
   }
 
-  // for verify phone number
   Future<ApiResponse> checkEmail(String email) async {
     try {
-      print('success');
       Response response =
           await dioClient!.post('${AppConstants.CHECK_EMAIL_URI}?email=$email');
       return ApiResponse.withSuccess(response);
     } catch (e) {
-      print('error: $e');
       return ApiResponse.withError(ApiErrorHandler.getMessage(e));
     }
   }

@@ -25,7 +25,6 @@ class CartProvider extends ChangeNotifier {
   String _product = '';
   String? get product => _product;
 
-
   void removeFromCart(CartModel cart) {
     _cartList.remove(cart);
     // _amount = _amount! - (cart.discountedPrice! * cart.quantity!);
@@ -38,7 +37,6 @@ class CartProvider extends ChangeNotifier {
     _cartList.clear();
     notifyListeners();
   }
-
 
   void clearCartList() {
     _cartList = [];
@@ -107,7 +105,7 @@ class CartProvider extends ChangeNotifier {
   bool _cartLoading = false;
   bool get cartLoading => _cartLoading;
 
-  Future<void> addToCartList(CartModel cart, Function feedbackMessage) async {
+  Future<void> addToCartList(CartModel cart) async {
     _cartLoading = true;
     notifyListeners();
 
@@ -117,12 +115,10 @@ class CartProvider extends ChangeNotifier {
       Map map = apiResponse.response!.data;
       String message = map['message'];
       print('message => ${message}');
-      feedbackMessage(message);
-      //_wishList.add(WishlistModel.fromJson(apiResponse.response!.data));
       _cartIdList.add(cart.productId!);
       _cartLoading = false;
     } else {
-      _cartLoading = false;      feedbackMessage('${apiResponse.error.toString()}');
+      _cartLoading = false;
       print('${apiResponse.error.toString()}');
     }
     _cartLoading = false;

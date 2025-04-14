@@ -20,12 +20,7 @@ class DeliveryOptionButton extends StatelessWidget {
           onTap: () => order.setOrderType(value!),
           child: Row(
             children: [
-              // Radio(
-              //   value: value,
-              //   groupValue: order.orderType,
-              //   activeColor: Theme.of(context).primaryColor,
-              //   onChanged: (String? value) => order.setOrderType(value!),
-              // ),
+
               SizedBox(width: Dimensions.PADDING_SIZE_SMALL),
 
               Text(title!, style: rubikRegular),

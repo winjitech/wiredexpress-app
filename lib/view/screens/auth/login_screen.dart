@@ -170,17 +170,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                             .login(context, _email, _password)
                                             .then((status) async {
                                           if (status.isSuccess) {
-                                            // DateTime _date = DateTime.now().add(const Duration(days: 7));
-                                            // var box = Hive.box('myBox');
-                                            // box.put('rate_last_datetime', _date);
-                                            authProvider.saveUserNumberAndPassword(_email, _password);
-                                            // if (authProvider.isActiveRememberMe!) {
-                                            //   authProvider.saveUserNumberAndPassword(_email, _password);
-                                            // } else {
-                                            //   authProvider
-                                            //       .clearUserNumberAndPassword();
-                                            // }
-                                            await Provider.of<CartProvider>(
+                                           authProvider.saveUserNumberAndPassword(_email, _password);
+                                        await Provider.of<CartProvider>(
                                                 context,
                                                 listen: false)
                                                 .initCartListProductIds(

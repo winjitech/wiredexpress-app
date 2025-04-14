@@ -3,14 +3,20 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
 import 'package:provider/provider.dart';
+import 'package:shimmer_animation/shimmer_animation.dart';
+import 'package:wired_express/data/model/response/address_model.dart';
+import 'package:wired_express/helper/responsive_helper.dart';
 import 'package:wired_express/localization/language_constrants.dart';
 import 'package:wired_express/provider/auth_provider.dart';
 import 'package:wired_express/provider/banner_provider.dart';
 import 'package:wired_express/provider/cart_provider.dart';
 import 'package:wired_express/provider/category_provider.dart';
+import 'package:wired_express/provider/location_provider.dart';
 import 'package:wired_express/provider/place_order_provider.dart';
 import 'package:wired_express/provider/profile_provider.dart';
+import 'package:wired_express/provider/splash_provider.dart';
 import 'package:wired_express/provider/subscription_provider.dart';
+import 'package:wired_express/provider/theme_provider.dart';
 import 'package:wired_express/provider/wishlist_provider.dart';
 import 'package:wired_express/utill/color_resources.dart';
 import 'package:wired_express/utill/dimensions.dart';
@@ -20,6 +26,8 @@ import 'package:wired_express/view/base/no_data_screen.dart';
 import 'package:wired_express/view/base/product_widget.dart';
 import 'package:wired_express/view/screens/drawer/drawer_screen.dart';
 import 'package:wired_express/view/screens/home/widget/banner_view.dart';
+import 'package:wired_express/view/screens/home/widget/category_product_view.dart';
+import 'package:wired_express/view/screens/nearby_electricians/nearby_electricians_screen.dart';
 import 'package:wired_express/view/screens/search/widget/filter_widget.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -29,42 +37,74 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final GlobalKey<ScaffoldMessengerState> _scaffoldKey =
-  GlobalKey<ScaffoldMessengerState>();
+      GlobalKey<ScaffoldMessengerState>();
 
-  ScrollController scrollController = ScrollController();
   Future<void> _loadData(BuildContext context, bool reload) async {
-    CustomAuthProvider authProvider = Provider.of<CustomAuthProvider>(context, listen: false);
-    SubscriptionProvider subscriptionProvider = Provider.of<SubscriptionProvider>(context, listen: false);
-    ProfileProvider profileProvider = Provider.of<ProfileProvider>(context, listen: false);
-    WishListProvider wishListProvider = Provider.of<WishListProvider>(context, listen: false);
-    CartProvider cartProvider = Provider.of<CartProvider>(context, listen: false);
-    CategoryProvider categoryProvider = Provider.of<CategoryProvider>(context, listen: false);
-    BannerProvider bannerProvider = Provider.of<BannerProvider>(context, listen: false);
-    PlaceOrderProvider placeOrderProvider = Provider.of<PlaceOrderProvider>(context, listen: false);
+    final authProvider =
+        Provider.of<CustomAuthProvider>(context, listen: false);
+    final splashProvider = Provider.of<SplashProvider>(context, listen: false);
+    final subscriptionProvider =
+        Provider.of<SubscriptionProvider>(context, listen: false);
+    final profileProvider =
+        Provider.of<ProfileProvider>(context, listen: false);
+    final wishListProvider =
+        Provider.of<WishListProvider>(context, listen: false);
+    final cartProvider = Provider.of<CartProvider>(context, listen: false);
+    final categoryProvider =
+        Provider.of<CategoryProvider>(context, listen: false);
+    final bannerProvider = Provider.of<BannerProvider>(context, listen: false);
+    final placeOrder = Provider.of<PlaceOrderProvider>(context, listen: false);
+    final location = Provider.of<LocationProvider>(context, listen: false);
 
     if (authProvider.isLoggedIn() ?? false) {
-      await subscriptionProvider.getSubscriptionPlans(context);
-      await profileProvider.getUserInfo(context);
+      if (profileProvider.userInfoModel != null &&
+          profileProvider.userInfoModel!.freeDelivery == 1) {
+        _showFreeDeliverySnackBar();
+      }
+      subscriptionProvider.getSubscriptionPlans(context);
+      profileProvider.getUserInfo(context);
+
+      location.initAddressList(context);
       wishListProvider.initWishListProductIds(context);
       cartProvider.initCartList(context);
       cartProvider.initCartListProductIds(context);
 
+      if (profileProvider.userInfoModel?.nearbyElectricians == 1 &&
+          location.addressList?.isNotEmpty == true) {
+        int? userAddressId = authProvider.getUserAddressId();
+        AddressModel matchedAddress = location.addressList!.firstWhere(
+          (element) =>
+              element.id ==
+              (userAddressId == 0
+                  ? location.addressList![0].id
+                  : userAddressId),
+          orElse: () => location.addressList![0],
+        );
+
+        splashProvider.getNearbyElectricians(
+          context,
+          matchedAddress.latitude!,
+          matchedAddress.longitude!,
+        );
+      }
     }
 
-      categoryProvider.getCategoryList(context, reload);
-      bannerProvider.getBannerList(context, reload);
-      placeOrderProvider.getRunningOrderList(context);
+    categoryProvider.getCategoryList(context, reload);
+    bannerProvider.getBannerList(context, reload);
+    placeOrder.getRunningOrderList(context);
 
-    if (placeOrderProvider.runningOrderList?.isNotEmpty ?? false) {
-      await placeOrderProvider.runningOrderList!.first;
+    if (placeOrder.runningOrderList?.isNotEmpty ?? false) {
+      await placeOrder.runningOrderList!.first;
     }
 
     await categoryProvider.getCategoryFeaturedList(context, reload).then((_) {
       final featuredList = categoryProvider.categoryFeaturedList;
       if (featuredList?.isNotEmpty ?? false) {
         final firstCategory = featuredList!.first;
-        categoryProvider.setCategory(firstCategory.name!);
-        categoryProvider.getCategoryProductList(context, firstCategory.id.toString());
+        categoryProvider.setCategory(firstCategory);
+        categoryProvider.clearCategoryProductListOffset();
+        categoryProvider.getCategoryProductList(
+            context, "1", firstCategory.id.toString());
       }
     });
   }
@@ -72,13 +112,14 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    Timer(const Duration(seconds: 0), () async {  _loadData(context, false);});
-
+    Timer(const Duration(seconds: 0), () async => _loadData(context, false));
   }
 
   final advancedDrawerController = AdvancedDrawerController();
   @override
   Widget build(BuildContext context) {
+    final ScrollController _scrollController = ScrollController();
+
     return AdvancedDrawer(
         rtlOpening: false,
         openRatio: 0.55,
@@ -104,85 +145,127 @@ class _HomeScreenState extends State<HomeScreen> {
             appBar: CustomMainAppBar(
                 onMenuPressed: () => showDrawer(),
                 title: getTranslated('shopping', context)),
-            body: Consumer<CategoryProvider>(
-                builder: (context, categoryProvider, child) {
-                  return Scrollbar(
-                      child: SingleChildScrollView(
-                          controller: scrollController,
-                          physics: const BouncingScrollPhysics(),
-                          //  padding: const EdgeInsets.all(Dimensions.PADDING_SIZE_SMALL),
-                          child: Center(
-                              child: Padding(
-                                  padding: const EdgeInsets.all(20),
-                                  child: Column(children: [
-                                    Consumer<BannerProvider>(
-                                        builder: (context, banner, child) {
-                                          return banner.bannerList == null
-                                              ? BannerView()
-                                              : banner.bannerList!.length == 0
-                                              ? const SizedBox()
-                                              : BannerView();
-                                        }),
-                                    const SizedBox(height: 20),
-                                    categoryProvider.categoryFeaturedList == null
-                                        ? const SizedBox()
-                                        : FilterWidget(categoryProvider),
-                                    const SizedBox(height: 20),
-                                    // Text(categoryProvider.selectedCategory
-                                    //     .toString()),
-
-                                    Provider.of<CategoryProvider>(context,
-                                        listen: false)
-                                        .getCategoryLoading ==
-                                        true &&
-                                        Provider.of<CategoryProvider>(context,
-                                            listen: false)
-                                            .categoryFeaturedList!
-                                            .length !=
-                                            0
-                                        ?CustomCircularIndicator(color: ColorResources.getScaffoldColor(context))
-                                        : Consumer<CategoryProvider>(
-                                        builder: (context, category, child) {
-                                          return category.selectedCategory == null
-                                              ?  CustomCircularIndicator(color: ColorResources.getScaffoldColor(context))
-                                              : category.categoryProductList!
-                                              .isEmpty
-                                              ? NoDataScreen()
-                                              : GridView.builder(
-                                            gridDelegate:
-                                            const SliverGridDelegateWithFixedCrossAxisCount(
-                                              crossAxisSpacing: 15,
-                                              mainAxisSpacing: 0,
-                                              mainAxisExtent: 250,
-                                              crossAxisCount: 2,
-                                            ),
-                                            itemCount: category
-                                                .categoryProductList!
-                                                .length >
-                                                10
-                                                ? 10
-                                                : category
-                                                .categoryProductList!
-                                                .length,
-                                            padding: const EdgeInsets
-                                                .symmetric(
-                                                horizontal: Dimensions
-                                                    .PADDING_SIZE_SMALL),
-                                            physics:
-                                            const NeverScrollableScrollPhysics(),
-                                            shrinkWrap: true,
-                                            itemBuilder:
-                                                (BuildContext context,
-                                                int index) {
-                                              return ProductWidget(
-                                                  product: category
-                                                      .categoryProductList![
-                                                  index]);
-                                            },
-                                          );
-                                        })
-                                  ])))));
-                })));
+            body: Consumer4<CategoryProvider, ProfileProvider, SplashProvider,
+                    CustomAuthProvider>(
+                builder: (context, categoryProvider, profileProvider,
+                    splashProvider, authProvider, child) {
+              return Padding(
+                padding: const EdgeInsets.all(15),
+                child: CustomScrollView(
+                    physics: const BouncingScrollPhysics(),
+                    controller: _scrollController,
+                    slivers: [
+                      SliverToBoxAdapter(
+                        child: Consumer<BannerProvider>(
+                          builder: (context, banner, child) {
+                            return BannerView();
+                          },
+                        ),
+                      ),
+                      SliverToBoxAdapter(child: Consumer4<
+                              CategoryProvider,
+                              ProfileProvider,
+                              SplashProvider,
+                              CustomAuthProvider>(
+                          builder: (context, categoryProvider, profileProvider,
+                              splashProvider, authProvider, child) {
+                        return Column(children: [
+                          const SizedBox(height: 20),
+                          if (authProvider.isLoggedIn()! &&
+                              profileProvider
+                                      .userInfoModel?.hasActiveSubscription ==
+                                  true)
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 20),
+                              child: Container(
+                                padding: const EdgeInsets.all(15),
+                                decoration: BoxDecoration(
+                                    color: Colors.amber[700],
+                                    borderRadius: BorderRadius.circular(10),
+                                    boxShadow: [
+                                      BoxShadow(
+                                          color: ColorResources.getBoxShadow(
+                                              context),
+                                          blurRadius: 5,
+                                          offset: const Offset(0, 2))
+                                    ]),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const Icon(Icons.star,
+                                        color: Colors.white, size: 24),
+                                    const SizedBox(width: 10),
+                                    Text(
+                                        getTranslated(
+                                            'your_active_subscription_plan_place',
+                                            context),
+                                        style: const TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 16))
+                                  ],
+                                ),
+                              ),
+                            ),
+                          if (authProvider.isLoggedIn()! &&
+                              profileProvider.userInfoModel?.nearbyElectricians ==
+                                  1 &&
+                              splashProvider.nearbyElectriciansList != null &&
+                              splashProvider.nearbyElectriciansList!.isNotEmpty)
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 20),
+                              child: GestureDetector(
+                                onTap: () => Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (BuildContext context) =>
+                                            NearbyElectriciansScreen(
+                                                electricians: splashProvider
+                                                    .nearbyElectriciansList!))),
+                                child: Container(
+                                  padding: const EdgeInsets.all(15),
+                                  decoration: BoxDecoration(
+                                      color: ColorResources.getCardColor(context),
+                                      borderRadius: BorderRadius.circular(10),
+                                      boxShadow: [
+                                        BoxShadow(
+                                            color: Provider.of<ThemeProvider>(
+                                                        context)
+                                                    .darkTheme
+                                                ? Colors.black.withOpacity(0.4)
+                                                : Colors.grey[300]!,
+                                            blurRadius: 5,
+                                            spreadRadius: 1,
+                                            offset: const Offset(0, 2))
+                                      ]),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                          getTranslated(
+                                              'nearby_electricians', context),
+                                          style: TextStyle(
+                                              color: ColorResources.getTextColor(
+                                                  context),
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 16))
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          categoryProvider.categoryFeaturedList == null
+                              ? const SizedBox()
+                              : FilterWidget(categoryProvider),
+                          const SizedBox(height: 20),
+                          CategoryProductView(
+                            scrollController: _scrollController,
+                          ),
+                        ]);
+                      })),
+                    ]),
+              );
+            })));
   }
 
   void showDrawer() {
@@ -190,13 +273,13 @@ class _HomeScreenState extends State<HomeScreen> {
       Provider.of<PlaceOrderProvider>(context, listen: false)
           .getRunningOrderList(context)
           .then((value) =>
-      Provider.of<PlaceOrderProvider>(context, listen: false)
-          .runningOrderList ==
-          null
-          ? Provider.of<ProfileProvider>(context, listen: false)
-          .getUserInfo(context)
-          : Provider.of<PlaceOrderProvider>(context, listen: false)
-          .runningOrderList![0]);
+              Provider.of<PlaceOrderProvider>(context, listen: false)
+                          .runningOrderList ==
+                      null
+                  ? Provider.of<ProfileProvider>(context, listen: false)
+                      .getUserInfo(context)
+                  : Provider.of<PlaceOrderProvider>(context, listen: false)
+                      .runningOrderList![0]);
       advancedDrawerController.showDrawer();
       Provider.of<ProfileProvider>(context, listen: false).getUserInfo(context);
     }
@@ -207,5 +290,53 @@ class _HomeScreenState extends State<HomeScreen> {
       advancedDrawerController.hideDrawer();
       Provider.of<ProfileProvider>(context, listen: false).getUserInfo(context);
     }
+  }
+
+  void _showFreeDeliverySnackBar() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        padding: EdgeInsets.zero,
+        content: Shimmer(
+          duration: const Duration(seconds: 2),
+          enabled: true,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            child: Center(
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Center(
+                    child: const Icon(
+                      Icons.local_shipping,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Text(
+                    getTranslated('you_have_free_delivery', context),
+                    textAlign: TextAlign.center,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 15),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+        backgroundColor: Colors.green,
+        duration: const Duration(seconds: 20),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(14),
+        ),
+        margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+      ),
+    );
   }
 }

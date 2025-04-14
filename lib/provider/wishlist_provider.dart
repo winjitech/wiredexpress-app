@@ -100,7 +100,7 @@ class WishListProvider extends ChangeNotifier {
   }
 
 
-  void addToWishList(Product product, Function feedbackMessage) async {
+  void addToWishList(ProductModel product, Function feedbackMessage) async {
     ApiResponse apiResponse = await wishListRepo!.addWishList(product.id!);
     if (apiResponse.response != null &&
         apiResponse.response!.statusCode == 200) {
@@ -117,7 +117,7 @@ class WishListProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void removeFromWishList(Product product, Function feedbackMessage) async {
+  void removeFromWishList(ProductModel product, Function feedbackMessage) async {
     ApiResponse apiResponse = await wishListRepo!.removeWishList(product.id!);
     if (apiResponse.response != null &&
         apiResponse.response!.statusCode == 200) {
@@ -148,7 +148,7 @@ class WishListProvider extends ChangeNotifier {
   //           WishListModel.fromJson(wishList).productId.toString());
   //       if (productResponse.response != null &&
   //           productResponse.response!.statusCode == 200) {
-  //         Product _product = Product.fromJson(productResponse.response!.data);
+  //         Product _product = ProductModel.fromJson(productResponse.response!.data);
   //         _wishList!.add(_product);
   //         _wishIdList.add(_product.id!);
   //         notifyListeners();

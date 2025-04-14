@@ -21,11 +21,11 @@ class ProfileProvider with ChangeNotifier {
 
   UserInfoModel? _userInfoModel;
 
-  Product? _cartProduct;
+  ProductModel? _cartProduct;
 
   UserInfoModel? get userInfoModel => _userInfoModel;
 
-  Product? get cartProduct => _cartProduct;
+  ProductModel? get cartProduct => _cartProduct;
 
   int _appRating = 0;
   int get appRating => _appRating;

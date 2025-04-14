@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:wired_express/data/helper/helpers.dart';
 import 'package:wired_express/data/model/response/tiered_pricing_model.dart';
 import 'package:wired_express/localization/language_constrants.dart';
+import 'package:wired_express/provider/auth_provider.dart';
+import 'package:wired_express/provider/profile_provider.dart';
+import 'package:wired_express/provider/splash_provider.dart';
 
 class PriceConverter {
   static String convertPrice(BuildContext? context, double? price,
@@ -13,10 +17,7 @@ class PriceConverter {
         price = price! - ((discount / 100) * price);
       }
     }
-    return '\$${Helpers.formatTextWithNum((price)!.toStringAsFixed(asFixed).replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},'))} ';
-
-    //   return '${getTranslated('description', context!) == "Description" ? 'LE' : 'ج.م'} '
-    //       '${(price)!.toStringAsFixed(asFixed).replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')}';
+    return '${Provider.of<SplashProvider>(context!, listen: false).configModel!.currencySymbol ?? '\$'}${Helpers.formatTextWithNum((price)!.toStringAsFixed(asFixed).replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},'))} ';
   }
 
   static double convertWithDiscount(BuildContext? context, double price,
@@ -49,15 +50,38 @@ class PriceConverter {
     return (percentage / 100) * price;
   }
 
-  static TiredPricingModel? getMatchedTieredPricingModel(
+  static TiredPricingModel? getMatchedTieredPricingModel(BuildContext context,
       List<TiredPricingModel> tieredPricing, int quantity) {
+    bool isHaveBulkOrderDiscounts = false;
+    final authProvider =
+        Provider.of<CustomAuthProvider>(context, listen: false);
+    final profileProvider =
+        Provider.of<ProfileProvider>(context, listen: false);
+    final userInfo = profileProvider.userInfoModel;
+
+    if (authProvider.isLoggedIn()! &&
+        userInfo != null &&
+        userInfo.bulkOrderDiscounts == 1) {
+      isHaveBulkOrderDiscounts = true;
+    }
+
     TiredPricingModel? matchedPricing;
 
     for (var pricing in tieredPricing) {
       if (pricing.minQuantity! <= quantity) {
+        if (!isHaveBulkOrderDiscounts && pricing.planId != null) {
+          continue;
+        }
+
         if (matchedPricing == null ||
             pricing.minQuantity! > matchedPricing.minQuantity!) {
           matchedPricing = pricing;
+        } else if (pricing.minQuantity! == matchedPricing.minQuantity!) {
+          if (isHaveBulkOrderDiscounts &&
+              userInfo != null &&
+              pricing.planId == userInfo.userSubscription!.planId) {
+            matchedPricing = pricing;
+          }
         }
       }
     }
@@ -66,24 +90,16 @@ class PriceConverter {
       print('Matched Pricing Model: minQuantity=${matchedPricing.minQuantity}, '
           'discountPrice=${matchedPricing.discountPrice}');
     }
-    // print("matchedPricing == ${matchedPricing!.toJson()}");
 
     return matchedPricing;
   }
 
-  static double? getProductFinalPrice(
+  static double? getProductFinalPrice(BuildContext context,
       List<TiredPricingModel> tieredPricing, double? price, int quantity) {
     double basePrice = price ?? 0.0;
-    getMatchedTieredPricingModel(tieredPricing, quantity);
-    TiredPricingModel? matchedPricing;
-    for (var pricing in tieredPricing) {
-      if (pricing.minQuantity! <= quantity) {
-        if (matchedPricing == null ||
-            pricing.minQuantity! > matchedPricing.minQuantity!) {
-          matchedPricing = pricing;
-        }
-      }
-    }
+
+    TiredPricingModel? matchedPricing =
+        getMatchedTieredPricingModel(context, tieredPricing, quantity);
 
     if (matchedPricing != null) {
       print('Matched Pricing: minQuantity=${matchedPricing.minQuantity}, '
@@ -95,22 +111,21 @@ class PriceConverter {
         : basePrice;
 
     print("finalPrice == $finalPrice");
-    return finalPrice ?? 0.0;
+    return finalPrice;
   }
 
   static double? getProductFinalPriceWithTieredPricing(
-      TiredPricingModel? tieredPricing, double? price, int quantity) {
+      TiredPricingModel? tieredPricing, double? price) {
     double basePrice = price ?? 0.0;
 
-
-      print('Matched Pricing: minQuantity=${tieredPricing!.minQuantity}, '
-          'discountPrice=${tieredPricing.discountPrice}');
+    print('Matched Pricing: minQuantity=${tieredPricing!.minQuantity}, '
+        'discountPrice=${tieredPricing.discountPrice}');
 
     double? finalPrice = tieredPricing != null
         ? basePrice - double.parse(tieredPricing.discountPrice ?? '0.0')
         : basePrice;
 
-    print("finalPrice == $finalPrice");
+    print("final price provider == $finalPrice");
     return finalPrice ?? 0.0;
   }
 }

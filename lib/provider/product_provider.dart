@@ -13,14 +13,14 @@ class ProductProvider extends ChangeNotifier {
   ProductProvider({@required this.productRepo});
 
   // Latest products
-  List<Product>? _popularProductList;
+  List<ProductModel>? _popularProductList;
   bool _isLoading = false;
   int? _popularPageSize;
   List<String> _offsetList = [];
   List<dynamic>? _variationIndex;
   int _quantity = 1;
 
-  List<Product>? get popularProductList => _popularProductList;
+  List<ProductModel>? get popularProductList => _popularProductList;
   bool get isLoading => _isLoading;
   int? get popularPageSize => _popularPageSize;
   List<dynamic>? get variationIndex => _variationIndex;
@@ -39,9 +39,9 @@ class ProductProvider extends ChangeNotifier {
           _popularProductList = [];
         }
         _popularProductList!.addAll(
-            ProductModel.fromJson(apiResponse.response!.data).products!);
+            ProductBody.fromJson(apiResponse.response!.data).products!);
         _popularPageSize =
-            ProductModel.fromJson(apiResponse.response!.data).totalSize;
+            ProductBody.fromJson(apiResponse.response!.data).totalSize;
         _isLoading = false;
         notifyListeners();
       } else {
@@ -58,8 +58,8 @@ class ProductProvider extends ChangeNotifier {
   }
   bool _productDetailsLoading = false;
   bool get productDetailsLoading => _productDetailsLoading;
-  Product? _productDetailsModel;
-  Product? get productDetailsModel => _productDetailsModel;
+  ProductModel? _productDetailsModel;
+  ProductModel? get productDetailsModel => _productDetailsModel;
   Future<ResponseModel> getProductDetails(
       BuildContext? context, int productId) async {
     _productDetailsLoading = true;
@@ -68,7 +68,7 @@ class ProductProvider extends ChangeNotifier {
     ApiResponse apiResponse = await productRepo!.getProductDetails(productId);
     if (apiResponse.response != null &&
         apiResponse.response!.statusCode == 200) {
-      _productDetailsModel = Product.fromJson(apiResponse.response!.data);
+      _productDetailsModel = ProductModel.fromJson(apiResponse.response!.data);
       _responseModel = ResponseModel(true, 'successful');
       _productDetailsLoading = false;
       notifyListeners();
@@ -88,9 +88,9 @@ class ProductProvider extends ChangeNotifier {
     return _responseModel;
   }
 
-  List<Product>? _productListWithCategoriesId;
+  List<ProductModel>? _productListWithCategoriesId;
 
-  List<Product>? get productListWithCategoriesId =>
+  List<ProductModel>? get productListWithCategoriesId =>
       _productListWithCategoriesId;
   int? _pageSize;
   int? get pageSize => _pageSize;
@@ -112,8 +112,8 @@ class ProductProvider extends ChangeNotifier {
           _productListWithCategoriesId = [];
         }
         _productListWithCategoriesId!.addAll(
-            ProductModel.fromJson(apiResponse.response!.data).products!);
-        _pageSize = ProductModel.fromJson(apiResponse.response!.data).totalSize;
+            ProductBody.fromJson(apiResponse.response!.data).products!);
+        _pageSize = ProductBody.fromJson(apiResponse.response!.data).totalSize;
         _isLoading = false;
         notifyListeners();
       } else {

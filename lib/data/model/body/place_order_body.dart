@@ -5,6 +5,7 @@ import 'package:wired_express/data/model/response/tiered_pricing_model.dart';
 class PlaceOrderBody {
   List<ProductCart>? _cart;
   double? _couponDiscountAmount;
+  double? _usePointsDiscountAmount;
   String? _couponDiscountTitle;
   String? _totalTaxAmount;
   double? _orderAmount;
@@ -13,22 +14,27 @@ class PlaceOrderBody {
   String? _paymentMethod;
   String? _orderNote;
   String? _couponCode;
-  int? _branchId;
   String? _deliveryDateTime;
+  int? _usePoints;
+  double? _remainingUserPoints;
+  double? _deliveryCharge;
 
   PlaceOrderBody({
-    @required List<ProductCart>? cart,
-    @required double? couponDiscountAmount,
-    @required String? couponDiscountTitle,
-    @required String? couponCode,
-    @required String? totalTaxAmount,
-    @required double? orderAmount,
-    @required int? deliveryAddressId,
-    @required String? orderType,
-    @required String? paymentMethod,
-    @required int? branchId,
-    @required String? orderNote,
-    @required String? deliveryDateTime,
+    required List<ProductCart> cart,
+    required double couponDiscountAmount,
+    required double usePointsDiscountAmount,
+    required String couponDiscountTitle,
+    required String couponCode,
+    required String totalTaxAmount,
+    required double orderAmount,
+    required int deliveryAddressId,
+    required String orderType,
+    required String paymentMethod,
+    required String orderNote,
+    required String deliveryDateTime,
+    required int usePoints,
+    required double remainingUserPoints,
+    required double deliveryCharge,
   }) {
     this._cart = cart;
     this._couponDiscountAmount = couponDiscountAmount;
@@ -40,8 +46,11 @@ class PlaceOrderBody {
     this._paymentMethod = paymentMethod;
     this._orderNote = orderNote;
     this._couponCode = couponCode;
-    this._branchId = branchId;
     this._deliveryDateTime = deliveryDateTime;
+    this._usePoints = usePoints;
+    this._usePointsDiscountAmount = usePointsDiscountAmount;
+    this._remainingUserPoints = remainingUserPoints;
+    this._deliveryCharge = deliveryCharge;
   }
 
   List<ProductCart>? get cart => _cart;
@@ -54,8 +63,11 @@ class PlaceOrderBody {
   String? get paymentMethod => _paymentMethod;
   String? get orderNote => _orderNote;
   String? get couponCode => _couponCode;
-  int? get branchId => _branchId;
   String? get deliveryDateTime => _deliveryDateTime;
+  int? get usePoints => _usePoints;
+  double? get usePointsDiscountAmount => _usePointsDiscountAmount;
+  double? get remainingUserPoints => _remainingUserPoints;
+  double? get deliveryCharge => _deliveryCharge;
 
   PlaceOrderBody.fromJson(Map<String?, dynamic> json) {
     if (json['cart'] != null) {
@@ -65,6 +77,7 @@ class PlaceOrderBody {
       });
     }
     _couponDiscountAmount = json['coupon_discount_amount'];
+    _usePointsDiscountAmount = json['use_points_discount_amount'];
     _couponDiscountTitle = json['coupon_discount_title'];
     _orderAmount = json['order_amount'];
     _totalTaxAmount = json['total_tax_amount'];
@@ -73,8 +86,10 @@ class PlaceOrderBody {
     _paymentMethod = json['payment_method'];
     _orderNote = json['order_note'];
     _couponCode = json['coupon_code'];
-    _branchId = json['branch_id'];
     _deliveryDateTime = json['delivery_date_time'];
+    _usePoints = json['use_points'];
+    _remainingUserPoints = json['remaining_user_points'];
+    _deliveryCharge = json['delivery_charge'];
   }
 
   Map<String?, dynamic> toJson() {
@@ -83,6 +98,7 @@ class PlaceOrderBody {
       data['cart'] = this._cart!.map((v) => v.toJson()).toList();
     }
     data['coupon_discount_amount'] = this._couponDiscountAmount;
+    data['use_points_discount_amount'] = this._usePointsDiscountAmount;
     data['coupon_discount_title'] = this._couponDiscountTitle;
     data['order_amount'] = this._orderAmount;
     data['total_tax_amount'] = this._totalTaxAmount;
@@ -91,8 +107,10 @@ class PlaceOrderBody {
     data['payment_method'] = this._paymentMethod;
     data['order_note'] = this._orderNote;
     data['coupon_code'] = this._couponCode;
-    data['branch_id'] = this._branchId;
     data['delivery_date_time'] = this._deliveryDateTime;
+    data['use_points'] = this._usePoints;
+    data['remaining_user_points'] = this._remainingUserPoints;
+    data['delivery_charge'] = this._deliveryCharge;
     return data;
   }
 }
@@ -107,13 +125,13 @@ class ProductCart {
   TiredPricingModel? _tieredPricing;
 
   ProductCart(
-      String? productId,
-      String? price,
-      double? discountAmount,
-      int? quantity,
-      double? taxAmount,
-      TiredPricingModel? tieredPricing,
-      ) {
+    String? productId,
+    String? price,
+    double? discountAmount,
+    int? quantity,
+    double? taxAmount,
+    TiredPricingModel? tieredPricing,
+  ) {
     this._productId = productId;
     this._price = price;
 

@@ -23,6 +23,8 @@ class ConfigModel {
   String? _appVersion;
   String? _phoneOTP;
   String? _serviceMessages;
+  String? _ppuEarn;
+  String? _ppuPurchase;
 
   ConfigModel(
       {String? storeName,
@@ -44,7 +46,9 @@ class ConfigModel {
       double? minimumOrderValue,
       String? appVersion,
       String? phoneOTP,
-      String? serviceMessages}) {
+      String? serviceMessages,
+      String? ppuEarn,
+      String? ppuPurchase}) {
     this._storeName = storeName;
     this._storeOpenTime = storeOpenTime;
     this._storeCloseTime = storeCloseTime;
@@ -65,6 +69,8 @@ class ConfigModel {
     this._appVersion = appVersion;
     this._phoneOTP = phoneOTP;
     this._serviceMessages = serviceMessages;
+    this._ppuEarn = ppuEarn;
+    this._ppuPurchase = ppuPurchase;
   }
 
   String? get storeName => _storeName;
@@ -87,7 +93,8 @@ class ConfigModel {
   String? get appVersion => _appVersion;
   String? get phoneOTP => _phoneOTP;
   String? get serviceMessages => _serviceMessages;
-
+  String? get ppuEarn => _ppuEarn;
+  String? get ppuPurchase => _ppuPurchase;
   ConfigModel.fromJson(Map<String?, dynamic> json) {
     _storeName = json['store_name'];
     _storeOpenTime = json['store_open_time'];
@@ -112,6 +119,8 @@ class ConfigModel {
     _appVersion = json['app_version'];
     _phoneOTP = json['phone_otp'];
     _serviceMessages = json['service_messages'];
+    _ppuEarn = json['ppu_earn'];
+    _ppuPurchase = json['ppu_purchase'];
     if (json['opening_hours'] != null) {
       _openingHours = [];
       json['opening_hours'].forEach((v) {
@@ -144,7 +153,8 @@ class ConfigModel {
 
     data['app_version'] = this.appVersion;
     data['phone_otp'] = this.phoneOTP;
-
+    data['ppu_earn'] = _ppuEarn;
+    data['ppu_purchase'] = _ppuPurchase;
     if (this._openingHours != null) {
       data['opening_hours'] =
           this._openingHours!.map((v) => v.toJson()).toList();
@@ -190,6 +200,7 @@ class BaseUrls {
   String? _contestImageUrl;
   String? _deliveryManImageUrl;
   String? _chatImageUrl;
+  String? _electricianImageUrl;
 
   BaseUrls(
       {String? productImageUrl,
@@ -201,7 +212,8 @@ class BaseUrls {
       String? storeImageUrl,
       String? contestImageUrl,
       String? deliveryManImageUrl,
-      String? chatImageUrl}) {
+      String? chatImageUrl,
+      String? electricianImageUrl}) {
     this._productImageUrl = productImageUrl;
     this._customerImageUrl = customerImageUrl;
     this._bannerImageUrl = bannerImageUrl;
@@ -212,6 +224,7 @@ class BaseUrls {
     this._contestImageUrl = contestImageUrl;
     this._deliveryManImageUrl = deliveryManImageUrl;
     this._chatImageUrl = chatImageUrl;
+    this._electricianImageUrl = electricianImageUrl;
   }
 
   String? get productImageUrl => _productImageUrl;
@@ -224,6 +237,7 @@ class BaseUrls {
   String? get contestImageUrl => _contestImageUrl;
   String? get deliveryManImageUrl => _deliveryManImageUrl;
   String? get chatImageUrl => _chatImageUrl;
+  String? get electricianImageUrl => _electricianImageUrl;
 
   BaseUrls.fromJson(Map<String?, dynamic> json) {
     _productImageUrl = json['product_image_url'];
@@ -236,6 +250,7 @@ class BaseUrls {
     _contestImageUrl = json['contest_image_url'];
     _deliveryManImageUrl = json['delivery_man_image_url'];
     _chatImageUrl = json['chat_image_url'];
+    _electricianImageUrl = json['electrician_image_url'];
   }
 
   Map<String?, dynamic> toJson() {
@@ -250,6 +265,7 @@ class BaseUrls {
     data['contest_image_url'] = this._contestImageUrl;
     data['delivery_man_image_url'] = this._deliveryManImageUrl;
     data['chat_image_url'] = this._chatImageUrl;
+    data['electrician_image_url'] = this._electricianImageUrl;
     return data;
   }
 }

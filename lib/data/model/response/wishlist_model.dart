@@ -6,7 +6,7 @@ class WishlistModel {
   int? _productId;
   String? _createdAt;
   String? _updatedAt;
-  Product? _product;
+  ProductModel? _product;
 
   WishlistModel({
     int? id,
@@ -14,7 +14,7 @@ class WishlistModel {
     int? productId,
     String? createdAt,
     String? updatedAt,
-    Product? product,
+    ProductModel? product,
   }) {
     this._id = id;
     this._userId = userId;
@@ -29,7 +29,7 @@ class WishlistModel {
   int? get productId => _productId;
   String? get createdAt => _createdAt;
   String? get updatedAt => _updatedAt;
-  Product? get product => _product;
+  ProductModel? get product => _product;
 
   WishlistModel.fromJson(Map<String, dynamic> json) {
     _id = json['id'];
@@ -38,7 +38,7 @@ class WishlistModel {
     _createdAt = json['created_at'];
     _updatedAt = json['updated_at'];
     _product =
-        json['product'] != null ? Product.fromJson(json['product']) : null;
+        json['product'] != null ? ProductModel.fromJson(json['product']) : null;
   }
 
   Map<String, dynamic> toJson() {

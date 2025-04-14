@@ -62,13 +62,14 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
       appBar: CustomAppBar(
           title:
               '${getTranslated('order_details', context)}: ${widget.orderModel!.id.toString()}'),
-      body: Consumer<OrderProvider>(
-        builder: (context, order, child) {
+      body: Consumer2<OrderProvider , SplashProvider>(
+        builder: (context, order, splashProvider ,child) {
           double deliveryCharge = 0;
           double itemsPrice = 0;
           double discount = 0;
           double tax = 0;
           double totalTieredPricingDiscount = 0;
+          String  currency =  splashProvider.configModel!.currencySymbol??'\$' ;
 
           if (order.orderDetails != null) {
             print(
@@ -84,7 +85,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
               itemsPrice = itemsPrice +
                   ((orderDetails.price! - orderDetails.discountOnProduct!) *
                       orderDetails.quantity!);
-              print("itemsPrice == ${itemsPrice}");
+              print("itemsPrice == $itemsPrice");
               discount = discount +
                   (orderDetails.discountOnProduct!
                   // * orderDetails.quantity!
@@ -324,7 +325,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                                                                     .cover);
                                                           },
                                                           image:
-                                                              '${Provider.of<SplashProvider>(context, listen: false).baseUrls!.productImageUrl}/'
+                                                              '${splashProvider.baseUrls!.productImageUrl}/'
                                                               '${order.orderDetails![index].productDetails!.image}',
                                                           height: 80,
                                                           width: 80,
@@ -455,7 +456,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                                                 fontSize: Dimensions
                                                     .FONT_SIZE_LARGE)),
                                         Text(
-                                            "(-) ${AppConstants.CURRENCY}${Helpers.formatTextWithNum(totalTieredPricingDiscount.toString())}",
+                                            "(-) $currency${Helpers.formatTextWithNum(totalTieredPricingDiscount.toString())}",
                                             style: rubikMedium.copyWith(
                                                 color:
                                                     ColorResources.getTextColor(
@@ -483,7 +484,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                                                       fontSize: Dimensions
                                                           .FONT_SIZE_LARGE)),
                                               Text(
-                                                  '${Provider.of<SplashProvider>(context, listen: false).configModel!.currencySymbol} ${Helpers.formatTextWithNum(widget.orderModel!.couponDiscountAmount!.toString())}',
+                                                  '${splashProvider.configModel!.currencySymbol} ${Helpers.formatTextWithNum(widget.orderModel!.couponDiscountAmount!.toString())}',
                                                   style: rubikMedium.copyWith(
                                                       color: ColorResources
                                                           .getTextColor(
@@ -510,7 +511,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                                                       fontSize: Dimensions
                                                           .FONT_SIZE_LARGE)),
                                               Text(
-                                                  '${Provider.of<SplashProvider>(context, listen: false).configModel!.currencySymbol} ${Helpers.formatTextWithNum(widget.orderModel!.totalTaxAmount!.toString())}',
+                                                  '${splashProvider.configModel!.currencySymbol} ${Helpers.formatTextWithNum(widget.orderModel!.totalTaxAmount!.toString())}',
                                                   style: rubikMedium.copyWith(
                                                       color: ColorResources
                                                           .getTextColor(

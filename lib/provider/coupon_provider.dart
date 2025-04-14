@@ -3,60 +3,96 @@ import 'package:wired_express/data/helper/helpers.dart';
 import 'package:wired_express/data/model/response/base/api_response.dart';
 import 'package:wired_express/data/model/response/coupon_model.dart';
 import 'package:wired_express/data/repository/coupon_repo.dart';
+import 'package:wired_express/helper/api_checker.dart';
 
 class CouponProvider extends ChangeNotifier {
   final CouponRepo? couponRepo;
   CouponProvider({@required this.couponRepo});
 
-  List<CouponModel>? _couponList;
-  CouponModel? _coupon;
-  double? _discount = 0.0;
-  bool? _isLoading = false;
+  double? _couponDiscountAmount = 0.0;
+  double? get couponDiscountAmount => _couponDiscountAmount;
 
-  CouponModel? get coupon => _coupon;
-  double? get discount => _discount;
-  bool? get isLoading => _isLoading;
+  CouponModel? _couponDiscount;
+  CouponModel? get couponDiscount => _couponDiscount;
+
+  bool? _couponListLoading = false;
+  bool? get couponListLoading => _couponListLoading;
+
+  bool? _useLoyaltyPoints = false;
+  bool? get useLoyaltyPoints => _useLoyaltyPoints;
+
+  double? _useLoyaltyPointsAmount = 0.0;
+  double? get useLoyaltyPointsAmount => _useLoyaltyPointsAmount;
+
+  bool? _applyCouponLoading = false;
+  bool? get applyCouponLoading => _applyCouponLoading;
+
+  bool? _removeCouponLoading = false;
+  bool? get removeCouponLoading => _removeCouponLoading;
+
+  List<CouponModel>? _couponList;
   List<CouponModel>? get couponList => _couponList;
 
   Future<void> getCouponList(BuildContext? context) async {
-    _isLoading = true;
+    _couponListLoading = true;
+    notifyListeners();
     ApiResponse apiResponse = await couponRepo!.getCouponList();
     if (apiResponse.response != null &&
         apiResponse.response!.statusCode == 200) {
-      _isLoading = false;
+      _couponListLoading = false;
       _couponList = [];
       apiResponse.response!.data!.forEach(
           (category) => _couponList!.add(CouponModel.fromJson(category)));
       notifyListeners();
     } else {
-      //  ApiChecker.checkApi(context, apiResponse);
+      _couponListLoading = false;
+      notifyListeners();
+
+      ApiChecker.checkApi(context, apiResponse);
     }
   }
 
   Future<double> applyCoupon(String coupon, double orderAmount) async {
-    _isLoading = true;
+    _applyCouponLoading = true;
     notifyListeners();
-    print('orderrrr 1-- ${orderAmount}');
+    print('orderAmount -- $orderAmount');
     ApiResponse apiResponse = await couponRepo!.applyCoupon(coupon);
     if (apiResponse.response != null &&
         apiResponse.response!.statusCode == 200) {
-      _coupon = CouponModel.fromJson(apiResponse.response!.data);
-      _discount = Helpers.applyDiscount(_coupon!, orderAmount);
+      _couponDiscount = CouponModel.fromJson(apiResponse.response!.data);
+      _couponDiscountAmount =
+          Helpers.applyDiscount(_couponDiscount!, orderAmount);
+      _applyCouponLoading = false;
+      notifyListeners();
     } else {
       print(apiResponse.error.toString());
-      _discount = 0.0;
+      _couponDiscountAmount = 0.0;
+      _applyCouponLoading = false;
+      notifyListeners();
     }
-    _isLoading = false;
-    notifyListeners();
-    return _discount!;
+
+    return _couponDiscountAmount!;
   }
 
   void removeCouponData(bool notify) {
-    _coupon = null;
-    _isLoading = false;
-    _discount = 0.0;
+    _couponDiscount = null;
+    _removeCouponLoading = false;
+    _couponDiscountAmount = 0.0;
     if (notify) {
       notifyListeners();
     }
+  }
+
+  void applyUseLoyaltyPoints(double discount) {
+    _useLoyaltyPointsAmount = discount;
+
+    _useLoyaltyPoints = true;
+    notifyListeners();
+  }
+
+  void removeUseLoyaltyPoints() {
+    _useLoyaltyPoints = false;
+    _useLoyaltyPointsAmount = 0.0;
+    notifyListeners();
   }
 }

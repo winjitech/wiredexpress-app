@@ -187,6 +187,7 @@
 import 'dart:async';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
 import 'package:wired_express/data/model/response/wishlist_model.dart';
+import 'package:wired_express/helper/responsive_helper.dart';
 import 'package:wired_express/provider/profile_provider.dart';
 import 'package:wired_express/provider/theme_provider.dart';
 import 'package:wired_express/utill/color_resources.dart';
@@ -284,7 +285,8 @@ class _WishListScreenState extends State<WishListScreen> {
               ? Consumer<WishListProvider>(
                   builder: (context, wishlistProvider, child) {
                     return wishlistProvider.loading
-                        ? CustomCircularIndicator(color:ColorResources.getScaffoldColor(context))
+                        ? CustomCircularIndicator(
+                            color: ColorResources.getScaffoldColor(context))
                         : wishlistProvider.wishList != null &&
                                 wishlistProvider.wishList!.isNotEmpty
                             ? RefreshIndicator(
@@ -299,7 +301,8 @@ class _WishListScreenState extends State<WishListScreen> {
                                   child: SingleChildScrollView(
                                     child: Center(
                                       child: SizedBox(
-                                          width: MediaQuery.of(context).size.width,
+                                          width:
+                                              MediaQuery.of(context).size.width,
                                           child: Column(
                                             children: [
                                               Padding(
@@ -347,84 +350,72 @@ class _WishListScreenState extends State<WishListScreen> {
                                                     //     ? Colors.black
                                                     //     : Colors.white,
                                                     hintStyle: TextStyle(
-                                                            fontSize: 14,
-                                                            color: ColorResources
-                                                                .COLOR_BLACK,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .w400),
+                                                        fontSize: 14,
+                                                        color: ColorResources
+                                                            .COLOR_BLACK,
+                                                        fontWeight:
+                                                            FontWeight.w400),
                                                     filled: true,
                                                   ),
                                                   onChanged: (value) {
                                                     filterWishList(value);
                                                   },
                                                   style: TextStyle(
-                                                          color: Provider.of<
-                                                                          ThemeProvider>(
+                                                      color:
+                                                          Provider.of<ThemeProvider>(
                                                                       context,
                                                                       listen:
                                                                           false)
                                                                   .darkTheme
                                                               ? Colors.white
                                                               : Colors.black,
-                                                          fontSize: 12),
+                                                      fontSize: 12),
                                                 ),
                                               ),
-                                              GridView.builder(
-                                                key: UniqueKey(),
-                                                gridDelegate:
-                                                    SliverGridDelegateWithFixedCrossAxisCount(
-                                                  crossAxisSpacing: 15,
-                                                  mainAxisSpacing: 15,
-                                                  mainAxisExtent: 231,
-                                                  crossAxisCount: 2,
+                                              Padding(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 20),
+                                                child: GridView.builder(
+                                                  gridDelegate:
+                                                      SliverGridDelegateWithFixedCrossAxisCount(
+                                                    crossAxisSpacing: 10,
+                                                    mainAxisSpacing: 10,
+                                                    mainAxisExtent: 240,
+                                                    crossAxisCount:
+                                                        ResponsiveHelper.isTab(
+                                                                context)
+                                                            ? 3
+                                                            : 2,
+                                                  ),
+                                                  physics:
+                                                      NeverScrollableScrollPhysics(),
+                                                  shrinkWrap: true,
+                                                  itemCount: _searchController
+                                                          .text
+                                                          .toString()
+                                                          .isEmpty
+                                                      ? wishlistProvider
+                                                          .wishList!.length
+                                                      : filteredWishList.length,
+                                                  padding: EdgeInsets.zero,
+                                                  itemBuilder:
+                                                      (context, index) {
+                                                    return ProductWidget(
+                                                        product: _searchController
+                                                                .text
+                                                                .toString()
+                                                                .isEmpty
+                                                            ? wishlistProvider
+                                                                .wishList![
+                                                                    index]
+                                                                .product
+                                                            : filteredWishList[
+                                                                    index]
+                                                                .product);
+                                                  },
                                                 ),
-                                                physics:
-                                                    NeverScrollableScrollPhysics(),
-                                                shrinkWrap: true,
-                                                itemCount: _searchController
-                                                        .text
-                                                        .toString()
-                                                        .isEmpty
-                                                    ? wishlistProvider
-                                                        .wishList!.length
-                                                    : filteredWishList.length,
-                                                padding: EdgeInsets.all(20),
-                                                itemBuilder: (context, index) {
-                                                  return ProductWidget(
-                                                      product: _searchController
-                                                              .text
-                                                              .toString()
-                                                              .isEmpty
-                                                          ? wishlistProvider
-                                                              .wishList![index]
-                                                              .product
-                                                          : filteredWishList[
-                                                                  index]
-                                                              .product);
-                                                },
                                               ),
-                                              // GridView.builder(
-                                              //     key: UniqueKey(),
-                                              //     gridDelegate:
-                                              //         SliverGridDelegateWithFixedCrossAxisCount(
-                                              //             crossAxisSpacing: 15,
-                                              //             mainAxisSpacing: 15,
-                                              //             mainAxisExtent: 231,
-                                              //             crossAxisCount: 2),
-                                              //     physics:
-                                              //         NeverScrollableScrollPhysics(),
-                                              //     shrinkWrap: true,
-                                              //     itemCount: wishlistProvider
-                                              //         .wishList!.length,
-                                              //     padding: EdgeInsets.all(15),
-                                              //     itemBuilder: (context, index) {
-                                              //       return ProductWidget(
-                                              //           product: wishlistProvider
-                                              //               .wishList![index]
-                                              //               .product);
-                                              //       ;
-                                              //     }),
                                             ],
                                           )),
                                     ),

@@ -2,9 +2,11 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:wired_express/data/helper/helpers.dart';
 import 'package:wired_express/data/model/response/cart_model.dart';
 import 'package:wired_express/data/model/response/moq_setting_model.dart';
 import 'package:wired_express/data/model/response/product_model.dart';
+import 'package:wired_express/data/model/response/product_plan_discount_model.dart';
 import 'package:wired_express/data/model/response/tiered_pricing_model.dart';
 import 'package:wired_express/helper/price_converter.dart';
 import 'package:wired_express/localization/language_constrants.dart';
@@ -13,30 +15,29 @@ import 'package:wired_express/provider/cart_provider.dart';
 import 'package:wired_express/provider/language_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:wired_express/provider/product_provider.dart';
+import 'package:wired_express/provider/profile_provider.dart';
 import 'package:wired_express/provider/splash_provider.dart';
-import 'package:wired_express/provider/theme_provider.dart';
 import 'package:wired_express/utill/color_resources.dart';
 import 'package:wired_express/utill/dimensions.dart';
 import 'package:wired_express/utill/styles.dart';
 import 'package:wired_express/view/base/circular_indicator_widget.dart';
 import 'package:wired_express/view/base/custom_button.dart';
 import 'package:wired_express/view/base/custom_snackbar.dart';
-import 'package:wired_express/view/base/rating_bar.dart';
 
-class SingleCartProductDetailsBottomSheet extends StatefulWidget {
-  final Product? product;
+class CartProductDetailsBottomSheet extends StatefulWidget {
+  final ProductModel? product;
   final bool? fromSetMenu;
   final CartModel? cart;
-  SingleCartProductDetailsBottomSheet(
+  CartProductDetailsBottomSheet(
       {@required this.product, this.fromSetMenu = false, this.cart});
 
   @override
-  State<SingleCartProductDetailsBottomSheet> createState() =>
-      _SingleCartProductDetailsBottomSheetState();
+  State<CartProductDetailsBottomSheet> createState() =>
+      _CartProductDetailsBottomSheetState();
 }
 
-class _SingleCartProductDetailsBottomSheetState
-    extends State<SingleCartProductDetailsBottomSheet> {
+class _CartProductDetailsBottomSheetState
+    extends State<CartProductDetailsBottomSheet> {
   @override
   void initState() {
     super.initState();
@@ -51,41 +52,69 @@ class _SingleCartProductDetailsBottomSheetState
 
   @override
   Widget build(BuildContext context) {
-    String? _image;
-    final bool _isLoggedIn =
+    final bool isLoggedIn =
         Provider.of<CustomAuthProvider>(context, listen: false).isLoggedIn()!;
     // final String languageStr = getTranslated('set_language', context);
-    return Consumer2<CartProvider, ProductProvider>(
-        builder: (context, cartProvider, productProvider, child) {
-      Product product = productProvider.productDetailsModel!;
+    return Consumer4<CartProvider, ProductProvider, ProfileProvider,
+            SplashProvider>(
+        builder: (context, cartProvider, productProvider, profileProvider,
+            splashProvider, child) {
+      ProductModel product = productProvider.productDetailsModel!;
       List<TiredPricingModel> tiredPricing = product.tiredPricing ?? [];
       MoqSettingModel? moqSetting = product.moqSetting;
       int minOrderQuantity = moqSetting?.minimumOrderQuantity ?? 1;
+      ProductPlanDiscountModel? productPlanDiscountModel;
+      if (isLoggedIn &&
+          profileProvider.userInfoModel != null &&
+          profileProvider.userInfoModel!.exclusiveDiscounts == 1) {
+        List<ProductPlanDiscountModel> productPlanDiscount =
+            product.productPlanDiscount ?? [];
 
-      double priceWithDiscount = PriceConverter.convertWithDiscount(
-          context, product.price!, product.discount!, product.discountType!);
-      double price = PriceConverter.getProductFinalPrice(
-              tiredPricing, priceWithDiscount, productProvider.quantity ?? 1) ??
+        try {
+          productPlanDiscountModel = productPlanDiscount.firstWhere(
+            (discount) =>
+                discount.planId ==
+                profileProvider.userInfoModel!.userSubscription!.planId,
+            orElse: () => ProductPlanDiscountModel(),
+          );
+        } catch (e) {
+          print("Error finding discount: $e");
+          productPlanDiscountModel = ProductPlanDiscountModel();
+        }
+      }
+
+      double discountedOnProductPrice = productPlanDiscountModel != null &&
+              productPlanDiscountModel.planId != null
+          ? PriceConverter.convertWithDiscount(
+              context,
+              product.price!,
+              productPlanDiscountModel.discount!,
+              productPlanDiscountModel.discountType!)
+          : PriceConverter.convertWithDiscount(context, product.price!,
+              product.discount!, product.discountType!);
+
+      double price = PriceConverter.getProductFinalPrice(context , tiredPricing,
+              discountedOnProductPrice, productProvider.quantity ?? 1) ??
           0.0;
 
       double priceWithQuantity = price * productProvider.quantity!;
       double priceWithQuantityWithoutDiscount =
           price * productProvider.quantity!;
 
-      DateTime _currentTime =
+      DateTime currentTime =
           Provider.of<SplashProvider>(context, listen: false).currentTime;
-      DateTime _start =
+      DateTime start =
           DateFormat('hh:mm:ss').parse(product.availableTimeStarts!);
-      DateTime _end = DateFormat('hh:mm:ss').parse(product.availableTimeEnds!);
-      DateTime _startTime = DateTime(_currentTime.year, _currentTime.month,
-          _currentTime.day, _start.hour, _start.minute, _start.second);
-      DateTime _endTime = DateTime(_currentTime.year, _currentTime.month,
-          _currentTime.day, _end.hour, _end.minute, _end.second);
-      if (_endTime.isBefore(_startTime)) {
-        _endTime = _endTime.add(const Duration(days: 1));
+      DateTime end = DateFormat('hh:mm:ss').parse(product.availableTimeEnds!);
+      DateTime startTime = DateTime(currentTime.year, currentTime.month,
+          currentTime.day, start.hour, start.minute, start.second);
+      DateTime endTime = DateTime(currentTime.year, currentTime.month,
+          currentTime.day, end.hour, end.minute, end.second);
+      if (endTime.isBefore(startTime)) {
+        endTime = endTime.add(const Duration(days: 1));
       }
 
-      bool _isAvailable = true;
+      bool isAvailable = true;
 
       return Container(
         decoration: BoxDecoration(
@@ -103,16 +132,7 @@ class _SingleCartProductDetailsBottomSheetState
                 padding: const EdgeInsets.only(),
                 child: Row(
                   children: [
-                    Text(
-                        '${'${PriceConverter.convertPrice(context, price, discount: product.discount, discountType: product.discountType)}'
-                            '${price != null ? ' - ${PriceConverter.convertPrice(context, price, discount: product.discount, discountType: product.discountType)}' : ''}'}',
-                        style: TextStyle(
-                            color: ColorResources.getTextColor(context),
-                            fontWeight: FontWeight.normal,
-                            fontSize: 16),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis),
-                    SizedBox(width: 20),
+
                     Spacer(),
                     Container(
                       decoration: BoxDecoration(
@@ -171,38 +191,6 @@ class _SingleCartProductDetailsBottomSheetState
                   ],
                 ),
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  price > priceWithDiscount
-                      ? Padding(
-                          padding: const EdgeInsets.all(0),
-                          child: Text(
-                            '${PriceConverter.convertPrice(context, price)}'
-                            '${price != null ? ' - ${PriceConverter.convertPrice(context, price)}' : ''}',
-                            style: TextStyle(
-                                color: Colors.black45,
-                                fontWeight: FontWeight.normal,
-                                fontSize: 16,
-                                decoration: TextDecoration.lineThrough),
-                          ),
-                        )
-                      : SizedBox(),
-                  Column(
-                    children: [
-                      SizedBox(
-                        height: 5,
-                      ),
-                      RatingBar(
-                          rating: product.rating!.length > 0
-                              ? double.parse(product.rating![0].average!)
-                              : 0.0,
-                          size: 18),
-                    ],
-                  ),
-                ],
-              ),
               product.description != null
                   ? Column(
                       mainAxisAlignment: MainAxisAlignment.start,
@@ -249,29 +237,33 @@ class _SingleCartProductDetailsBottomSheetState
                           fontSize: Dimensions.FONT_SIZE_LARGE,
                           color: ColorResources.getTextColor(context))),
                   const SizedBox(width: Dimensions.PADDING_SIZE_EXTRA_SMALL),
+                  if (((product.price! * productProvider.quantity!)) !=
+                      priceWithQuantity)
+                    Row(
+                      children: [
+                        Text(
+                          "${splashProvider.configModel!.currencySymbol ?? '\$'}${Helpers.formatTextWithNum((product.price! * productProvider.quantity!).toString())}",
+                          style: TextStyle(
+                            color: ColorResources.getTextColor(context)
+                                .withOpacity(0.4),
+                            fontWeight: FontWeight.w500,
+                            fontSize: 15,
+                            decoration: TextDecoration.lineThrough,
+                            decorationColor:
+                                ColorResources.getTextColor(context)
+                                    .withOpacity(0.4),
+                          ),
+                        ),
+                        SizedBox(width: 5),
+                      ],
+                    ),
                   Text(
-                      PriceConverter.convertPrice(context, price,
-                                  discount: product.discount,
-                                  discountType: product.discountType) ==
-                              PriceConverter.convertPrice(context, price)
-                          ? ""
-                          : PriceConverter.convertPrice(
-                              context, priceWithQuantityWithoutDiscount),
-                      style: TextStyle(
-                          color:
-                              Provider.of<ThemeProvider>(context, listen: false)
-                                      .darkTheme
-                                  ? ColorResources.DISABLE_COLOR
-                                  : ColorResources.COLOR_GREY,
-                          fontWeight: FontWeight.normal,
-                          fontSize: 14,
-                          decoration: TextDecoration.lineThrough)),
-                  const SizedBox(width: 1),
-                  Text(PriceConverter.convertPrice(context, priceWithQuantity),
-                      style: rubikBold.copyWith(
-                        color: ColorResources.getScaffoldColor(context),
-                        fontSize: Dimensions.FONT_SIZE_LARGE,
-                      )),
+                    PriceConverter.convertPrice(context, priceWithQuantity),
+                    style: TextStyle(
+                        fontSize: 16,
+                        color: ColorResources.getPrimaryColor(context),
+                        fontWeight: FontWeight.w600),
+                  ),
                 ]),
               ),
               SizedBox(
@@ -287,14 +279,17 @@ class _SingleCartProductDetailsBottomSheetState
                           backgroundColor:
                               ColorResources.getPrimaryColor(context),
                           onTap: () {
-                            CartModel _cartModel = CartModel(
-                                id: widget.cart!.id,
+                            CartModel cartModel = CartModel(
+                                id: widget.cart!.id!,
                                 productId: product.id,
+                                quantity: productProvider.quantity,
                                 product: product,
-                                quantity: productProvider.quantity);
-                            cartProvider
-                                .addToCartList(_cartModel, (message) {})
-                                .then((value) {
+                                tieredPricing:
+                                    PriceConverter.getMatchedTieredPricingModel(context ,
+                                        tiredPricing,
+                                        productProvider.quantity ?? 1));
+
+                            cartProvider.addToCartList(cartModel).then((value) {
                               cartProvider.initCartList(context);
                               cartProvider.initCartListProductIds(context);
                               showCustomSnackBar(

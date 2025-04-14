@@ -6,7 +6,7 @@ class OrderDetailsModel {
   int? _productId;
   int? _orderId;
   double? _price;
-  Product? _productDetails;
+  ProductModel? _productDetails;
   double? _discountOnProduct;
   String? _discountType;
   int? _quantity;
@@ -20,7 +20,7 @@ class OrderDetailsModel {
       int? productId,
       int? orderId,
       double? price,
-      Product? productDetails,
+      ProductModel? productDetails,
       double? discountOnProduct,
       String? discountType,
       int? quantity,
@@ -46,7 +46,7 @@ class OrderDetailsModel {
   int? get productId => _productId;
   int? get orderId => _orderId;
   double? get price => _price;
-  Product? get productDetails => _productDetails;
+  ProductModel? get productDetails => _productDetails;
   double? get discountOnProduct => _discountOnProduct;
   String? get discountType => _discountType;
   int? get quantity => _quantity;
@@ -63,7 +63,7 @@ class OrderDetailsModel {
 
     _price = (json['price'] as num).toDouble();
     _productDetails = json['product_details'] != null
-        ? new Product.fromJson(json['product_details'])
+        ? new ProductModel.fromJson(json['product_details'])
         : null;
 
     _discountOnProduct = (json['discount_on_product'] as num).toDouble();

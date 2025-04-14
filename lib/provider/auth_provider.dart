@@ -42,22 +42,31 @@ class CustomAuthProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void saveRegistrationData(SignUpModel signUpModel) async {}
+  bool? _registerIsLoading = false;
+
+  bool? get registerIsLoading => _registerIsLoading;
+
   Future<ResponseModel> registration(SignUpModel signUpModel) async {
-    _isLoading = true;
+    _registerIsLoading = true;
     _registrationErrorMessage = '';
     notifyListeners();
+    print(signUpModel.toJson());
     ApiResponse apiResponse = await authRepo!.registration(signUpModel);
     ResponseModel responseModel;
     if (apiResponse.response != null &&
         apiResponse.response!.statusCode == 200) {
-      saveUserNumberAndPassword(signUpModel.email, signUpModel.password);
+      _registerIsLoading = false;
+      notifyListeners();
       Map map = apiResponse.response!.data;
       String? token = map["token"];
       authRepo!.saveUserToken(token!);
+      // saveUserEmailAndPassword(signUpModel.email, signUpModel.password);
+
       await authRepo!.updateToken();
       responseModel = ResponseModel(true, 'successful');
     } else {
+      _registerIsLoading = false;
+      notifyListeners();
       String? errorMessage;
       if (apiResponse.error is String?) {
         errorMessage = apiResponse.error.toString();
@@ -65,11 +74,10 @@ class CustomAuthProvider with ChangeNotifier {
         ErrorResponse errorResponse = apiResponse.error;
         errorMessage = errorResponse.errors![0].message;
       }
-      print(errorMessage);
       _registrationErrorMessage = errorMessage;
       responseModel = ResponseModel(false, errorMessage!);
     }
-    _isLoading = false;
+    _registerIsLoading = false;
     notifyListeners();
     return responseModel;
   }
@@ -162,26 +170,31 @@ class CustomAuthProvider with ChangeNotifier {
     }
   }
 
+  bool? _verifyTokenLoading = false;
+  bool? get verifyTokenLoading => _verifyTokenLoading;
   Future<ResponseModel> verifyToken(String? email) async {
-    _isPhoneNumberVerificationButtonLoading = true;
+    _verifyTokenLoading = true;
     notifyListeners();
     ApiResponse apiResponse =
         await authRepo!.verifyToken(email!, _verificationCode!);
-    _isPhoneNumberVerificationButtonLoading = false;
-    notifyListeners();
+
     ResponseModel responseModel;
     if (apiResponse.response != null &&
         apiResponse.response!.statusCode == 200) {
+      _verifyTokenLoading = false;
+      notifyListeners();
       responseModel =
           ResponseModel(true, apiResponse.response!.data["message"]);
     } else {
+      _verifyTokenLoading = false;
+      notifyListeners();
       String? errorMessage;
       if (apiResponse.error is String?) {
-        print(apiResponse.error.toString());
         errorMessage = apiResponse.error.toString();
       } else {
+        _verifyTokenLoading = false;
+        notifyListeners();
         ErrorResponse errorResponse = apiResponse.error;
-        print(errorResponse.errors![0].message);
         errorMessage = errorResponse.errors![0].message;
       }
       responseModel = ResponseModel(false, errorMessage!);
@@ -238,41 +251,59 @@ class CustomAuthProvider with ChangeNotifier {
     _verificationMsg = '';
   }
 
-  Future<ResponseModel> checkEmail(String? email) async {
-    _isPhoneNumberVerificationButtonLoading = true;
-    _verificationMsg = '';
+  bool? _checkEmailLoading = false;
+
+  bool? get checkEmailLoading => _checkEmailLoading;
+  Future<ResponseModel> checkEmail(BuildContext? context, String? email) async {
+    _checkEmailLoading = true;
     notifyListeners();
     ApiResponse apiResponse = await authRepo!.checkEmail(email!);
-    _isPhoneNumberVerificationButtonLoading = false;
-    notifyListeners();
+
     ResponseModel responseModel;
     if (apiResponse.response != null &&
         apiResponse.response!.statusCode == 200) {
+      _checkEmailLoading = false;
+      notifyListeners();
       responseModel = ResponseModel(true, apiResponse.response!.data["token"]);
     } else {
+      ApiChecker.checkApi(context, apiResponse);
+      _checkEmailLoading = false;
+      notifyListeners();
       String? errorMessage;
       if (apiResponse.error is String?) {
-        print(apiResponse.error.toString());
         errorMessage = apiResponse.error.toString();
       } else {
         ErrorResponse errorResponse = apiResponse.error;
-        print(errorResponse.errors![0].message);
         errorMessage = errorResponse.errors![0].message;
       }
-      responseModel = ResponseModel(false, errorMessage!);
-      _verificationMsg = errorMessage;
+      String? text;
+      if (errorMessage!.contains("Email already registered before!")) {
+        text = getTranslated('email_already_registered_before', context!);
+      } else {
+        text = getTranslated('something_went_wrong', context!);
+      }
+      showCustomSnackBar(text, context);
+
+      _checkEmailLoading = false;
+      notifyListeners();
+      responseModel = ResponseModel(false, errorMessage);
     }
     notifyListeners();
     return responseModel;
   }
 
+  bool? _verifyEmailLoading = false;
+
+  bool? get verifyEmailLoading => _verifyEmailLoading;
+
   Future<ResponseModel> verifyEmail(String? email) async {
-    _isPhoneNumberVerificationButtonLoading = true;
+    _verifyEmailLoading = true;
     _verificationMsg = '';
     notifyListeners();
+
     ApiResponse apiResponse =
         await authRepo!.verifyEmail(email!, _verificationCode!);
-    _isPhoneNumberVerificationButtonLoading = false;
+    _verifyEmailLoading = false;
     notifyListeners();
     ResponseModel responseModel;
     if (apiResponse.response != null &&
@@ -282,11 +313,9 @@ class CustomAuthProvider with ChangeNotifier {
     } else {
       String? errorMessage;
       if (apiResponse.error is String?) {
-        print(apiResponse.error.toString());
         errorMessage = apiResponse.error.toString();
       } else {
         ErrorResponse errorResponse = apiResponse.error;
-        print(errorResponse.errors![0].message);
         errorMessage = errorResponse.errors![0].message;
       }
       responseModel = ResponseModel(false, errorMessage!);

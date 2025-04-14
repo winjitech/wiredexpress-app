@@ -1,19 +1,18 @@
-import 'dart:convert';
-
 import 'package:wired_express/data/model/response/moq_setting_model.dart';
+import 'package:wired_express/data/model/response/product_plan_discount_model.dart';
 import 'package:wired_express/data/model/response/tiered_pricing_model.dart';
 
-class ProductModel {
+class ProductBody {
   int? _totalSize;
   String? _limit;
   String? _offset;
-  List<Product>? _products;
+  List<ProductModel>? _products;
 
-  ProductModel(
+  ProductBody(
       {int? totalSize,
-        String? limit,
-        String? offset,
-        List<Product>? products}) {
+      String? limit,
+      String? offset,
+      List<ProductModel>? products}) {
     this._totalSize = totalSize;
     this._limit = limit;
     this._offset = offset;
@@ -23,9 +22,9 @@ class ProductModel {
   int? get totalSize => _totalSize;
   String? get limit => _limit;
   String? get offset => _offset;
-  List<Product>? get products => _products;
+  List<ProductModel>? get products => _products;
 
-  ProductModel.fromJson(Map<String?, dynamic> json) {
+  ProductBody.fromJson(Map<String?, dynamic> json) {
     _totalSize = json['total_size'];
     if (json['limit'] is int?) {
       _limit = json['limit'].toString();
@@ -33,11 +32,11 @@ class ProductModel {
       _limit = json['limit'];
     }
 
-    _offset = json['offset'];
+    _offset = json['offset'].toString();
     if (json['products'] != null) {
       _products = [];
       json['products']!.forEach((v) {
-        _products!.add(new Product.fromJson(v));
+        _products!.add(new ProductModel.fromJson(v));
       });
     }
   }
@@ -54,14 +53,13 @@ class ProductModel {
   }
 }
 
-class Product {
+class ProductModel {
   int? _id;
   String? _name;
   String? _description;
   String? _image;
   double? _price;
   List<TiredPricingModel>? _tiredPricing;
-
   double? _tax;
   String? _availableTimeStarts;
   String? _availableTimeEnds;
@@ -76,37 +74,40 @@ class Product {
   List<Rating>? _rating;
   String? _matchedTag;
   String? _availability;
+  int? _isEarlyProduct;
   MoqSettingModel? _moqSetting;
+  List<ProductPlanDiscountModel>? _productPlanDiscount;
 
-  Product(
+  ProductModel(
       {int? id,
-        String? name,
-        String? description,
-        String? image,
-        double? price,
-        List<TiredPricingModel>? tiredPricing,
-        double? tax,
-        String? availableTimeStarts,
-        String? availableTimeEnds,
-        int? status,
-        String? createdAt,
-        String? updatedAt,
-        List<CategoryId>? categoryIds,
-        double? discount,
-        String? discountType,
-        String? taxType,
-        int? setMenu,
-        List<Rating>? rating,
-        String? matchedTag,
-        String? availability,
-        MoqSettingModel? moqSetting}) {
+      String? name,
+      String? description,
+      String? image,
+      double? price,
+      List<TiredPricingModel>? tiredPricing,
+      double? tax,
+      String? availableTimeStarts,
+      String? availableTimeEnds,
+      int? status,
+      String? createdAt,
+      String? updatedAt,
+      List<CategoryId>? categoryIds,
+      double? discount,
+      String? discountType,
+      String? taxType,
+      int? setMenu,
+      List<Rating>? rating,
+      String? matchedTag,
+      String? availability,
+      MoqSettingModel? moqSetting,
+      int? isEarlyProduct,
+      List<ProductPlanDiscountModel>? productPlanDiscount}) {
     this._id = id;
     this._name = name;
     this._description = description;
     this._image = image;
     this._price = price;
     this._tiredPricing = tiredPricing;
-
     this._tax = tax;
     this._availableTimeStarts = availableTimeStarts;
     this._availableTimeEnds = availableTimeEnds;
@@ -122,6 +123,8 @@ class Product {
     this._matchedTag = matchedTag;
     this._availability = availability;
     this._moqSetting = moqSetting;
+    this._productPlanDiscount = productPlanDiscount;
+    this._isEarlyProduct = isEarlyProduct;
   }
 
   int? get id => _id;
@@ -130,7 +133,6 @@ class Product {
   String? get image => _image;
   double? get price => _price;
   List<TiredPricingModel>? get tiredPricing => _tiredPricing;
-
   double? get tax => _tax;
   String? get availableTimeStarts => _availableTimeStarts;
   String? get availableTimeEnds => _availableTimeEnds;
@@ -146,8 +148,11 @@ class Product {
   List<Rating>? get rating => _rating;
   String? get availability => _availability;
   MoqSettingModel? get moqSetting => _moqSetting;
+  List<ProductPlanDiscountModel>? get productPlanDiscount =>
+      _productPlanDiscount;
+  int? get isEarlyProduct => _isEarlyProduct;
 
-  Product.fromJson(Map<String?, dynamic> json) {
+  ProductModel.fromJson(Map<String?, dynamic> json) {
     _id = json['id'];
     _name = json['name'];
     _description = json['description'];
@@ -159,6 +164,12 @@ class Product {
       _tiredPricing = [];
       json['tired_pricing']!.forEach((v) {
         _tiredPricing!.add(new TiredPricingModel.fromJson(v));
+      });
+    }
+    if (json['plan_discounts'] != null) {
+      _productPlanDiscount = [];
+      json['plan_discounts']!.forEach((v) {
+        _productPlanDiscount!.add(new ProductPlanDiscountModel.fromJson(v));
       });
     }
 
@@ -181,6 +192,7 @@ class Product {
     _setMenu = json['set_menu'];
     _matchedTag = json['matchedTag'] ?? '';
     _availability = json['availability'];
+    _isEarlyProduct = json['is_early_product'];
     if (json['rating'] != null) {
       _rating = [];
       json['rating']!.forEach((v) {
@@ -208,6 +220,10 @@ class Product {
           this._tiredPricing!.map((v) => v.toJson()).toList();
     }
 
+    if (this._productPlanDiscount != null) {
+      data['plan_discounts'] =
+          this._productPlanDiscount!.map((v) => v.toJson()).toList();
+    }
     data['tax'] = this._tax;
     data['available_time_starts'] = this._availableTimeStarts;
     data['available_time_ends'] = this._availableTimeEnds;
@@ -224,6 +240,7 @@ class Product {
     data['set_menu'] = this._setMenu;
     data['matchedTag'] = this._matchedTag ?? '';
     data['availability'] = this._availability;
+    data['is_early_product'] = this._isEarlyProduct;
     if (this._rating != null) {
       data['rating'] = this._rating!.map((v) => v.toJson()).toList();
     }
@@ -233,7 +250,6 @@ class Product {
     return data;
   }
 }
-
 
 class CategoryId {
   String? _id;
