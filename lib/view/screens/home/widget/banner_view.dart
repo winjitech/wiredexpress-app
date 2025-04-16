@@ -73,87 +73,12 @@ class _BannerViewState extends State<BannerView> {
                                     margin: EdgeInsets.only(right: 0),
                                     decoration: BoxDecoration(
                                       image: DecorationImage(
-                                        image: NetworkImage(
-                                            '${Provider.of<SplashProvider>(context, listen: false).baseUrls!.bannerImageUrl}/${banner.bannerList![index].image}'),
-                                        fit: BoxFit.cover,
-                                      ),
+                                          image: NetworkImage(
+                                              '${Provider.of<SplashProvider>(context, listen: false).baseUrls!.bannerImageUrl}/${banner.bannerList![index].image}'),
+                                          fit: BoxFit.cover),
                                       color: ColorResources
                                           .getScaffoldBackgroundColor(context),
                                       borderRadius: BorderRadius.circular(10),
-                                    ),
-                                  ),
-                                ),
-                                Center(
-                                  child: Container(
-                                    height: 180,
-                                    width: MediaQuery.of(context).size.width,
-                                    decoration: BoxDecoration(
-                                      color: Colors.black.withOpacity(0.2),
-                                      borderRadius: BorderRadius.circular(10),
-                                    ),
-                                  ),
-                                ),
-                                Positioned(
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 10, vertical: 20),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Container(
-                                          decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(16),
-                                            color: Colors.white,
-                                          ),
-                                          child: Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 15, vertical: 5),
-                                            child: Text(
-                                              banner.bannerList![index].title
-                                                  .toString(),
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 15,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                        SizedBox(height: 15),
-                                        Text(
-                                          getTranslated('up_to', context),
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 18,
-                                          ),
-                                        ),
-                                        SizedBox(height: 10),
-                                        Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            Text(
-                                              banner.bannerList![index].describe
-                                                  .toString(),
-                                              style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 40,
-                                                fontWeight: FontWeight.w700,
-                                              ),
-                                            ),
-                                            SizedBox(width: 10),
-                                            Text(
-                                              'off',
-                                              style: TextStyle(
-                                                color: Colors.white,
-                                                fontWeight: FontWeight.w700,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
                                     ),
                                   ),
                                 ),
@@ -198,27 +123,27 @@ class BannerShimmer extends StatelessWidget {
             ),
             itemCount: 10,
             itemBuilder: (context, index, _) => Row(children: [
-              Expanded(
-                child: Container(
-                  height: 175,
-                  width: double.infinity,
-                  margin: EdgeInsets.only(right: 0),
-                  decoration: BoxDecoration(
-                      color: ColorResources.getScaffoldBackgroundColor(
-                          context),
-                      borderRadius: BorderRadius.circular(10),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Provider.of<ThemeProvider>(context)
-                              .darkTheme
-                              ? Colors.black.withOpacity(0.4)
-                              : Colors.grey[300]!,
-                          blurRadius: 5,
-                          spreadRadius: 1,
-                        )
-                      ]),
-                ),
-              ),
+                  Expanded(
+                    child: Container(
+                      height: 175,
+                      width: double.infinity,
+                      margin: EdgeInsets.only(right: 0),
+                      decoration: BoxDecoration(
+                          color: ColorResources.getScaffoldBackgroundColor(
+                              context),
+                          borderRadius: BorderRadius.circular(10),
+                          boxShadow: [
+                            BoxShadow(
+                              color:
+                                  Provider.of<ThemeProvider>(context).darkTheme
+                                      ? Colors.black.withOpacity(0.4)
+                                      : Colors.grey[300]!,
+                              blurRadius: 5,
+                              spreadRadius: 1,
+                            )
+                          ]),
+                    ),
+                  ),
                 ])));
   }
 }

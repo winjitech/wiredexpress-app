@@ -12,7 +12,7 @@ class CategoryRepo {
   Future<ApiResponse> getCategory(String iDCate) async {
     try {
       final response =
-          await dioClient!.get('${AppConstants.CATEGORY_URI}/$iDCate');
+          await dioClient!.get('${AppConstants.categoryUrl}/$iDCate');
       return ApiResponse.withSuccess(response);
     } catch (e) {
       return ApiResponse.withError(ApiErrorHandler.getMessage(e));
@@ -21,7 +21,7 @@ class CategoryRepo {
 
   Future<ApiResponse> getCategoryList() async {
     try {
-      final response = await dioClient!.get(AppConstants.CATEGORY_URI);
+      final response = await dioClient!.get(AppConstants.categoryUrl);
       return ApiResponse.withSuccess(response);
     } catch (e) {
       return ApiResponse.withError(ApiErrorHandler.getMessage(e));
@@ -30,7 +30,7 @@ class CategoryRepo {
 
   Future<ApiResponse> getCategoryFeaturedList() async {
     try {
-      final response = await dioClient!.get(AppConstants.CATEGORY_FEATURED_URI);
+      final response = await dioClient!.get(AppConstants.categoryFeaturedUrl);
       return ApiResponse.withSuccess(response);
     } catch (e) {
       return ApiResponse.withError(ApiErrorHandler.getMessage(e));
@@ -41,7 +41,7 @@ class CategoryRepo {
       {int? planId}) async {
     try {
       String url =
-          '${AppConstants.CATEGORY_PRODUCT_URI}?limit=20&offset=$offset&category_id=$categoryID';
+          '${AppConstants.categoryProductUrl}?limit=20&offset=$offset&category_id=$categoryID';
       if (planId != null) {
         url += '&plan_id=$planId';
       }
@@ -59,7 +59,7 @@ class CategoryRepo {
   //   var customer_id = await prefs.getInt('my_defined_user_id');
   //   try {
   //     final response = await dioClient!.get(
-  //         '${AppConstants.CATEGORY_PRODUCT_URI}?category_id=$categoryID&page_number=$pageNumber');
+  //         '${AppConstants.categoryProductUrl}?category_id=$categoryID&page_number=$pageNumber');
   //     return ApiResponse.withSuccess(response);
   //   } catch (e) {
   //     return ApiResponse.withError(ApiErrorHandler.getMessage(e));

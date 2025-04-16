@@ -8,13 +8,11 @@ import 'package:wired_express/view/screens/dashboard/dashboard_screen.dart';
 import 'package:wired_express/view/screens/order/order_screen.dart';
 
 class PaymentSuccessScreen extends StatelessWidget {
-
   final bool? success;
   PaymentSuccessScreen({@required this.success});
 
   @override
   Widget build(BuildContext? context) {
-
     return Scaffold(
       //appBar: ResponsiveHelper.isDesktop(context)? PreferredSize(child: MainAppBar(), preferredSize: Size.fromHeight(80)):null,
       body: Center(
@@ -25,15 +23,12 @@ class PaymentSuccessScreen extends StatelessWidget {
               height: 100,
               width: 100,
               decoration: BoxDecoration(
-                color: ColorResources.getPrimaryColor(context!)
-                    .withOpacity(0.2),
+                color:
+                    ColorResources.getPrimaryColor(context!).withOpacity(0.2),
                 shape: BoxShape.circle,
               ),
               child: Icon(
-                success!
-                    ? Icons.check_circle
-                    : Icons.sms_failed
-                    ,
+                success! ? Icons.check_circle : Icons.sms_failed,
                 color: ColorResources.getPrimaryColor(context),
                 size: 80,
               ),
@@ -59,15 +54,22 @@ class PaymentSuccessScreen extends StatelessWidget {
               padding: EdgeInsets.all(Dimensions.PADDING_SIZE_LARGE),
               child: CustomButton(
                   backgroundColor: ColorResources.getPrimaryColor(context),
-                  text: success!? 'Back' : 'Home', onTap: () {
-                if(success!) {
-                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext? context)=> DashboardScreen(pageIndex: 2)));
-                }else{
-                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext? context)=>
-                      DashboardScreen(pageIndex: 0)));
-                }
-
-              }),
+                  text: success! ? 'Back' : 'Home',
+                  onTap: () {
+                    if (success!) {
+                      Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                              builder: (BuildContext? context) =>
+                                  DashboardScreen(pageIndex: 0)));
+                    } else {
+                      Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                              builder: (BuildContext? context) =>
+                                  DashboardScreen(pageIndex: 0)));
+                    }
+                  }),
             ),
           ]),
         ),

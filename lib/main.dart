@@ -19,7 +19,6 @@ import 'package:wired_express/provider/cart_provider.dart';
 import 'package:wired_express/provider/category_provider.dart';
 import 'package:wired_express/provider/chat_provider.dart';
 import 'package:wired_express/provider/coupon_provider.dart';
-import 'package:wired_express/provider/deliveryman_chat_provider.dart';
 import 'package:wired_express/provider/localization_provider.dart';
 import 'package:wired_express/provider/main_provider.dart';
 import 'package:wired_express/provider/notification_provider.dart';
@@ -96,8 +95,6 @@ Future<void> main() async {
       ChangeNotifierProvider(create: (context) => di.sl<SearchProvider>()),
       ChangeNotifierProvider(create: (context) => di.sl<MainProvider>()),
       ChangeNotifierProvider(create: (context) => di.sl<PlaceOrderProvider>()),
-      ChangeNotifierProvider(
-          create: (context) => di.sl<DeliveryManChatProvider>()),
       ChangeNotifierProvider(create: (context) => di.sl<SubscriptionProvider>()),
 
     ],
@@ -164,7 +161,7 @@ class _MyAppState extends State<MyApp> {
                 // home: LoginWithPhoneScreen(),
                 title: splashProvider.configModel != null
                     ? splashProvider.configModel!.storeName ?? ''
-                    : AppConstants.APP_NAME,
+                    : AppConstants.appName,
                 debugShowCheckedModeBanner: false,
                 navigatorKey: MyApp.navigatorKey,
                 theme: themeProvider.darkTheme ? dark : light,

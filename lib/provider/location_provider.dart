@@ -355,14 +355,14 @@ class LocationProvider with ChangeNotifier {
     String userAddress = jsonEncode(address);
     try {
       await sharedPreferences!
-          .setString(AppConstants.USER_ADDRESS, userAddress);
+          .setString(AppConstants.userAddress, userAddress);
     } catch (e) {
       throw e;
     }
   }
 
   String getUserAddress() {
-    return sharedPreferences!.getString(AppConstants.USER_ADDRESS) ?? "";
+    return sharedPreferences!.getString(AppConstants.userAddress) ?? "";
   }
 
   List<String> _getAllAddressType = [];

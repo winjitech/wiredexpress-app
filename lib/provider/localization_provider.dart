@@ -26,14 +26,14 @@ class LocalizationProvider extends ChangeNotifier {
   }
 
   _loadCurrentLanguage() async {
-    _locale = Locale(sharedPreferences!.getString(AppConstants.LANGUAGE_CODE) ?? 'en',
-        sharedPreferences!.getString(AppConstants.COUNTRY_CODE) ?? 'US');
+    _locale = Locale(sharedPreferences!.getString(AppConstants.languageCode) ?? 'en',
+        sharedPreferences!.getString(AppConstants.countryCode) ?? 'US');
     _isLtr = _locale.languageCode == 'en';
     notifyListeners();
   }
 
   _saveLanguage(Locale locale) async {
-    sharedPreferences!.setString(AppConstants.LANGUAGE_CODE, locale.languageCode);
-    sharedPreferences!.setString(AppConstants.COUNTRY_CODE, locale.countryCode!);
+    sharedPreferences!.setString(AppConstants.languageCode, locale.languageCode);
+    sharedPreferences!.setString(AppConstants.countryCode, locale.countryCode!);
   }
 }

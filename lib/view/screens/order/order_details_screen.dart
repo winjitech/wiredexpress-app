@@ -1,10 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:wired_express/data/helper/helpers.dart';
 import 'package:wired_express/provider/splash_provider.dart';
-import 'package:wired_express/utill/Images.dart';
-import 'package:wired_express/utill/app_constants.dart';
 import 'package:wired_express/view/base/circular_indicator_widget.dart';
 import 'package:wired_express/view/base/custom_snackbar.dart';
 
@@ -62,14 +61,14 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
       appBar: CustomAppBar(
           title:
               '${getTranslated('order_details', context)}: ${widget.orderModel!.id.toString()}'),
-      body: Consumer2<OrderProvider , SplashProvider>(
-        builder: (context, order, splashProvider ,child) {
+      body: Consumer2<OrderProvider, SplashProvider>(
+        builder: (context, order, splashProvider, child) {
           double deliveryCharge = 0;
           double itemsPrice = 0;
           double discount = 0;
           double tax = 0;
           double totalTieredPricingDiscount = 0;
-          String  currency =  splashProvider.configModel!.currencySymbol??'\$' ;
+          String currency = splashProvider.configModel!.currencySymbol ?? '\$';
 
           if (order.orderDetails != null) {
             print(
@@ -83,13 +82,11 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                         orderDetails.quantity!);
               }
               itemsPrice = itemsPrice +
-                  ((orderDetails.price! - orderDetails.discountOnProduct!) *
+                  ((orderDetails.productDetails!.price!) *
                       orderDetails.quantity!);
               print("itemsPrice == $itemsPrice");
               discount = discount +
-                  (orderDetails.discountOnProduct!
-                  // * orderDetails.quantity!
-                  );
+                  (orderDetails.discountOnProduct!);
               tax = tax + (orderDetails.taxAmount! * orderDetails.quantity!);
             }
           }
@@ -228,26 +225,6 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                                     physics: NeverScrollableScrollPhysics(),
                                     itemCount: order.orderDetails!.length,
                                     itemBuilder: (context, index) {
-                                      double priceWithProductDis =
-                                          order.orderDetails![index].price! -
-                                              order.orderDetails![index]
-                                                  .discountOnProduct!;
-                                      double totalProductPrice = ((order
-                                                          .orderDetails![index]
-                                                          .tieredPricing ==
-                                                      null ||
-                                                  order
-                                                          .orderDetails![index]
-                                                          .tieredPricing!
-                                                          .productId ==
-                                                      null
-                                              ? priceWithProductDis
-                                              : (priceWithProductDis -
-                                                  double.parse(order
-                                                      .orderDetails![index]
-                                                      .tieredPricing!
-                                                      .discountPrice!))) *
-                                          order.orderDetails![index].quantity!);
                                       return Column(
                                           crossAxisAlignment:
                                               CrossAxisAlignment.start,
@@ -261,16 +238,16 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                                                       BorderRadius.circular(10),
                                                   boxShadow: [
                                                     BoxShadow(
-                                                      color: Provider.of<
-                                                                      ThemeProvider>(
-                                                                  context)
-                                                              .darkTheme
-                                                          ? Colors.black
-                                                              .withOpacity(0.4)
-                                                          : Colors.grey[300]!,
-                                                      blurRadius: 5,
-                                                      spreadRadius: 1,
-                                                    ),
+                                                        color: Provider.of<
+                                                                        ThemeProvider>(
+                                                                    context)
+                                                                .darkTheme
+                                                            ? Colors.black
+                                                                .withOpacity(
+                                                                    0.4)
+                                                            : Colors.grey[300]!,
+                                                        blurRadius: 5,
+                                                        spreadRadius: 1)
                                                   ],
                                                   color: ColorResources
                                                       .getScaffoldBackgroundColor(
@@ -279,58 +256,19 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                                                 padding:
                                                     const EdgeInsets.all(10),
                                                 child: Row(children: [
-                                                  Container(
-                                                      height: 80,
-                                                      width: 80,
-                                                      decoration: BoxDecoration(
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(10),
-                                                          color:
-                                                              Colors.black12),
-                                                      child: Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .all(5),
-                                                        child: FadeInImage
-                                                            .assetNetwork(
-                                                          placeholder:
-                                                              Images.loading,
-                                                          placeholderErrorBuilder:
-                                                              (BuildContext?
-                                                                      context,
-                                                                  Object?
-                                                                      exception,
-                                                                  StackTrace?
-                                                                      stackTrace) {
-                                                            return Image.asset(
-                                                                Images.loading,
-                                                                height: 80,
-                                                                width: 80,
-                                                                fit: BoxFit
-                                                                    .cover);
-                                                          },
-                                                          imageErrorBuilder:
-                                                              (BuildContext?
-                                                                      context,
-                                                                  Object?
-                                                                      exception,
-                                                                  StackTrace?
-                                                                      stackTrace) {
-                                                            return Image.asset(
-                                                                Images.loading,
-                                                                height: 80,
-                                                                width: 80,
-                                                                fit: BoxFit
-                                                                    .cover);
-                                                          },
-                                                          image:
-                                                              '${splashProvider.baseUrls!.productImageUrl}/'
-                                                              '${order.orderDetails![index].productDetails!.image}',
-                                                          height: 80,
-                                                          width: 80,
-                                                        ),
-                                                      )),
+                                                  ClipRRect(
+                                                    borderRadius: BorderRadius.circular(10),
+                                                    child: CachedNetworkImage(
+                                                      height: 80,  width:
+                                                    80,
+                                                      fit: BoxFit.cover,
+                                                      imageUrl:
+                                                      '${Provider.of<SplashProvider>(context, listen: false).baseUrls!.productImageUrl}/${order.orderDetails![index].productDetails!.image}',
+                                                      cacheKey:
+                                                      '${Provider.of<SplashProvider>(context, listen: false).baseUrls!.productImageUrl}/${order.orderDetails![index].productDetails!.image}',
+                                                    ),
+                                                  ),
+
                                                   SizedBox(
                                                       width: Dimensions
                                                           .PADDING_SIZE_SMALL),
@@ -399,7 +337,10 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                                                   Text(
                                                     PriceConverter.convertPrice(
                                                         context,
-                                                        totalProductPrice),
+                                                        order
+                                                            .orderDetails![
+                                                                index]
+                                                            .price),
                                                     style: rubikMedium.copyWith(
                                                         color: ColorResources
                                                             .getPrimaryColor(
@@ -433,6 +374,30 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                                         Text(
                                             PriceConverter.convertPrice(
                                                 context, itemsPrice),
+                                            style: rubikMedium.copyWith(
+                                                color:
+                                                    ColorResources.getTextColor(
+                                                        context),
+                                                fontSize: Dimensions
+                                                    .FONT_SIZE_LARGE)),
+                                      ]),
+                                  SizedBox(height: 10),
+                                  Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                            getTranslated(
+                                                'total_products_discount',
+                                                context),
+                                            style: rubikMedium.copyWith(
+                                                color:
+                                                    ColorResources.getTextColor(
+                                                        context),
+                                                fontSize: Dimensions
+                                                    .FONT_SIZE_LARGE)),
+                                        Text(
+                                            "(-) $currency${Helpers.formatTextWithNum(discount.toString())}",
                                             style: rubikMedium.copyWith(
                                                 color:
                                                     ColorResources.getTextColor(

@@ -271,7 +271,7 @@ class _SelectLocationScreenState extends State<SelectLocationScreen> {
                 color:ColorResources.getScaffoldColor(context),),
           ),
           textEditingController: _addressController,
-          googleAPIKey: AppConstants.API_KEY,
+          googleAPIKey: AppConstants.apiKey,
           inputDecoration: InputDecoration(
               hintText: 'Search your location',
               hintStyle:

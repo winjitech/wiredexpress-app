@@ -26,12 +26,14 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
           children: [
             CustomAppBar(title: 'subscriptions', isBackButtonExist: true),
             Expanded(
-              child: Consumer2<SubscriptionProvider , SplashProvider>(
-                builder: (context, subscriptionProvider, splashProvider , child) {
-                  if (subscriptionProvider.subscriptionListLoading!|| subscriptionProvider.subscriptionList == null) {
+              child: Consumer2<SubscriptionProvider, SplashProvider>(
+                builder:
+                    (context, subscriptionProvider, splashProvider, child) {
+                  if (subscriptionProvider.subscriptionPlanListLoading! ||
+                      subscriptionProvider.subscriptionPlanList == null) {
                     return const CustomCircularIndicator();
                   }
-                  if (subscriptionProvider.subscriptionList!.isEmpty) {
+                  if (subscriptionProvider.subscriptionPlanList!.isEmpty) {
                     return Center(
                       child: Text(
                         getTranslated('no_any_plan_available', context),
@@ -40,7 +42,8 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                       ),
                     );
                   }
-                  String currency = splashProvider.configModel!.currencySymbol ?? '\$';
+                  String currency =
+                      splashProvider.configModel!.currencySymbol ?? '\$';
 
                   return Scrollbar(
                     child: SingleChildScrollView(
@@ -50,14 +53,14 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           ListView.builder(
-                            itemCount:
-                                subscriptionProvider.subscriptionList!.length,
+                            itemCount: subscriptionProvider
+                                .subscriptionPlanList!.length,
                             shrinkWrap: true,
                             physics: const NeverScrollableScrollPhysics(),
                             itemBuilder: (context, index) {
-                              SubscriptionModel subscription =
-                                  subscriptionProvider.subscriptionList![index];
-                              bool userUseThisPlan = subscription.usePlan!;
+                              SubscriptionPlanModel plan = subscriptionProvider
+                                  .subscriptionPlanList![index];
+                              bool userUseThisPlan = plan.usePlan!;
 
                               return Column(
                                 children: [
@@ -65,8 +68,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                                     onTap: () => showModalBottomSheet(
                                       context: context,
                                       builder: (BuildContext context) =>
-                                          SubscriptionBottomSheet(
-                                              subscription: subscription),
+                                          SubscriptionBottomSheet(plan: plan),
                                       backgroundColor: Colors.transparent,
                                       isScrollControlled: true,
                                       barrierColor: Colors.black54,
@@ -98,7 +100,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                                                   CrossAxisAlignment.start,
                                               children: [
                                                 Text(
-                                                  subscription.name ?? "",
+                                                  plan.name ?? "",
                                                   maxLines: 1,
                                                   overflow:
                                                       TextOverflow.ellipsis,
@@ -118,22 +120,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                                                 Row(
                                                   children: [
                                                     Text(
-                                                      "${getTranslated(subscription.frequency!, context)}  /  ",
-                                                      maxLines: 1,
-                                                      overflow:
-                                                          TextOverflow.ellipsis,
-                                                      style: TextStyle(
-                                                        color: ColorResources
-                                                                .getTextColor(
-                                                                    context)
-                                                            .withOpacity(0.8),
-                                                        fontWeight:
-                                                            FontWeight.w600,
-                                                        fontSize: 15,
-                                                      ),
-                                                    ),
-                                                    Text(
-                                                      "$currency${Helpers.formatTextWithNum(subscription.price ?? "0.0")}",
+                                                      "$currency${Helpers.formatTextWithNum(plan.price ?? "0.0")}",
                                                       maxLines: 1,
                                                       overflow:
                                                           TextOverflow.ellipsis,

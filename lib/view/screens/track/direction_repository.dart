@@ -16,7 +16,7 @@ class DirectionsRepository {
     String originInfo = '${origin!.latitude},${origin.longitude}';
     String destinationInfo =
         '${destination!.latitude},${destination.longitude}';
-    String key = AppConstants.API_KEY;
+    String key = AppConstants.apiKey;
 
     var url = Uri.parse(
         '$_baseUrl?origin=$originInfo&destination=$destinationInfo&key=$key');

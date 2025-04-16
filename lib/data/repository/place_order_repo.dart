@@ -14,63 +14,40 @@ class PlaceOrderRepo {
   Future<ApiResponse> placeOrder(PlaceOrderBody orderBody) async {
     try {
       final response = await dioClient!
-          .post(AppConstants.PLACE_ORDER_URI, data: orderBody.toJson());
+          .post(AppConstants.placeOrderUrl, data: orderBody.toJson());
       return ApiResponse.withSuccess(response);
     } catch (e) {
       return ApiResponse.withError(ApiErrorHandler.getMessage(e));
     }
   }
-
-
-
-
 
   Future<ApiResponse> getHistoryOrdersList(String offset) async {
     try {
-      final response = await dioClient!.get(
-          '${AppConstants.HISTORY_ORDER_LIST_URI}?limit=10&offset=$offset');
+      final response = await dioClient!
+          .get('${AppConstants.historyOrderListUrl}?limit=10&offset=$offset');
       return ApiResponse.withSuccess(response);
     } catch (e) {
       return ApiResponse.withError(ApiErrorHandler.getMessage(e));
     }
   }
-
 
   Future<ApiResponse> getRunningOrdersList() async {
     try {
       final response =
-      await dioClient!.get('${AppConstants.RUNNING_ORDER_LIST_URI}');
+          await dioClient!.get('${AppConstants.runningOrderListUrl}');
       return ApiResponse.withSuccess(response);
     } catch (e) {
       return ApiResponse.withError(ApiErrorHandler.getMessage(e));
     }
   }
-
-
-
-
 
   Future<ApiResponse> trackOrder(String orderID) async {
     try {
       final response =
-      await dioClient!.get('${AppConstants.TRACK_URI}?order_id=$orderID');
+          await dioClient!.get('${AppConstants.trackUrl}?order_id=$orderID');
       return ApiResponse.withSuccess(response);
     } catch (e) {
       return ApiResponse.withError(ApiErrorHandler.getMessage(e));
     }
   }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }

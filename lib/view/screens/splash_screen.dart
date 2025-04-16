@@ -151,7 +151,7 @@ class _SplashScreenState extends State<SplashScreen> {
                   MaterialPageRoute(
                       builder: (BuildContext? context) =>
                           DashboardScreen(pageIndex: 0)));
-              log("TOKEN = ${Provider.of<CustomAuthProvider>(context, listen: false).getUserToken()!}");
+              log("token = ${Provider.of<CustomAuthProvider>(context, listen: false).getUserToken()!}");
             }
           });
         } else {

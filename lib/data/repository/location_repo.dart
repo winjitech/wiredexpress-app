@@ -15,7 +15,7 @@ class LocationRepo {
 
   Future<ApiResponse> getAllAddress() async {
     try {
-      final response = await dioClient!.get(AppConstants.ADDRESS_LIST_URI);
+      final response = await dioClient!.get(AppConstants.addressListUrl);
       return ApiResponse.withSuccess(response);
     } catch (e) {
       return ApiResponse.withError(ApiErrorHandler.getMessage(e));
@@ -25,7 +25,7 @@ class LocationRepo {
   Future<ApiResponse> removeAddressByID(int id) async {
     try {
       final response = await dioClient!.post(
-          '${AppConstants.REMOVE_ADDRESS_URI}$id',
+          '${AppConstants.removeAddressUrl}$id',
           data: {"_method": "delete"});
       return ApiResponse.withSuccess(response);
     } catch (e) {
@@ -36,7 +36,7 @@ class LocationRepo {
   Future<ApiResponse> addAddress(AddressModel addressModel) async {
     try {
       Response response = await dioClient!.post(
-        AppConstants.ADD_ADDRESS_URI,
+        AppConstants.addAddressUrl,
         data: addressModel.toJson(),
       );
       return ApiResponse.withSuccess(response);
@@ -49,7 +49,7 @@ class LocationRepo {
       AddressModel addressModel, int addressId) async {
     try {
       Response response = await dioClient!.post(
-        '${AppConstants.UPDATE_ADDRESS_URI}$addressId',
+        '${AppConstants.updateAddressUrl}$addressId',
         data: addressModel.toJson(),
       );
       return ApiResponse.withSuccess(response);

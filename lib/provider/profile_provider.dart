@@ -75,7 +75,7 @@ class ProfileProvider with ChangeNotifier {
     http.MultipartRequest request = http.MultipartRequest(
         'POST',
         Uri.parse(
-            '${AppConstants.BASE_URL}${AppConstants.UPDATE_PROFILE_URI}'));
+            '${AppConstants.baseUrl}${AppConstants.updateProfileUrl}'));
     _isLoading = true;
 
     request.headers

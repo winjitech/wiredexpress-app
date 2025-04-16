@@ -50,8 +50,8 @@ class CartProductWidget extends StatelessWidget {
 
           try {
             productPlanDiscountModel = productPlanDiscount.firstWhere(
-                  (discount) =>
-              discount.planId ==
+              (discount) =>
+                  discount.planId ==
                   profileProvider.userInfoModel!.userSubscription!.planId,
               orElse: () => ProductPlanDiscountModel(),
             );
@@ -62,18 +62,18 @@ class CartProductWidget extends StatelessWidget {
         }
 
         double discountedOnProductPrice = productPlanDiscountModel != null &&
-            productPlanDiscountModel.planId != null
+                productPlanDiscountModel.planId != null
             ? PriceConverter.convertWithDiscount(
-            context,
-            product.price!,
-            productPlanDiscountModel.discount!,
-            productPlanDiscountModel.discountType!)
+                context,
+                product.price!,
+                productPlanDiscountModel.discount!,
+                productPlanDiscountModel.discountType!)
             : PriceConverter.convertWithDiscount(context, product.price!,
-            product.discount!, product.discountType!);
+                product.discount!, product.discountType!);
 
         double priceAfterTieredPricing =
             PriceConverter.getProductFinalPriceWithTieredPricing(
-                tiredPricing, discountedOnProductPrice) ??
+                    tiredPricing, discountedOnProductPrice) ??
                 0.0;
         double finalProductPrice = priceAfterTieredPricing * quantity;
 
@@ -90,7 +90,7 @@ class CartProductWidget extends StatelessWidget {
           ),
           child: Container(
             margin:
-            const EdgeInsets.only(bottom: Dimensions.PADDING_SIZE_DEFAULT),
+                const EdgeInsets.only(bottom: Dimensions.PADDING_SIZE_DEFAULT),
             child: Container(
               padding: const EdgeInsets.symmetric(
                 vertical: Dimensions.PADDING_SIZE_EXTRA_SMALL,
@@ -106,9 +106,9 @@ class CartProductWidget extends StatelessWidget {
                       width: 100,
                       fit: BoxFit.cover,
                       imageUrl:
-                      '${splashProvider.baseUrls!.productImageUrl}/${product.image}',
+                          '${splashProvider.baseUrls!.productImageUrl}/${product.image}',
                       cacheKey:
-                      '${splashProvider.baseUrls!.productImageUrl}/${product.image}',
+                          '${splashProvider.baseUrls!.productImageUrl}/${product.image}',
                     ),
                   ),
                   const SizedBox(width: 20),
@@ -134,35 +134,35 @@ class CartProductWidget extends StatelessWidget {
                             children: [
                               Expanded(
                                   child: Row(
-                                    children: [
-                                      if (haveDiscount)
-                                        Text(
-                                          '$currency${Helpers.formatTextWithNum((priceBeforeDisc * quantity).toString())}',
-                                          style: TextStyle(
-                                            color:
+                                children: [
+                                  if (haveDiscount)
+                                    Text(
+                                      '$currency${Helpers.formatTextWithNum((priceBeforeDisc * quantity).toString())}',
+                                      style: TextStyle(
+                                        color:
                                             ColorResources.getTextColor(context)
                                                 .withOpacity(0.4),
-                                            fontSize: 16,
-                                            decoration: TextDecoration.lineThrough,
-                                            decorationColor:
+                                        fontSize: 16,
+                                        decoration: TextDecoration.lineThrough,
+                                        decorationColor:
                                             ColorResources.getTextColor(context)
                                                 .withOpacity(0.4),
-                                          ),
-                                        ),
-                                      SizedBox(
-                                        width: 5,
                                       ),
-                                      Text(
-                                        '$currency${Helpers.formatTextWithNum(finalProductPrice.toString())}',
-                                        style: TextStyle(
-                                          color:
+                                    ),
+                                  SizedBox(
+                                    width: 5,
+                                  ),
+                                  Text(
+                                    '$currency${Helpers.formatTextWithNum(finalProductPrice.toString())}',
+                                    style: TextStyle(
+                                      color:
                                           ColorResources.getTextColor(context),
-                                          fontWeight: FontWeight.w500,
-                                          fontSize: 18,
-                                        ),
-                                      ),
-                                    ],
-                                  )),
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 18,
+                                    ),
+                                  ),
+                                ],
+                              )),
                               // Quantity Controls
                               Container(
                                 decoration: BoxDecoration(
@@ -172,69 +172,87 @@ class CartProductWidget extends StatelessWidget {
                                   children: [
                                     quantity == 1
                                         ? GestureDetector(
-                                      onTap: () {
-                                        Provider.of<CartProvider>(context,
-                                            listen: false)
-                                            .removeFromCart(cart!);
-                                        Provider.of<CartProvider>(context,
-                                            listen: false)
-                                            .removeFromCartList(
-                                            cart!.id!,
-                                            cart!.productId!,
-                                                (message) {});
-                                        showCustomSnackBar(
-                                            getTranslated(
-                                                'removed_cart_successfully',
-                                                context),
-                                            context,
-                                            isError: false);
-                                      },
-                                      child: Container(
-                                        width: 25,
-                                        height: 25,
-                                        decoration: BoxDecoration(
-                                            color: ColorResources
-                                                .getScaffoldColor(
-                                                context),
-                                            borderRadius:
-                                            BorderRadius.circular(
-                                                50)),
-                                        child: const Icon(
-                                          Icons.delete,
-                                          size: 20,
-                                          color:
-                                          ColorResources.COLOR_WHITE,
-                                        ),
-                                      ),
-                                    )
+                                            onTap: () {
+                                              cartProvider
+                                                  .removeFromCart(cart!);
+                                              cartProvider.removeFromCartList(
+                                                  cart!.id!, cart!.productId!);
+                                              showCustomSnackBar(
+                                                  getTranslated(
+                                                      'removed_cart_successfully',
+                                                      context),
+                                                  context,
+                                                  isError: false);
+                                            },
+                                            child: Container(
+                                              width: 25,
+                                              height: 25,
+                                              decoration: BoxDecoration(
+                                                  color: ColorResources
+                                                      .getScaffoldColor(
+                                                          context),
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          50)),
+                                              child: const Icon(
+                                                Icons.delete,
+                                                size: 20,
+                                                color:
+                                                    ColorResources.COLOR_WHITE,
+                                              ),
+                                            ),
+                                          )
                                         : GestureDetector(
-                                      onTap: () {
-                                        if (quantity > 1) {
-                                          Provider.of<CartProvider>(
-                                              context,
-                                              listen: false)
-                                              .updateQuantity(cartIndex!,
-                                              quantity - 1);
-                                        }
-                                      },
-                                      child: Container(
-                                        width: 25,
-                                        height: 25,
-                                        decoration: BoxDecoration(
-                                            color: ColorResources
-                                                .getScaffoldColor(
-                                                context),
-                                            borderRadius:
-                                            BorderRadius.circular(
-                                                50)),
-                                        child: const Icon(
-                                          Icons.remove,
-                                          size: 20,
-                                          color:
-                                          ColorResources.COLOR_WHITE,
-                                        ),
-                                      ),
-                                    ),
+                                            onTap: () {
+                                              List<TiredPricingModel>
+                                                  tiredPricing =
+                                                  product.tiredPricing ?? [];
+
+                                              if (quantity > 1) {
+                                                cartProvider.updateQuantity(
+                                                    cartIndex!, quantity - 1);
+                                                CartModel cartModel = CartModel(
+                                                    id: cart!.id,
+                                                    productId: product.id,
+                                                    quantity: quantity - 1,
+                                                    product: product,
+                                                    tieredPricing: PriceConverter
+                                                        .getMatchedTieredPricingModel(
+                                                            context,
+                                                            tiredPricing,
+                                                            quantity - 1));
+
+                                                cartProvider
+                                                    .addToCartList(cartModel)
+                                                    .then((value) {
+                                                  cartProvider.initCartList(
+                                                      context,
+                                                      showLoading: false);
+                                                  cartProvider
+                                                      .initCartListProductIds(
+                                                          context,
+                                                          showLoading: false);
+                                                });
+                                              }
+                                            },
+                                            child: Container(
+                                              width: 25,
+                                              height: 25,
+                                              decoration: BoxDecoration(
+                                                  color: ColorResources
+                                                      .getScaffoldColor(
+                                                          context),
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          50)),
+                                              child: const Icon(
+                                                Icons.remove,
+                                                size: 20,
+                                                color:
+                                                    ColorResources.COLOR_WHITE,
+                                              ),
+                                            ),
+                                          ),
                                     Padding(
                                       padding: const EdgeInsets.symmetric(
                                           horizontal: 10),
@@ -250,20 +268,40 @@ class CartProductWidget extends StatelessWidget {
                                     ),
                                     GestureDetector(
                                       onTap: () {
-                                        Provider.of<CartProvider>(context,
-                                            listen: false)
-                                            .updateQuantity(
+                                        cartProvider.updateQuantity(
                                             cartIndex!, quantity + 1);
+                                        List<TiredPricingModel> tiredPricing =
+                                            product.tiredPricing ?? [];
+                                        CartModel cartModel = CartModel(
+                                            id: cart!.id,
+                                            productId: product.id,
+                                            quantity: quantity + 1,
+                                            product: product,
+                                            tieredPricing: PriceConverter
+                                                .getMatchedTieredPricingModel(
+                                                    context,
+                                                    tiredPricing,
+                                                    quantity + 1));
+
+                                        cartProvider
+                                            .addToCartList(cartModel)
+                                            .then((value) {
+                                          cartProvider.initCartList(context,
+                                              showLoading: false);
+                                          cartProvider.initCartListProductIds(
+                                              context,
+                                              showLoading: false);
+                                        });
                                       },
                                       child: Container(
                                         width: 25,
                                         height: 25,
                                         decoration: BoxDecoration(
                                           color:
-                                          ColorResources.getScaffoldColor(
-                                              context),
+                                              ColorResources.getScaffoldColor(
+                                                  context),
                                           borderRadius:
-                                          BorderRadius.circular(50),
+                                              BorderRadius.circular(50),
                                         ),
                                         child: const Icon(
                                           Icons.add,

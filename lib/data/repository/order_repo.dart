@@ -16,7 +16,7 @@ class OrderRepo {
   Future<ApiResponse> getOrderDetails(String orderID) async {
     try {
       final response =
-          await dioClient!.get('${AppConstants.ORDER_DETAILS_URI}$orderID');
+          await dioClient!.get('${AppConstants.orderDetailsUrl}$orderID');
       return ApiResponse.withSuccess(response);
     } catch (e) {
       return ApiResponse.withError(ApiErrorHandler.getMessage(e));
@@ -29,7 +29,7 @@ class OrderRepo {
       data['order_id'] = orderID;
       data['_method'] = 'put';
       final response =
-          await dioClient!.post(AppConstants.ORDER_CANCEL_URI, data: data);
+          await dioClient!.post(AppConstants.orderCancelUrl, data: data);
       return ApiResponse.withSuccess(response);
     } catch (e) {
       return ApiResponse.withError(ApiErrorHandler.getMessage(e));
@@ -43,7 +43,7 @@ class OrderRepo {
       data['_method'] = 'put';
       data['payment_method'] = 'cash_on_delivery';
       final response =
-          await dioClient!.post(AppConstants.UPDATE_METHOD_URI, data: data);
+          await dioClient!.post(AppConstants.updateMethodUrl, data: data);
       return ApiResponse.withSuccess(response);
     } catch (e) {
       return ApiResponse.withError(ApiErrorHandler.getMessage(e));
@@ -53,7 +53,7 @@ class OrderRepo {
   Future<ApiResponse> trackOrder(String orderID) async {
     try {
       final response =
-          await dioClient!.get('${AppConstants.TRACK_URI}?order_id=$orderID');
+          await dioClient!.get('${AppConstants.trackUrl}?order_id=$orderID');
       return ApiResponse.withSuccess(response);
     } catch (e) {
       return ApiResponse.withError(ApiErrorHandler.getMessage(e));
@@ -63,7 +63,7 @@ class OrderRepo {
   Future<ApiResponse> placeOrder(PlaceOrderBody orderBody) async {
     try {
       final response = await dioClient!
-          .post(AppConstants.PLACE_ORDER_URI, data: orderBody.toJson());
+          .post(AppConstants.placeOrderUrl, data: orderBody.toJson());
       return ApiResponse.withSuccess(response);
     } catch (e) {
       return ApiResponse.withError(ApiErrorHandler.getMessage(e));
@@ -73,7 +73,7 @@ class OrderRepo {
   Future<ApiResponse> getDeliveryManData(String orderID) async {
     try {
       final response =
-          await dioClient!.get('${AppConstants.LAST_LOCATION_URI}$orderID');
+          await dioClient!.get('${AppConstants.lastLocationUrl}$orderID');
       return ApiResponse.withSuccess(response);
     } catch (e) {
       return ApiResponse.withError(ApiErrorHandler.getMessage(e));
@@ -82,8 +82,8 @@ class OrderRepo {
 
   Future<ApiResponse> getHistoryOrdersList(String offset) async {
     try {
-      final response = await dioClient!.get(
-          '${AppConstants.HISTORY_ORDER_LIST_URI}?limit=10&offset=$offset');
+      final response = await dioClient!
+          .get('${AppConstants.historyOrderListUrl}?limit=10&offset=$offset');
       return ApiResponse.withSuccess(response);
     } catch (e) {
       return ApiResponse.withError(ApiErrorHandler.getMessage(e));
@@ -102,7 +102,7 @@ class OrderRepo {
   Future<ApiResponse> getLastDeliveryCoordinates(String orderId) async {
     try {
       final response = await dioClient!
-          .get('${AppConstants.GET_LAST_DELIVERY_COORDINATES_URI}$orderId');
+          .get('${AppConstants.getLastDeliveryCoordinatesUrl}$orderId');
       return ApiResponse.withSuccess(response);
     } catch (e) {
       return ApiResponse.withError(ApiErrorHandler.getMessage(e));

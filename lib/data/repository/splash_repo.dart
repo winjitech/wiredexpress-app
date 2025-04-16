@@ -13,7 +13,7 @@ class SplashRepo {
 
   Future<ApiResponse> getConfig() async {
     try {
-      final response = await dioClient!.get(AppConstants.CONFIG_URI);
+      final response = await dioClient!.get(AppConstants.configUrl);
       print('success');
       return ApiResponse.withSuccess(response);
     } catch (e) {
@@ -23,26 +23,24 @@ class SplashRepo {
   }
 
   Future<bool> initSharedData() {
-    if (!sharedPreferences!.containsKey(AppConstants.THEME)) {
-      return sharedPreferences!.setBool(AppConstants.THEME, false);
+    if (!sharedPreferences!.containsKey(AppConstants.theme)) {
+      return sharedPreferences!.setBool(AppConstants.theme, false);
     }
-    if (!sharedPreferences!.containsKey(AppConstants.COUNTRY_CODE)) {
-      return sharedPreferences!.setString(AppConstants.COUNTRY_CODE, 'US');
+    if (!sharedPreferences!.containsKey(AppConstants.countryCode)) {
+      return sharedPreferences!.setString(AppConstants.countryCode, 'US');
     }
-    if (!sharedPreferences!.containsKey(AppConstants.LANGUAGE_CODE)) {
-      return sharedPreferences!.setString(AppConstants.LANGUAGE_CODE, 'en');
+    if (!sharedPreferences!.containsKey(AppConstants.languageCode)) {
+      return sharedPreferences!.setString(AppConstants.languageCode, 'en');
     }
-    if (!sharedPreferences!.containsKey(AppConstants.CART_LIST)) {
-      return sharedPreferences!.setStringList(AppConstants.CART_LIST, []);
+    if (!sharedPreferences!.containsKey(AppConstants.cartList)) {
+      return sharedPreferences!.setStringList(AppConstants.cartList, []);
     }
     return Future.value(true);
   }
 
   Future<http.StreamedResponse> appUpdated(String update, String token) async {
-    http.MultipartRequest request = http.MultipartRequest(
-        'POST',
-        Uri.parse(
-            '${AppConstants.BASE_URL}${AppConstants.UPDATE_VERSION_CODE_URI}'));
+    http.MultipartRequest request = http.MultipartRequest('POST',
+        Uri.parse('${AppConstants.baseUrl}${AppConstants.updateVersionUrl}'));
     request.headers.addAll(<String, String>{'Authorization': 'Bearer $token'});
 
     Map<String, String> _fields = Map();
@@ -62,7 +60,7 @@ class SplashRepo {
       String latitude, String longitude) async {
     try {
       final response = await dioClient!.get(
-          "${AppConstants.ELECTRICIANS_URI}?latitude=$latitude&longitude=$longitude");
+          "${AppConstants.electriciansUrl}?latitude=$latitude&longitude=$longitude");
       return ApiResponse.withSuccess(response);
     } catch (e) {
       return ApiResponse.withError(ApiErrorHandler.getMessage(e));

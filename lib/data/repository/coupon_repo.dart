@@ -10,7 +10,7 @@ class CouponRepo {
 
   Future<ApiResponse> getCouponList() async {
     try {
-      final response = await dioClient!.get(AppConstants.COUPON_URI);
+      final response = await dioClient!.get(AppConstants.couponUrl);
       return ApiResponse.withSuccess(response);
     } catch (e) {
       return ApiResponse.withError(ApiErrorHandler.getMessage(e));
@@ -19,7 +19,7 @@ class CouponRepo {
 
   Future<ApiResponse> applyCoupon(String couponCode) async {
     try {
-      final response = await dioClient!.get('${AppConstants.COUPON_APPLY_URI}$couponCode');
+      final response = await dioClient!.get('${AppConstants.couponApplyUrl}$couponCode');
       return ApiResponse.withSuccess(response);
     } catch (e) {
       return ApiResponse.withError(ApiErrorHandler.getMessage(e));

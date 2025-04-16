@@ -23,7 +23,7 @@ class UserInfoModel {
   int? freeDelivery;
   int? nearbyElectricians;
   int? productsEarlyAccess;
-  UserSubscriptionModel? userSubscription;
+  UserSubscriptionPlanModel? userSubscription;
 
   UserInfoModel(
       {this.id,
@@ -77,7 +77,7 @@ class UserInfoModel {
     productsEarlyAccess = json['products_early_access'];
 
     userSubscription = json['user_subscription'] != null
-        ? UserSubscriptionModel.fromJson(json['user_subscription'])
+        ? UserSubscriptionPlanModel.fromJson(json['user_subscription'])
         : null;
   }
 

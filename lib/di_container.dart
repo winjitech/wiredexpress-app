@@ -5,7 +5,6 @@ import 'package:wired_express/data/repository/cart_repo.dart';
 import 'package:wired_express/data/repository/category_repo.dart';
 import 'package:wired_express/data/repository/chat_repo.dart';
 import 'package:wired_express/data/repository/coupon_repo.dart';
-import 'package:wired_express/data/repository/deliveryman_chat_repo.dart';
 import 'package:wired_express/data/repository/location_repo.dart';
 import 'package:wired_express/data/repository/main_repo.dart';
 import 'package:wired_express/data/repository/notification_repo.dart';
@@ -24,7 +23,6 @@ import 'package:wired_express/provider/cart_provider.dart';
 import 'package:wired_express/provider/category_provider.dart';
 import 'package:wired_express/provider/chat_provider.dart';
 import 'package:wired_express/provider/coupon_provider.dart';
-import 'package:wired_express/provider/deliveryman_chat_provider.dart';
 import 'package:wired_express/provider/localization_provider.dart';
 import 'package:wired_express/provider/main_provider.dart';
 import 'package:wired_express/provider/notification_provider.dart';
@@ -50,7 +48,7 @@ final sl = GetIt.instance;
 
 Future<void> init() async {
   // Core
-  sl.registerLazySingleton(() => DioClient(AppConstants.BASE_URL, sl(),
+  sl.registerLazySingleton(() => DioClient(AppConstants.baseUrl, sl(),
       loggingInterceptor: sl(), sharedPreferences: sl()));
 
   // Repository
@@ -79,7 +77,6 @@ Future<void> init() async {
   sl.registerLazySingleton(() => CouponRepo(dioClient: sl()));
   sl.registerLazySingleton(() => WishListRepo(dioClient: sl()));
   sl.registerLazySingleton(() => MainRepo(dioClient: sl()));
-  sl.registerLazySingleton(() => DeliveryManChatRepo(dioClient: sl()));
   sl.registerLazySingleton(() => SubscriptionRepo(dioClient: sl()));
 
   // Provider
@@ -106,7 +103,6 @@ Future<void> init() async {
   sl.registerFactory(() => CouponProvider(couponRepo: sl()));
   sl.registerFactory(() => SearchProvider(searchRepo: sl()));
   sl.registerFactory(() => MainProvider(mainRepo: sl()));
-  sl.registerFactory(() => DeliveryManChatProvider(chatRepo: sl()));
   sl.registerFactory(() => SubscriptionProvider(subscriptionRepo: sl()));
 
   // External

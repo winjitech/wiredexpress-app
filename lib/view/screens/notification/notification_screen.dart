@@ -216,7 +216,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                                                                                 placeholder: Images.filterIcon,
                                                                                 image: '${Provider.of<SplashProvider>(context, listen: false).baseUrls?.notificationImageUrl}/${_notification.image!}',
 
-                                                                                // '${AppConstants.BASE_URL}/public/storage/${_notification.image!}' ,
+                                                                                // '${AppConstants.baseUrl}/public/storage/${_notification.image!}' ,
                                                                                 // .fileFolder}/${_notification.image!.uid}.${_notification.image!.fileExtension}',
                                                                                 height: 80,
                                                                                 width: 80,
@@ -408,7 +408,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                                                                                 placeholder: Images.filterIcon,
                                                                                 image: '${Provider.of<SplashProvider>(context, listen: false).baseUrls?.notificationImageUrl}/${_notification.image!}',
 
-                                                                                // image: '${AppConstants.BASE_URL}/public/storage/${_notification.image!}' ,
+                                                                                // image: '${AppConstants.baseUrl}/public/storage/${_notification.image!}' ,
                                                                                 // .fileFolder}/${_notification.image!.uid}.${_notification.image!.fileExtension}',
                                                                                 height: 80,
                                                                                 width: 80,
@@ -599,7 +599,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                                                                                 placeholder: Images.filterIcon,
                                                                                 image: '${Provider.of<SplashProvider>(context, listen: false).baseUrls?.notificationImageUrl}/${_notification.image!}',
 
-                                                                                // image: '${AppConstants.BASE_URL}/public/storage/${_notification.image!}' ,
+                                                                                // image: '${AppConstants.baseUrl}/public/storage/${_notification.image!}' ,
                                                                                 // .fileFolder}/${_notification.image!.uid}.${_notification.image!.fileExtension}',
                                                                                 height: 80,
                                                                                 width: 80,
@@ -815,7 +815,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                                                                         placeholder: Images.filterIcon,
                                                                         image: '${Provider.of<SplashProvider>(context, listen: false).baseUrls?.notificationImageUrl}/${_notification.image!}',
 
-                                                                        // image: '${AppConstants.BASE_URL}/public/storage/${_notification.image!}' ,
+                                                                        // image: '${AppConstants.baseUrl}/public/storage/${_notification.image!}' ,
                                                                         // .fileFolder}/${_notification.image!.uid}.${_notification.image!.fileExtension}',
                                                                         height: 80,
                                                                         width: 80,
