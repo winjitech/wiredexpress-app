@@ -21,7 +21,10 @@ class SubscriptionRepo {
 
   Future<ApiResponse> subscribeUser(
       UserSubscriptionPlanModel userSubscription) async {
-    try {
+
+    print("userSubscription ==  ${userSubscription.toJson()}") ;
+
+  try {
       final response = await dioClient!.post(AppConstants.subscriptionUserUrl,
           data: userSubscription.toJson());
       return ApiResponse.withSuccess(response);

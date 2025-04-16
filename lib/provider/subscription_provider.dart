@@ -62,7 +62,7 @@ class SubscriptionProvider extends ChangeNotifier {
     if (apiResponse.response != null &&
         apiResponse.response!.statusCode == 200) {
       _approveUrl = apiResponse.response!.data!['approve_url'];
-      print("_approveUrl == ${_approveUrl}");
+      print("_approveUrl == $_approveUrl");
       _responseModel = ResponseModel(true, 'successful');
       _subscribeUserLoading = false;
       notifyListeners();
@@ -97,7 +97,7 @@ class SubscriptionProvider extends ChangeNotifier {
     if (apiResponse.response != null &&
         apiResponse.response!.statusCode == 200) {
       _subscriptionStatus = apiResponse.response!.data!['status'];
-      print("status == ${_subscriptionStatus}");
+      print("status == $_subscriptionStatus");
       _responseModel = ResponseModel(true, 'successful');
       _subscriptionDetailsLoading = false;
       notifyListeners();
