@@ -3,6 +3,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:wired_express/data/helper/helpers.dart';
 import 'package:wired_express/data/model/response/cart_model.dart';
+import 'package:wired_express/data/model/response/moq_setting_model.dart';
 import 'package:wired_express/data/model/response/product_model.dart';
 import 'package:wired_express/data/model/response/product_plan_discount_model.dart';
 import 'package:wired_express/data/model/response/tiered_pricing_model.dart';
@@ -39,6 +40,11 @@ class CartProductWidget extends StatelessWidget {
 
         ProductModel product = cart!.product!;
         int quantity = cart!.quantity!;
+        MoqSettingModel? moqSetting = product.moqSetting;
+
+        int minOrderQuantity = moqSetting?.minimumOrderQuantity ?? 1;
+        print("minOrderQuantity == ${minOrderQuantity}");
+
         TiredPricingModel? tiredPricing =
             cart!.tieredPricing ?? TiredPricingModel();
         double priceBeforeDisc = product.price!;
@@ -175,6 +181,7 @@ class CartProductWidget extends StatelessWidget {
                                             onTap: () {
                                               cartProvider
                                                   .removeFromCart(cart!);
+
                                               cartProvider.removeFromCartList(
                                                   cart!.id!, cart!.productId!);
                                               showCustomSnackBar(
@@ -204,35 +211,39 @@ class CartProductWidget extends StatelessWidget {
                                           )
                                         : GestureDetector(
                                             onTap: () {
-                                              List<TiredPricingModel>
-                                                  tiredPricing =
-                                                  product.tiredPricing ?? [];
+                                              if (quantity >
+                                                  minOrderQuantity) {
+                                                print("ikdhfjodifjs");
+                                                List<TiredPricingModel>
+                                                    tiredPricing =
+                                                    product.tiredPricing ?? [];
 
-                                              if (quantity > 1) {
-                                                cartProvider.updateQuantity(
-                                                    cartIndex!, quantity - 1);
-                                                CartModel cartModel = CartModel(
-                                                    id: cart!.id,
-                                                    productId: product.id,
-                                                    quantity: quantity - 1,
-                                                    product: product,
-                                                    tieredPricing: PriceConverter
-                                                        .getMatchedTieredPricingModel(
-                                                            context,
-                                                            tiredPricing,
-                                                            quantity - 1));
+                                                if (quantity > 1) {
+                                                  cartProvider.updateQuantity(
+                                                      cartIndex!, quantity - 1);
+                                                  CartModel cartModel = CartModel(
+                                                      id: cart!.id,
+                                                      productId: product.id,
+                                                      quantity: quantity - 1,
+                                                      product: product,
+                                                      tieredPricing: PriceConverter
+                                                          .getMatchedTieredPricingModel(
+                                                              context,
+                                                              tiredPricing,
+                                                              quantity - 1));
 
-                                                cartProvider
-                                                    .addToCartList(cartModel)
-                                                    .then((value) {
-                                                  cartProvider.initCartList(
-                                                      context,
-                                                      showLoading: false);
                                                   cartProvider
-                                                      .initCartListProductIds(
-                                                          context,
-                                                          showLoading: false);
-                                                });
+                                                      .addToCartList(cartModel)
+                                                      .then((value) {
+                                                    cartProvider.initCartList(
+                                                        context,
+                                                        showLoading: false);
+                                                    cartProvider
+                                                        .initCartListProductIds(
+                                                            context,
+                                                            showLoading: false);
+                                                  });
+                                                }
                                               }
                                             },
                                             child: Container(

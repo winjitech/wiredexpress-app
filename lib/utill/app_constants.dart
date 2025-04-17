@@ -4,7 +4,7 @@ import 'package:wired_express/utill/images.dart';
 class AppConstants {
   static const String appName = 'Wired Express';
 
-  static const String baseUrl = 'https://192.168.8.104/wired_express';
+  static const String baseUrl = 'https://192.168.1.7/wired_express';
 
   // static const String baseUrl = 'https://wiredexpress01.com';
   static const String categoryUrl = '/api/v1/categories';
