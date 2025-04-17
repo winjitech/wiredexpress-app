@@ -10,6 +10,7 @@ import 'package:wired_express/utill/color_resources.dart';
 import 'package:wired_express/utill/dimensions.dart';
 import 'package:wired_express/utill/images.dart';
 import 'package:wired_express/utill/styles.dart';
+import 'package:wired_express/view/base/circular_indicator_widget.dart';
 import 'package:wired_express/view/base/custom_app_bar.dart';
 import 'package:wired_express/view/base/main_app_bar.dart';
 import 'package:wired_express/view/base/no_data_screen.dart';
@@ -32,7 +33,7 @@ class CouponScreen extends StatelessWidget {
       body: _isLoggedIn
           ? Consumer<CouponProvider>(
               builder: (context, coupon, child) {
-                return coupon.isLoading != true
+                return coupon.couponListLoading != true
                     ? coupon.couponList != null
                         ? coupon.couponList!.length > 0
                             ? RefreshIndicator(
@@ -41,7 +42,7 @@ class CouponScreen extends StatelessWidget {
                                           listen: false)
                                       .getCouponList(context);
                                 },
-                                backgroundColor: ColorResources.SCAFFOLD_COLOR,
+                                backgroundColor: ColorResources.getScaffoldColor(context),
                                 child: Scrollbar(
                                   child: SingleChildScrollView(
                                     child: Center(
@@ -72,7 +73,7 @@ class CouponScreen extends StatelessWidget {
                                                     padding: EdgeInsets.only(
                                                         bottom: Dimensions
                                                             .PADDING_SIZE_LARGE),
-                                                    child: InkWell(
+                                                    child: GestureDetector(
                                                       onTap: () {
                                                         Clipboard.setData(
                                                             ClipboardData(
@@ -102,7 +103,7 @@ class CouponScreen extends StatelessWidget {
                                                                     .width,
                                                             fit: BoxFit.cover,
                                                             color: ColorResources
-                                                                .SCAFFOLD_COLOR),
+                                                                .getScaffoldColor(context)),
                                                         Container(
                                                           height: 100,
                                                           alignment:
@@ -189,14 +190,8 @@ class CouponScreen extends StatelessWidget {
                                 ),
                               )
                             : NoDataScreen()
-                        : Center(
-                            child: CircularProgressIndicator(
-                                valueColor: AlwaysStoppedAnimation<Color>(
-                                    ColorResources.SCAFFOLD_COLOR)))
-                    : Center(
-                        child: CircularProgressIndicator(
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                                ColorResources.SCAFFOLD_COLOR)));
+                        : CustomCircularIndicator(color:ColorResources.getScaffoldColor(context))
+                    : CustomCircularIndicator(color:ColorResources.getScaffoldColor(context));
               },
             )
           : NotLoggedInScreen(),

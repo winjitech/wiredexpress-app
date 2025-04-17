@@ -5,10 +5,10 @@ import 'package:wired_express/provider/search_provider.dart';
 import 'package:wired_express/utill/color_resources.dart';
 import 'package:wired_express/utill/dimensions.dart';
 import 'package:wired_express/utill/images.dart';
+import 'package:wired_express/view/base/circular_indicator_widget.dart';
 import 'package:wired_express/view/base/custom_text_field.dart';
 import 'package:wired_express/view/base/main_app_bar.dart';
 import 'package:provider/provider.dart';
-import 'package:wired_express/view/screens/search/custom_search.dart';
 import 'package:wired_express/view/screens/search/search_result_screen.dart';
 
 class SearchScreen extends StatelessWidget {
@@ -23,23 +23,7 @@ class SearchScreen extends StatelessWidget {
             ? PreferredSize(
                 child: MainAppBar(), preferredSize: Size.fromHeight(80))
             : null,
-        // floatingActionButton:  Consumer<SearchProvider>(
-        //     builder: (context, searchProvider, child) {
-        //       return searchProvider.brandsLoading ?
-        //       SizedBox() :
-        //       FloatingActionButton.extended(
-        //         backgroundColor: Theme.of(context).primaryColor,
-        //         onPressed: () {
-        //           searchProvider.getBrands(context).then((value) {
-        //             Navigator.push(
-        //                 context, MaterialPageRoute(builder: (BuildContext context) => CustomSearchScreen()));
-        //           });
-        //         },
-        //         label: Text(getTranslated('brand_search', context), style: TextStyle(color: Colors.white)),
-        //         icon: Image.asset(Images.filter_icon, color: Colors.white),
-        //       );
-        //     }),
-        //  floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+
         body: SafeArea(
             child: Center(
                 child: Container(
@@ -50,16 +34,7 @@ class SearchScreen extends StatelessWidget {
                         child: Consumer<SearchProvider>(
                             builder:
                                 (context, searchProvider, child) =>
-                                    searchProvider.brandsLoading
-                                        ? Center(
-                                            child: CircularProgressIndicator(
-                                                valueColor:
-                                                    AlwaysStoppedAnimation<
-                                                            Color>(
-                                                        ColorResources
-                                                            .getPrimaryColor(
-                                                                context))))
-                                        : Column(
+                                     Column(
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.start,
                                             children: [
@@ -154,7 +129,7 @@ class SearchScreen extends StatelessWidget {
                                                                       FontWeight
                                                                           .w500,
                                                                   color: ColorResources
-                                                                      .SCAFFOLD_COLOR,
+                                                                      .getScaffoldColor(context),
                                                                 )))
                                                   ],
                                                 ),
@@ -214,7 +189,7 @@ class SearchScreen extends StatelessWidget {
                                                             BouncingScrollPhysics(),
                                                         itemBuilder: (context,
                                                                 index) =>
-                                                            InkWell(
+                                                            GestureDetector(
                                                                 onTap: () {
                                                                   searchProvider.searchProduct(
                                                                       searchProvider

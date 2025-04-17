@@ -7,7 +7,6 @@ import 'package:wired_express/data/model/response/address_model.dart';
 import 'package:wired_express/data/model/response/base/api_response.dart';
 import 'package:wired_express/data/model/response/base/error_response.dart';
 import 'package:wired_express/data/model/response/response_model.dart';
-import 'package:wired_express/data/model/response/zone_model.dart';
 import 'package:wired_express/data/repository/location_repo.dart';
 import 'package:wired_express/helper/api_checker.dart';
 import 'package:wired_express/utill/app_constants.dart';
@@ -54,12 +53,6 @@ class LocationProvider with ChangeNotifier {
   GoogleMapController? _mapController;
   GoogleMapController? get mapController => _mapController;
 
-  double _deliveryFee = 0.0;
-  double get deliveryFee => _deliveryFee;
-
-  bool _outOfArea = false;
-  bool get outOfArea => _outOfArea;
-
   String? _searchedText;
   String? get searchedText => _searchedText;
 
@@ -91,15 +84,6 @@ class LocationProvider with ChangeNotifier {
   void updateSearchedPosition(LatLng position) {
     _searchedPosition = position;
 
-    // _cameraPosition = CameraPosition(
-    //   target: position,
-    //   zoom: 12,
-    // );
-
-    // if (_mapController != null) {
-    //   _mapController!.animateCamera(CameraUpdate.newCameraPosition(
-    //       CameraPosition(target: position, zoom: 12)));
-    // }
     notifyListeners();
   }
 
@@ -122,7 +106,6 @@ class LocationProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  // for get current location
   void getCurrentLocation(
       {GoogleMapController? mapController, bool fromSearch = false}) async {
     print('test 3');
@@ -154,7 +137,6 @@ class LocationProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  /// update location
   void updateCurrentLocation(
       {GoogleMapController? mapController, LatLng? latLng}) async {
     _loading = true;
@@ -209,7 +191,6 @@ class LocationProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  // update Position
   void updatePosition(CameraPosition position) async {
     _position = Position(
         latitude: position.target.latitude,
@@ -224,7 +205,6 @@ class LocationProvider with ChangeNotifier {
         headingAccuracy: 0);
   }
 
-  // End Address Position
   void dragableAddress() async {
     try {
       _loading = true;
@@ -241,7 +221,6 @@ class LocationProvider with ChangeNotifier {
     }
   }
 
-  // delete usser address
   void deleteUserAddressByID(int id, int index, Function callback) async {
     ApiResponse apiResponse = await locationRepo!.removeAddressByID(id);
     if (apiResponse.response != null &&
@@ -267,11 +246,8 @@ class LocationProvider with ChangeNotifier {
 
   bool get isAvaibleLocation => _isAvaibleLocation;
 
-  // user address
   List<AddressModel>? _addressList;
   List<AddressModel>? get addressList => _addressList;
-  ZonesModel? _zoneList;
-  ZonesModel? get zoneList => _zoneList;
 
   Future<ResponseModel> initAddressList(BuildContext? context) async {
     ResponseModel? _responseModel;
@@ -282,11 +258,9 @@ class LocationProvider with ChangeNotifier {
       _addressList = [];
       apiResponse.response!.data!.forEach(
           (address) => _addressList!.add(AddressModel.fromJson(address)));
-      // print(" model address => ${_addressList![0].id}");
       _responseModel = ResponseModel(true, 'successful');
     } else {
       print('test 2');
-      // ApiChecker.checkApi(context, apiResponse);
     }
     notifyListeners();
     return _responseModel!;
@@ -343,7 +317,6 @@ class LocationProvider with ChangeNotifier {
     return responseModel;
   }
 
-  // for address update screen
   Future<ResponseModel> updateAddress(BuildContext? context,
       {AddressModel? addressModel, int? addressId}) async {
     _isLoading = true;
@@ -378,7 +351,6 @@ class LocationProvider with ChangeNotifier {
     return responseModel;
   }
 
-  // for save user address Section
   Future<void> saveUserAddress({Placemark? address}) async {
     String userAddress = jsonEncode(address);
     try {
@@ -393,7 +365,6 @@ class LocationProvider with ChangeNotifier {
     return sharedPreferences!.getString(AppConstants.USER_ADDRESS) ?? "";
   }
 
-  // for Label Us
   List<String> _getAllAddressType = [];
 
   List<String> get getAllAddressType => _getAllAddressType;
@@ -411,89 +382,5 @@ class LocationProvider with ChangeNotifier {
       _getAllAddressType = [];
       _getAllAddressType = locationRepo!.getAllAddressType(context: context);
     }
-  }
-
-  // Future<ResponseModel> getZone(
-  //     BuildContext? context, String latitude, String longitude) async {
-  //   ResponseModel? _responseModel;
-  //   ApiResponse apiResponse = await locationRepo!.getZone(latitude, longitude);
-  //   if (apiResponse.response != null &&
-  //       apiResponse.response!.statusCode == 200) {
-  //     print('zone 1');
-  //     _zoneList = [];
-  //     apiResponse.response!.data!
-  //         .forEach((zone) => _zoneList!.add(ZonesModel.fromJson(zone)));
-  //     // print(" id zoneList => ${_zoneList![0].id}");
-  //     // print("zoneList => ${_zoneList!}");
-  //
-  //     _responseModel = ResponseModel(true, 'successful');
-  //   } else {
-  //     print('zone 2');
-  //     ApiChecker.checkApi(context, apiResponse);
-  //   }
-  //   notifyListeners();
-  //   return _responseModel!;
-  // }
-
-  bool? _zoneLoading = false;
-  bool? get zoneLoading => _zoneLoading;
-  // Future<void> getZone(
-  //     BuildContext? context, String latitude, String longitude) async {
-  //   _zoneLoading = true;
-  //
-  //   ApiResponse apiResponse = await locationRepo!.getZone(latitude, longitude);
-  //   if (apiResponse.response != null &&
-  //       apiResponse.response!.statusCode == 200) {
-  //     _zoneLoading = false;
-  //
-  //     _zoneList = [];
-  //     final responseData = apiResponse.response!.data;
-  //     if (responseData is List) {
-  //       responseData.forEach((zoneModel) {
-  //         if (zoneModel is Map<String, dynamic>) {
-  //           _zoneList!.add(ZonesModel.fromJson(zoneModel));
-  //         }
-  //       });
-  //     }
-  //     notifyListeners();
-  //   } else {
-  //     // ApiChecker.checkApi(context, apiResponse);
-  //   }
-  // }
-  Future<ResponseModel> getZone(
-      BuildContext? context, String latitude, String longitude) async {
-    ResponseModel _responseModel;
-    ApiResponse apiResponse = await locationRepo!.getZone(latitude, longitude);
-    if (apiResponse.response != null &&
-        apiResponse.response!.statusCode == 200) {
-      _zoneList = ZonesModel.fromJson(apiResponse.response!.data);
-      if (_zoneList != null) {
-        _outOfArea = false;
-        _deliveryFee =
-            _zoneList!.deliveryFee != null ? _zoneList!.deliveryFee! : 0.0;
-        if (_zoneList!.deliveryFee == null) {
-          _outOfArea = true;
-        }
-      } else if (_zoneList == null) {
-        _outOfArea = true;
-        notifyListeners();
-      } else {
-        _outOfArea = true;
-        notifyListeners();
-      }
-      _responseModel = ResponseModel(true, 'successful');
-    } else {
-      String _errorMessage;
-      if (apiResponse.error is String) {
-        _errorMessage = apiResponse.error.toString();
-      } else {
-        _errorMessage = apiResponse.error.errors[0].message;
-      }
-      print(_errorMessage);
-      _responseModel = ResponseModel(false, _errorMessage);
-      // ApiChecker.checkApi(context, apiResponse);
-    }
-    notifyListeners();
-    return _responseModel;
   }
 }

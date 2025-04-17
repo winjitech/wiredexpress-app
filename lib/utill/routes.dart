@@ -67,7 +67,6 @@ class Routes {
   static String getPaymentRoute(String page, String id, int user) => '$PAYMENT_SCREEN?page=$page&id=$id&user=$user';
   static String getOrderDetailsRoute(int id) => '$ORDER_DETAILS_SCREEN?id=$id';
   static String getRateReviewRoute() => RATE_SCREEN;
-  static String getSearchNotificationRoute(String text) => '$SEARCH_NOTIFICATION?text=$text';
   static String getOrderTrackingRoute(int id) => '$ORDERTRAKING_SCREEN?id=$id';
   static String getProfileRoute() => PROFILE_SCREEN;
   static String getAddressRoute() => ADDRESS_SCREEN;

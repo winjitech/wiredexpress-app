@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:wired_express/data/model/response/base/api_response.dart';
 import 'package:wired_express/data/model/response/config_model.dart';
+import 'package:wired_express/data/model/response/electrician_model.dart';
 import 'package:wired_express/data/model/response/response_model.dart';
 import 'package:wired_express/data/repository/splash_repo.dart';
 import 'package:intl/intl.dart';
@@ -111,5 +112,44 @@ class SplashProvider extends ChangeNotifier {
     } else {
       return true;
     }
+  }
+
+  List<ElectricianModel>? _nearbyElectriciansList;
+  List<ElectricianModel>? get nearbyElectriciansList => _nearbyElectriciansList;
+  bool? _nearbyElectriciansListLoading;
+  bool? get nearbyElectriciansListLoading => _nearbyElectriciansListLoading;
+
+  Future<ResponseModel> getNearbyElectricians(
+      BuildContext? context, String latitude, String longitude) async {
+    _nearbyElectriciansListLoading = true;
+    notifyListeners();
+    ResponseModel _responseModel;
+    ApiResponse apiResponse =
+        await splashRepo!.getNearbyElectricians(latitude, longitude);
+    if (apiResponse.response != null &&
+        apiResponse.response!.statusCode == 200) {
+      _nearbyElectriciansList = [];
+
+      apiResponse.response!.data!.forEach((item) {
+        ElectricianModel itemModel = ElectricianModel.fromJson(item);
+        _nearbyElectriciansList!.add(itemModel);
+      });
+      _responseModel = ResponseModel(true, 'successful');
+      _nearbyElectriciansListLoading = false;
+      notifyListeners();
+    } else {
+      String _errorMessage;
+      if (apiResponse.error is String) {
+        _errorMessage = apiResponse.error.toString();
+      } else {
+        _errorMessage = apiResponse.error.errors[0].message;
+      }
+      // print(_errorMessage);
+      _responseModel = ResponseModel(false, _errorMessage);
+      _nearbyElectriciansListLoading = false;
+      notifyListeners();
+    }
+    notifyListeners();
+    return _responseModel;
   }
 }

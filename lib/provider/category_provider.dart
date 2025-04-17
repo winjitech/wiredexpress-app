@@ -1,34 +1,34 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:wired_express/data/model/response/base/api_response.dart';
 import 'package:wired_express/data/model/response/category_model.dart';
 import 'package:wired_express/data/model/response/product_model.dart';
+import 'package:wired_express/data/model/response/userinfo_model.dart';
 import 'package:wired_express/data/repository/category_repo.dart';
+import 'package:wired_express/helper/api_checker.dart';
+import 'package:wired_express/provider/auth_provider.dart';
+import 'package:wired_express/provider/profile_provider.dart';
 
 class CategoryProvider extends ChangeNotifier {
   final CategoryRepo? categoryRepo;
 
   CategoryProvider({@required this.categoryRepo});
 
-  List<CategoryModel>? _categoryListFull;
-
-  List<CategoryModel>? _subCategoryList;
-  List<Product>? _categoryProductList;
+  // List<ProductModel>? _categoryProductList;
   CategoryModel? _category;
   List<CategoryModel>? _categoryList;
   List<CategoryModel>? get categoryList => _categoryList;
   List<CategoryModel>? _categoryFeaturedList;
   List<CategoryModel>? get categoryFeaturedList => _categoryFeaturedList;
-  List<CategoryModel>? get categoryListFull => _categoryListFull;
 
-  List<CategoryModel>? get subCategoryList => _subCategoryList;
-  List<Product>? get categoryProductList => _categoryProductList;
+  // List<ProductModel>? get categoryProductList => _categoryProductList;
   CategoryModel? get category => _category;
 
-  int _countPages = 2;
-  int get countPages => _countPages;
-
-  bool? _bottomLoading = false;
-  bool? get bottomLoading => _bottomLoading;
+  // int _countPages = 2;
+  // int get countPages => _countPages;
+  //
+  // bool? _bottomLoading = false;
+  // bool? get bottomLoading => _bottomLoading;
 
   Future<void> getCategoryList(BuildContext? context, bool reload) async {
     if (_categoryList == null || reload) {
@@ -62,23 +62,7 @@ class CategoryProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> getCategoryListFull(BuildContext? context, bool reload) async {
-    if (_categoryListFull == null || reload) {
-      ApiResponse apiResponse = await categoryRepo!.getCategoryListFull();
-      if (apiResponse.response != null &&
-          apiResponse.response!.statusCode == 200) {
-        _categoryListFull = [];
-        apiResponse.response!.data!.forEach((category) =>
-            _categoryListFull!.add(CategoryModel.fromJson(category)));
-      } else {
-        //  ApiChecker.checkApi(context, apiResponse);
-      }
-      notifyListeners();
-    }
-  }
-
   void getCategory(BuildContext? context, String categoryID) async {
-    _subCategoryList = null;
     ApiResponse apiResponse = await categoryRepo!.getCategory(categoryID);
     if (apiResponse.response != null &&
         apiResponse.response!.statusCode == 200) {
@@ -91,7 +75,6 @@ class CategoryProvider extends ChangeNotifier {
 
   Future<CategoryModel> getCategoryByID(
       BuildContext? context, String categoryID) async {
-    _subCategoryList = null;
     ApiResponse apiResponse = await categoryRepo!.getCategory(categoryID);
     if (apiResponse.response != null &&
         apiResponse.response!.statusCode == 200) {
@@ -102,98 +85,101 @@ class CategoryProvider extends ChangeNotifier {
     }
   }
 
-  void getSubCategoryList(BuildContext? context, String categoryID) async {
-    _subCategoryList = null;
-    ApiResponse apiResponse =
-        await categoryRepo!.getSubCategoryList(categoryID);
-    if (apiResponse.response != null &&
-        apiResponse.response!.statusCode == 200) {
-      _subCategoryList = [];
-      apiResponse.response!.data.forEach((category) =>
-          _subCategoryList!.add(CategoryModel.fromJson(category)));
-      getCategoryProductList(context, categoryID);
-    } else {
-      // ApiChecker.checkApi(context, apiResponse);
+  int? _totalCategoryProductListSize;
+  int? get totalCategoryProductListSize => _totalCategoryProductListSize;
+
+  String? _categoryProductListOffset;
+  String? get categoryProductListOffset => _categoryProductListOffset;
+
+  List<ProductModel>? _categoryProductList = [];
+  List<ProductModel>? get categoryProductList => _categoryProductList;
+
+  List<String> _categoryProductListOffsetList = [];
+
+  bool _categoryProductListIsLoading = false;
+  bool get categoryProductListIsLoading => _categoryProductListIsLoading;
+
+  bool _bottomCategoryProductListLoading = false;
+  bool get bottomCategoryProductListLoading =>
+      _bottomCategoryProductListLoading;
+  Future<void> getCategoryProductList(
+      BuildContext context, String offset, String categoryID) async {
+    int showProductsEarlyAccess = 0;
+    final authProvider =
+        Provider.of<CustomAuthProvider>(context, listen: false);
+    final profileProvider =
+        Provider.of<ProfileProvider>(context, listen: false);
+    bool isLoggedIn = authProvider.isLoggedIn() ?? false;
+    UserInfoModel? userInfo = profileProvider.userInfoModel;
+
+    if (isLoggedIn && userInfo != null && userInfo.productsEarlyAccess == 1) {
+      print("productsEarlyAccess === ${userInfo.productsEarlyAccess == 1}");
+      showProductsEarlyAccess = 1;
     }
-    notifyListeners();
-  }
 
-  bool? _getCategoryLoading = false;
-  bool? get getCategoryLoading => _getCategoryLoading;
-
-  void getCategoryProductList(BuildContext? context, String categoryID) async {
-    _getCategoryLoading = true;
-    _categoryProductList = null;
-    notifyListeners();
-    ApiResponse apiResponse =
-        await categoryRepo!.getCategoryProductList(1, categoryID);
-    if (apiResponse.response != null &&
-        apiResponse.response!.statusCode == 200) {
-      _categoryProductList = [];
-      apiResponse.response!.data.forEach(
-          (category) => _categoryProductList!.add(Product.fromJson(category)));
-      _getCategoryLoading = false;
-
-      notifyListeners();
-
-    } else {
-      _getCategoryLoading = false;
-
-      ScaffoldMessenger.of(context!)
-          .showSnackBar(SnackBar(content: Text(apiResponse.error.toString())));
+    // print('tip 1 ---');
+    if (offset == '1') {
+      _categoryProductList = null;
+      _categoryProductListIsLoading = true;
     }
-  }
+    if (!_categoryProductListOffsetList.contains(offset)) {
+      // print('tip 2 ---');
+      _categoryProductListOffsetList.add(offset);
+      ApiResponse apiResponse = await categoryRepo!.getCategoryProductList(
+          offset, categoryID,
+          planId: showProductsEarlyAccess == 1
+              ? userInfo!.userSubscription!.planId
+              : null);
 
-  void getCategoryProductListMore(
-      BuildContext? context, String categoryID) async {
-    _bottomLoading = true;
-    notifyListeners();
-    ApiResponse apiResponse =
-        await categoryRepo!.getCategoryProductList(_countPages, categoryID);
-    if (apiResponse.response != null &&
-        apiResponse.response!.statusCode == 200) {
-      _bottomLoading = false;
+      if (apiResponse.response != null &&
+          apiResponse.response!.statusCode == 200) {
+        _bottomCategoryProductListLoading = false;
 
-      int _productsCount = apiResponse.response!.data.length;
-      if (_productsCount > 0) {
-        _countPages++;
-        print('Count Pages: ${_countPages}');
+        if (offset == '1') {
+          _categoryProductList = [];
+        }
+        _totalCategoryProductListSize =
+            ProductBody.fromJson(apiResponse.response!.data).totalSize;
+        _categoryProductList!
+            .addAll(ProductBody.fromJson(apiResponse.response!.data).products!);
+        _categoryProductListOffset =
+            ProductBody.fromJson(apiResponse.response!.data).offset;
+        _categoryProductListIsLoading = false;
+      } else {
+        ApiChecker.checkApi(context, apiResponse);
+
+        _bottomCategoryProductListLoading = false;
+        _categoryProductListIsLoading = false;
+        print('error message -- one ${apiResponse.error.toString()}');
       }
-
-      apiResponse.response!.data.forEach(
-          (category) => _categoryProductList!.add(Product.fromJson(category)));
-      if (_productsCount < 50) {}
-
-      notifyListeners();
     } else {
-      ScaffoldMessenger.of(context!)
-          .showSnackBar(SnackBar(content: Text(apiResponse.error.toString())));
+      if (_categoryProductListIsLoading) {
+        _bottomCategoryProductListLoading = false;
+        _categoryProductListIsLoading = false;
+      }
     }
-  }
-
-  // int _selectCategory = -1;
-  // int get selectCategory => _selectCategory;
-  //
-  // updateSelectCategory(int index) {
-  //   _selectCategory = index;
-  //   notifyListeners();
-  // }
-
-  resetPagesCount() {
-    _countPages = 2;
     notifyListeners();
   }
 
-  String? _selectedCategory;
+  void clearCategoryProductListOffset() {
+    // if (_categoryProductList != null) {
+    _categoryProductListOffsetList.clear();
+    _categoryProductList!.clear();
+    // }
 
-  String? get selectedCategory => _selectedCategory;
+    notifyListeners();
+  }
 
-  //
-  // set selectedCategory(String? category) {
-  //   _selectedCategory = category;
-  //   notifyListeners();
-  // }
-  void setCategory(String category) {
+  void showBottomCategoryProductListLoader() {
+    _bottomCategoryProductListLoading = true;
+    notifyListeners();
+  }
+
+  CategoryModel? _selectedCategory;
+
+  CategoryModel? get selectedCategory => _selectedCategory;
+
+  void setCategory(CategoryModel category) {
     _selectedCategory = category;
     notifyListeners();
   }

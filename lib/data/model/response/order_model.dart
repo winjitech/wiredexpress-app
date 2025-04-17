@@ -74,7 +74,10 @@ class OrderModel {
   DeliveryMan? _deliveryMan;
   DeliveryAddress? _deliveryAddress;
   int? _detailsCount;
-  String? _orderType;
+  String? _deliveryType;
+  String? _deliveryDate;
+  String? _deliveryTime;
+  int? _usePoints;
 
   OrderModel({
     int? id,
@@ -90,7 +93,6 @@ class OrderModel {
     int? deliveryAddressId,
     String? createdAt,
     String? updatedAt,
-    String? checked,
     int? deliveryManId,
     double? deliveryCharge,
     String? orderNote,
@@ -98,30 +100,35 @@ class OrderModel {
     DeliveryMan? deliveryMan,
     DeliveryAddress? deliveryAddress,
     int? detailsCount,
-    String? orderType,
-    String? gift,
+    String? deliveryType,
+    String? deliveryDate,
+    String? deliveryTime,
+    int? usePoints,
   }) {
-    this._id = id;
-    this._userId = userId;
-    this._orderAmount = orderAmount;
-    this._couponDiscountAmount = couponDiscountAmount;
-    this._couponDiscountTitle = couponDiscountTitle;
-    this._paymentStatus = paymentStatus;
-    this._orderStatus = orderStatus;
-    this._totalTaxAmount = totalTaxAmount;
-    this._paymentMethod = paymentMethod;
-    this._transactionReference = transactionReference;
-    this._deliveryAddressId = deliveryAddressId;
-    this._createdAt = createdAt;
-    this._updatedAt = updatedAt;
-    this._deliveryManId = deliveryManId;
-    this._deliveryCharge = deliveryCharge;
-    this._orderNote = orderNote;
-    this._details = details;
-    this._deliveryMan = deliveryMan;
-    this._deliveryAddress = deliveryAddress;
-    this._detailsCount = detailsCount;
-    this._orderType = orderType;
+    _id = id;
+    _userId = userId;
+    _orderAmount = orderAmount;
+    _couponDiscountAmount = couponDiscountAmount;
+    _couponDiscountTitle = couponDiscountTitle;
+    _paymentStatus = paymentStatus;
+    _orderStatus = orderStatus;
+    _totalTaxAmount = totalTaxAmount;
+    _paymentMethod = paymentMethod;
+    _transactionReference = transactionReference;
+    _deliveryAddressId = deliveryAddressId;
+    _createdAt = createdAt;
+    _updatedAt = updatedAt;
+    _deliveryManId = deliveryManId;
+    _deliveryCharge = deliveryCharge;
+    _orderNote = orderNote;
+    _details = details;
+    _deliveryMan = deliveryMan;
+    _deliveryAddress = deliveryAddress;
+    _detailsCount = detailsCount;
+    _deliveryType = deliveryType;
+    _deliveryDate = deliveryDate;
+    _deliveryTime = deliveryTime;
+    _usePoints = usePoints;
   }
 
   int? get id => _id;
@@ -132,9 +139,7 @@ class OrderModel {
   String? get paymentStatus => _paymentStatus;
   String? get orderStatus => _orderStatus;
   double? get totalTaxAmount => _totalTaxAmount;
-  // ignore: unnecessary_getters_setters
   String? get paymentMethod => _paymentMethod;
-  // ignore: unnecessary_getters_setters
   set paymentMethod(String? method) => _paymentMethod = method;
   String? get transactionReference => _transactionReference;
   int? get deliveryAddressId => _deliveryAddressId;
@@ -143,35 +148,37 @@ class OrderModel {
   int? get deliveryManId => _deliveryManId;
   double? get deliveryCharge => _deliveryCharge;
   String? get orderNote => _orderNote;
-
   List<Details>? get details => _details;
   DeliveryMan? get deliveryMan => _deliveryMan;
   DeliveryAddress? get deliveryAddress => _deliveryAddress;
   int? get detailsCount => _detailsCount;
-  String? get orderType => _orderType;
+  String? get deliveryType => _deliveryType;
+  String? get deliveryDate => _deliveryDate;
+  String? get deliveryTime => _deliveryTime;
+  int? get usePoints => _usePoints;
+
   OrderModel.fromJson(Map<String?, dynamic> json) {
     _id = json['id'];
     _userId = json['user_id'];
-
     _orderAmount = (json['order_amount'] as num).toDouble();
     _couponDiscountAmount = (json['coupon_discount_amount'] as num).toDouble();
     _couponDiscountTitle = json['coupon_discount_title'];
     _paymentStatus = json['payment_status'];
     _orderStatus = json['order_status'];
-
     _totalTaxAmount = (json['total_tax_amount'] as num).toDouble();
-
     _paymentMethod = json['payment_method'];
     _transactionReference = json['transaction_reference'];
     _deliveryAddressId = json['delivery_address_id'];
     _createdAt = json['created_at'];
     _updatedAt = json['updated_at'];
     _deliveryManId = json['delivery_man_id'];
-
     _deliveryCharge = (json['delivery_charge'] as num).toDouble();
     _orderNote = json['order_note'];
-
     _detailsCount = json['details_count'] as int? ?? 0;
+    _deliveryType = json['delivery_type'];
+    _deliveryDate = json['delivery_date'];
+    _deliveryTime = json['delivery_time'];
+    _usePoints = json['use_points'];
 
     if (json['details'] != null) {
       _details = [];
@@ -182,43 +189,44 @@ class OrderModel {
     _deliveryMan = json['delivery_man'] != null
         ? DeliveryMan.fromJson(json['delivery_man'])
         : null;
-    _orderType = json['order_type'];
     _deliveryAddress = json['delivery_address'] != null
         ? DeliveryAddress.fromJson(json['delivery_address'])
         : null;
   }
 
   Map<String?, dynamic> toJson() {
-    final Map<String?, dynamic> data = new Map<String?, dynamic>();
-    data['id'] = this._id;
-    data['user_id'] = this._userId;
-    data['order_amount'] = this._orderAmount;
-    data['coupon_discount_amount'] = this._couponDiscountAmount;
-    data['coupon_discount_title'] = this._couponDiscountTitle;
-    data['payment_status'] = this._paymentStatus;
-    data['order_status'] = this._orderStatus;
-    data['total_tax_amount'] = this._totalTaxAmount;
-    data['payment_method'] = this._paymentMethod;
-    data['transaction_reference'] = this._transactionReference;
-    data['delivery_address_id'] = this._deliveryAddressId;
-    data['created_at'] = this._createdAt;
-    data['updated_at'] = this._updatedAt;
-    data['delivery_man_id'] = this._deliveryManId;
-    data['delivery_charge'] = this._deliveryCharge;
-    data['order_note'] = this._orderNote;
+    final Map<String?, dynamic> data = {};
+    data['id'] = _id;
+    data['user_id'] = _userId;
+    data['order_amount'] = _orderAmount;
+    data['coupon_discount_amount'] = _couponDiscountAmount;
+    data['coupon_discount_title'] = _couponDiscountTitle;
+    data['payment_status'] = _paymentStatus;
+    data['order_status'] = _orderStatus;
+    data['total_tax_amount'] = _totalTaxAmount;
+    data['payment_method'] = _paymentMethod;
+    data['transaction_reference'] = _transactionReference;
+    data['delivery_address_id'] = _deliveryAddressId;
+    data['created_at'] = _createdAt;
+    data['updated_at'] = _updatedAt;
+    data['delivery_man_id'] = _deliveryManId;
+    data['delivery_charge'] = _deliveryCharge;
+    data['order_note'] = _orderNote;
+    data['details_count'] = _detailsCount;
+    data['delivery_type'] = _deliveryType;
+    data['delivery_date'] = _deliveryDate;
+    data['delivery_time'] = _deliveryTime;
+    data['use_points'] = _usePoints;
 
-    data['details_count'] = this._detailsCount;
-    if (this._details != null) {
-      data['details'] = this._details!.map((v) => v.toJson()).toList();
+    if (_details != null) {
+      data['details'] = _details!.map((v) => v.toJson()).toList();
     }
-    if (this._deliveryMan != null) {
-      data['delivery_man'] = this._deliveryMan!.toJson();
+    if (_deliveryMan != null) {
+      data['delivery_man'] = _deliveryMan!.toJson();
     }
-    if (this._deliveryAddress != null) {
-      data['delivery_address'] = this._deliveryAddress!.toJson();
+    if (_deliveryAddress != null) {
+      data['delivery_address'] = _deliveryAddress!.toJson();
     }
-    data['order_type'] = this._orderType;
-
     return data;
   }
 }
@@ -228,46 +236,39 @@ class Details {
   int? _productId;
   int? _orderId;
   double? _price;
-  Product? _productDetails;
-  Variation? _variation;
+  ProductModel? _productDetails;
   double? _discountOnProduct;
   String? _discountType;
   int? _quantity;
   double? _taxAmount;
   String? _createdAt;
   String? _updatedAt;
-  String? _variant;
   String? _image;
   Details(
       {int? id,
-      int? productId,
-      int? orderId,
-      double? price,
-      Product? productDetails,
-      Variation? variation,
-      double? discountOnProduct,
-      String? discountType,
-      int? quantity,
-      double? taxAmount,
-      String? createdAt,
-      String? updatedAt,
-      String? image,
-      String? variant}) {
+        int? productId,
+        int? orderId,
+        double? price,
+        ProductModel? productDetails,
+        double? discountOnProduct,
+        String? discountType,
+        int? quantity,
+        double? taxAmount,
+        String? createdAt,
+        String? updatedAt,
+        String? image}) {
     this._id = id;
     this._image = image;
     this._productId = productId;
     this._orderId = orderId;
     this._price = price;
     this._productDetails = productDetails;
-    this._variation = variation;
     this._discountOnProduct = discountOnProduct;
     this._discountType = discountType;
     this._quantity = quantity;
     this._taxAmount = taxAmount;
     this._createdAt = createdAt;
     this._updatedAt = updatedAt;
-
-    this._variant = variant;
   }
 
   int? get id => _id;
@@ -275,15 +276,13 @@ class Details {
   int? get productId => _productId;
   int? get orderId => _orderId;
   double? get price => _price;
-  Product? get productDetails => _productDetails;
-  Variation? get variation => _variation;
+  ProductModel? get productDetails => _productDetails;
   double? get discountOnProduct => _discountOnProduct;
   String? get discountType => _discountType;
   int? get quantity => _quantity;
   double? get taxAmount => _taxAmount;
   String? get createdAt => _createdAt;
   String? get updatedAt => _updatedAt;
-  String? get variant => _variant;
 
   Details.fromJson(Map<String?, dynamic> json) {
     _id = json['id'];
@@ -292,10 +291,7 @@ class Details {
     _image = json['image'];
 
     _price = (json['price'] as num).toDouble();
-    // _variation = json['variation'];
-    _variation = json['variation'] != null
-        ? Variation.fromJson(json['variation'])
-        : null;
+
     _discountOnProduct = (json['discount_on_product'] as num).toDouble();
     _discountType = json['discount_type'];
     _quantity = json['quantity'];
@@ -303,10 +299,8 @@ class Details {
     _taxAmount = (json['tax_amount'] as num).toDouble();
     _createdAt = json['created_at'];
     _productDetails = json['product_details'] != null
-        ? Product.fromJson(json['product_details'])
+        ? ProductModel.fromJson(json['product_details'])
         : null;
-
-    _variant = json['variant'];
   }
 
   Map<String?, dynamic> toJson() {
@@ -319,9 +313,7 @@ class Details {
     if (_productDetails != null) {
       data['product_details'] = _productDetails!.toJson();
     }
-    if (_variation != null) {
-      data['variation'] = _variation!.toJson();
-    }
+
     data['discount_on_product'] = this._discountOnProduct;
     data['discount_type'] = this._discountType;
     data['quantity'] = this._quantity;
@@ -329,7 +321,6 @@ class Details {
     data['created_at'] = this._createdAt;
     data['updated_at'] = this._updatedAt;
 
-    data['variant'] = this._variant;
     return data;
   }
 }
@@ -383,19 +374,7 @@ class DeliveryAddress {
   String? get updatedAt => _updatedAt;
   String? get contactPersonNumber => _contactPersonNumber;
   String? get contactPersonName => _contactPersonName;
-// "delivery_address": {
-// "id": 1,
-// "address_type": "Home",
-// "contact_person_number": "6666666",
-// "address": "1650, Santa Clara County, US",
-// "latitude": "37.42209351379723",
-// "longitude": "-122.08392206579445",
-// "is_current": 0,
-// "created_at": "2024-03-03T21:23:06.000000Z",
-// "updated_at": "2024-03-03T21:23:06.000000Z",
-// "user_id": 8,
-// "contact_person_name": "Address One"
-// }
+
 
   DeliveryAddress.fromJson(Map<String?, dynamic> json) {
     _id = json['id'];

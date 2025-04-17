@@ -10,6 +10,7 @@ import 'package:wired_express/provider/cart_provider.dart';
 import 'package:wired_express/provider/location_provider.dart';
 import 'package:wired_express/provider/wishlist_provider.dart';
 import 'package:wired_express/utill/color_resources.dart';
+import 'package:wired_express/view/base/circular_indicator_widget.dart';
 import 'package:wired_express/view/base/custom_button.dart';
 import 'package:wired_express/view/base/custom_snackbar.dart';
 import 'package:wired_express/view/base/custom_text_field.dart';
@@ -17,7 +18,6 @@ import 'package:wired_express/view/screens/auth/login_with_phone_screen.dart';
 import 'package:wired_express/view/screens/auth/signup_screen.dart';
 import 'package:wired_express/view/screens/dashboard/dashboard_screen.dart';
 import 'package:wired_express/view/screens/forgot_password/forgot_password_screen.dart';
-import 'package:wired_express/view/screens/shopping/shopping_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -132,11 +132,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   height: 30,
                                 ),
                                 authProvider.isLoading == true
-                                    ? Center(
-                                    child: CircularProgressIndicator(
-                                        valueColor: AlwaysStoppedAnimation<
-                                            Color>(
-                                            ColorResources.getPrimaryColor(context))))
+                                    ? CustomCircularIndicator()
                                     : CustomButton(
                                     text: getTranslated('login', context),
                                     onTap: () async {
@@ -174,17 +170,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                             .login(context, _email, _password)
                                             .then((status) async {
                                           if (status.isSuccess) {
-                                            // DateTime _date = DateTime.now().add(const Duration(days: 7));
-                                            // var box = Hive.box('myBox');
-                                            // box.put('rate_last_datetime', _date);
-                                            authProvider.saveUserNumberAndPassword(_email, _password);
-                                            // if (authProvider.isActiveRememberMe!) {
-                                            //   authProvider.saveUserNumberAndPassword(_email, _password);
-                                            // } else {
-                                            //   authProvider
-                                            //       .clearUserNumberAndPassword();
-                                            // }
-                                            await Provider.of<CartProvider>(
+                                           authProvider.saveUserNumberAndPassword(_email, _password);
+                                        await Provider.of<CartProvider>(
                                                 context,
                                                 listen: false)
                                                 .initCartListProductIds(
@@ -276,7 +263,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     )),
                                 SizedBox(height: 15),
                                 Center(
-                                  child: InkWell(
+                                  child: GestureDetector(
                                     onTap: () async {
                                       final pref =
                                       await SharedPreferences.getInstance();

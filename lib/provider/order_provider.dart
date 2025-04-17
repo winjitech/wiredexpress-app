@@ -10,8 +10,8 @@ import 'package:wired_express/data/model/response/order_details_model.dart';
 import 'package:wired_express/data/model/response/response_model.dart';
 import 'package:wired_express/data/model/response/order_model.dart';
 import 'package:wired_express/data/repository/order_repo.dart';
-import 'package:wired_express/helper/api_checker.dart';
 import 'package:wired_express/view/screens/track/directions.dart';
+import 'package:wired_express/data/model/response/delivery_coordinate_history_model.dart';
 
 class OrderProvider extends ChangeNotifier {
   final OrderRepo? orderRepo;
@@ -21,7 +21,6 @@ class OrderProvider extends ChangeNotifier {
   OrderModel? _trackModel;
   OrderModel? get trackModel => _trackModel;
   ResponseModel? _responseModel;
-  int _addressIndex = -1;
 
   DeliveryManModel? _deliveryManModel;
   String _orderType = 'delivery';
@@ -36,14 +35,12 @@ class OrderProvider extends ChangeNotifier {
   List<OrderDetailsModel>? get orderDetails => _orderDetails;
   int get paymentMethodIndex => _paymentMethodIndex;
   ResponseModel? get responseModel => _responseModel;
-  int get addressIndex => _addressIndex;
   bool _showCancelled = false;
   bool get showCancelled => _showCancelled;
   DeliveryManModel? get deliveryManModel => _deliveryManModel;
   String get orderType => _orderType;
   int get branchIndex => _branchIndex;
 
-  ///HISTORY
   int? _totalHistorySize;
   int? get totalHistorySize => _totalHistorySize;
 
@@ -61,33 +58,6 @@ class OrderProvider extends ChangeNotifier {
   bool _bottomHistoryOrderLoading = false;
   bool get bottomHistoryOrderLoading => _bottomHistoryOrderLoading;
 
-  ///end history
-
-  Future<void> getOrderList(BuildContext? context) async {
-    ApiResponse apiResponse = await orderRepo!.getOrderList();
-    if (apiResponse.response != null &&
-        apiResponse.response!.statusCode == 200) {
-      print('orderList --');
-      _runningOrderList = [];
-      _historyOrderList = [];
-      apiResponse.response!.data!.forEach((order) {
-        OrderModel orderModel = OrderModel.fromJson(order);
-        if (orderModel.orderStatus == 'pending' ||
-            orderModel.orderStatus == 'processing' ||
-            orderModel.orderStatus == 'out_for_delivery' ||
-            orderModel.orderStatus == 'confirmed') {
-          _runningOrderList!.add(orderModel);
-          print('orderList /--');
-          print(jsonEncode(_runningOrderList));
-        } else if (orderModel.orderStatus == 'delivered') {
-          _historyOrderList!.add(orderModel);
-        }
-      });
-    } else {
-      // ApiChecker.checkApi(context, apiResponse);
-    }
-    notifyListeners();
-  }
 
   Future<List<OrderDetailsModel>> getOrderDetails(
       String orderID, BuildContext? context) async {
@@ -103,7 +73,6 @@ class OrderProvider extends ChangeNotifier {
       apiResponse.response!.data!.forEach((orderDetail) =>
           _orderDetails!.add(OrderDetailsModel.fromJson(orderDetail)));
     } else {
-      //  ApiChecker.checkApi(context, apiResponse);
     }
     notifyListeners();
     return _orderDetails!;
@@ -115,7 +84,6 @@ class OrderProvider extends ChangeNotifier {
         apiResponse.response!.statusCode == 200) {
       _deliveryManModel = DeliveryManModel.fromJson(apiResponse.response!.data);
     } else {
-      // ApiChecker.checkApi(context, apiResponse);
     }
     notifyListeners();
   }
@@ -148,7 +116,6 @@ class OrderProvider extends ChangeNotifier {
         _responseModel =
             ResponseModel(false, apiResponse.error.errors[0].message);
         print("3 => $_responseModel");
-        //  ApiChecker.checkApi(context, apiResponse);
       }
 
       _isLoading = false;
@@ -199,13 +166,8 @@ class OrderProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setAddressIndex(int index) {
-    _addressIndex = index;
-    notifyListeners();
-  }
 
   void clearPrevData() {
-    _addressIndex = -1;
     _branchIndex = 0;
     _paymentMethodIndex = 0;
   }
@@ -218,13 +180,7 @@ class OrderProvider extends ChangeNotifier {
     if (apiResponse.response != null &&
         apiResponse.response!.statusCode == 200) {
       _isLoading = false;
-      OrderModel? orderModel;
-      // _runningOrderList!.forEach((order) {
-      //   if (order.id.toString() == orderID) {
-      //     orderModel = order;
-      //   }
-      // });
-      // _runningOrderList!.remove(orderModel);
+
       _showCancelled = false;
       callback(apiResponse.response!.data['message'], true, orderID);
     } else {
@@ -269,11 +225,9 @@ class OrderProvider extends ChangeNotifier {
 
   void setBranchIndex(int index) {
     _branchIndex = index;
-    _addressIndex = -1;
     notifyListeners();
   }
 
-  //// HISTORY
   Future<void> getHistoryOrdersList(BuildContext context, String offset) async {
     print('test 1 ---');
     if (offset == '1') {
@@ -310,7 +264,6 @@ class OrderProvider extends ChangeNotifier {
       if (_historyOrderIsLoading) {
         _bottomHistoryOrderLoading = false;
         _historyOrderIsLoading = false;
-        //notifyListeners();
       }
     }
     notifyListeners();
@@ -327,7 +280,6 @@ class OrderProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  //////////   MAP ROUTES ////////////
   Directions? _info;
   Directions? get info => _info;
 
@@ -342,5 +294,84 @@ class OrderProvider extends ChangeNotifier {
   Timer? get timer => _timer;
   void cancelTimer() {
     _timer?.cancel();
+  }
+
+
+  bool _lastDeliveryCoordinatesLoading = false;
+  bool get lastDeliveryCoordinatesLoading => _lastDeliveryCoordinatesLoading;
+
+  DeliveryCoordinateHistoryModel? _lastDeliveryCoordinates;
+  DeliveryCoordinateHistoryModel? get lastDeliveryCoordinates =>
+      _lastDeliveryCoordinates;
+
+  Future<ResponseModel> getLastDeliveryCoordinates(
+      BuildContext? context, String orderId) async {
+    _lastDeliveryCoordinatesLoading = true;
+    notifyListeners();
+
+    ResponseModel _responseModel;
+
+    try {
+      ApiResponse apiResponse =
+          await orderRepo!.getLastDeliveryCoordinates(orderId);
+
+      if (apiResponse.response != null &&
+          apiResponse.response!.statusCode == 200) {
+        print("apiResponse.response!.data == ${apiResponse.response!.data}");
+        DeliveryCoordinateHistoryModel newData =
+            DeliveryCoordinateHistoryModel.fromJson(apiResponse.response!.data);
+
+        if (_lastDeliveryCoordinates?.lastUpdate != newData.lastUpdate) {
+          _lastDeliveryCoordinates = newData;
+          notifyListeners();
+        }
+
+        print("newData === ${newData.toJson()}");
+        _responseModel = ResponseModel(true, 'successful');
+      } else {
+        String _errorMessage;
+        if (apiResponse.error is String) {
+          _errorMessage = apiResponse.error.toString();
+        } else {
+          _errorMessage = apiResponse.error.errors[0].message;
+        }
+        print(_errorMessage);
+        _responseModel = ResponseModel(false, _errorMessage);
+      }
+    } catch (e) {
+      print(e.toString());
+      _responseModel = ResponseModel(false, e.toString());
+    }
+
+    _lastDeliveryCoordinatesLoading = false;
+    notifyListeners();
+
+    return _responseModel;
+  }
+
+  int? _selectedScheduledValue;
+  int? get selectedScheduledValue => _selectedScheduledValue;
+
+  void setSelectScheduledValue(int selectedScheduledValue) {
+    _selectedScheduledValue = selectedScheduledValue;
+    notifyListeners();
+  }
+
+  void clearSelectScheduledValue() {
+    _selectedScheduledValue = null;
+    notifyListeners();
+  }
+
+  DateTime? _selectedDeliveryDate;
+  DateTime? get selectedDeliveryDate => _selectedDeliveryDate;
+
+  void setSelectDeliveryDate(DateTime selectedDeliveryDate) {
+    _selectedDeliveryDate = selectedDeliveryDate;
+    notifyListeners();
+  }
+
+  void clearSelectDeliveryDate() {
+    _selectedDeliveryDate = null;
+    notifyListeners();
   }
 }

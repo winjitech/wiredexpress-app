@@ -5,6 +5,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:wired_express/provider/place_order_provider.dart';
+import 'package:wired_express/provider/subscription_provider.dart';
 import 'package:wired_express/provider/timer_provider.dart';
 import 'package:wired_express/theme/dark_theme.dart';
 import 'package:wired_express/theme/light_theme.dart';
@@ -26,10 +27,8 @@ import 'package:wired_express/provider/order_provider.dart';
 import 'package:wired_express/provider/location_provider.dart';
 import 'package:wired_express/provider/product_provider.dart';
 import 'package:wired_express/provider/language_provider.dart';
-import 'package:wired_express/provider/onboarding_provider.dart';
 import 'package:wired_express/provider/profile_provider.dart';
 import 'package:wired_express/provider/search_provider.dart';
-import 'package:wired_express/provider/set_menu_provider.dart';
 import 'package:wired_express/provider/splash_provider.dart';
 import 'package:wired_express/provider/theme_provider.dart';
 import 'package:wired_express/provider/wishlist_provider.dart';
@@ -79,7 +78,6 @@ Future<void> main() async {
       ChangeNotifierProvider(create: (context) => di.sl<TimerProvider>()),
       ChangeNotifierProvider(create: (context) => di.sl<SplashProvider>()),
       ChangeNotifierProvider(create: (context) => di.sl<LanguageProvider>()),
-      ChangeNotifierProvider(create: (context) => di.sl<OnBoardingProvider>()),
       ChangeNotifierProvider(create: (context) => di.sl<CategoryProvider>()),
       ChangeNotifierProvider(create: (context) => di.sl<BannerProvider>()),
       ChangeNotifierProvider(create: (context) => di.sl<ProductProvider>()),
@@ -90,7 +88,6 @@ Future<void> main() async {
       ChangeNotifierProvider(create: (context) => di.sl<CartProvider>()),
       ChangeNotifierProvider(create: (context) => di.sl<OrderProvider>()),
       ChangeNotifierProvider(create: (context) => di.sl<ChatProvider>()),
-      ChangeNotifierProvider(create: (context) => di.sl<SetMenuProvider>()),
       ChangeNotifierProvider(create: (context) => di.sl<ProfileProvider>()),
       ChangeNotifierProvider(
           create: (context) => di.sl<NotificationProvider>()),
@@ -101,6 +98,8 @@ Future<void> main() async {
       ChangeNotifierProvider(create: (context) => di.sl<PlaceOrderProvider>()),
       ChangeNotifierProvider(
           create: (context) => di.sl<DeliveryManChatProvider>()),
+      ChangeNotifierProvider(create: (context) => di.sl<SubscriptionProvider>()),
+
     ],
     child: MyApp(isWeb: !kIsWeb),
   ));
@@ -135,7 +134,7 @@ class _MyAppState extends State<MyApp> {
         .initConfig(_globalKey)
         .then((bool isSuccess) {
       if (isSuccess) {
-        Timer(Duration(seconds: 1), () async {
+        Timer(Duration(seconds: 0), () async {
           if (Provider.of<CustomAuthProvider>(context, listen: false)
               .isLoggedIn()!) {
             Provider.of<CustomAuthProvider>(context, listen: false)

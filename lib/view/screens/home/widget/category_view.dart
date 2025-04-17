@@ -1,16 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:wired_express/helper/responsive_helper.dart';
 import 'package:wired_express/localization/language_constrants.dart';
 import 'package:wired_express/provider/category_provider.dart';
 import 'package:wired_express/provider/splash_provider.dart';
 import 'package:wired_express/provider/theme_provider.dart';
 import 'package:wired_express/utill/color_resources.dart';
 import 'package:wired_express/utill/dimensions.dart';
-import 'package:wired_express/utill/images.dart';
-import 'package:wired_express/utill/styles.dart';
-import 'package:wired_express/view/base/title_widget.dart';
 import 'package:wired_express/view/screens/category/category_screen.dart';
-import 'package:wired_express/view/screens/home/widget/category_pop_up.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer_animation/shimmer_animation.dart';
 
@@ -21,11 +16,6 @@ class CategoryView extends StatelessWidget {
       builder: (context, category, child) {
         return Column(
           children: [
-            // Padding(
-            //   padding: EdgeInsets.fromLTRB(10, 20, 0, 10),
-            //   child:
-            //       TitleWidget(title: getTranslated('all_categories', context)),
-            // ),
             Row(
               children: [
                 Expanded(
@@ -50,7 +40,7 @@ class CategoryView extends StatelessWidget {
                                   return Padding(
                                       padding: EdgeInsets.only(
                                           right: Dimensions.PADDING_SIZE_SMALL),
-                                      child: InkWell(
+                                      child: GestureDetector(
                                         onTap: () {
                                           Navigator.push(
                                               context,
@@ -85,7 +75,9 @@ class CategoryView extends StatelessWidget {
                                             ),
                                             Text(
                                               '${category.categoryList![index].name}',
-                                              maxLines: 2,
+                                              textAlign: TextAlign.center,
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
                                               style: TextStyle(
                                                   fontWeight: FontWeight.bold,
                                                   fontSize: 19),
@@ -110,41 +102,6 @@ class CategoryView extends StatelessWidget {
                         : CategoryShimmer(),
                   ),
                 ),
-                ResponsiveHelper.isMobile(context)
-                    ? SizedBox()
-                    : category.categoryList != null
-                        ? Column(
-                            children: [
-                              InkWell(
-                                onTap: () {
-                                  showDialog(
-                                      context: context,
-                                      builder: (con) => Dialog(
-                                          child: Container(
-                                              height: 550,
-                                              width: 600,
-                                              child: CategoryPopUp())));
-                                },
-                                child: Padding(
-                                  padding: EdgeInsets.only(
-                                      right: Dimensions.PADDING_SIZE_SMALL),
-                                  child: CircleAvatar(
-                                    radius: 35,
-                                    backgroundColor:
-                                        ColorResources.getPrimaryColor(context),
-                                    child: Text(
-                                        getTranslated('view_all', context),
-                                        style: TextStyle(
-                                            fontSize: 14, color: Colors.white)),
-                                  ),
-                                ),
-                              ),
-                              SizedBox(
-                                height: 10,
-                              )
-                            ],
-                          )
-                        : CategoryAllShimmer()
               ],
             ),
           ],

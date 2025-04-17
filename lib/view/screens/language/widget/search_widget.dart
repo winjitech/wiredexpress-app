@@ -4,7 +4,6 @@ import 'package:wired_express/provider/language_provider.dart';
 import 'package:wired_express/utill/color_resources.dart';
 import 'package:wired_express/utill/dimensions.dart';
 import 'package:wired_express/utill/images.dart';
-import 'package:wired_express/utill/strings.dart';
 import 'package:provider/provider.dart';
 
 class SearchWidget extends StatelessWidget {

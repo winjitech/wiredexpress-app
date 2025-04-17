@@ -23,30 +23,31 @@ class SplashRepo {
   }
 
   Future<bool> initSharedData() {
-    if(!sharedPreferences!.containsKey(AppConstants.THEME)) {
+    if (!sharedPreferences!.containsKey(AppConstants.THEME)) {
       return sharedPreferences!.setBool(AppConstants.THEME, false);
     }
-    if(!sharedPreferences!.containsKey(AppConstants.COUNTRY_CODE)) {
+    if (!sharedPreferences!.containsKey(AppConstants.COUNTRY_CODE)) {
       return sharedPreferences!.setString(AppConstants.COUNTRY_CODE, 'US');
     }
-    if(!sharedPreferences!.containsKey(AppConstants.LANGUAGE_CODE)) {
+    if (!sharedPreferences!.containsKey(AppConstants.LANGUAGE_CODE)) {
       return sharedPreferences!.setString(AppConstants.LANGUAGE_CODE, 'en');
     }
-    if(!sharedPreferences!.containsKey(AppConstants.CART_LIST)) {
+    if (!sharedPreferences!.containsKey(AppConstants.CART_LIST)) {
       return sharedPreferences!.setStringList(AppConstants.CART_LIST, []);
     }
     return Future.value(true);
   }
 
-
   Future<http.StreamedResponse> appUpdated(String update, String token) async {
-    http.MultipartRequest request = http.MultipartRequest('POST', Uri.parse('${AppConstants.BASE_URL}${AppConstants.UPDATE_VERSION_CODE_URI}'));
-    request.headers.addAll(<String,String>{'Authorization': 'Bearer $token'});
+    http.MultipartRequest request = http.MultipartRequest(
+        'POST',
+        Uri.parse(
+            '${AppConstants.BASE_URL}${AppConstants.UPDATE_VERSION_CODE_URI}'));
+    request.headers.addAll(<String, String>{'Authorization': 'Bearer $token'});
 
     Map<String, String> _fields = Map();
-    _fields.addAll(<String, String>{
-      '_method': 'put', 'update_version': update
-    });
+    _fields
+        .addAll(<String, String>{'_method': 'put', 'update_version': update});
 
     request.fields.addAll(_fields);
     http.StreamedResponse response = await request.send();
@@ -55,5 +56,16 @@ class SplashRepo {
 
   Future<bool> removeSharedData() {
     return sharedPreferences!.clear();
+  }
+
+  Future<ApiResponse> getNearbyElectricians(
+      String latitude, String longitude) async {
+    try {
+      final response = await dioClient!.get(
+          "${AppConstants.ELECTRICIANS_URI}?latitude=$latitude&longitude=$longitude");
+      return ApiResponse.withSuccess(response);
+    } catch (e) {
+      return ApiResponse.withError(ApiErrorHandler.getMessage(e));
+    }
   }
 }

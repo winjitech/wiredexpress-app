@@ -14,7 +14,7 @@ class CategoriesWidget extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
+    return GestureDetector(
       onTap: () {},
       child: Container(
         decoration: BoxDecoration(

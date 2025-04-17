@@ -8,11 +8,11 @@ import 'package:wired_express/provider/cart_provider.dart';
 import 'package:wired_express/provider/theme_provider.dart';
 import 'package:wired_express/utill/color_resources.dart';
 import 'package:wired_express/utill/styles.dart';
-import 'package:wired_express/view/screens/auth/guest_screen.dart';
+import 'package:wired_express/view/base/not_logged_in_screen.dart';
 import 'package:wired_express/view/screens/cart/cart_screen.dart';
+import 'package:wired_express/view/screens/home/home_screen.dart';
 import 'package:wired_express/view/screens/menu/menu_screen.dart';
 import 'package:wired_express/view/screens/order/order_screen.dart';
-import 'package:wired_express/view/screens/shopping/shopping_screen.dart';
 import 'package:wired_express/view/screens/wishlist/wishlist_screen.dart';
 import 'package:provider/provider.dart';
 
@@ -39,13 +39,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
     _pageController = PageController(initialPage: widget.pageIndex!);
     final bool _isLoggedIn =
-    Provider.of<CustomAuthProvider>(context, listen: false).isLoggedIn()!;
+        Provider.of<CustomAuthProvider>(context, listen: false).isLoggedIn()!;
 
     _screens = [
-      ShoppingScreen(),
-      _isLoggedIn? CartScreen(): GuestScreen(),
-      _isLoggedIn? OrderScreen(): GuestScreen(),
-      _isLoggedIn? WishListScreen(): GuestScreen(),
+      HomeScreen(),
+      _isLoggedIn ? CartScreen() : NotLoggedInScreen(),
+      _isLoggedIn ? OrderScreen() : NotLoggedInScreen(),
+      _isLoggedIn ? WishListScreen() : NotLoggedInScreen(),
       MenuScreen(onTap: (int pageIndex) {
         _setPage(pageIndex);
       }),

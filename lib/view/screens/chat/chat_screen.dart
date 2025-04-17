@@ -1,13 +1,9 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:wired_express/helper/responsive_helper.dart';
 import 'package:wired_express/localization/language_constrants.dart';
 import 'package:wired_express/provider/auth_provider.dart';
 import 'package:wired_express/provider/chat_provider.dart';
 import 'package:wired_express/provider/profile_provider.dart';
-import 'package:wired_express/provider/theme_provider.dart';
-import 'package:wired_express/theme/dark_theme.dart';
-import 'package:wired_express/theme/light_theme.dart';
 import 'package:provider/provider.dart';
 import 'package:wired_express/utill/color_resources.dart';
 import 'package:wired_express/utill/dimensions.dart';
@@ -15,12 +11,9 @@ import 'package:wired_express/utill/images.dart';
 import 'package:wired_express/utill/styles.dart';
 import 'package:wired_express/view/base/custom_app_bar.dart';
 import 'package:wired_express/view/base/custom_snackbar.dart';
-import 'package:wired_express/view/base/main_app_bar.dart';
 import 'package:wired_express/view/base/not_logged_in_screen.dart';
-import 'package:wired_express/view/screens/chat/send_image.dart';
 import 'package:wired_express/view/screens/chat/widget/message_bubble.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:provider/provider.dart';
 
 class ChatScreen extends StatefulWidget {
   @override
@@ -167,7 +160,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                     ColorResources.getScaffoldBackgroundColor(
                                         context),
                                 child: Row(children: [
-                                  // InkWell(
+                                  // GestureDetector(
                                   //   onTap: () async {
                                   //     Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) =>
                                   //         SendImage()));
@@ -230,7 +223,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                     ),
                                   ),
 
-                                  InkWell(
+                                  GestureDetector(
                                     onTap: () async {
                                       FocusScope.of(context).unfocus();
                                       if (Provider.of<ChatProvider>(context,

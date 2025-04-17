@@ -2,6 +2,7 @@ import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wired_express/utill/images.dart';
+import 'package:wired_express/view/base/circular_indicator_widget.dart';
 import 'package:wired_express/view/screens/auth/login_screen.dart';
 import 'package:wired_express/helper/responsive_helper.dart';
 import 'package:wired_express/localization/language_constrants.dart';
@@ -56,7 +57,7 @@ class _LoginWithPhoneScreenState extends State<LoginWithPhoneScreen> {
             alignment: Alignment.topLeft,
             child: Padding(
               padding: const EdgeInsets.only(top: 20, left: 20),
-              child: InkWell(
+              child: GestureDetector(
                 onTap: () {
                   Navigator.pop(context);
                 },
@@ -68,7 +69,7 @@ class _LoginWithPhoneScreenState extends State<LoginWithPhoneScreen> {
                       padding: const EdgeInsets.all(14),
                       child: Icon(
                         Icons.arrow_back_ios_new_outlined,
-                        color: ColorResources.SCAFFOLD_COLOR,
+                        color: ColorResources.getScaffoldColor(context),
                         size: 19,
                       ),
                     )),
@@ -207,12 +208,7 @@ class _LoginWithPhoneScreenState extends State<LoginWithPhoneScreen> {
                             ),
                             SizedBox(height: Dimensions.PADDING_SIZE_LARGE),
                             authProvider.isLoading == true
-                                ? Center(
-                                child: CircularProgressIndicator(
-                                    valueColor:
-                                    new AlwaysStoppedAnimation<
-                                        Color>(
-                                        ColorResources.getPrimaryColor(context))))
+                                ? CustomCircularIndicator()
                                 :  CustomButton(
                               text: getTranslated('next', context),
                               onTap: () async {
@@ -246,7 +242,7 @@ class _LoginWithPhoneScreenState extends State<LoginWithPhoneScreen> {
                             ),
                             SizedBox(height: 15),
                             Center(
-                              child: InkWell(
+                              child: GestureDetector(
                                 onTap: () async {
                                   final pref =
                                   await SharedPreferences.getInstance();

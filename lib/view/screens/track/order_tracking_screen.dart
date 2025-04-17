@@ -1,24 +1,20 @@
 import 'dart:async';
 import 'dart:collection';
-import 'dart:ui';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/services.dart';
+import 'dart:convert';
+import 'dart:typed_data';
+import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
-
-import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
-import 'package:url_launcher/url_launcher_string.dart';
 import 'package:wired_express/data/model/response/order_model.dart';
 import 'package:wired_express/localization/language_constrants.dart';
 import 'package:wired_express/provider/order_provider.dart';
-import 'package:wired_express/provider/splash_provider.dart';
 import 'package:wired_express/provider/theme_provider.dart';
-import 'package:wired_express/utill/Images.dart';
 import 'package:wired_express/utill/color_resources.dart';
-import 'package:wired_express/view/base/custom_button.dart';
-import 'package:wired_express/view/base/custom_snackbar.dart';
-import 'package:wired_express/view/screens/dashboard/dashboard_screen.dart';
+import 'package:wired_express/utill/images.dart';
+import 'package:wired_express/view/base/circular_indicator_widget.dart';
+import 'package:widget_to_marker/widget_to_marker.dart';
+import 'package:flutter/services.dart';
+import 'package:wired_express/view/base/custom_app_bar.dart';
 
 class OrderTrackingScreen extends StatefulWidget {
   final String? orderID;
@@ -33,43 +29,33 @@ class OrderTrackingScreen extends StatefulWidget {
   OrderTrackingScreenState createState() => OrderTrackingScreenState();
 }
 
-class OrderTrackingScreenState extends State<OrderTrackingScreen>
-    with WidgetsBindingObserver {
-  GoogleMapController? _controller;
-  bool _isLoading = true;
+class OrderTrackingScreenState extends State<OrderTrackingScreen> {
+  GoogleMapController? _mapController;
   Set<Marker> _markers = HashSet<Marker>();
-  List<LatLng> _polylinePoints = [];
+  late BitmapDescriptor deliveryIcon;
+  int _currentCoordinateIndex = 0;
+  Timer? _moveMarkerTimer;
+  bool _isLoading = true;
+  List<LatLng> _coordinatesList = [];
+  late LatLng dropOff;
   var _lightStyle;
   var _nightStyle;
-
-  late GoogleMapController _mapController;
-  late BitmapDescriptor deliveryIcon;
-  void _loadData() async {
-    Provider.of<OrderProvider>(context, listen: false)
-        .trackOrder(widget.orderID!, widget.track!, context, true)
-        .then((value) {
-      Provider.of<OrderProvider>(context, listen: false).addDirections(
-          LatLng(double.parse(widget.track!.deliveryMan!.latitude!),
-              double.parse(widget.track!.deliveryMan!.longitude!)),
-          LatLng(double.parse(widget.track!.deliveryAddress!.latitude!),
-              double.parse(widget.track!.deliveryAddress!.longitude!)));
-    });
-  }
 
   @override
   void initState() {
     super.initState();
     _loadMapStyles();
-    Timer(Duration(seconds: 1), () async {
-      _loadData();
-      _loadMapStyles();      WidgetsBinding.instance.addObserver(this);
 
-      BitmapDescriptor.fromAssetImage(
-              ImageConfiguration(size: Size(4, 5)), Images.delivery_boy_marker)
-          .then((icon) {
-        deliveryIcon = icon;
-      });
-    });
+    dropOff = LatLng(double.parse(widget.track!.deliveryAddress!.latitude!),
+        double.parse(widget.track!.deliveryAddress!.longitude!));
+    print("dropOff == $dropOff");
+    Timer(const Duration(seconds: 0), () async => _loadData());
+  }
+
+  @override
+  void dispose() {
+    _moveMarkerTimer?.cancel();
+    super.dispose();
   }
 
   Future _loadMapStyles() async {
@@ -79,240 +65,139 @@ class OrderTrackingScreenState extends State<OrderTrackingScreen>
         await rootBundle.loadString('assets/map/map_night_theme.json');
   }
 
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {}
+  void _loadData() async {
+    print("rklsmfsirjsoifksporkfs");
 
-  @override
-  void dispose() {
-    super.dispose();
-    _controller?.dispose();
-    Provider.of<OrderProvider>(context, listen: false).cancelTimer();
-    WidgetsBinding.instance.removeObserver(this);
+    final response = await Provider.of<OrderProvider>(context, listen: false)
+        .getLastDeliveryCoordinates(context, widget.orderID!);
+
+    if (response.isSuccess) {
+      final coordinates = Provider.of<OrderProvider>(context, listen: false)
+              .lastDeliveryCoordinates
+              ?.coordinates ??
+          [];
+
+      _coordinatesList = coordinates
+          .map((coord) => LatLng(coord['latitude']!, coord['longitude']!))
+          .toList();
+
+      print("_coordinatesList == ${_coordinatesList.first}");
+      if (_coordinatesList.isNotEmpty) {
+        _initializeMarker(_coordinatesList.first);
+        _startMovingMarker();
+      }
+    }
+
+    setState(() {
+      _isLoading = false;
+    });
   }
 
-  Future<Uint8List> convertAssetToUnit8List(String imagePath,
-      {int width = 50}) async {
-    ByteData data = await rootBundle.load(imagePath);
-    Codec codec = await instantiateImageCodec(data.buffer.asUint8List(),
-        targetWidth: width);
-    FrameInfo fi = await codec.getNextFrame();
-    return (await fi.image.toByteData(format: ImageByteFormat.png))!
-        .buffer
-        .asUint8List();
-  }
-
-  void setMarker(
-    DeliveryAddress? deliveryAddress,
-    DeliveryMan? deliveryMan,
-  ) async {
-    try {
-      _polylinePoints.add(LatLng(double.parse(deliveryAddress!.latitude!),
-          double.parse(deliveryAddress.longitude!)));
-      _polylinePoints.add(LatLng(double.parse(deliveryMan!.latitude!),
-          double.parse(deliveryMan.longitude!)));
-
-      Uint8List deliveryBoyImageData =
-          await convertAssetToUnit8List(Images.delivery_boy_marker, width: 100);
-
-      // Marker
-      _markers = HashSet<Marker>();
-
-      deliveryAddress != null
-          ? _markers.add(Marker(
-              markerId: const MarkerId('restaurant'),
-              position: LatLng(double.parse(deliveryAddress.latitude!),
-                  double.parse(deliveryAddress.longitude!)),
-              infoWindow: InfoWindow(
-                snippet: deliveryAddress.address,
-              ),
-              icon: BitmapDescriptor.defaultMarker))
-          : const SizedBox();
-
-      deliveryMan != null
-          ? _markers.add(Marker(
-              markerId: const MarkerId('delivery_boy'),
-              position: LatLng(double.parse(deliveryMan.latitude ?? '0'),
-                  double.parse(deliveryMan.longitude ?? '0')),
-              infoWindow: InfoWindow(
-                snippet: deliveryMan.fName,
-              ),
-              rotation: 0,
-              icon: BitmapDescriptor.fromBytes(deliveryBoyImageData),
-            ))
-          : const SizedBox();
-      setState(() {});
-    } catch (_) {}
+  Future<void> _initializeMarker(LatLng position) async {
+    final dropOffLocationIcon = await Image(
+      image: AssetImage(Images.delivery_boy_marker),
+      height: 80,
+      width: 80,
+      color: ColorResources.getPrimaryColor(context),
+    ).toBitmapDescriptor(
+        logicalSize: const Size(350, 300), imageSize: const Size(500, 200));
+    _markers.clear();
+    _markers.add(Marker(
+        markerId: const MarkerId('delivery_man'),
+        position: position,
+        icon: dropOffLocationIcon));
     setState(() {});
+  }
+
+  Future<void> _startMovingMarker() async {
+    final dropOffLocationIcon = await Image(
+      image: AssetImage(Images.delivery_boy_marker),
+      height: 80,
+      width: 80,
+      color: ColorResources.getPrimaryColor(context),
+    ).toBitmapDescriptor(
+        logicalSize: const Size(350, 300), imageSize: const Size(500, 200));
+    _moveMarkerTimer = Timer.periodic(const Duration(seconds: 2), (timer) {
+      if (_currentCoordinateIndex >= _coordinatesList.length - 1) {
+        timer.cancel();
+        _startFetchingNewCoordinates();
+        return;
+      }
+
+      _currentCoordinateIndex++;
+      final nextPosition = _coordinatesList[_currentCoordinateIndex];
+
+      _markers.clear();
+      _markers.add(
+        Marker(
+          markerId: const MarkerId('delivery_man'),
+          position: nextPosition,
+          icon: dropOffLocationIcon,
+        ),
+      );
+
+      _mapController?.animateCamera(
+        CameraUpdate.newLatLng(nextPosition),
+      );
+
+      setState(() {});
+    });
+  }
+
+  void _startFetchingNewCoordinates() {
+    Timer.periodic(const Duration(seconds: 10), (timer) async {
+      final response = await Provider.of<OrderProvider>(context, listen: false)
+          .getLastDeliveryCoordinates(context, widget.orderID!);
+
+      if (response.isSuccess) {
+        final coordinates = Provider.of<OrderProvider>(context, listen: false)
+                .lastDeliveryCoordinates
+                ?.coordinates ??
+            [];
+
+        if (coordinates.isNotEmpty) {
+          _coordinatesList = coordinates
+              .map((coord) => LatLng(coord['latitude']!, coord['longitude']!))
+              .toList();
+
+          _currentCoordinateIndex = 0;
+
+          _initializeMarker(_coordinatesList.first);
+          _startMovingMarker();
+        }
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        // backgroundColor: ColorResources.getScaffoldBackgroundColor(context!),
+        appBar: CustomAppBar(title: getTranslated('track_order', context)),
+        body: Column(
+          children: [
 
-        body: Consumer<OrderProvider>(builder: (context, order, child) {
-      return Stack(children: [
-        GoogleMap(
-            initialCameraPosition: CameraPosition(
-                target: LatLng(
-                    double.parse(widget.track!.deliveryAddress!.latitude!),
-                    double.parse(widget.track!.deliveryAddress!.longitude!)),
-                zoom: 5),
-            // markers: _createMarkers(),
-            markers: _markers,
-            minMaxZoomPreference: const MinMaxZoomPreference(0, 16),
-            zoomControlsEnabled: true,
-            polylines: {
-              Polyline(
-                  polylineId: const PolylineId('overview_polyline'),
-                  color: ColorResources.SCAFFOLD_COLOR,
-                  width: 3,
-                  points: order.info!.polylinePoints!
-                      .map((e) => LatLng(e.latitude, e.longitude))
-                      .toList())
-            },
-            onMapCreated: (controller) {
-              _isLoading = false;
-
-              setMarker(
-                widget.track!.deliveryAddress,
-                widget.track!.deliveryMan,
-              );
-              _mapController = controller;
-              controller.setMapStyle(
-                  Provider.of<ThemeProvider>(context, listen: false).darkTheme
-                      ? _nightStyle
-                      : _lightStyle);
-            }),
-        if (_isLoading)
-          Center(
-              child: CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(
-                      ColorResources.SCAFFOLD_COLOR)))
-        else
-          SizedBox.shrink(),
-        Positioned(
-            top: 5,
-            left: 5,
-            right: 5,
-            child: SafeArea(
-                child: Padding(
-                    padding: const EdgeInsets.all(10),
-                    child: Align(
-                        child: InkWell(
-                            onTap: () => Navigator.pop(context),
-                            child: Container(
-                                height: 35,
-                                width: 35,
-                                decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(50)),
-                                child: Icon(Icons.arrow_back_ios_new_rounded,
-                                    color: Colors.black, size: 15))),
-                        alignment: Alignment.topLeft)))),
-        Positioned(
-            top: 10,
-            left: MediaQuery.of(context).size.width / 2 - 50,
-            child: SafeArea(
-                child: Padding(
-                    padding: const EdgeInsets.all(10),
-                    child: Align(
-                        child: Text(getTranslated('track_order', context),
-                            style: TextStyle(
-                                fontWeight: FontWeight.w700, fontSize: 18)),
-                        alignment: Alignment.topCenter)))),
-        Positioned(
-            bottom: 0,
-            right: 0,
-            left: 0,
-            child: Container(
-                decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.only(
-                        topRight: Radius.circular(25),
-                        topLeft: Radius.circular(25))),
-                child: Padding(
-                    padding: const EdgeInsets.all(25.0),
-                    child: Column(mainAxisSize: MainAxisSize.min, children: [
-                      Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Row(children: [
-                              Text('${getTranslated('order_id', context)}: ',
-                                  style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w600)),
-                              Text(widget.orderID.toString(),
-                                  style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w600))
-                            ]),
-                            Text("20 MIN",
-                                style: TextStyle(
-                                    color: Colors.black26, fontSize: 17))
-                          ]),
-                      SizedBox(height: 15),
-                      Row(children: [
-                        Container(
-                            width: 50,
-                            height: 50,
-                            decoration: BoxDecoration(
-                                image: DecorationImage(
-                                    image: NetworkImage(
-                                        '${Provider.of<SplashProvider>(context, listen: false).baseUrls!.deliveryManImageUrl}/${widget.track!.deliveryMan!.image}'),
-                                    fit: BoxFit.cover),
-                                borderRadius: BorderRadius.circular(50))),
-                        SizedBox(width: 10),
-                        Expanded(
-                            child: Text(
-                                ' ${widget.track!.deliveryMan!.fName} ${widget.track!.deliveryMan!.lName}',
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w600))),
-                        SizedBox(width: 10),
-                        Text(widget.track!.deliveryMan!.phone.toString(),
-                            style:
-                                TextStyle(color: Colors.black26, fontSize: 17)),
-                        SizedBox(width: 10),
-                        InkWell(
-                            onTap: () async {
-                              if (await canLaunchUrlString(
-                                  'tel:${widget.track!.deliveryMan!.phone}')) {
-                                launchUrlString(
-                                    'tel:${widget.track!.deliveryMan!.phone}',
-                                    mode: LaunchMode.externalApplication);
-                              } else {
-                                showCustomSnackBar(
-                                    '${getTranslated('can_not_launch', context)} ${widget.track!.deliveryMan!.phone}',
-                                    context);
-                              }
-                            },
-                            child:
-                                Icon(Icons.call, color: Colors.black, size: 30))
-                      ]),
-                      SizedBox(height: 15),
-                      Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.location_on_outlined, size: 30),
-                            SizedBox(width: 15),
-                            Text(widget.track!.deliveryAddress!.address
-                                .toString())
-                          ]),
-                      SizedBox(height: 25),
-                      CustomButton(
-                          text: getTranslated('back_home', context),
-                          onTap: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (BuildContext context) =>
-                                        DashboardScreen(pageIndex: 0)));
-                          })
-                    ]))))
-      ]);
-    }));
+            Expanded(
+              child: _isLoading
+                  ? const CustomCircularIndicator()
+                  : GoogleMap(
+                      initialCameraPosition: CameraPosition(
+                        target: _coordinatesList.isNotEmpty
+                            ? _coordinatesList.first
+                            : const LatLng(0, 0),
+                        zoom: 10,
+                      ),
+                      markers: _markers,
+                      onMapCreated: (GoogleMapController controller) {
+                        _mapController = controller;
+                        controller.setMapStyle(
+                            Provider.of<ThemeProvider>(context, listen: false)
+                                    .darkTheme
+                                ? _nightStyle
+                                : _lightStyle);
+                      },
+                    ),
+            )
+          ],
+        ));
   }
 }

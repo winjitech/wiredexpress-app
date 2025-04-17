@@ -5,6 +5,7 @@ import 'package:wired_express/utill/color_resources.dart';
 import 'package:wired_express/utill/dimensions.dart';
 import 'package:wired_express/utill/images.dart';
 import 'package:wired_express/utill/styles.dart';
+import 'package:wired_express/view/base/circular_indicator_widget.dart';
 import 'package:wired_express/view/base/custom_button.dart';
 import 'package:provider/provider.dart';
 
@@ -50,7 +51,7 @@ class ChangeMethodDialog extends StatelessWidget {
                     await order.updatePaymentMethod(orderID!, callback!);
                     Navigator.pop(context);
                   })),
-                ]) : Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(ColorResources.getPrimaryColor(context)))),
+                ]) : CustomCircularIndicator(),
 
               ]),
             ),

@@ -27,6 +27,7 @@ class CategoryRepo {
       return ApiResponse.withError(ApiErrorHandler.getMessage(e));
     }
   }
+
   Future<ApiResponse> getCategoryFeaturedList() async {
     try {
       final response = await dioClient!.get(AppConstants.CATEGORY_FEATURED_URI);
@@ -36,36 +37,32 @@ class CategoryRepo {
     }
   }
 
-  Future<ApiResponse> getCategoryListFull() async {
+  Future<ApiResponse> getCategoryProductList(String offset, String categoryID,
+      {int? planId}) async {
     try {
-      final response = await dioClient!.get(AppConstants.CATEGORY_URI_FUlL);
+      String url =
+          '${AppConstants.CATEGORY_PRODUCT_URI}?limit=20&offset=$offset&category_id=$categoryID';
+      if (planId != null) {
+        url += '&plan_id=$planId';
+      }
 
+      final response = await dioClient!.get(url);
       return ApiResponse.withSuccess(response);
     } catch (e) {
       return ApiResponse.withError(ApiErrorHandler.getMessage(e));
     }
   }
 
-  Future<ApiResponse> getSubCategoryList(String parentID) async {
-    try {
-      final response =
-          await dioClient!.get('${AppConstants.SUB_CATEGORY_URI}$parentID');
-      return ApiResponse.withSuccess(response);
-    } catch (e) {
-      return ApiResponse.withError(ApiErrorHandler.getMessage(e));
-    }
-  }
-
-  Future<ApiResponse> getCategoryProductList(
-      int pageNumber, String categoryID) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    var customer_id = await prefs.getInt('my_defined_user_id');
-    try {
-      final response = await dioClient!.get(
-          '${AppConstants.CATEGORY_PRODUCT_URI}?category_id=$categoryID&page_number=$pageNumber');
-      return ApiResponse.withSuccess(response);
-    } catch (e) {
-      return ApiResponse.withError(ApiErrorHandler.getMessage(e));
-    }
-  }
+// Future<ApiResponse> getCategoryProductList(
+  //     int pageNumber, String categoryID) async {
+  //   SharedPreferences prefs = await SharedPreferences.getInstance();
+  //   var customer_id = await prefs.getInt('my_defined_user_id');
+  //   try {
+  //     final response = await dioClient!.get(
+  //         '${AppConstants.CATEGORY_PRODUCT_URI}?category_id=$categoryID&page_number=$pageNumber');
+  //     return ApiResponse.withSuccess(response);
+  //   } catch (e) {
+  //     return ApiResponse.withError(ApiErrorHandler.getMessage(e));
+  //   }
+  // }
 }

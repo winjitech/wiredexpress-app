@@ -1,3 +1,5 @@
+import 'package:wired_express/data/model/response/category_model.dart';
+
 class BannerModel {
   int? _id;
   String? _title;
@@ -7,25 +9,28 @@ class BannerModel {
   String? _createdAt;
   String? _updatedAt;
   int? _categoryId;
+  CategoryModel? _category;
 
-  BannerModel(
-      {int? id,
-      String? title,
-      String? describe,
-      String? image,
-      int? productId,
-      int? status,
-      String? createdAt,
-      String? updatedAt,
-      int? categoryId}) {
-    this._id = id;
-    this._title = title;
-    this._image = image;
-    this._describe = describe;
-    this._productId = productId;
-    this._createdAt = createdAt;
-    this._updatedAt = updatedAt;
-    this._categoryId = categoryId;
+  BannerModel({
+    int? id,
+    String? title,
+    String? describe,
+    String? image,
+    int? productId,
+    String? createdAt,
+    String? updatedAt,
+    int? categoryId,
+    CategoryModel? category,
+  }) {
+    _id = id;
+    _title = title;
+    _image = image;
+    _describe = describe;
+    _productId = productId;
+    _createdAt = createdAt;
+    _updatedAt = updatedAt;
+    _categoryId = categoryId;
+    _category = category;
   }
 
   int? get id => _id;
@@ -36,8 +41,9 @@ class BannerModel {
   String? get createdAt => _createdAt;
   String? get updatedAt => _updatedAt;
   int? get categoryId => _categoryId;
+  CategoryModel? get category => _category;
 
-  BannerModel.fromJson(Map<String?, dynamic> json) {
+  BannerModel.fromJson(Map<String, dynamic> json) {
     _id = json['id'];
     _describe = json['description'];
     _title = json['title'];
@@ -46,18 +52,22 @@ class BannerModel {
     _createdAt = json['created_at'];
     _updatedAt = json['updated_at'];
     _categoryId = json['category_id'];
+    _category = json['category'] != null ? CategoryModel.fromJson(json['category']) : null;
   }
 
-  Map<String?, dynamic> toJson() {
-    final Map<String?, dynamic> data = new Map<String?, dynamic>();
-    data['id'] = this._id;
-    data['title'] = this._title;
-    data['description'] = this._describe;
-    data['image'] = this._image;
-    data['product_id'] = this._productId;
-    data['created_at'] = this._createdAt;
-    data['updated_at'] = this._updatedAt;
-    data['category_id'] = this._categoryId;
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = _id;
+    data['title'] = _title;
+    data['description'] = _describe;
+    data['image'] = _image;
+    data['product_id'] = _productId;
+    data['created_at'] = _createdAt;
+    data['updated_at'] = _updatedAt;
+    data['category_id'] = _categoryId;
+    if (_category != null) {
+      data['category'] = _category!.toJson();
+    }
     return data;
   }
 }

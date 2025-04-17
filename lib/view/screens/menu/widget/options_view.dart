@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wired_express/provider/chat_provider.dart';
 import 'package:wired_express/provider/coupon_provider.dart';
 import 'package:wired_express/provider/notification_provider.dart';
 import 'package:wired_express/provider/splash_provider.dart';
 import 'package:wired_express/utill/color_resources.dart';
-import 'package:wired_express/view/base/border_button.dart';
+import 'package:wired_express/view/base/circular_indicator_widget.dart';
 import 'package:wired_express/view/base/custom_button.dart';
+import 'package:wired_express/view/base/not_logged_in_screen.dart';
 import 'package:wired_express/view/screens/address/address_screen.dart';
-import 'package:wired_express/view/screens/auth/guest_screen.dart';
 import 'package:wired_express/view/screens/auth/login_screen.dart';
 import 'package:wired_express/view/screens/chat/chat_screen.dart';
 import 'package:wired_express/view/screens/coupon/coupon_screen.dart';
@@ -17,8 +16,7 @@ import 'package:wired_express/view/screens/menu/widget/confirm_delete_account_bo
 import 'package:wired_express/view/screens/notification/notification_screen.dart';
 import 'package:wired_express/view/screens/profile/change_pass_screen.dart';
 import 'package:wired_express/view/screens/profile/profile_screen.dart';
-import 'package:wired_express/view/screens/rating/RateAppScreen.dart';
-import 'package:wired_express/view/screens/splash_screen.dart';
+import 'package:wired_express/view/screens/subscription/subscription_screen.dart';
 import 'package:wired_express/view/screens/support/support_screen.dart';
 import 'package:wired_express/view/screens/terms/terms_screen.dart';
 import 'package:wired_express/helper/responsive_helper.dart';
@@ -60,10 +58,7 @@ class OptionsView extends StatelessWidget {
         child: Consumer2<MainProvider, ProfileProvider>(
             builder: (context, mainProvider, profileProvider, child) {
           return mainProvider.loading
-              ? Center(
-                  child: CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(
-                          ColorResources.getPrimaryColor(context))))
+              ? CustomCircularIndicator()
               : Center(
                   child: SizedBox(
                     width: ResponsiveHelper.isTab(context) ? null : 1170,
@@ -162,6 +157,27 @@ class OptionsView extends StatelessWidget {
                                 style: TextStyle(
                                     fontSize: 16, fontWeight: FontWeight.w500)),
                           ),
+                          if (_isLoggedIn)
+                            ListTile(
+                              onTap: () => Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (BuildContext? context) =>
+                                          SubscriptionScreen())),
+                              leading: Icon(Icons.subscriptions,
+                                  color: ColorResources.getTextColor(context)),
+                              trailing: Icon(
+                                Icons.arrow_forward_ios_rounded,
+                                size: 17,
+                                color: Colors.black,
+                              ),
+                              title: Text(
+                                  getTranslated('subscription', context),
+                                  style: rubikMedium.copyWith(
+                                      fontSize: Dimensions.FONT_SIZE_LARGE,
+                                      color: ColorResources.getTextColor(
+                                          context))),
+                            ),
                           ListTile(
                               onTap: () {
                                 Navigator.push(
@@ -222,7 +238,7 @@ class OptionsView extends StatelessWidget {
                                       context,
                                       MaterialPageRoute(
                                           builder: (BuildContext? context) =>
-                                              GuestScreen()));
+                                              NotLoggedInScreen()));
                             },
                             leading: Image.asset(Images.message,
                                 width: 20,
@@ -322,28 +338,7 @@ class OptionsView extends StatelessWidget {
                           SizedBox(
                             height: 10,
                           ),
-                          // ListTile(
-                          //   onTap: () {
-                          //     // Navigator.push(
-                          //     //     context,
-                          //     //     MaterialPageRoute(
-                          //     //         builder: (_) =>
-                          //     //             RateAppScreen(fromHome: false)));
-                          //   },
-                          //   leading: Icon(
-                          //     Icons.star_border,
-                          //     color: Colors.black,
-                          //   ),
-                          //   trailing: Icon(
-                          //     Icons.arrow_forward_ios_rounded,
-                          //     size: 17,
-                          //     color: Colors.black,
-                          //   ),
-                          //   title: Text(
-                          //       getTranslated('rate_review_app', context),
-                          //       style: TextStyle(
-                          //           fontSize: 16, fontWeight: FontWeight.w500)),
-                          // ),
+
                           ListTile(
                             onTap: () {
                               Navigator.push(

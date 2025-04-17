@@ -1,22 +1,17 @@
-import 'dart:convert';
-import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:wired_express/data/model/response/category_model.dart';
+import 'package:wired_express/data/model/response/product_model.dart';
 import 'package:wired_express/helper/responsive_helper.dart';
-import 'package:wired_express/provider/category_provider.dart';
-import 'package:wired_express/provider/splash_provider.dart';
-import 'package:wired_express/utill/color_resources.dart';
-import 'package:wired_express/utill/dimensions.dart';
-import 'package:wired_express/utill/images.dart';
-import 'package:wired_express/utill/styles.dart';
-import 'package:wired_express/view/base/category_product_widget.dart';
-import 'package:wired_express/view/base/custom_app_bar.dart';
-import 'package:wired_express/view/base/main_app_bar.dart';
-import 'package:wired_express/view/base/no_data_screen.dart';
-import 'package:wired_express/view/base/product_shimmer.dart';
-import 'package:wired_express/view/base/product_widget.dart';
-import 'package:provider/provider.dart';
-//import 'package:wired_express/provider/language_provider.dart';
 import 'package:wired_express/localization/language_constrants.dart';
+import 'package:wired_express/provider/category_provider.dart';
+import 'package:wired_express/provider/localization_provider.dart';
+import 'package:wired_express/provider/splash_provider.dart';
+import 'package:wired_express/view/base/category_product_widget.dart';
+import 'package:wired_express/view/base/circular_indicator_widget.dart';
+import 'package:provider/provider.dart';
+import 'package:flutter/material.dart';
+import 'package:wired_express/utill/color_resources.dart';
+import 'package:wired_express/view/base/custom_app_bar.dart';
 
 class CategoryScreen extends StatefulWidget {
   final CategoryModel? categoryModel;
@@ -26,254 +21,181 @@ class CategoryScreen extends StatefulWidget {
   _CategoryScreenState createState() => _CategoryScreenState();
 }
 
-class _CategoryScreenState extends State<CategoryScreen>
-    with TickerProviderStateMixin {
-  int _tabIndex = 0;
+class _CategoryScreenState extends State<CategoryScreen> {
+  late ScrollController _scrollController;
 
   @override
   void initState() {
     super.initState();
-    Provider.of<CategoryProvider>(context, listen: false)
-        .getSubCategoryList(context, widget.categoryModel!.id.toString());
+    _scrollController = ScrollController()..addListener(_onScroll);
+    WidgetsBinding.instance
+        .addPostFrameCallback((_) => _fetchCategoryProducts(resetOffset: true));
+  }
+
+  void _fetchCategoryProducts({bool resetOffset = false}) {
+    final categoryProvider =
+        Provider.of<CategoryProvider>(context, listen: false);
+    if (resetOffset) categoryProvider.clearCategoryProductListOffset();
+
+    categoryProvider.getCategoryProductList(
+        context, "1", widget.categoryModel!.id!.toString());
+  }
+
+  void _onScroll() {
+    final categoryProvider =
+        Provider.of<CategoryProvider>(context, listen: false);
+    bool isAtBottom = _scrollController.position.pixels ==
+        _scrollController.position.maxScrollExtent;
+    bool canFetchMore = (categoryProvider.categoryProductList?.length ?? 0) <
+        (categoryProvider.totalCategoryProductListSize ?? 0);
+
+    if (isAtBottom &&
+        !categoryProvider.bottomCategoryProductListLoading &&
+        canFetchMore) {
+      int nextOffset =
+          (int.tryParse(categoryProvider.categoryProductListOffset ?? "1") ??
+                  1) +
+              1;
+      categoryProvider.showBottomCategoryProductListLoader();
+      categoryProvider.getCategoryProductList(
+        context,
+        nextOffset.toString(),
+        widget.categoryModel!.id!.toString(),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final ScrollController _scrollController = ScrollController();
-
-    _scrollController?.addListener(() {
-      if (_scrollController.position.pixels ==
-          _scrollController.position.maxScrollExtent) {
-        print('Tab index: ${_tabIndex}');
-        {
-          if (_tabIndex == 0) {
-            Provider.of<CategoryProvider>(context, listen: false)
-                .getCategoryProductListMore(
-                    context, widget.categoryModel!.id.toString());
-          } else {
-            print('sub category ids ///');
-            print(jsonEncode(
-                Provider.of<CategoryProvider>(context, listen: false)
-                    .subCategoryList![_tabIndex - 1]
-                    .name));
-            Provider.of<CategoryProvider>(context, listen: false)
-                .getCategoryProductListMore(
-                    context,
-                    Provider.of<CategoryProvider>(context, listen: false)
-                        .subCategoryList![_tabIndex - 1]
-                        .id
-                        .toString());
-          }
-        }
-      }
-    });
-
     return Scaffold(
-      backgroundColor: ColorResources.getScaffoldBackgroundColor(context!),
-      appBar: CustomAppBar(
-        title: widget.categoryModel!.name,
-      ),
-      body: Consumer<CategoryProvider>(
-        builder: (context, category, child) {
-          return category.subCategoryList != null
-              ? Center(
-                  child: Scrollbar(
-                    controller: _scrollController,
-                    child: Container(
-                      width: MediaQuery.of(context).size.width,
-                      child: CustomScrollView(
-                        controller: _scrollController,
-                        physics: BouncingScrollPhysics(),
-                        slivers: [
-                          category.subCategoryList!.isNotEmpty
-                              ? SliverAppBar(
-                                  expandedHeight: 5,
-                                  toolbarHeight: 19,
-                                  pinned: true,
-                                  floating: false,
-                                  backgroundColor:
-                                      ColorResources.getScaffoldBackgroundColor(
-                                          context),
-                                  flexibleSpace: FlexibleSpaceBar(
-                                    title: Text('${widget.categoryModel!.name}',
-                                        style: TextStyle(
-                                            color: ColorResources
-                                                .getScaffoldBackgroundColor(
-                                                    context))),
-                                    titlePadding: EdgeInsets.only(
-                                      bottom: 54 +
-                                          (MediaQuery.of(context).padding.top /
-                                              2),
-                                      left: 50,
-                                      right: 50,
-                                    ),
-                                    // background: Container(
-                                    //   margin: EdgeInsets.only(bottom: 50),
-                                    //   child: FadeInImage.assetNetwork(
-                                    //     placeholder: Images.placeholder_rectangle,
-                                    //     image:
-                                    //         '${Provider.of<SplashProvider>(context, listen: false).baseUrls!.categoryImageUrl}/${widget.categoryModel!.image}',
-                                    //     fit: BoxFit.cover,
-                                    //   ),
-                                    // ),
-                                  ),
-                                  bottom: PreferredSize(
-                                    preferredSize: Size.fromHeight(30.0),
-                                    child: Container(
-                                      width: MediaQuery.of(context).size.width,
-                                      color: ColorResources
-                                          .getScaffoldBackgroundColor(context),
-                                      child: TabBar(
-                                        controller: TabController(
-                                            initialIndex: _tabIndex,
-                                            length: category
-                                                    .subCategoryList!.length +
-                                                1,
-                                            vsync: this),
-                                        isScrollable: true,
-                                        unselectedLabelColor:
-                                            ColorResources.getHintColor(
-                                                context),
-                                        indicatorWeight: 3,
-                                        indicatorSize:
-                                            TabBarIndicatorSize.label,
-                                        indicatorColor:
-                                            ColorResources.SCAFFOLD_COLOR,
-                                        labelColor: ColorResources.getTextColor(
-                                            context),
+      backgroundColor: ColorResources.getScaffoldBackgroundColor(context),
+      appBar: CustomAppBar(title: widget.categoryModel!.name),
+      body: SafeArea(
+        child: Consumer<CategoryProvider>(
+          builder: (context, categoryProvider, child) {
+            final localizationProvider =
+                Provider.of<LocalizationProvider>(context, listen: false);
 
-                                        // indicatorColor: ColorResources.SCAFFOLD_COLOR,
-                                        // labelColor:
-                                        //     ColorResources.getTextColor(context),
-                                        tabs: _tabs(category),
-                                        onTap: (int index) {
-                                          category.resetPagesCount();
-                                          _tabIndex = index;
-                                          if (index == 0) {
-                                            category.getCategoryProductList(
-                                                context,
-                                                widget.categoryModel!.id
-                                                    .toString());
-                                          } else {
-                                            category.getCategoryProductList(
-                                                context,
-                                                category
-                                                    .subCategoryList![index - 1]
-                                                    .id
-                                                    .toString());
-                                          }
-                                        },
-                                      ),
-                                    ),
-                                  ),
-                                )
-                              : SliverAppBar(
-                                  expandedHeight: 0,
-                                  toolbarHeight: 0,
-                                  pinned: false,
-                                  floating: false,
-                                  backgroundColor:
-                                      ColorResources.getScaffoldBackgroundColor(
-                                          context),
-                                ),
+            List<ProductModel> categoryProducts =
+                categoryProvider.categoryProductList ?? [];
+            bool isLoading = categoryProvider.categoryProductListIsLoading;
 
-                          SliverToBoxAdapter(
-                            child: category.categoryProductList != null
-                                ? category.categoryProductList!.length > 0
-                                    ? Column(
-                                        children: [
-                                          GridView.builder(
-                                            gridDelegate:
-                                                SliverGridDelegateWithFixedCrossAxisCount(
-                                                    crossAxisSpacing: 5,
-                                                    mainAxisSpacing: 5,
-                                                    childAspectRatio: 3,
-                                                    crossAxisCount:
-                                                        ResponsiveHelper
-                                                                .isDesktop(
-                                                                    context)
-                                                            ? 3
-                                                            : ResponsiveHelper
-                                                                    .isTab(
-                                                                        context)
-                                                                ? 2
-                                                                : 1),
-                                            itemCount: category
-                                                .categoryProductList!.length,
-                                            shrinkWrap: true,
-                                            physics:
-                                                NeverScrollableScrollPhysics(),
-                                            padding: EdgeInsets.all(
-                                                Dimensions.PADDING_SIZE_SMALL),
-                                            itemBuilder: (context, index) {
-                                              return CategoryProductWidget(
-                                                  product: category
-                                                          .categoryProductList![
-                                                      index]);
-                                            },
-                                          ),
-                                          category.bottomLoading!
-                                              ? Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          bottom: 15),
-                                                  child: Center(
-                                                      child: CircularProgressIndicator(
-                                                          valueColor:
-                                                              AlwaysStoppedAnimation<
-                                                                      Color>(
-                                                                  ColorResources
-                                                                      .SCAFFOLD_COLOR))),
-                                                )
-                                              : SizedBox(),
-                                        ],
-                                      )
-                                    : NoDataScreen()
-                                : GridView.builder(
-                                    shrinkWrap: true,
-                                    itemCount: 10,
-                                    physics: NeverScrollableScrollPhysics(),
-                                    padding: EdgeInsets.all(
-                                        Dimensions.PADDING_SIZE_SMALL),
-                                    gridDelegate:
-                                        SliverGridDelegateWithFixedCrossAxisCount(
-                                      crossAxisSpacing: 5,
-                                      mainAxisSpacing: 5,
-                                      childAspectRatio: 3,
-                                      crossAxisCount:
-                                          ResponsiveHelper.isDesktop(context)
-                                              ? 3
-                                              : ResponsiveHelper.isTab(context)
-                                                  ? 2
-                                                  : 1,
-                                    ),
-                                    itemBuilder: (context, index) {
-                                      return ProductShimmer(
-                                          isEnabled:
-                                              category.categoryProductList ==
-                                                  null);
-                                    },
-                                  ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                )
-              : Center(
-                  child: CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(
-                          ColorResources.SCAFFOLD_COLOR)));
-        },
+            return Column(
+              children: [
+                Expanded(
+                  child: isLoading
+                      ? CustomCircularIndicator()
+                      : categoryProducts.isEmpty
+                          ? Center(
+                              child: Text(
+                                getTranslated(
+                                    'no_any_product_available', context),
+                                style: TextStyle(
+                                    color:
+                                        ColorResources.getTextColor(context)),
+                              ),
+                            )
+                          : _buildCategoryProductsList(
+                              categoryProducts, categoryProvider),
+                ),
+              ],
+            );
+          },
+        ),
       ),
     );
   }
 
-  List<Tab> _tabs(CategoryProvider category) {
-    List<Tab> tabList = [];
-    tabList.add(Tab(text: 'All'));
-    category.subCategoryList!.forEach(
-        (subCategory) => tabList.add(Tab(text: '${subCategory.name}')));
-    return tabList;
+  Widget _buildHeader(
+    BuildContext context,
+    CategoryModel category,
+    SplashProvider splashProvider,
+    LocalizationProvider localizationProvider,
+  ) {
+    return Padding(
+      padding: const EdgeInsets.all(15),
+      child: Row(
+        children: [
+          IconButton(
+            onPressed: () => Navigator.pop(context),
+            icon: Icon(
+              Icons.arrow_back_ios_new_rounded,
+              size: 18,
+              color: ColorResources.getTextColor(context),
+            ),
+          ),
+          const SizedBox(width: 10),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(15),
+            child: CachedNetworkImage(
+              width: 50,
+              height: 50,
+              fit: BoxFit.cover,
+              imageUrl:
+                  '${splashProvider.configModel!.baseUrls!.productImageUrl}/${category.image!}',
+              cacheKey:
+                  '${splashProvider.configModel!.baseUrls!.productImageUrl}/${category.image!}',
+            ),
+          ),
+          const SizedBox(width: 10),
+          Text(
+            category.name!,
+            style: TextStyle(
+              color: ColorResources.getTextColor(context),
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCategoryProductsList(
+    List<ProductModel> categoryProducts,
+    CategoryProvider categoryProvider,
+  ) {
+    final splashProvider = Provider.of<SplashProvider>(context, listen: false);
+    return NotificationListener<ScrollNotification>(
+      onNotification: (scrollNotification) {
+        if (scrollNotification.metrics.pixels ==
+                scrollNotification.metrics.maxScrollExtent &&
+            categoryProducts.length <
+                (categoryProvider.totalCategoryProductListSize ?? 0)) {
+          _onScroll();
+        }
+        return false;
+      },
+      child: Scrollbar(
+        child: SingleChildScrollView(
+          controller: _scrollController,
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            children: [
+              GridView.builder(
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisSpacing: 10,
+                  mainAxisSpacing: 10,
+                  mainAxisExtent: 100,
+                  childAspectRatio: 4,
+                  crossAxisCount: ResponsiveHelper.isTab(context) ? 2 : 1,
+                ),
+                itemCount: categoryProvider.categoryProductList!.length,
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                padding: EdgeInsets.zero,
+                itemBuilder: (context, index) => CategoryProductWidget(
+                    product: categoryProvider.categoryProductList![index]),
+              ),
+              if (categoryProvider.bottomCategoryProductListLoading)
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 15),
+                  child: CustomCircularIndicator(),
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

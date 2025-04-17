@@ -13,14 +13,14 @@ class ProductProvider extends ChangeNotifier {
   ProductProvider({@required this.productRepo});
 
   // Latest products
-  List<Product>? _popularProductList;
+  List<ProductModel>? _popularProductList;
   bool _isLoading = false;
   int? _popularPageSize;
   List<String> _offsetList = [];
   List<dynamic>? _variationIndex;
   int _quantity = 1;
 
-  List<Product>? get popularProductList => _popularProductList;
+  List<ProductModel>? get popularProductList => _popularProductList;
   bool get isLoading => _isLoading;
   int? get popularPageSize => _popularPageSize;
   List<dynamic>? get variationIndex => _variationIndex;
@@ -30,31 +30,67 @@ class ProductProvider extends ChangeNotifier {
     print('productsss 1 --');
     if (!_offsetList.contains(offset)) {
       _offsetList.add(offset);
-      ApiResponse apiResponse = await productRepo!.getPopularProductList(offset);
-      if (apiResponse.response != null && apiResponse.response!.statusCode == 200) {
+      ApiResponse apiResponse =
+          await productRepo!.getPopularProductList(offset);
+      if (apiResponse.response != null &&
+          apiResponse.response!.statusCode == 200) {
         print('productsss 2 --');
         if (offset == '1') {
           _popularProductList = [];
         }
-        _popularProductList!.addAll(ProductModel.fromJson(apiResponse.response!.data).products!);
-        _popularPageSize = ProductModel.fromJson(apiResponse.response!.data).totalSize;
+        _popularProductList!.addAll(
+            ProductBody.fromJson(apiResponse.response!.data).products!);
+        _popularPageSize =
+            ProductBody.fromJson(apiResponse.response!.data).totalSize;
         _isLoading = false;
         notifyListeners();
       } else {
         print('productsss 3 --');
-        ScaffoldMessenger.of(context!).showSnackBar(SnackBar(content: Text(apiResponse.error.toString())));
+        ScaffoldMessenger.of(context!).showSnackBar(
+            SnackBar(content: Text(apiResponse.error.toString())));
       }
     } else {
-      if(isLoading) {
+      if (isLoading) {
         _isLoading = false;
         notifyListeners();
       }
     }
   }
+  bool _productDetailsLoading = false;
+  bool get productDetailsLoading => _productDetailsLoading;
+  ProductModel? _productDetailsModel;
+  ProductModel? get productDetailsModel => _productDetailsModel;
+  Future<ResponseModel> getProductDetails(
+      BuildContext? context, int productId) async {
+    _productDetailsLoading = true;
+    notifyListeners();
+    ResponseModel _responseModel;
+    ApiResponse apiResponse = await productRepo!.getProductDetails(productId);
+    if (apiResponse.response != null &&
+        apiResponse.response!.statusCode == 200) {
+      _productDetailsModel = ProductModel.fromJson(apiResponse.response!.data);
+      _responseModel = ResponseModel(true, 'successful');
+      _productDetailsLoading = false;
+      notifyListeners();
+    } else {
+      String _errorMessage;
+      if (apiResponse.error is String) {
+        _errorMessage = apiResponse.error.toString();
+      } else {
+        _errorMessage = apiResponse.error.errors[0].message;
+      }
+      print(_errorMessage);
+      _responseModel = ResponseModel(false, _errorMessage);
+      _productDetailsLoading = false;
+      notifyListeners();
+    }
+    notifyListeners();
+    return _responseModel;
+  }
 
-  List<Product>? _productListWithCategoriesId;
+  List<ProductModel>? _productListWithCategoriesId;
 
-  List<Product>? get productListWithCategoriesId =>
+  List<ProductModel>? get productListWithCategoriesId =>
       _productListWithCategoriesId;
   int? _pageSize;
   int? get pageSize => _pageSize;
@@ -76,8 +112,8 @@ class ProductProvider extends ChangeNotifier {
           _productListWithCategoriesId = [];
         }
         _productListWithCategoriesId!.addAll(
-            ProductModel.fromJson(apiResponse.response!.data).products!);
-        _pageSize = ProductModel.fromJson(apiResponse.response!.data).totalSize;
+            ProductBody.fromJson(apiResponse.response!.data).products!);
+        _pageSize = ProductBody.fromJson(apiResponse.response!.data).totalSize;
         _isLoading = false;
         notifyListeners();
       } else {
@@ -98,47 +134,17 @@ class ProductProvider extends ChangeNotifier {
     _isLoading = true;
     notifyListeners();
   }
-  // void initDataWithCart(Product product, CartlistModel? cart) {
-  //   _variationIndex = [];
-  //
-  //
-  //     _quantity = cart!.quantity!;
-  //     List<String> _variationTypes = [];
-  //     if(cart.variation![0].type != null) {
-  //       _variationTypes.addAll(cart.variation![0].type!.split('-'));
-  //     }
-  //     int _varIndex = 0;
-  //     product.choiceOptions!.forEach((choiceOption) {
-  //       for(int index=0; index<choiceOption.options!.length; index++) {
-  //         if(choiceOption.options![index].trim().replaceAll(' ', '') == _variationTypes[_varIndex].trim()) {
-  //           _variationIndex!.add(index);
-  //           break;
-  //         }
-  //       }
-  //       _varIndex++;
-  //     });
-  //
-  // }
-
-  void initData(Product product) {
-    _variationIndex = [];
-    _quantity = 1;
-    product.choiceOptions!.forEach((element) => _variationIndex!.add(0));
-  }
 
   void initCartData(int quantity, List<dynamic> variationIndex) {
     _variationIndex = variationIndex;
     _quantity = quantity;
   }
 
-  void setQuantity(bool isIncrement) {
-    if (isIncrement) {
-      _quantity = _quantity + 1;
-    } else {
-      _quantity = _quantity - 1;
-    }
+  void setQuantity(int quantity) {
+    _quantity = quantity;
     notifyListeners();
   }
+
 
   void setCartVariationIndex(int index, int i) {
     _variationIndex![index] = i;
@@ -231,60 +237,5 @@ class ProductProvider extends ChangeNotifier {
     _isLoading = false;
     notifyListeners();
     return responseModel;
-  }
-
-  // String getVariationType(Product product, List<dynamic> variationIndex){
-  //   List<String> _variationList = [];
-  //   for (int index = 0;
-  //   index < product.choiceOptions!.length;
-  //   index++) {
-  //     _variationList.add(product.choiceOptions![index]
-  //         .options![variationIndex[index]]
-  //         .replaceAll(' ', ''));
-  //   }
-  //   String variationType = '';
-  //   bool isFirst = true;
-  //   _variationList.forEach((variation) {
-  //     if (isFirst) {
-  //       variationType = '$variationType$variation';
-  //       isFirst = false;
-  //     } else {
-  //       variationType = '$variationType-$variation';
-  //     }
-  //   });
-  //   return variationType;
-  // }
-
-  Variation getVariation(Product product, List<dynamic> variationIndex) {
-    List<String> _variationList = [];
-    List<Map<String, dynamic>> _variations = [];
-
-    for (int index = 0; index < product.choiceOptions!.length; index++) {
-      _variationList.add(product
-          .choiceOptions![index].options![variationIndex[index]]
-          .replaceAll(' ', ''));
-    }
-
-    String variationType = '';
-    bool isFirst = true;
-    _variationList.forEach((variation) {
-      if (isFirst) {
-        variationType = '$variationType$variation';
-        isFirst = false;
-      } else {
-        variationType = '$variationType-$variation';
-      }
-    });
-
-    double price = product.price!;
-    String? _url;
-    for (Variation variation in product.variations!) {
-      if (variation.type == variationType) {
-        price = variation.price!;
-        break;
-      }
-    }
-
-    return Variation(type: variationType, price: price);
   }
 }

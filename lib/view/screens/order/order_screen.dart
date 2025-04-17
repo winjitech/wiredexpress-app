@@ -39,7 +39,7 @@ class _OrderScreenState extends State<OrderScreen>
         Provider.of<CustomAuthProvider>(context, listen: false).isLoggedIn();
     if (_isLoggedIn!) {
       _tabController = TabController(length: 2, initialIndex: 0, vsync: this);
-      Timer(Duration(seconds: 1), () async {
+      Timer(Duration(seconds: 0), () async {
         Provider.of<OrderProvider>(context, listen: false).clearHistoryOffset();
         Provider.of<PlaceOrderProvider>(context, listen: false)
             .getRunningOrderList(context);
@@ -72,7 +72,7 @@ class _OrderScreenState extends State<OrderScreen>
         controller: advancedDrawerController,
         animationCurve: Curves.easeInOutExpo,
         animationDuration: Duration(milliseconds: 400),
-        backdropColor: ColorResources.SCAFFOLD_COLOR,
+        backdropColor: ColorResources.getScaffoldColor(context),
         drawer: DrawerScreen(),
         child: Scaffold(
           backgroundColor: ColorResources.getScaffoldBackgroundColor(context),
@@ -124,7 +124,7 @@ class _OrderScreenState extends State<OrderScreen>
                                           labelStyle: rubikMedium.copyWith(
                                               fontSize: 15,
                                               color: ColorResources
-                                                  .SCAFFOLD_COLOR),
+                                                  .getScaffoldColor(context)),
                                           indicator: BoxDecoration(
                                             color: Colors.white,
                                             borderRadius:

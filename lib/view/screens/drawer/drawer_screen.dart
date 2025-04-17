@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:wired_express/data/model/response/address_model.dart';
 import 'package:wired_express/localization/language_constrants.dart';
 import 'package:wired_express/provider/auth_provider.dart';
 import 'package:wired_express/provider/location_provider.dart';
@@ -34,16 +35,16 @@ class _DrawerScreenState extends State<DrawerScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final bool _isLoggedIn =
+        Provider.of<CustomAuthProvider>(context, listen: false).isLoggedIn()!;
 
-    final bool _isLoggedIn = Provider.of<CustomAuthProvider>(context, listen: false).isLoggedIn()!;
-
-    final address = Provider.of<LocationProvider>(context, listen: false).addressList;
+    final address =
+        Provider.of<LocationProvider>(context, listen: false).addressList;
 
     return SafeArea(child:
         Consumer<ProfileProvider>(builder: (context, profileProvider, child) {
-      String? id = Provider.of<CustomAuthProvider>(context, listen: false)
+      int? id = Provider.of<CustomAuthProvider>(context, listen: false)
           .getUserAddressId();
-      print("--------------${id}");
 
       return Padding(
           padding: const EdgeInsets.all(30),
@@ -52,83 +53,74 @@ class _DrawerScreenState extends State<DrawerScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 45),
-               if(_isLoggedIn) Column(
-                 mainAxisAlignment: MainAxisAlignment.start,
-                 crossAxisAlignment: CrossAxisAlignment.start,
-                 children: [
-                   profileProvider.userInfoModel!.image == null
-                       ? const SizedBox(
-                     height: 70,
-                     width: 70,
-                   )
-                       : Container(
-                     decoration: BoxDecoration(
-                         borderRadius: BorderRadius.circular(50),
-                         image: DecorationImage(
-                             image: NetworkImage(
-                               '${Provider.of<SplashProvider>(context, listen: false).baseUrls!.customerImageUrl}/${profileProvider.userInfoModel!.image}',
-                             ),
-                             fit: BoxFit.cover)),
-                     height: 70,
-                     width: 70,
-                   ),
-                   const SizedBox(height: 20),
+                if (_isLoggedIn)
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      profileProvider.userInfoModel != null &&
+                          profileProvider.userInfoModel!.image == null
+                          ? const SizedBox(
+                              height: 70,
+                              width: 70,
+                            )
+                          : Container(
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(50),
+                                  image: DecorationImage(
+                                      image: NetworkImage(
+                                        '${Provider.of<SplashProvider>(context, listen: false).baseUrls!.customerImageUrl}/${profileProvider.userInfoModel!.image}',
+                                      ),
+                                      fit: BoxFit.cover)),
+                              height: 70,
+                              width: 70,
+                            ),
+                      const SizedBox(height: 20),
+                      profileProvider.userInfoModel!.fName != null &&
+                              profileProvider.userInfoModel!.lName != null
+                          ? Text(
+                              '${profileProvider.userInfoModel!.fName!} ${profileProvider.userInfoModel!.lName!}' ??
+                                  '',
+                              style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.w500))
+                          : const SizedBox(),
+                      const SizedBox(height: 5),
+                      Consumer<CustomAuthProvider>(
+                        builder: (context, custom, child) {
+                          try {
+                            if (address == null || address.isEmpty ||id == 0 ) {
+                              return const SizedBox();
+                            }
+                            AddressModel matchedAddress = address.firstWhere(
+                              (element) => element.id == id,
+                            );
 
-                   profileProvider.userInfoModel!.fName!=null && profileProvider.userInfoModel!.lName!=null?
-                   Text(
-                       '${profileProvider.userInfoModel!.fName!} ${profileProvider.userInfoModel!.lName!}' ??
-                           '',
-                       style: const TextStyle(
-                           color: Colors.white,
-                           fontSize: 22,
-                           fontWeight: FontWeight.w500)): const SizedBox(),
-                   const SizedBox(height: 5),
-
-                   Consumer<CustomAuthProvider>(
-                     builder: (context, custom, child) {
-                       try {
-                         if (address == null || address.isEmpty) {
-                           return const SizedBox();
-                         }
-
-                         if (id == null || id.isEmpty) {
-                           return Text(
-                             address[0].address.toString(),
-                             maxLines: 1,
-                             overflow: TextOverflow.ellipsis,
-                             style: const TextStyle(color: Colors.white, fontSize: 15),
-                           );
-                         }
-
-                         var matchedAddress = address.firstWhere(
-                               (element) => element.id == int.parse(id),
-                         );
-
-                         if (matchedAddress != null) {
-                           return Text(
-                             matchedAddress.address.toString(),
-                             maxLines: 1,
-                             overflow: TextOverflow.ellipsis,
-                             style: const TextStyle(color: Colors.white, fontSize: 15),
-                           );
-                         } else {
-                           return const SizedBox();
-                         }
-                       } catch (e) {
-                         return const SizedBox();
-                       }
-                     },
-                   ),
-                 ],
-               ),
-                if(!_isLoggedIn)Text(
-                    getTranslated('guest', context),
-                    style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 22,
-                        fontWeight: FontWeight.w500)) ,
-
-
+                            if (matchedAddress != null) {
+                              return Text(
+                                matchedAddress.address.toString(),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                    color: Colors.white, fontSize: 15),
+                              );
+                            } else {
+                              return const SizedBox();
+                            }
+                          } catch (e) {
+                            return const SizedBox();
+                          }
+                        },
+                      ),
+                    ],
+                  ),
+                if (!_isLoggedIn)
+                  Text(getTranslated('guest', context),
+                      style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 22,
+                          fontWeight: FontWeight.w500)),
                 const SizedBox(height: 10),
                 const Divider(color: Colors.white, thickness: 1),
                 const SizedBox(height: 10),
@@ -252,16 +244,24 @@ class _DrawerScreenState extends State<DrawerScreen> {
                 const SizedBox(height: 10),
                 TextButton(
                     onPressed: () {
-                      _isLoggedIn?   showDialog(
-                          context: context,
-                          barrierDismissible: false,
-                          builder: (context) => SignOutConfirmationDialog()):
-                      Navigator.push(context, MaterialPageRoute(builder: (BuildContext context)=>
-                      LoginScreen()));
+                      _isLoggedIn
+                          ? showDialog(
+                              context: context,
+                              barrierDismissible: false,
+                              builder: (context) => SignOutConfirmationDialog())
+                          : Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (BuildContext context) =>
+                                      LoginScreen()));
                     },
-                    child: Text(getTranslated(_isLoggedIn?'logout':'login', context),
+                    child: Text(
+                        getTranslated(
+                            _isLoggedIn ? 'logout' : 'login', context),
                         style: TextStyle(
-                            color:_isLoggedIn? Colors.white:ColorResources.getPrimaryColor(context),
+                            color: _isLoggedIn
+                                ? Colors.white
+                                : ColorResources.getPrimaryColor(context),
                             fontSize: 20,
                             fontWeight: FontWeight.w500)))
               ]));

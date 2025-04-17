@@ -16,7 +16,7 @@ class MainAppBar extends StatelessWidget implements PreferredSizeWidget {
             children: [
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: InkWell(
+                child: GestureDetector(
                   onTap: () => Navigator.pop(context),
                   // Navigator.pushNamed(context, Routes.getMainRoute()),
                   child: Provider.of<SplashProvider>(context).baseUrls != null

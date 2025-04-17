@@ -8,6 +8,7 @@ import 'package:wired_express/provider/timer_provider.dart';
 import 'package:wired_express/utill/color_resources.dart';
 import 'package:wired_express/utill/dimensions.dart';
 import 'package:wired_express/utill/images.dart';
+import 'package:wired_express/view/base/circular_indicator_widget.dart';
 import 'package:wired_express/view/base/custom_button.dart';
 import 'package:wired_express/view/base/custom_text_field.dart';
 import 'package:wired_express/view/base/main_app_bar.dart';
@@ -61,7 +62,7 @@ class _VerifyPhoneCodeScreenState extends State<VerifyPhoneCodeScreen> {
                 alignment: Alignment.topLeft,
                 child: Padding(
                   padding: const EdgeInsets.only(top: 20, left: 20),
-                  child: InkWell(
+                  child: GestureDetector(
                     onTap: () {
                       Navigator.pop(context);
                     },
@@ -74,7 +75,7 @@ class _VerifyPhoneCodeScreenState extends State<VerifyPhoneCodeScreen> {
                           padding: const EdgeInsets.all(14),
                           child: Icon(
                             Icons.arrow_back_ios_new_outlined,
-                            color: ColorResources.SCAFFOLD_COLOR,
+                            color: ColorResources.getScaffoldColor(context),
                             size: 19,
                           ),
                         )),
@@ -150,7 +151,7 @@ class _VerifyPhoneCodeScreenState extends State<VerifyPhoneCodeScreen> {
                                       obscureText: false,
                                       keyboardType: TextInputType.number,
                                       textStyle: TextStyle(
-                                          color: ColorResources.SCAFFOLD_COLOR),
+                                          color: ColorResources.getScaffoldColor(context)),
                                       animationType: AnimationType.fade,
                                       pinTheme: PinTheme(
                                         shape: PinCodeFieldShape.box,
@@ -210,7 +211,7 @@ class _VerifyPhoneCodeScreenState extends State<VerifyPhoneCodeScreen> {
                                                       'resend_code', context),
                                                   style: TextStyle(
                                                       color: ColorResources
-                                                          .SCAFFOLD_COLOR),
+                                                          .getScaffoldColor(context)),
                                                 ),
                                               ),
                                       ],
@@ -220,11 +221,7 @@ class _VerifyPhoneCodeScreenState extends State<VerifyPhoneCodeScreen> {
                               ),
                               // for login button
                               authProvider.isLoading == true
-                                  ? Center(
-                                      child: CircularProgressIndicator(
-                                      valueColor: new AlwaysStoppedAnimation<Color>(
-                                          ColorResources.getPrimaryColor(context)),
-                                    ))
+                                  ? CustomCircularIndicator()
                                   : _smsCodeController.text.isEmpty
                                       ? CustomButton(
                                           text: getTranslated('login', context),

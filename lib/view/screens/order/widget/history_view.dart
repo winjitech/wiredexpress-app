@@ -12,8 +12,7 @@
 // import 'package:wired_express/utill/Images.dart';
 // import 'package:wired_express/utill/color_resources.dart';
 // import 'package:wired_express/utill/dimensions.dart';
-// import 'package:wired_express/view/screens/checkout/history_checkout_screen.dart';
-// import 'package:wired_express/view/screens/order/widget/order_cancel_dialog.dart';
+// // import 'package:wired_express/view/screens/order/widget/order_cancel_dialog.dart';
 // import 'package:wired_express/view/screens/order/widget/order_shimmer.dart';
 // import 'package:provider/provider.dart';
 // import 'package:wired_express/utill/routes.dart';
@@ -85,7 +84,7 @@
 //                                                         index];
 //
 //                                                 return Column(children: [
-//                                                   InkWell(
+//                                                   GestureDetector(
 //                                                       onTap: () async {
 //                                                         await orderProvider
 //                                                             .getOrderDetails(
@@ -174,7 +173,7 @@
 //                                                                             children: [
 //                                                                           Text(
 //                                                                               '${getTranslated('order_id', context)}:${_historyOrder.id}',
-//                                                                               style: TextStyle(color: ColorResources.SCAFFOLD_COLOR, fontWeight: FontWeight.w500, fontSize: 16)),
+//                                                                               style: TextStyle(color: ColorResources.getScaffoldColor(context), fontWeight: FontWeight.w500, fontSize: 16)),
 //                                                                           SizedBox(
 //                                                                               height: 1),
 //                                                                           _historyOrder.detailsCount == 1
@@ -292,10 +291,10 @@
 //                                                                                   margin: EdgeInsets.all(Dimensions.PADDING_SIZE_SMALL),
 //                                                                                   alignment: Alignment.center,
 //                                                                                   decoration: BoxDecoration(
-//                                                                                     border: Border.all(width: 2, color: ColorResources.SCAFFOLD_COLOR),
+//                                                                                     border: Border.all(width: 2, color: ColorResources.getScaffoldColor(context)),
 //                                                                                     borderRadius: BorderRadius.circular(10),
 //                                                                                   ),
-//                                                                                   child: Text(getTranslated('order_cancelled', context), style: rubikBold.copyWith(color: ColorResources.SCAFFOLD_COLOR)),
+//                                                                                   child: Text(getTranslated('order_cancelled', context), style: rubikBold.copyWith(color: ColorResources.getScaffoldColor(context))),
 //                                                                                 ))
 //                                                                         ]))
 //                                                                   ])))),
@@ -612,13 +611,7 @@
 //                                               ? Column(
 //                                                   children: [
 //                                                     SizedBox(height: 10),
-//                                                     Center(
-//                                                         child: CircularProgressIndicator(
-//                                                             valueColor:
-//                                                                 AlwaysStoppedAnimation<
-//                                                                         Color>(
-//                                                                     ColorResources
-//                                                                         .SCAFFOLD_COLOR)))
+//                                                     CustomCircularIndicator(color:ColorResources.getScaffoldColor(context))
 //                                                   ],
 //                                                 )
 //                                               : ordersLength < totalSize
@@ -648,7 +641,7 @@
 //                                                               '${getTranslated('load_more', context)}...',
 //                                                               style: TextStyle(
 //                                                                   color: ColorResources
-//                                                                       .SCAFFOLD_COLOR))))
+//                                                                       .getScaffoldColor(context)))))
 //                                                   : SizedBox()
 //                                         ]))
 //                                   ])))),
@@ -683,32 +676,23 @@
 
 import 'dart:async';
 
-import 'package:wired_express/data/helper/date_converter.dart';
 import 'package:wired_express/data/helper/helpers.dart';
-import 'package:wired_express/data/model/response/cart_model.dart';
-import 'package:wired_express/data/model/response/order_details_model.dart';
 import 'package:wired_express/data/model/response/order_model.dart';
-import 'package:wired_express/helper/price_converter.dart';
 import 'package:wired_express/localization/language_constrants.dart';
 import 'package:flutter/material.dart';
 import 'package:wired_express/provider/order_provider.dart';
 import 'package:wired_express/provider/splash_provider.dart';
 import 'package:wired_express/provider/theme_provider.dart';
 import 'package:wired_express/utill/Images.dart';
-import 'package:wired_express/utill/app_constants.dart';
 import 'package:wired_express/utill/color_resources.dart';
 import 'package:wired_express/utill/dimensions.dart';
-import 'package:wired_express/view/screens/checkout/history_checkout_screen.dart';
+import 'package:wired_express/view/base/circular_indicator_widget.dart';
 import 'package:wired_express/view/screens/order/widget/order_cancel_dialog.dart';
 import 'package:wired_express/view/screens/order/widget/order_shimmer.dart';
 import 'package:provider/provider.dart';
-import 'package:wired_express/utill/routes.dart';
 import 'package:wired_express/utill/styles.dart';
-import 'package:wired_express/view/base/custom_button.dart';
 import 'package:wired_express/view/base/no_data_screen.dart';
-import 'package:wired_express/view/screens/checkout/checkout_screen.dart';
 import 'package:wired_express/view/screens/order/order_details_screen.dart';
-import 'package:wired_express/view/screens/track/order_tracking_screen.dart';
 
 class HistoryView extends StatefulWidget {
   @override
@@ -723,7 +707,7 @@ class _HistoryViewState extends State<HistoryView> {
   @override
   void initState() {
     super.initState();
-    Timer(Duration(seconds: 1), () async {
+    Timer(Duration(seconds: 0), () async {
       Provider.of<OrderProvider>(context, listen: false)
           .getHistoryOrdersList(context, '1');
     });
@@ -766,74 +750,79 @@ class _HistoryViewState extends State<HistoryView> {
                                               shrinkWrap: true,
                                               itemBuilder: (context, index) {
                                                 OrderModel _historyOrder =
-                                                    orderProvider
-                                                            .historyOrderList![
-                                                        index];
+                                                orderProvider
+                                                    .historyOrderList![
+                                                index];
+                                                Color scheduledColor = _historyOrder.deliveryType == 'scheduled'
+                                                    ? ColorResources.getSecondaryColor(
+                                                    context)
+                                                    : ColorResources.getPrimaryColor(
+                                                    context);
 
                                                 return Column(children: [
-                                                  InkWell(
+                                                  GestureDetector(
                                                       onTap: () async {
                                                         await orderProvider
                                                             .getOrderDetails(
-                                                                _historyOrder.id
-                                                                    .toString(),
-                                                                context);
+                                                            _historyOrder.id
+                                                                .toString(),
+                                                            context);
                                                         orderProvider
                                                             .trackOrder(
-                                                                _historyOrder.id
-                                                                    .toString(),
-                                                                _historyOrder,
-                                                                context,
-                                                                true)
+                                                            _historyOrder.id
+                                                                .toString(),
+                                                            _historyOrder,
+                                                            context,
+                                                            true)
                                                             .then((value) => Navigator.push(
-                                                                context,
-                                                                MaterialPageRoute(
-                                                                    builder: (BuildContext? context) => OrderDetailsScreen(
-                                                                        orderModel:
-                                                                            _historyOrder,
-                                                                        orderId:
-                                                                            _historyOrder.id!))));
+                                                            context,
+                                                            MaterialPageRoute(
+                                                                builder: (BuildContext? context) => OrderDetailsScreen(
+                                                                    orderModel:
+                                                                    _historyOrder,
+                                                                    orderId:
+                                                                    _historyOrder.id!))));
                                                       },
                                                       child: Container(
-                                                          height: 150,
+                                                        // height: 150,
                                                           width:
-                                                              MediaQuery.of(context).size.width,
+                                                          MediaQuery.of(context).size.width,
                                                           decoration:
-                                                              BoxDecoration(
-                                                                  borderRadius:
-                                                                      BorderRadius
-                                                                          .circular(
-                                                                              10),
-                                                                  boxShadow: [
-                                                                    BoxShadow(
-                                                                        color: Provider.of<ThemeProvider>(context).darkTheme
-                                                                            ? Colors.black.withOpacity(
-                                                                                0.4)
-                                                                            : Colors.grey[
-                                                                                300]!,
-                                                                        blurRadius:
-                                                                            5,
-                                                                        spreadRadius:
-                                                                            1)
-                                                                  ],
-                                                                  color: ColorResources
-                                                                      .getScaffoldBackgroundColor(
-                                                                          context)),
+                                                          BoxDecoration(
+                                                              borderRadius:
+                                                              BorderRadius
+                                                                  .circular(
+                                                                  10),
+                                                              boxShadow: [
+                                                                BoxShadow(
+                                                                    color: Provider.of<ThemeProvider>(context).darkTheme
+                                                                        ? Colors.black.withOpacity(
+                                                                        0.4)
+                                                                        : Colors.grey[
+                                                                    300]!,
+                                                                    blurRadius:
+                                                                    5,
+                                                                    spreadRadius:
+                                                                    1)
+                                                              ],
+                                                              color: ColorResources
+                                                                  .getScaffoldBackgroundColor(
+                                                                  context)),
                                                           child: Padding(
                                                               padding:
-                                                                  const EdgeInsets
-                                                                      .all(10),
+                                                              const EdgeInsets
+                                                                  .all(10),
                                                               child: Row(
                                                                   children: [
                                                                     Container(
                                                                         height:
-                                                                            180,
+                                                                        100,
                                                                         width:
-                                                                            150,
+                                                                        100,
                                                                         decoration: BoxDecoration(
                                                                             border: Border.all(width: 1.0, color: Colors.black12),
                                                                             borderRadius:
-                                                                                BorderRadius.circular(10),
+                                                                            BorderRadius.circular(10),
                                                                             color: Colors.white),
                                                                         child: Padding(
                                                                             padding: const EdgeInsets.all(5),
@@ -850,138 +839,124 @@ class _HistoryViewState extends State<HistoryView> {
                                                                             ))),
                                                                     SizedBox(
                                                                         width:
-                                                                            15),
+                                                                        15),
                                                                     Expanded(
                                                                         child: Column(
                                                                             mainAxisAlignment:
-                                                                                MainAxisAlignment.spaceBetween,
+                                                                            MainAxisAlignment.spaceBetween,
                                                                             crossAxisAlignment: CrossAxisAlignment.start,
                                                                             children: [
-                                                                          Text(
-                                                                              '${getTranslated('order_id', context)}:${_historyOrder.id}',
-                                                                              style: TextStyle(color: ColorResources.SCAFFOLD_COLOR, fontWeight: FontWeight.w500, fontSize: 16)),
-                                                                          SizedBox(
-                                                                              height: 1),
-                                                                          _historyOrder.detailsCount == 1
-                                                                              ? Text(
-                                                                                  '${_historyOrder.details![0].productDetails!.name}',
-                                                                                  maxLines: 1,
-                                                                                  overflow: TextOverflow.ellipsis,
-                                                                                  style: TextStyle(color: Colors.black54, fontWeight: FontWeight.w500, fontSize: 15),
-                                                                                )
-                                                                              : Text(
-                                                                                  '${_historyOrder.detailsCount} ${getTranslated('items', context)}',
-                                                                                  style: TextStyle(color: Colors.black54, fontWeight: FontWeight.w500, fontSize: 15),
-                                                                                ),
-                                                                          SizedBox(
-                                                                            height:
-                                                                                1,
-                                                                          ),
-
-                                                                          // _historyOrder.detailsCount == 1
-                                                                          //     ? Text(
-                                                                          //         '${_historyOrder.details![0].variation!.type} | ${_historyOrder.details![0].variation!.price}'.replaceAll('.0', ''),
-                                                                          //       )
-                                                                          //     : SizedBox(),
-                                                                          SizedBox(
-                                                                            height:
-                                                                                1,
-                                                                          ),
-                                                                          Text(
-                                                                            '${Helpers.formatTextStatus(_historyOrder.orderStatus!)}',
-                                                                            maxLines:
-                                                                                1,
-                                                                            overflow:
-                                                                                TextOverflow.ellipsis,
-                                                                            style: TextStyle(
-                                                                                color:Helpers.statusColor(context , _historyOrder.orderStatus!),
-                                                                                fontWeight: FontWeight.w500,
-                                                                                fontSize: 15),
-                                                                          ),
-                                                                          // MaterialButton(
-                                                                          //     elevation: 0,
-                                                                          //     minWidth: MediaQuery.of(context).size.width,
-                                                                          //     color: Colors.grey[200],
-                                                                          //     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40)),
-                                                                          //     onPressed: () async {
-                                                                          //       List<OrderDetailsModel> orderDetails = await orderProvider.getOrderDetails(_historyOrder.id.toString(), context);
-                                                                          //       List<CartModel> _cartList = [];
-                                                                          //       List<int> _availableList = [];
-                                                                          //       orderDetails.forEach((orderDetail) {
-                                                                          //         _availableList.add(
-                                                                          //           orderDetail.productDetails!.status!,
-                                                                          //         );
-                                                                          //         //  _availableList.add(DateConverter.isAvailable(
-                                                                          //         //    orderDetail.productDetails.availableTimeStarts, orderDetail.productDetails.availableTimeEnds, context,
-                                                                          //         // ));
-                                                                          //         // _cartList.add(CartModel(
-                                                                          //         //     orderDetail.price, PriceConverter.convertWithDiscount(context, orderDetail.price!, orderDetail.discountOnProduct!, 'amount'),
-                                                                          //         //     orderDetail.variation, orderDetail.discountOnProduct, orderDetail.quantity,
-                                                                          //         //     orderDetail.taxAmount, orderDetail.productDetails!
-                                                                          //         // ));
-                                                                          //       });
-                                                                          //       //print('cart list ////////////////////');
-                                                                          //
-                                                                          //       //  print('cart list ////////////////////');
-                                                                          //       //  print(jsonEncode(_cartList));
-                                                                          //
-                                                                          //       if (_availableList.contains(0)) {
-                                                                          //         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                                                                          //           content: Text(getTranslated('one_or_more_product_unavailable', context)),
-                                                                          //           backgroundColor: Colors.red,
-                                                                          //         ));
-                                                                          //       } else {
-                                                                          //         Navigator.push(
-                                                                          //             context,
-                                                                          //             MaterialPageRoute(
-                                                                          //                 builder: (BuildContext? context) => HistoryCheckoutScreen(
-                                                                          //                       cartList: _cartList,
-                                                                          //                       fromCart: false,
-                                                                          //                       amount: _historyOrder.orderAmount,
-                                                                          //                       orderType: _historyOrder.orderType,
-                                                                          //                     )));
-                                                                          //       }
-                                                                          //     },
-                                                                          //     child: Text(getTranslated('reorder', context), style: TextStyle(color: Colors.black))),
-                                                                          !orderProvider.showCancelled
-                                                                              ? _historyOrder.orderStatus == 'pending'
-                                                                                  ? MaterialButton(
-                                                                                      elevation: 0,
-                                                                                      minWidth: MediaQuery.of(context).size.width,
-                                                                                      color: Colors.black12,
-                                                                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40)),
-                                                                                      onPressed: () {
-                                                                                        showDialog(
-                                                                                            context: context,
-                                                                                            barrierDismissible: false,
-                                                                                            builder: (context) => OrderCancelDialog(
-                                                                                                orderID: _historyOrder.id.toString(),
-                                                                                                callback: (String message, bool isSuccess, String orderID) {
-                                                                                                  if (isSuccess) {
-                                                                                                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$message. Order ID: $orderID'), backgroundColor: Colors.green));
-                                                                                                  } else {
-                                                                                                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message), backgroundColor: Colors.green));
-                                                                                                  }
-                                                                                                }));
-                                                                                      },
-                                                                                      child: Text(
-                                                                                        getTranslated('cancel_order', context),
-                                                                                        style: TextStyle(color: Colors.black),
-                                                                                      ))
-                                                                                  : SizedBox()
-                                                                              : Center(
-                                                                                  child: Container(
-                                                                                  width: MediaQuery.of(context).size.width,
-                                                                                  height: 50,
-                                                                                  margin: EdgeInsets.all(Dimensions.PADDING_SIZE_SMALL),
-                                                                                  alignment: Alignment.center,
-                                                                                  decoration: BoxDecoration(
-                                                                                    border: Border.all(width: 2, color: ColorResources.SCAFFOLD_COLOR),
-                                                                                    borderRadius: BorderRadius.circular(10),
+                                                                              Text(
+                                                                                  '${getTranslated('order_id', context)}:${_historyOrder.id}',
+                                                                                  style: TextStyle(color: ColorResources.getScaffoldColor(context), fontWeight: FontWeight.w500, fontSize: 16)),
+                                                                              Row(
+                                                                                children: [
+                                                                                  Icon(
+                                                                                    _historyOrder.deliveryType == "scheduled"
+                                                                                        ? Icons.schedule
+                                                                                        : Icons
+                                                                                        .local_shipping,
+                                                                                    color: scheduledColor,
+                                                                                    size: 20,
                                                                                   ),
-                                                                                  child: Text(getTranslated('order_cancelled', context), style: rubikBold.copyWith(color: ColorResources.SCAFFOLD_COLOR)),
-                                                                                ))
-                                                                        ]))
+                                                                                  const SizedBox(width: 5),
+                                                                                  Expanded(
+                                                                                    child: Row(
+                                                                                      children: [
+                                                                                        Text(
+                                                                                          getTranslated(
+                                                                                              _historyOrder.deliveryType == "scheduled"
+                                                                                                  ? 'scheduled'
+                                                                                                  : 'immediate',
+                                                                                              context),
+                                                                                          maxLines: 1,
+                                                                                          overflow:
+                                                                                          TextOverflow
+                                                                                              .ellipsis,
+                                                                                          style: TextStyle(
+                                                                                            color:
+                                                                                            scheduledColor,
+                                                                                            fontWeight:
+                                                                                            FontWeight
+                                                                                                .w500,
+                                                                                            fontSize: 15,
+                                                                                          ),
+                                                                                        ),
+                                                                                      ],
+                                                                                    ),
+                                                                                  ),
+                                                                                ],
+                                                                              ),
+                                                                              const SizedBox(height: 2),
+                                                                              SizedBox(
+                                                                                  height: 1),
+                                                                              _historyOrder.detailsCount == 1
+                                                                                  ? Text(
+                                                                                '${_historyOrder.details![0].productDetails!.name}',
+                                                                                maxLines: 1,
+                                                                                overflow: TextOverflow.ellipsis,
+                                                                                style: TextStyle(color: Colors.black54, fontWeight: FontWeight.w500, fontSize: 15),
+                                                                              )
+                                                                                  : Text(
+                                                                                '${_historyOrder.detailsCount} ${getTranslated('items', context)}',
+                                                                                style: TextStyle(color: Colors.black54, fontWeight: FontWeight.w500, fontSize: 15),
+                                                                              ),
+
+                                                                              SizedBox(
+                                                                                height:
+                                                                                1,
+                                                                              ),
+                                                                              Text(
+                                                                                '${Helpers.formatTextStatus(_historyOrder.orderStatus!)}',
+                                                                                maxLines:
+                                                                                1,
+                                                                                overflow:
+                                                                                TextOverflow.ellipsis,
+                                                                                style: TextStyle(
+                                                                                    color:Helpers.statusColor(context , _historyOrder.orderStatus!),
+                                                                                    fontWeight: FontWeight.w500,
+                                                                                    fontSize: 15),
+                                                                              ),
+
+                                                                              !orderProvider.showCancelled
+                                                                                  ? _historyOrder.orderStatus == 'pending'
+                                                                                  ? MaterialButton(
+                                                                                  elevation: 0,
+                                                                                  minWidth: MediaQuery.of(context).size.width,
+                                                                                  color: Colors.black12,
+                                                                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40)),
+                                                                                  onPressed: () {
+                                                                                    showDialog(
+                                                                                        context: context,
+                                                                                        barrierDismissible: false,
+                                                                                        builder: (context) => OrderCancelDialog(
+                                                                                            orderID: _historyOrder.id.toString(),
+                                                                                            callback: (String message, bool isSuccess, String orderID) {
+                                                                                              if (isSuccess) {
+                                                                                                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$message. Order ID: $orderID'), backgroundColor: Colors.green));
+                                                                                              } else {
+                                                                                                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message), backgroundColor: Colors.green));
+                                                                                              }
+                                                                                            }));
+                                                                                  },
+                                                                                  child: Text(
+                                                                                    getTranslated('cancel_order', context),
+                                                                                    style: TextStyle(color: Colors.black),
+                                                                                  ))
+                                                                                  : SizedBox()
+                                                                                  : Center(
+                                                                                  child: Container(
+                                                                                    width: MediaQuery.of(context).size.width,
+                                                                                    height: 50,
+                                                                                    margin: EdgeInsets.all(Dimensions.PADDING_SIZE_SMALL),
+                                                                                    alignment: Alignment.center,
+                                                                                    decoration: BoxDecoration(
+                                                                                      border: Border.all(width: 2, color: ColorResources.getScaffoldColor(context)),
+                                                                                      borderRadius: BorderRadius.circular(10),
+                                                                                    ),
+                                                                                    child: Text(getTranslated('order_cancelled', context), style: rubikBold.copyWith(color: ColorResources.getScaffoldColor(context))),
+                                                                                  ))
+                                                                            ]))
                                                                   ])))),
                                                   SizedBox(height: 15)
                                                 ]);
@@ -991,13 +966,7 @@ class _HistoryViewState extends State<HistoryView> {
                                               ? Column(
                                                   children: [
                                                     SizedBox(height: 10),
-                                                    Center(
-                                                        child: CircularProgressIndicator(
-                                                            valueColor:
-                                                                AlwaysStoppedAnimation<
-                                                                        Color>(
-                                                                    ColorResources
-                                                                        .SCAFFOLD_COLOR)))
+                                                    CustomCircularIndicator(color:ColorResources.getScaffoldColor(context))
                                                   ],
                                                 )
                                               : ordersLength < totalSize
@@ -1027,7 +996,7 @@ class _HistoryViewState extends State<HistoryView> {
                                                               '${getTranslated('load_more', context)}...',
                                                               style: TextStyle(
                                                                   color: ColorResources
-                                                                      .SCAFFOLD_COLOR))))
+                                                                      .getScaffoldColor(context)))))
                                                   : SizedBox()
                                         ]))
                                   ])))),

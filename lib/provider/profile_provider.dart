@@ -21,17 +21,14 @@ class ProfileProvider with ChangeNotifier {
 
   UserInfoModel? _userInfoModel;
 
-  Product? _cartProduct;
+  ProductModel? _cartProduct;
 
   UserInfoModel? get userInfoModel => _userInfoModel;
 
-  Product? get cartProduct => _cartProduct;
+  ProductModel? get cartProduct => _cartProduct;
 
   int _appRating = 0;
   int get appRating => _appRating;
-
-  bool _loadingAppReview = false;
-  bool get loadingAppReview => _loadingAppReview;
 
   void setAppRating(int rate) {
     _appRating = rate;
@@ -102,8 +99,8 @@ class ProfileProvider with ChangeNotifier {
         '_method': 'post',
         'f_name': signUpdModel.fName!,
         'l_name': signUpdModel.lName!,
-       // 'email': signUpdModel.email!,
-       // 'phone': signUpdModel.phone!,
+        // 'email': signUpdModel.email!,
+        // 'phone': signUpdModel.phone!,
         'password': signUpdModel.password!.toString(),
       });
     }
@@ -136,29 +133,5 @@ class ProfileProvider with ChangeNotifier {
     }
     notifyListeners();
     return _responseModel;
-  }
-
-  Future<ResponseModel> sendAppReview(String review, String rating) async {
-    _loadingAppReview = true;
-    notifyListeners();
-    ApiResponse apiResponse = await profileRepo!.sendAppReview(review, rating);
-    ResponseModel responseModel;
-    if (apiResponse.response != null &&
-        apiResponse.response!.statusCode == 200) {
-      _loadingAppReview = false;
-      responseModel = ResponseModel(true, 'successful');
-    } else {
-      _loadingAppReview = false;
-      String errorMessage;
-      if (apiResponse.error is String) {
-        errorMessage = apiResponse.error.toString();
-      } else {
-        errorMessage = apiResponse.error.errors[0].message;
-      }
-      responseModel = ResponseModel(false, errorMessage);
-    }
-    _isLoading = false;
-    notifyListeners();
-    return responseModel;
   }
 }

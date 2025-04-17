@@ -25,40 +25,6 @@ class CartProvider extends ChangeNotifier {
   String _product = '';
   String? get product => _product;
 
-  bool _existInCart = false;
-  bool get existInCart => _existInCart;
-
-  int? _matchedCartId;
-  int? get matchedCartId => _matchedCartId;
-
-  // void getCartData() {
-  //   _cartList = [];
-  //   _cartList!.addAll(cartRepo!.getCartList()!);
-  //   _cartList!.forEach((cart) {
-  //     _amount = _amount! + (cart.discountedPrice! * cart.quantity!);
-  //   });
-  // }
-
-  // void addToCart(CartModel cartModel, int index, bool formCart) {
-  //   if (formCart) {
-  //     _amount = _amount! -
-  //         (_cartList![index].discountedPrice! * _cartList![index].quantity!);
-  //     _cartList!.replaceRange(index, index + 1, [cartModel]);
-  //   } else {
-  //     if (index != 0) {
-  //       _amount = _amount! -
-  //           (_cartList![index].discountedPrice! * _cartList![index].quantity!);
-  //       _cartList!.replaceRange(index, index + 1, [cartModel]);
-  //     } else {
-  //       _cartList!.add(cartModel);
-  //     }
-  //   }
-  //
-  //   _amount = _amount! + (cartModel.discountedPrice! * cartModel.quantity!);
-  //   cartRepo!.addToCartList(_cartList!);
-  //   notifyListeners();
-  // }
-
   void removeFromCart(CartModel cart) {
     _cartList.remove(cart);
     // _amount = _amount! - (cart.discountedPrice! * cart.quantity!);
@@ -69,32 +35,6 @@ class CartProvider extends ChangeNotifier {
   void removeCartIds() {
     _cartIdList.clear();
     _cartList.clear();
-    notifyListeners();
-  }
-
-  void isExistInCart(Product product, List<dynamic> productVariationIndex) {
-    _existInCart = false;
-    notifyListeners();
-
-    String selectedProductType =
-        Helpers.getVariationType(product, productVariationIndex);
-    print('selectedProductType=> ${selectedProductType}');
-//  result 1:  'cheese-small'
-
-    _cartList.forEach((cart) {
-      if (cart.productId == product.id) {
-        _matchedCartId = cart.id;
-        _existInCart = true;
-        // String cartProductType =
-        //     Helpers.getVariationType(cart.product!, cart.variationIndex!);
-        // print('cartProductType=> ${cartProductType}');
-        // // result 2 'ranch-medium'
-        //
-        // if (selectedProductType == cartProductType) {
-        //   _existInCart = true;
-        // }
-      }
-    });
     notifyListeners();
   }
 
@@ -165,7 +105,7 @@ class CartProvider extends ChangeNotifier {
   bool _cartLoading = false;
   bool get cartLoading => _cartLoading;
 
-  Future<void> addToCartList(CartModel cart, Function feedbackMessage) async {
+  Future<void> addToCartList(CartModel cart) async {
     _cartLoading = true;
     notifyListeners();
 
@@ -175,12 +115,10 @@ class CartProvider extends ChangeNotifier {
       Map map = apiResponse.response!.data;
       String message = map['message'];
       print('message => ${message}');
-      feedbackMessage(message);
-      //_wishList.add(WishlistModel.fromJson(apiResponse.response!.data));
       _cartIdList.add(cart.productId!);
       _cartLoading = false;
     } else {
-      _cartLoading = false;      feedbackMessage('${apiResponse.error.toString()}');
+      _cartLoading = false;
       print('${apiResponse.error.toString()}');
     }
     _cartLoading = false;

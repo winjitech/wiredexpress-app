@@ -13,15 +13,6 @@ class OrderRepo {
   final SharedPreferences? sharedPreferences;
   OrderRepo({@required this.dioClient, @required this.sharedPreferences});
 
-  Future<ApiResponse> getOrderList() async {
-    try {
-      final response = await dioClient!.get(AppConstants.ORDER_LIST_URI);
-      return ApiResponse.withSuccess(response);
-    } catch (e) {
-      return ApiResponse.withError(ApiErrorHandler.getMessage(e));
-    }
-  }
-
   Future<ApiResponse> getOrderDetails(String orderID) async {
     try {
       final response =
@@ -106,5 +97,15 @@ class OrderRepo {
         .getDirections(origin: origin, destination: destination);
 
     return directions;
+  }
+
+  Future<ApiResponse> getLastDeliveryCoordinates(String orderId) async {
+    try {
+      final response = await dioClient!
+          .get('${AppConstants.GET_LAST_DELIVERY_COORDINATES_URI}$orderId');
+      return ApiResponse.withSuccess(response);
+    } catch (e) {
+      return ApiResponse.withError(ApiErrorHandler.getMessage(e));
+    }
   }
 }

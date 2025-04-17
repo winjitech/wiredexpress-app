@@ -2,29 +2,29 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
 import 'package:wired_express/data/helper/helpers.dart';
+import 'package:wired_express/data/model/body/place_order_body.dart';
+import 'package:wired_express/data/model/response/cart_model.dart';
 import 'package:wired_express/data/model/response/product_model.dart';
+import 'package:wired_express/data/model/response/tiered_pricing_model.dart';
+import 'package:wired_express/helper/price_converter.dart';
 import 'package:wired_express/localization/language_constrants.dart';
 import 'package:wired_express/provider/auth_provider.dart';
 import 'package:wired_express/provider/cart_provider.dart';
 import 'package:wired_express/provider/coupon_provider.dart';
 import 'package:wired_express/provider/location_provider.dart';
-import 'package:wired_express/provider/order_provider.dart';
-import 'package:wired_express/provider/place_order_provider.dart';
+import 'package:wired_express/provider/profile_provider.dart';
 import 'package:wired_express/provider/splash_provider.dart';
-import 'package:wired_express/provider/theme_provider.dart';
-import 'package:wired_express/utill/app_constants.dart';
 import 'package:wired_express/utill/color_resources.dart';
 import 'package:wired_express/utill/dimensions.dart';
-import 'package:wired_express/utill/styles.dart';
-import 'package:wired_express/view/base/address_bottom_sheet.dart';
 import 'package:wired_express/view/base/custom_button.dart';
 import 'package:wired_express/view/base/custom_main_appbar.dart';
 import 'package:wired_express/view/base/custom_snackbar.dart';
-import 'package:wired_express/view/base/custom_text_field.dart';
 import 'package:wired_express/view/base/no_data_screen.dart';
 import 'package:wired_express/view/base/not_logged_in_screen.dart';
 import 'package:wired_express/view/screens/cart/widget/cart_product_widget.dart';
 import 'package:provider/provider.dart';
+import 'package:wired_express/view/screens/cart/widget/choose_delivery_address_view.dart';
+import 'package:wired_express/view/screens/cart/widget/discount_view.dart';
 import 'package:wired_express/view/screens/checkout/checkout_screen.dart';
 import 'package:wired_express/view/screens/drawer/drawer_screen.dart';
 
@@ -40,55 +40,24 @@ class _CartScreenState extends State<CartScreen> {
   void initState() {
     super.initState();
     Timer(const Duration(seconds: 0), () {
-      final bool _isLoggedIn =
-      Provider.of<CustomAuthProvider>(context, listen: false).isLoggedIn()!;
-      if(_isLoggedIn){
+      final bool isLoggedIn =
+          Provider.of<CustomAuthProvider>(context, listen: false).isLoggedIn()!;
+      if (isLoggedIn) {
+        int? id = Provider.of<CustomAuthProvider>(context, listen: false)
+            .getUserAddressId();
+        print("--------------$id");
+
         Provider.of<CartProvider>(context, listen: false).initCartList(context);
         Provider.of<LocationProvider>(context, listen: false)
             .initAddressList(context);
-        ('cart' != 'take_away' &&
-            (Provider.of<LocationProvider>(context, listen: false).addressList == null ||
-                Provider.of<LocationProvider>(context, listen: false)
-                    .addressList!
-                    .length ==
-                    0 ||
-                Provider.of<OrderProvider>(context, listen: false).addressIndex <
-                    0))
-            ? Provider.of<LocationProvider>(context, listen: false).getZone(
-            context,
-            Provider.of<LocationProvider>(context, listen: false)
-                .addressList![0]
-                .latitude
-                .toString(),
-            Provider.of<LocationProvider>(context, listen: false)
-                .addressList![0]
-                .longitude
-                .toString())
-            : Provider.of<LocationProvider>(context, listen: false).getZone(
-            context,
-            Provider.of<LocationProvider>(context, listen: false)
-                .addressList![
-            Provider.of<OrderProvider>(context, listen: false)
-                .addressIndex]
-                .latitude
-                .toString(),
-            Provider.of<LocationProvider>(context, listen: false)
-                .addressList![Provider.of<OrderProvider>(context, listen: false).addressIndex]
-                .longitude
-                .toString());
       }
-
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    // Provider.of<CouponProvider>(context, listen: false).removeCouponData(false);
-    Provider.of<OrderProvider>(context, listen: false)
-        .setOrderType('delivery', notify: false);
-    final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-    final TextEditingController _couponController = TextEditingController();
-    final bool _isLoggedIn =
+    final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
+    final bool isLoggedIn =
         Provider.of<CustomAuthProvider>(context, listen: false).isLoggedIn()!;
     return AdvancedDrawer(
       rtlOpening: false,
@@ -98,9 +67,7 @@ class _CartScreenState extends State<CartScreen> {
           child: Padding(
         padding: const EdgeInsets.all(15),
         child: IconButton(
-            onPressed: () {
-              closeDrawer();
-            },
+            onPressed: () => closeDrawer(),
             icon: const Icon(
               Icons.close,
               color: Colors.white,
@@ -111,81 +78,156 @@ class _CartScreenState extends State<CartScreen> {
       controller: advancedDrawerController,
       animationCurve: Curves.easeInOutExpo,
       animationDuration: const Duration(milliseconds: 400),
-      backdropColor: ColorResources.SCAFFOLD_COLOR,
+      backdropColor: ColorResources.getScaffoldColor(context),
       drawer: DrawerScreen(),
       child: Scaffold(
-        backgroundColor: ColorResources.getScaffoldBackgroundColor(context!),
-        key: _scaffoldKey,
+        backgroundColor: ColorResources.getScaffoldBackgroundColor(context),
+        key: scaffoldKey,
         appBar: CustomMainAppBar(
           onMenuPressed: () => showDrawer(),
           title: getTranslated('shopping_cart', context),
         ),
-        body: _isLoggedIn
+        body: isLoggedIn
             ? Padding(
                 padding: const EdgeInsets.all(5),
-                child: Consumer2<CartProvider, LocationProvider>(
-                  builder: (context, cartProvider, locationProvider, child) {
-                    double _finalPrice = 0;
-                    double _totalPrice = 0;
-                    double _totalDiscount = 0;
-                    double _totalTax = 0;
+                child: Consumer5<ProfileProvider, CartProvider, SplashProvider,
+                    CustomAuthProvider, CouponProvider>(
+                  builder: (context, profileProvider, cartProvider,
+                      splashProvider, authProvider, couponProvider, child) {
+                    bool haveFreeDelivery =
+                        profileProvider.userInfoModel != null &&
+                            profileProvider.userInfoModel!.freeDelivery == 1;
+                    String currency =
+                        splashProvider.configModel!.currencySymbol ?? '\$';
+                    double totalUserPoints = double.parse(
+                        Provider.of<ProfileProvider>(context, listen: false)
+                            .userInfoModel!
+                            .purchasesPoints!);
+                    double totalItemsPrice = 0.0;
+                    double totalItemsPriceAfterDiscOnProducts = 0.0;
+                    double totalProductsPrice = 0.0;
+
+                    double totalOrderPrice = 0.0;
+                    double subTotalOrderPrice = 0.0;
+
+                    double couponDiscountAmount = 0.0;
+                    double usePointsDiscountAmount = 0.0;
+                    double totalTax = 0.0;
+                    double totalTiredPricing = 0.0;
+                    double totalDiscountOnProducts = 0.0;
+
+                    double officialDeliveryFees = double.parse(
+                        splashProvider.configModel!.deliveryCharge ?? "0.0");
+                    double deliveryCharge =
+                        haveFreeDelivery ? 0.0 : officialDeliveryFees;
+                    double ppuPurchase = double.parse(
+                        splashProvider.configModel!.ppuPurchase ?? "0.0");
+                    double ppuEarn = double.parse(
+                        splashProvider.configModel!.ppuEarn ?? "0.0");
+                    double totalPointsDiscountAmount =
+                        totalUserPoints * ppuPurchase;
+
+                    print("ppuPurchase == $ppuPurchase");
+                    print("ppuEarn == $ppuEarn");
+
+                    print(
+                        "totalPointsDiscountAmount == $totalPointsDiscountAmount");
+                    double remainingUserPoints = totalUserPoints;
 
                     cartProvider.cartList.forEach((cart) {
-                      String variationType = Helpers.getVariationType(
-                          cart.product!, cart.variationIndex!);
+                      ProductModel product = cart.product!;
+                      TiredPricingModel? tiredPricing =
+                          cart.tieredPricing ?? TiredPricingModel();
+                      double priceBeforeDisc = product.price!;
+                      double priceAfterDiscOnProduct =
+                          PriceConverter.convertWithDiscount(
+                              context,
+                              priceBeforeDisc,
+                              product.discount!,
+                              product.discountType!);
+                      double priceAfterTieredPricing =
+                          PriceConverter.getProductFinalPriceWithTieredPricing(
+                                  tiredPricing, priceAfterDiscOnProduct) ??
+                              0.0;
+                      double finalProductPrice =
+                          priceAfterTieredPricing * cart.quantity!;
+                      double taxAmount = double.parse(Helpers.formatTextWithNum(
+                              PriceConverter.convertPercentageToAmount(
+                                      finalProductPrice, product.tax!)
+                                  .toString())) *
+                          cart.quantity!;
+                      double discountAmount =
+                          (priceBeforeDisc - priceAfterDiscOnProduct) *
+                              cart.quantity!;
+                      totalDiscountOnProducts += discountAmount;
 
-                      double price = cart.product!.price!;
-                      double discountAmount = 0;
-                      if (cart.product!.discountType == 'amount') {
-                        discountAmount = cart.product!.discount!;
-                      } else {
-                        discountAmount =
-                            (cart.product!.price! * cart.product!.discount!) /
-                                100;
-                      }
-                      for (Variation variation in cart.product!.variations!) {
-                        if (variation.type == variationType) {
-                          price = variation.price!;
+                      print("finalProductPrice == $finalProductPrice");
 
-                          if (cart.product!.discountType == 'amount') {
-                            discountAmount = cart.product!.discount!;
-                          } else {
-                            discountAmount =
-                                (variation.price! * cart.product!.discount!) /
-                                    100;
-                          }
-
-                          break;
-                        }
-                      }
-
-                      _totalPrice = _totalPrice + (price * cart.quantity!);
-
-                      double taxAmount =
-                          (cart.product!.tax! * price) /
-                              100;
-                      _totalTax = _totalTax + taxAmount;
-
-                      _totalDiscount =
-                          _totalDiscount + (discountAmount * cart.quantity!);
+                      totalProductsPrice =
+                          totalProductsPrice + finalProductPrice;
+                      totalTax = totalTax + taxAmount;
+                      totalItemsPriceAfterDiscOnProducts =
+                          totalItemsPriceAfterDiscOnProducts +
+                              priceAfterDiscOnProduct;
+                      totalTiredPricing =
+                          totalTiredPricing + priceAfterTieredPricing;
+                      totalItemsPrice =
+                          totalItemsPrice + (priceBeforeDisc * cart.quantity!);
                     });
-
-                    double deliveryCharge = double.parse(Provider.of<SplashProvider>(context, listen: false).configModel!.deliveryCharge!);
-
-                    _finalPrice = _totalPrice -
-                        _totalDiscount -
-                        Provider.of<CouponProvider>(context).discount! +
-                         _totalTax +
-                        deliveryCharge;
-
-                    double _priceWithDiscount = _totalPrice - _totalDiscount;
-
-                    double _couponDiscountAmount = 0;
-                    if (Provider.of<CouponProvider>(context).coupon != null) {
-                      _couponDiscountAmount = Helpers.applyDiscount(
-                          Provider.of<CouponProvider>(context).coupon!,
-                          (_totalPrice - _totalDiscount));
+                    subTotalOrderPrice = totalProductsPrice + totalTax;
+                    if (couponProvider.couponDiscount == null &&
+                        !couponProvider.useLoyaltyPoints!) {
+                      print("CASE 1");
+                      subTotalOrderPrice = subTotalOrderPrice;
+                    } else if (couponProvider.couponDiscount != null &&
+                        !couponProvider.useLoyaltyPoints!) {
+                      couponDiscountAmount = Helpers.applyDiscount(
+                          couponProvider.couponDiscount!,
+                          (totalProductsPrice + totalTax));
+                      subTotalOrderPrice =
+                          subTotalOrderPrice - couponDiscountAmount;
+                      print("CASE 2");
+                    } else if (couponProvider.couponDiscount == null &&
+                        couponProvider.useLoyaltyPoints!) {
+                      usePointsDiscountAmount =
+                          couponProvider.useLoyaltyPointsAmount ?? 0.0;
+                      subTotalOrderPrice =
+                          subTotalOrderPrice - usePointsDiscountAmount;
+                      print("CASE 3");
+                      print(
+                          "usePointsDiscountAmount == $usePointsDiscountAmount");
+                    } else if (couponProvider.couponDiscount != null &&
+                        couponProvider.useLoyaltyPoints!) {
+                      usePointsDiscountAmount =
+                          couponProvider.useLoyaltyPointsAmount ?? 0.0;
+                      couponDiscountAmount = Helpers.applyDiscount(
+                          couponProvider.couponDiscount!,
+                          (totalProductsPrice + totalTax));
+                      subTotalOrderPrice = subTotalOrderPrice -
+                          usePointsDiscountAmount -
+                          couponDiscountAmount;
+                      print("CASE 4");
                     }
+
+                    totalOrderPrice =
+                        (subTotalOrderPrice > 0 ? subTotalOrderPrice : 0) +
+                            deliveryCharge;
+
+                    if (couponProvider.useLoyaltyPoints!) {
+                      double usedPoints =
+                          couponProvider.useLoyaltyPointsAmount ?? 0.0;
+                      if (usedPoints <= remainingUserPoints) {
+                        remainingUserPoints = remainingUserPoints -
+                            (totalPointsDiscountAmount / ppuPurchase);
+                      } else {
+                        remainingUserPoints = 0;
+                      }
+                    }
+
+                    print("totalOrderPrice == $totalOrderPrice");
+                    print(
+                        "totalDiscountOnProducts == $totalDiscountOnProducts");
+                    print("remainingUserPoints == $remainingUserPoints");
 
                     return cartProvider.cartList.isNotEmpty
                         ? Column(
@@ -201,455 +243,137 @@ class _CartScreenState extends State<CartScreen> {
                                         width:
                                             MediaQuery.of(context).size.width,
                                         child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              // const StatusCartWidget(
-                                              //   cart: true,
-                                              // ),
-                                              const SizedBox(
-                                                height: 15,
-                                              ),
-                                              ListView.builder(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            ListView.builder(
+                                                padding: EdgeInsets.zero,
                                                 physics:
                                                     const NeverScrollableScrollPhysics(),
                                                 shrinkWrap: true,
                                                 itemCount: cartProvider
                                                     .cartList.length,
-                                                itemBuilder: (context, index) {
-                                                  return CartProductWidget(
-                                                      cart: cartProvider
-                                                          .cartList[index],
-                                                      cartIndex: index,
-                                                      isAvailable: true);
-                                                },
+                                                itemBuilder: (context, index) =>
+                                                    CartProductWidget(
+                                                        cart: cartProvider
+                                                            .cartList[index],
+                                                        cartIndex: index)),
+                                            ChooseDeliveryAddressView(),
+
+                                            DiscountView(
+                                                totalPointsDiscount:
+                                                    totalPointsDiscountAmount,
+                                                couponDiscountAmount:
+                                                    couponDiscountAmount,
+                                                totalOrderPrice:
+                                                    totalOrderPrice),
+                                            _buildDetailRow(
+                                                context,
+                                                'items_price',
+                                                '$currency${Helpers.formatTextWithNum(totalItemsPrice.toString())}'),
+                                            _buildDetailRow(context, 'tax',
+                                                '$currency${Helpers.formatTextWithNum(totalTax.toString())}'),
+                                            _buildDetailRow(
+                                                context,
+                                                'delivery_fee',
+                                                '(+) $currency$deliveryCharge'),
+                                            // if (haveFreeDelivery)
+                                            //   Center(
+                                            //     child: Container(
+                                            //       margin: const EdgeInsets.symmetric( vertical: 10),
+                                            //       decoration: BoxDecoration(
+                                            //         color: ColorResources.getPrimaryColor(context).withOpacity(0.1),
+                                            //         borderRadius: BorderRadius.circular(10),
+                                            //         border: Border.all(
+                                            //             color: ColorResources.getPrimaryColor(context),
+                                            //             width: 0.5),
+                                            //       ),
+                                            //       padding: const EdgeInsets.symmetric(horizontal: 35, vertical: 4),
+                                            //       child: Text(
+                                            //         "${getTranslated('you_have_free_delivery', context)} (-) $currency${Helpers.formatTextWithNum(officialDeliveryFees.toString())}",textAlign: TextAlign.center,
+                                            //         style: TextStyle(
+                                            //           color: ColorResources.getPrimaryColor(context),
+                                            //           fontWeight: FontWeight.w600,
+                                            //           fontSize: 16,
+                                            //           letterSpacing: 0.5,
+                                            //         ),
+                                            //       ),
+                                            //     ),
+                                            //   ),
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 15,
+                                                      vertical: 5),
+                                              child: Divider(
+                                                color:
+                                                    ColorResources.getTextColor(
+                                                            context)
+                                                        .withOpacity(0.4),
                                               ),
-                                              const SizedBox(height: 10),
-                                              Container(
-                                                decoration: BoxDecoration(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            15),
-                                                    color: ColorResources
-                                                        .getScaffoldBackgroundColor(
-                                                            context),
-                                                    boxShadow: [
-                                                      BoxShadow(
-                                                          color: Provider.of<
-                                                                          ThemeProvider>(
-                                                                      context,
-                                                                      listen:
-                                                                          false)
-                                                                  .darkTheme
-                                                              ? Colors.black
-                                                                  .withOpacity(
-                                                                      0.4)
-                                                              : Colors
-                                                                  .grey[300]!,
-                                                          blurRadius: 2,
-                                                          spreadRadius: 1)
-                                                    ]),
-                                                height: 50,
-                                                child: InkWell(
-                                                  onTap: () {
-                                                    showModalBottomSheet(
-                                                      backgroundColor:
-                                                          Colors.transparent,
-                                                      context: context,
-                                                      builder: (BuildContext
-                                                          context) {
-                                                        return const AddressBottomSheet();
-                                                      },
-                                                    );
-                                                  },
-                                                  child: Padding(
-                                                    padding:
-                                                        const EdgeInsets.all(
-                                                            10),
-                                                    child: Row(
-                                                      children: [
-                                                        ("cart" != 'take_away' &&
-                                                                (locationProvider
-                                                                            .addressList ==
-                                                                        null ||
-                                                                    locationProvider
-                                                                            .addressList!
-                                                                            .length ==
-                                                                        0 ||
-                                                                    Provider.of<OrderProvider>(context,
-                                                                                listen: false)
-                                                                            .addressIndex <
-                                                                        0))
-                                                            ? Text(
-                                                                'Select Delivery Location',
-                                                                style: TextStyle(
-                                                                    color: Provider.of<ThemeProvider>(context,
-                                                                                listen:
-                                                                                    false)
-                                                                            .darkTheme
-                                                                        ? Colors
-                                                                            .white54
-                                                                        : ColorResources
-                                                                            .SCAFFOLD_COLOR,
-                                                                    fontSize:
-                                                                        16,
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .w500),
-                                                              )
-                                                            : Text(
-                                                                'Change Delivery Location',
-                                                                style: TextStyle(
-                                                                    color: Provider.of<ThemeProvider>(context,
-                                                                                listen:
-                                                                                    false)
-                                                                            .darkTheme
-                                                                        ? Colors
-                                                                            .white54
-                                                                        : ColorResources
-                                                                            .SCAFFOLD_COLOR,
-                                                                    fontSize:
-                                                                        16,
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .w500),
-                                                              ),
-                                                        const Spacer(),
-                                                        ("cart" != 'take_away' &&
-                                                                (locationProvider
-                                                                            .addressList ==
-                                                                        null ||
-                                                                    locationProvider
-                                                                            .addressList!
-                                                                            .length ==
-                                                                        0 ||
-                                                                    Provider.of<OrderProvider>(context,
-                                                                                listen: false)
-                                                                            .addressIndex <
-                                                                        0))
-                                                            ? const Icon(
-                                                                Icons
-                                                                    .not_listed_location_outlined,
-                                                                color: ColorResources
-                                                                    .SCAFFOLD_COLOR,
-                                                              )
-                                                            : const Icon(
-                                                                Icons
-                                                                    .published_with_changes_sharp,
-                                                                color: ColorResources
-                                                                    .SCAFFOLD_COLOR,
-                                                              ),
-                                                      ],
+                                            ),
+                                            _buildDetailRow(
+                                                context,
+                                                'tiered_pricing_discount',
+                                                '(-) $currency${Helpers.formatTextWithNum(totalTiredPricing.toString())}'),
+                                            if (couponDiscountAmount != 0.0)
+                                              _buildDetailRow(
+                                                  context,
+                                                  'coupon_discount',
+                                                  '(-)  $currency${Helpers.formatTextWithNum(couponDiscountAmount.toString())}'),
+
+                                            if (usePointsDiscountAmount != 0.0)
+                                              _buildDetailRow(
+                                                  context,
+                                                  'loyalty_points_discount',
+                                                  '(-)  $currency${Helpers.formatTextWithNum(usePointsDiscountAmount.toString())}'),
+                                            if (haveFreeDelivery)
+                                              _buildDetailRow(
+                                                  context,
+                                                  'free_delivery',
+                                                  '(-)  $currency${Helpers.formatTextWithNum(officialDeliveryFees.toString())}'),
+
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 15,
+                                                      vertical: 5),
+                                              child: Divider(
+                                                color:
+                                                    ColorResources.getTextColor(
+                                                            context)
+                                                        .withOpacity(0.4),
+                                              ),
+                                            ),
+                                            _buildDetailRow(
+                                                context,
+                                                'total_price',
+                                                '$currency${Helpers.formatTextWithNum(totalOrderPrice.toString())}',
+                                                color: ColorResources
+                                                    .getPrimaryColor(context)),
+
+                                            if (couponProvider
+                                                .useLoyaltyPoints!)
+                                              Center(
+                                                child: Padding(
+                                                  padding: const EdgeInsets
+                                                      .symmetric(vertical: 10),
+                                                  child: Text(
+                                                    '"${getTranslated('you_have', context)} ${Helpers.formatTextWithNum(totalUserPoints.toString())} ${getTranslated('points', context)}, ($currency${Helpers.formatTextWithNum(usePointsDiscountAmount.toString())} ${getTranslated('off', context)}), ${getTranslated('remaining_points:', context)} ${Helpers.formatTextWithNum((remainingUserPoints).toString())}"',
+                                                    textAlign: TextAlign.center,
+                                                    style: TextStyle(
+                                                      color: ColorResources
+                                                          .getSecondaryColor(
+                                                              context),
+                                                      fontSize: 14,
+                                                      fontWeight:
+                                                          FontWeight.w500,
                                                     ),
                                                   ),
                                                 ),
                                               ),
-                                              const SizedBox(height: 10),
-                                              Align(
-                                                  alignment:
-                                                      Alignment.centerLeft,
-                                                  child: Text(
-                                                    getTranslated(
-                                                        'promo_code', context),
-                                                    style: const TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.w600,
-                                                        fontSize: 20),
-                                                  )),
-                                              const SizedBox(
-                                                height: 10,
-                                              ),
-                                              // Coupon
-                                              Consumer<CouponProvider>(
-                                                builder:
-                                                    (context, coupon, child) {
-                                                  return Row(
-                                                    children: [
-                                                      Expanded(
-                                                        child: CustomTextField(
-                                                          hintText: getTranslated(
-                                                              'enter_promo_code',
-                                                              context),
-                                                          controller:
-                                                              _couponController,
-                                                          inputType:
-                                                              TextInputType
-                                                                  .text,
-                                                        ),
-                                                      ),
-                                                      const SizedBox(
-                                                        width: 20,
-                                                      ),
-                                                      MaterialButton(
-                                                        height: 50,
-                                                        shape: RoundedRectangleBorder(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        40)),
-                                                        onPressed: () {
-                                                          FocusScope.of(context)
-                                                              .unfocus();
-                                                          if (_couponController
-                                                                  .text
-                                                                  .isNotEmpty &&
-                                                              !coupon
-                                                                  .isLoading!) {
-                                                            print(
-                                                                'couponDiscountAmount 1=> ${_couponDiscountAmount}');
-                                                            if (_couponDiscountAmount <
-                                                                1) {
-                                                              print(
-                                                                  'couponDiscountAmount 2=> ${_couponDiscountAmount}');
-                                                              coupon
-                                                                  .applyCoupon(
-                                                                      _couponController
-                                                                          .text,
-                                                                      _priceWithDiscount)
-                                                                  .then(
-                                                                      (discount) {
-                                                                if (discount >
-                                                                    0) {
-                                                                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                                                                      content: Text(
-                                                                          'You got ${getTranslated('description', context) == "Description" ? '${Provider.of<SplashProvider>(context, listen: false).configModel!.currencySymbol}' : '${Provider.of<SplashProvider>(context, listen: false).configModel!.currencySymbol}'}$discount discount'),
-                                                                      backgroundColor:
-                                                                          Colors
-                                                                              .green));
-                                                                } else {
-                                                                  ScaffoldMessenger.of(
-                                                                          context)
-                                                                      .showSnackBar(
-                                                                          SnackBar(
-                                                                    content: Text(getTranslated(
-                                                                        'invalid_code_or',
-                                                                        context)),
-                                                                    backgroundColor:
-                                                                        Colors
-                                                                            .red,
-                                                                  ));
-                                                                }
-                                                              });
-                                                            } else {
-                                                              print(
-                                                                  'couponDiscountAmount 3=> ${_couponDiscountAmount}');
-                                                              coupon
-                                                                  .removeCouponData(
-                                                                      true);
-                                                            }
-                                                          } else if (_couponController
-                                                              .text.isEmpty) {
-                                                            showCustomSnackBar(
-                                                                getTranslated(
-                                                                    'enter_a_Coupon_code',
-                                                                    context),
-                                                                context);
-                                                          }
-                                                        },
-                                                        color: ColorResources
-                                                            .SCAFFOLD_COLOR,
-                                                        child: coupon.discount! <=
-                                                                0
-                                                            ? !coupon.isLoading!
-                                                                ? Text(
-                                                                    getTranslated(
-                                                                        'enter',
-                                                                        context),
-                                                                    style: rubikMedium.copyWith(
-                                                                        color: Colors
-                                                                            .white))
-                                                                : const CircularProgressIndicator(
-                                                                    valueColor: AlwaysStoppedAnimation<
-                                                                            Color>(
-                                                                        Colors
-                                                                            .white))
-                                                            : const Icon(
-                                                                Icons.clear,
-                                                                color: Colors
-                                                                    .white),
-                                                      ),
-                                                    ],
-                                                  );
-                                                },
-                                              ),
-
-                                              const SizedBox(height: 40),
-                                              Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceBetween,
-                                                  children: [
-                                                    Text(
-                                                        getTranslated(
-                                                            'items_price',
-                                                            context),
-                                                        style: const TextStyle(
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                          fontSize: 16,
-                                                        )),
-                                                    Text(
-                                                        '${Provider.of<SplashProvider>(context, listen: false).configModel!.currencySymbol}${Helpers.formatTextWithNum(_totalPrice.toString())}',
-                                                        style: const TextStyle(
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                          fontSize: 16,
-                                                        )),
-                                                  ]),
-
-                                              const SizedBox(height: 10),
-
-                                              Row(
-                                                  mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                                  children: [
-                                                    Text(
-                                                        getTranslated(
-                                                            'tax',
-                                                            context),
-                                                        style: const TextStyle(
-                                                          fontWeight:
-                                                          FontWeight.bold,
-                                                          fontSize: 16,
-                                                        )),
-                                                    Text(
-                                                        '${Provider.of<SplashProvider>(context, listen: false).configModel!.currencySymbol}${Helpers.formatTextWithNum(_totalTax.toString())}',
-                                                        style: const TextStyle(
-                                                          fontWeight:
-                                                          FontWeight.bold,
-                                                          fontSize: 16,
-                                                        )),
-                                                  ]),
-
-                                              const SizedBox(height: 10),
-
-                                              if (_couponDiscountAmount != 0.0)
-                                                Column(
-                                                  children: [
-                                                    Row(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .spaceBetween,
-                                                        children: [
-                                                          Text(
-                                                              getTranslated(
-                                                                  'coupon_discount',
-                                                                  context),
-                                                              style:
-                                                                  const TextStyle(
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold,
-                                                                fontSize: 16,
-                                                              )),
-                                                          Text(
-                                                              '(-)  ${Provider.of<SplashProvider>(context, listen: false).configModel!.currencySymbol}${Helpers.formatTextWithNum(_couponDiscountAmount.toString())}',
-                                                              style:
-                                                                  const TextStyle(
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold,
-                                                                fontSize: 16,
-                                                              )),
-                                                        ]),
-                                                    const SizedBox(height: 10),
-                                                  ],
-                                                ),
-
-                                              if (_totalDiscount != 0.0)
-                                                Column(
-                                                  children: [
-                                                    Row(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .spaceBetween,
-                                                      children: [
-                                                        Text(
-                                                            '${getTranslated('your_sale', context)}',
-                                                            style:
-                                                                const TextStyle(
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold,
-                                                              fontSize: 16,
-                                                            )),
-                                                        Text(
-                                                            '(-) ${Provider.of<SplashProvider>(context, listen: false).configModel!.currencySymbol}${Helpers.formatTextWithNum(_totalDiscount.toString())}',
-                                                            style:
-                                                                const TextStyle(
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold,
-                                                              fontSize: 16,
-                                                            ))
-                                                      ],
-                                                    ),
-                                                    const SizedBox(height: 10),
-                                                  ],
-                                                ),
-                                               // if (deliveryCharge != 0.0)
-                                                Column(
-                                                  children: [
-                                                    Row(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .spaceBetween,
-                                                        children: [
-                                                          Text(
-                                                              getTranslated(
-                                                                  'delivery_fee',
-                                                                  context),
-                                                              style:
-                                                                  const TextStyle(
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold,
-                                                                fontSize: 16,
-                                                              )),
-                                                          Text(
-                                                              '(+) ${Provider.of<SplashProvider>(context, listen: false).configModel!.currencySymbol}${deliveryCharge}',
-                                                              style:
-                                                                  const TextStyle(
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold,
-                                                                fontSize: 16,
-                                                              )),
-                                                        ]),
-                                                    const SizedBox(
-                                                      height: 10,
-                                                    ),
-                                                  ],
-                                                ),
-
-                                              const Divider(
-                                                thickness: 1,
-                                              ),
-                                              const SizedBox(
-                                                height: 10,
-                                              ),
-                                              Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceBetween,
-                                                  children: [
-                                                    Text(
-                                                        '${getTranslated('total_price', context)}:',
-                                                        style: const TextStyle(
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                          fontSize: 18,
-                                                        )),
-                                                    Text(
-                                                        '${Provider.of<SplashProvider>(context, listen: false).configModel!.currencySymbol}${Helpers.formatTextWithNum(_finalPrice.toString())}',
-                                                        style: const TextStyle(
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                          fontSize: 18,
-                                                        ))
-                                                  ]),
-                                            ]),
+                                          ],
+                                        ),
                                       ),
                                     ),
                                   ),
@@ -662,64 +386,73 @@ class _CartScreenState extends State<CartScreen> {
                                 child: CustomButton(
                                   text: getTranslated('place_order', context),
                                   onTap: () {
-                                    var orderProvider =
-                                        Provider.of<OrderProvider>(context,
-                                            listen: false);
-                                    var locationProvider =
-                                        Provider.of<LocationProvider>(context,
-                                            listen: false);
-
-                                    if (locationProvider.addressList!.isEmpty) {
+                                    if (authProvider.getUserAddressId() == 0) {
                                       showCustomSnackBar(
-                                        getTranslated(
-                                            'select_address_required', context),
-                                        context,
-                                      );
-                                    } else if (orderProvider.addressIndex ==
-                                            -1 ||
-                                        locationProvider
-                                                .addressList![
-                                                    orderProvider.addressIndex]
-                                                .id ==
-                                            null) {
-                                      showCustomSnackBar(
-                                        getTranslated(
-                                            'select_address_required', context),
-                                        context,
-                                      );
-                                    } else {
-                                      Provider.of<PlaceOrderProvider>(context,
-                                              listen: false)
-                                          .orderDetails(
-                                        amount: _finalPrice,
-                                        orderType: 'cart',
-                                        fromCart: true,
-
-                                        cartList: cartProvider.cartList,
-                                        deliveryId: locationProvider
-                                            .addressList![
-                                                orderProvider.addressIndex]
-                                            .id!,
-                                      );
-
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (BuildContext context) =>
-                                                CheckoutScreen(
-                                                  amount: _finalPrice,
-                                                  orderType: 'cart',
-                                                  fromCart: true,
-                                                  cartList: cartProvider.cartList,
-                                                  deliveryAddressId:locationProvider
-                                                      .addressList![
-                                                  orderProvider.addressIndex]
-                                                      .id!,
-                                                  totalTax: _totalTax,
-                                                )),
-                                      );
-
+                                          getTranslated(
+                                              'select_address_required',
+                                              context),
+                                          context);
+                                      return;
                                     }
+
+                                    List<CartModel>? cartList =
+                                        cartProvider.cartList;
+                                    List<ProductCart> carts =
+                                        cartList.map((cart) {
+                                      double price = cart.product!.price!;
+                                      double discountAmount =
+                                          cart.product!.discountType == 'amount'
+                                              ? cart.product!.discount!
+                                              : (price *
+                                                      cart.product!.discount!) /
+                                                  100;
+
+                                      return ProductCart(
+                                        cart.product!.id.toString(),
+                                        price.toString(),
+                                        discountAmount,
+                                        cart.quantity,
+                                        cart.product!.tax,
+                                        cart.tieredPricing,
+                                      );
+                                    }).toList();
+
+                                    PlaceOrderBody placeOrder = PlaceOrderBody(
+                                        cart: carts,
+                                        couponDiscountAmount:
+                                            couponDiscountAmount,
+                                        usePointsDiscountAmount:
+                                            usePointsDiscountAmount,
+                                        couponDiscountTitle: '',
+                                        couponCode: couponProvider
+                                                .couponDiscount?.code ??
+                                            "",
+                                        totalTaxAmount: totalTax.toString(),
+                                        orderAmount: totalOrderPrice,
+                                        deliveryAddressId:
+                                            authProvider.getUserAddressId()!,
+                                        orderType: 'cart',
+                                        paymentMethod: '',
+                                        orderNote: "",
+                                        deliveryDateTime: "",
+                                        usePoints:
+                                            couponProvider.useLoyaltyPoints!
+                                                ? 1
+                                                : 0,
+                                        remainingUserPoints:
+                                            remainingUserPoints,
+                                        deliveryCharge: deliveryCharge);
+
+                                    print(
+                                        "placeOrder == ${placeOrder.toJson()}");
+
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (BuildContext context) =>
+                                              CheckoutScreen(
+                                                  orderBody: placeOrder)),
+                                    );
                                   },
                                 ),
                               ),
@@ -730,6 +463,39 @@ class _CartScreenState extends State<CartScreen> {
                 ),
               )
             : NotLoggedInScreen(),
+      ),
+    );
+  }
+
+  Widget _buildDetailRow(BuildContext context, String labelKey, String value,
+      {Color? color}) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 5),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            getTranslated(labelKey, context),
+            style: TextStyle(
+              color: ColorResources.getTextColor(context).withOpacity(0.9),
+              fontWeight: FontWeight.w600,
+              fontSize: 16,
+            ),
+          ),
+          Expanded(
+            child: Text(
+              value,
+              maxLines: 1,
+              textAlign: TextAlign.end,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                color: color ?? ColorResources.getTextColor(context),
+                fontWeight: FontWeight.w600,
+                fontSize: 16,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

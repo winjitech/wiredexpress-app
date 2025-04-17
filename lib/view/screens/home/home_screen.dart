@@ -1,394 +1,342 @@
-import 'package:hive_flutter/hive_flutter.dart';
-import 'package:wired_express/provider/cart_provider.dart';
-import 'package:wired_express/provider/location_provider.dart';
-import 'package:wired_express/provider/notification_provider.dart';
-import 'package:wired_express/provider/theme_provider.dart';
-import 'package:wired_express/provider/wishlist_provider.dart';
-import 'package:wired_express/view/base/border_button.dart';
-import 'package:wired_express/view/base/custom_button.dart';
-import 'package:wired_express/view/screens/notification/notification_screen.dart';
-import 'package:wired_express/view/screens/rating/RateAppScreen.dart';
-import 'package:flutter/cupertino.dart';
+import 'dart:async';
+
 import 'package:flutter/material.dart';
-import 'package:wired_express/helper/product_type.dart';
+import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
+import 'package:provider/provider.dart';
+import 'package:shimmer_animation/shimmer_animation.dart';
+import 'package:wired_express/data/model/response/address_model.dart';
 import 'package:wired_express/helper/responsive_helper.dart';
 import 'package:wired_express/localization/language_constrants.dart';
 import 'package:wired_express/provider/auth_provider.dart';
 import 'package:wired_express/provider/banner_provider.dart';
+import 'package:wired_express/provider/cart_provider.dart';
 import 'package:wired_express/provider/category_provider.dart';
+import 'package:wired_express/provider/location_provider.dart';
+import 'package:wired_express/provider/place_order_provider.dart';
 import 'package:wired_express/provider/profile_provider.dart';
-import 'package:wired_express/provider/set_menu_provider.dart';
 import 'package:wired_express/provider/splash_provider.dart';
+import 'package:wired_express/provider/subscription_provider.dart';
+import 'package:wired_express/provider/theme_provider.dart';
+import 'package:wired_express/provider/wishlist_provider.dart';
 import 'package:wired_express/utill/color_resources.dart';
 import 'package:wired_express/utill/dimensions.dart';
-import 'package:wired_express/utill/images.dart';
-import 'package:wired_express/utill/routes.dart';
-import 'package:wired_express/utill/styles.dart';
-import 'package:wired_express/view/base/main_app_bar.dart';
-import 'package:wired_express/view/base/title_widget.dart';
+import 'package:wired_express/view/base/circular_indicator_widget.dart';
+import 'package:wired_express/view/base/custom_main_appbar.dart';
+import 'package:wired_express/view/base/no_data_screen.dart';
+import 'package:wired_express/view/base/product_widget.dart';
+import 'package:wired_express/view/screens/drawer/drawer_screen.dart';
 import 'package:wired_express/view/screens/home/widget/banner_view.dart';
-import 'package:wired_express/view/screens/home/widget/category_view.dart';
-import 'package:wired_express/view/screens/home/widget/main_slider.dart';
-import 'package:wired_express/view/screens/home/widget/product_view.dart';
-import 'package:wired_express/view/screens/home/widget/set_menu_view.dart';
-import 'package:wired_express/view/screens/menu/widget/options_view.dart';
-import 'package:wired_express/view/screens/search/search_screen.dart';
-import 'package:wired_express/view/screens/track/order_tracking_screen.dart';
-import 'package:provider/provider.dart';
-import 'package:wired_express/provider/theme_provider.dart';
-import 'package:wired_express/theme/dark_theme.dart';
-import 'package:wired_express/theme/light_theme.dart';
-import 'package:provider/provider.dart';
+import 'package:wired_express/view/screens/home/widget/category_product_view.dart';
+import 'package:wired_express/view/screens/nearby_electricians/nearby_electricians_screen.dart';
+import 'package:wired_express/view/screens/search/widget/filter_widget.dart';
 
-String LanguageStr = '';
+class HomeScreen extends StatefulWidget {
+  @override
+  _HomeScreenState createState() => _HomeScreenState();
+}
 
-class HomeScreen extends StatelessWidget {
-  final GlobalKey<ScaffoldState> drawerGlobalKey = GlobalKey();
+class _HomeScreenState extends State<HomeScreen> {
+  final GlobalKey<ScaffoldMessengerState> _scaffoldKey =
+      GlobalKey<ScaffoldMessengerState>();
 
   Future<void> _loadData(BuildContext context, bool reload) async {
-    if (Provider.of<CustomAuthProvider>(context, listen: false).isLoggedIn()!) {
-      await Provider.of<ProfileProvider>(context, listen: false)
-          .getUserInfo(context);
-    }
-    await Provider.of<WishListProvider>(context, listen: false)
-        .initWishListProductIds(context);
-    await Provider.of<CartProvider>(context, listen: false)
-        .initCartList(context);
+    final authProvider =
+        Provider.of<CustomAuthProvider>(context, listen: false);
+    final splashProvider = Provider.of<SplashProvider>(context, listen: false);
+    final subscriptionProvider =
+        Provider.of<SubscriptionProvider>(context, listen: false);
+    final profileProvider =
+        Provider.of<ProfileProvider>(context, listen: false);
+    final wishListProvider =
+        Provider.of<WishListProvider>(context, listen: false);
+    final cartProvider = Provider.of<CartProvider>(context, listen: false);
+    final categoryProvider =
+        Provider.of<CategoryProvider>(context, listen: false);
+    final bannerProvider = Provider.of<BannerProvider>(context, listen: false);
+    final placeOrder = Provider.of<PlaceOrderProvider>(context, listen: false);
+    final location = Provider.of<LocationProvider>(context, listen: false);
 
-    await Provider.of<CartProvider>(context, listen: false)
-        .initCartListProductIds(context);
-    await Provider.of<CategoryProvider>(context, listen: false)
-        .getCategoryListFull(context, reload);
-    await Provider.of<CategoryProvider>(context, listen: false)
-        .getCategoryList(context, reload);
-    await Provider.of<SetMenuProvider>(context, listen: false)
-        .getSetMenuList(context, reload);
-    await Provider.of<BannerProvider>(context, listen: false)
-        .getBannerList(context, reload);
+    if (authProvider.isLoggedIn() ?? false) {
+      if (profileProvider.userInfoModel != null &&
+          profileProvider.userInfoModel!.freeDelivery == 1) {
+        _showFreeDeliverySnackBar();
+      }
+      subscriptionProvider.getSubscriptionPlans(context);
+      profileProvider.getUserInfo(context);
+
+      location.initAddressList(context);
+      wishListProvider.initWishListProductIds(context);
+      cartProvider.initCartList(context);
+      cartProvider.initCartListProductIds(context);
+
+      if (profileProvider.userInfoModel?.nearbyElectricians == 1 &&
+          location.addressList?.isNotEmpty == true) {
+        int? userAddressId = authProvider.getUserAddressId();
+        AddressModel matchedAddress = location.addressList!.firstWhere(
+          (element) =>
+              element.id ==
+              (userAddressId == 0
+                  ? location.addressList![0].id
+                  : userAddressId),
+          orElse: () => location.addressList![0],
+        );
+
+        splashProvider.getNearbyElectricians(
+          context,
+          matchedAddress.latitude!,
+          matchedAddress.longitude!,
+        );
+      }
+    }
+
+    categoryProvider.getCategoryList(context, reload);
+    bannerProvider.getBannerList(context, reload);
+    placeOrder.getRunningOrderList(context);
+
+    if (placeOrder.runningOrderList?.isNotEmpty ?? false) {
+      await placeOrder.runningOrderList!.first;
+    }
+
+    await categoryProvider.getCategoryFeaturedList(context, reload).then((_) {
+      final featuredList = categoryProvider.categoryFeaturedList;
+      if (featuredList?.isNotEmpty ?? false) {
+        final firstCategory = featuredList!.first;
+        categoryProvider.setCategory(firstCategory);
+        categoryProvider.clearCategoryProductListOffset();
+        categoryProvider.getCategoryProductList(
+            context, "1", firstCategory.id.toString());
+      }
+    });
   }
 
+  @override
+  void initState() {
+    super.initState();
+    Timer(const Duration(seconds: 0), () async => _loadData(context, false));
+  }
+
+  final advancedDrawerController = AdvancedDrawerController();
   @override
   Widget build(BuildContext context) {
-    final bool _isLoggedIn =
-        Provider.of<CustomAuthProvider>(context, listen: false).isLoggedIn()!;
     final ScrollController _scrollController = ScrollController();
-    _loadData(context, false);
 
-    if (Provider.of<SplashProvider>(context, listen: false)
-            .configModel
-            ?.openingHours !=
-        null) {
-      bool isAvailable = false;
-      final currentTime = DateTime.now();
-      final currentHour = currentTime.hour;
-
-      for (final openingHours
-          in Provider.of<SplashProvider>(context, listen: false)
-              .configModel!
-              .openingHours!) {
-        final start = openingHours.start?.split(':');
-        final end = openingHours.end?.split(':');
-
-        if (start != null &&
-            end != null &&
-            start.length == 2 &&
-            end.length == 2) {
-          final startHour = int.parse(start[0]);
-          final startMinute = int.parse(start[1]);
-          final endHour = int.parse(end[0]);
-          final endMinute = int.parse(end[1]);
-
-          if ((currentHour > startHour ||
-                  (currentHour == startHour &&
-                      currentTime.minute >= startMinute)) &&
-              (currentHour < endHour ||
-                  (currentHour == endHour &&
-                      currentTime.minute <= endMinute))) {
-            isAvailable = true;
-            break;
-          }
-        }
-      }
-
-      if (!isAvailable) {
-        Future.delayed(Duration(milliseconds: 500), () {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              dismissDirection: DismissDirection.up,
-              content: Text(
-                'Sorry, the store is currently closed',
-                style: TextStyle(color: Colors.white),
-              ),
-              backgroundColor: Colors.red,
-              duration: Duration(seconds: 5),
-            ),
-          );
-        });
-      }
-    }
-
-    LanguageStr = getTranslated('set_language', context);
-
-    String _setLogoImage() {
-      return Images.logo;
-    }
-
-    return Scaffold(
-      backgroundColor: ColorResources.getScaffoldBackgroundColor(context),
-      key: drawerGlobalKey,
-      endDrawerEnableOpenDragGesture: false,
-      // floatingActionButton: FloatingActionButton(
-      //   onPressed: () {
-      //     Provider.of<ThemeProvider>(context, listen: false).toggleTheme();
-      //   },
-      //   child: Icon(Icons.brightness_4),
-      // ),
-      drawer: ResponsiveHelper.isTab(context)
-          ? Drawer(child: OptionsView(onTap: () {}))
-          : SizedBox(),
-      appBar: ResponsiveHelper.isDesktop(context)
-          ? PreferredSize(
-              child: MainAppBar(), preferredSize: Size.fromHeight(80))
-          : null,
-      body: SafeArea(
-        child: RefreshIndicator(
-          onRefresh: () async {
-            await _loadData(context, true);
-          },
-          backgroundColor: ColorResources.getPrimaryColor(context),
-          child: Scrollbar(
-            controller: _scrollController,
-            child: CustomScrollView(controller: _scrollController, slivers: [
-              // AppBar
-              ResponsiveHelper.isDesktop(context)
-                  ? SliverToBoxAdapter(child: SizedBox())
-                  : SliverAppBar(
-                      floating: true,
-                      elevation: 0,
-                      centerTitle: false,
-                      automaticallyImplyLeading: false,
-                      backgroundColor:
-                          ColorResources.getScaffoldBackgroundColor(context),
-                      pinned: ResponsiveHelper.isTab(context) ? true : false,
-                      leading: ResponsiveHelper.isTab(context)
-                          ? IconButton(
-                              onPressed: () =>
-                                  drawerGlobalKey.currentState!.openDrawer(),
-                              icon: Icon(Icons.menu,
-                                  color: ColorResources.getTextColor(context)),
-                            )
-                          : null,
-                      title: Consumer<SplashProvider>(
-                          builder: (context, splash, child) => Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  ResponsiveHelper.isWeb()
-                                      ? FadeInImage.assetNetwork(
-                                          placeholder:
-                                              Images.placeholder_rectangle,
-                                          image: splash.baseUrls != null
-                                              ? '${splash.baseUrls!.storeImageUrl}/${splash.configModel!.storeLogo}'
-                                              : '',
-                                          height: 40,
-                                          width: 40,
-                                        )
-                                      : Container(
-                                          decoration: BoxDecoration(
-                                              image: DecorationImage(
-                                            image: AssetImage(_setLogoImage()),
-                                            fit: BoxFit.cover,
-                                          )),
-                                          width: 40.0,
-                                          height: 40),
-                                  SizedBox(width: 10),
-                                ],
-                              )),
-                      actions: [
-                        IconButton(
-                          // onPressed: () => Navigator.pushNamed(
-                          //     context, Routes.getNotificationRoute()),
-                          onPressed: () async {
-                            await Provider.of<NotificationProvider>(context,
-                                    listen: false)
-                                .initNotificationList(context)
-                                .then((value) => Navigator.push(
+    return AdvancedDrawer(
+        rtlOpening: false,
+        openRatio: 0.55,
+        openScale: 0.80,
+        backdrop: SafeArea(
+            child: Padding(
+                padding: const EdgeInsets.all(15),
+                child: IconButton(
+                    onPressed: () {
+                      closeDrawer();
+                    },
+                    icon: const Icon(Icons.close,
+                        color: Colors.white, size: 36)))),
+        childDecoration: BoxDecoration(borderRadius: BorderRadius.circular(40)),
+        controller: advancedDrawerController,
+        animationCurve: Curves.easeInOutExpo,
+        animationDuration: const Duration(milliseconds: 400),
+        backdropColor: ColorResources.getScaffoldColor(context),
+        drawer: DrawerScreen(),
+        child: Scaffold(
+            backgroundColor: ColorResources.getScaffoldBackgroundColor(context),
+            key: _scaffoldKey,
+            appBar: CustomMainAppBar(
+                onMenuPressed: () => showDrawer(),
+                title: getTranslated('shopping', context)),
+            body: Consumer4<CategoryProvider, ProfileProvider, SplashProvider,
+                    CustomAuthProvider>(
+                builder: (context, categoryProvider, profileProvider,
+                    splashProvider, authProvider, child) {
+              return Padding(
+                padding: const EdgeInsets.all(15),
+                child: CustomScrollView(
+                    physics: const BouncingScrollPhysics(),
+                    controller: _scrollController,
+                    slivers: [
+                      SliverToBoxAdapter(
+                        child: Consumer<BannerProvider>(
+                          builder: (context, banner, child) {
+                            return BannerView();
+                          },
+                        ),
+                      ),
+                      SliverToBoxAdapter(child: Consumer4<
+                              CategoryProvider,
+                              ProfileProvider,
+                              SplashProvider,
+                              CustomAuthProvider>(
+                          builder: (context, categoryProvider, profileProvider,
+                              splashProvider, authProvider, child) {
+                        return Column(children: [
+                          const SizedBox(height: 20),
+                          if (authProvider.isLoggedIn()! &&
+                              profileProvider
+                                      .userInfoModel?.hasActiveSubscription ==
+                                  true)
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 20),
+                              child: Container(
+                                padding: const EdgeInsets.all(15),
+                                decoration: BoxDecoration(
+                                    color: Colors.amber[700],
+                                    borderRadius: BorderRadius.circular(10),
+                                    boxShadow: [
+                                      BoxShadow(
+                                          color: ColorResources.getBoxShadow(
+                                              context),
+                                          blurRadius: 5,
+                                          offset: const Offset(0, 2))
+                                    ]),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const Icon(Icons.star,
+                                        color: Colors.white, size: 24),
+                                    const SizedBox(width: 10),
+                                    Text(
+                                        getTranslated(
+                                            'your_active_subscription_plan_place',
+                                            context),
+                                        style: const TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 16))
+                                  ],
+                                ),
+                              ),
+                            ),
+                          if (authProvider.isLoggedIn()! &&
+                              profileProvider.userInfoModel?.nearbyElectricians ==
+                                  1 &&
+                              splashProvider.nearbyElectriciansList != null &&
+                              splashProvider.nearbyElectriciansList!.isNotEmpty)
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 20),
+                              child: GestureDetector(
+                                onTap: () => Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (BuildContext? context) =>
-                                            NotificationScreen())));
-                          },
-                          icon: Icon(Icons.notifications,
-                              color: ColorResources.getTextColor(context)),
-                        ),
-                      ],
-                    ),
-
-              // Search Button
-              SliverPersistentHeader(
-                pinned: true,
-                delegate: SliverDelegate(
-                    child: Center(
-                  child: InkWell(
-                    onTap: () {
-                      // Navigator.pushNamed(context, Routes.getSearchRoute()), // type 'Null' is not a subtype of type 'Handler'
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (BuildContext? context) =>
-                                  SearchScreen()));
-                    },
-                    child: Container(
-                      height: 60,
-                      width: MediaQuery.of(context).size.width,
-                      color: ColorResources.getScaffoldBackgroundColor(context),
-                      padding: EdgeInsets.symmetric(
-                          horizontal: Dimensions.PADDING_SIZE_SMALL,
-                          vertical: 5),
-                      child: Container(
-                        decoration: BoxDecoration(
-                            color: ColorResources.getSearchBg(context),
-                            borderRadius: BorderRadius.circular(10)),
-                        child: Row(children: [
-                          Padding(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: Dimensions.PADDING_SIZE_SMALL),
-                              child: Icon(
-                                Icons.search,
-                                size: 25,
-                                color: ColorResources.getTextColor(context),
-                              )),
-                          Expanded(
-                            child: Text(
-                                getTranslated('search_items_here', context),
-                                style: rubikRegular.copyWith(
-                                  fontSize: 12,
-                                  color: ColorResources.getTextColor(context),
-                                )),
-                          )
-                        ]),
-                      ),
-                    ),
-                  ),
-                )),
-              ),
-
-              SliverToBoxAdapter(
-                child: Center(
-                  child: SizedBox(
-                    width: MediaQuery.of(context).size.width,
-                    child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // _isLoggedIn?
-                          // Provider.of<LocationProvider>(context, listen: false)
-                          //             .zoneLoading ==
-                          //         true
-                          //     ? Center(
-                          //         child: CircularProgressIndicator(
-                          //             valueColor: AlwaysStoppedAnimation<Color>(
-                          //                 Colors.redAccent)))
-                          //     : Center(
-                          //         child: ElevatedButton(
-                          //             onPressed: () {
-                          //               Provider.of<LocationProvider>(context,
-                          //                       listen: false)
-                          //                   .getZone(
-                          //                       context,
-                          //                       40.416268.toString(),
-                          //                       "${-3.703581}");
-                          //               print("-----------------------------");
-                          //               print("zone id => ${ Provider.of<LocationProvider>(context,
-                          //                   listen: false).zoneList!.id}");      print("-----------------------------");
-                          //
-                          //             },
-                          //             child: Text("zones")),
-                          //       ):SizedBox(),
-                          ResponsiveHelper.isDesktop(context)
-                              ? Padding(
-                                  padding: EdgeInsets.only(
-                                      top: Dimensions.PADDING_SIZE_DEFAULT),
-                                  child: MainSlider(),
-                                )
-                              : SizedBox(),
-                          Consumer<CategoryProvider>(
-                            builder: (context, category, child) {
-                              return category.categoryList == null
-                                  ? CategoryView()
-                                  : category.categoryList!.length == 0
-                                      ? SizedBox()
-                                      : CategoryView();
-                            },
-                          ),
-                          Consumer<SetMenuProvider>(
-                            builder: (context, setMenu, child) {
-                              return setMenu.setMenuList == null
-                                  ? SetMenuView()
-                                  : setMenu.setMenuList!.length == 0
-                                      ? SizedBox()
-                                      : SetMenuView();
-                            },
-                          ),
-                          ResponsiveHelper.isDesktop(context)
-                              ? SizedBox()
-                              : Consumer<BannerProvider>(
-                                  builder: (context, banner, child) {
-                                    return banner.bannerList == null
-                                        ? BannerView()
-                                        : banner.bannerList!.length == 0
-                                            ? SizedBox()
-                                            : BannerView();
-                                  },
+                                        builder: (BuildContext context) =>
+                                            NearbyElectriciansScreen(
+                                                electricians: splashProvider
+                                                    .nearbyElectriciansList!))),
+                                child: Container(
+                                  padding: const EdgeInsets.all(15),
+                                  decoration: BoxDecoration(
+                                      color: ColorResources.getCardColor(context),
+                                      borderRadius: BorderRadius.circular(10),
+                                      boxShadow: [
+                                        BoxShadow(
+                                            color: Provider.of<ThemeProvider>(
+                                                        context)
+                                                    .darkTheme
+                                                ? Colors.black.withOpacity(0.4)
+                                                : Colors.grey[300]!,
+                                            blurRadius: 5,
+                                            spreadRadius: 1,
+                                            offset: const Offset(0, 2))
+                                      ]),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                          getTranslated(
+                                              'nearby_electricians', context),
+                                          style: TextStyle(
+                                              color: ColorResources.getTextColor(
+                                                  context),
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 16))
+                                    ],
+                                  ),
                                 ),
-                          Text(
-                            '',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 12,
-                                color: Colors.transparent),
+                              ),
+                            ),
+                          categoryProvider.categoryFeaturedList == null
+                              ? const SizedBox()
+                              : FilterWidget(categoryProvider),
+                          const SizedBox(height: 20),
+                          CategoryProductView(
+                            scrollController: _scrollController,
                           ),
-                          Padding(
-                            padding: EdgeInsets.fromLTRB(10, 20, 10, 10),
-                            child: TitleWidget(
-                                title: getTranslated('popular_item', context)),
-                          ),
-                          ProductView(
-                              productType: ProductType.POPULAR_PRODUCT,
-                              scrollController: _scrollController),
-                        ]),
+                        ]);
+                      })),
+                    ]),
+              );
+            })));
+  }
+
+  void showDrawer() {
+    if (mounted) {
+      Provider.of<PlaceOrderProvider>(context, listen: false)
+          .getRunningOrderList(context)
+          .then((value) =>
+              Provider.of<PlaceOrderProvider>(context, listen: false)
+                          .runningOrderList ==
+                      null
+                  ? Provider.of<ProfileProvider>(context, listen: false)
+                      .getUserInfo(context)
+                  : Provider.of<PlaceOrderProvider>(context, listen: false)
+                      .runningOrderList![0]);
+      advancedDrawerController.showDrawer();
+      Provider.of<ProfileProvider>(context, listen: false).getUserInfo(context);
+    }
+  }
+
+  void closeDrawer() {
+    if (mounted) {
+      advancedDrawerController.hideDrawer();
+      Provider.of<ProfileProvider>(context, listen: false).getUserInfo(context);
+    }
+  }
+
+  void _showFreeDeliverySnackBar() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        padding: EdgeInsets.zero,
+        content: Shimmer(
+          duration: const Duration(seconds: 2),
+          enabled: true,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            child: Center(
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Center(
+                    child: const Icon(
+                      Icons.local_shipping,
+                      color: Colors.white,
+                    ),
                   ),
-                ),
+                  const SizedBox(width: 10),
+                  Text(
+                    getTranslated('you_have_free_delivery', context),
+                    textAlign: TextAlign.center,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 15),
+                  ),
+                ],
               ),
-            ]),
+            ),
           ),
         ),
+        backgroundColor: Colors.green,
+        duration: const Duration(seconds: 20),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(14),
+        ),
+        margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
       ),
     );
-  }
-}
-//ResponsiveHelper
-
-class SliverDelegate extends SliverPersistentHeaderDelegate {
-  Widget? child;
-
-  SliverDelegate({@required this.child});
-
-  @override
-  Widget build(
-      BuildContext context, double shrinkOffset, bool overlapsContent) {
-    return child!;
-  }
-
-  @override
-  double get maxExtent => 60;
-
-  @override
-  double get minExtent => 60;
-
-  @override
-  bool shouldRebuild(SliverDelegate oldDelegate) {
-    return oldDelegate.maxExtent != 60 ||
-        oldDelegate.minExtent != 60 ||
-        child != oldDelegate.child;
   }
 }
