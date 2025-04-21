@@ -1,3 +1,4 @@
+import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -24,10 +25,8 @@ class ProductWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer3<ProfileProvider, SplashProvider,
-            WishListProvider>(
-        builder: (context, profileProvider, splashProvider,
-            wishListProvider, child) {
+    return Consumer3<ProfileProvider, SplashProvider, WishListProvider>(builder:
+        (context, profileProvider, splashProvider, wishListProvider, child) {
       bool isLoggedIn =
           Provider.of<CustomAuthProvider>(context, listen: false).isLoggedIn()!;
       ProductPlanDiscountModel? productPlanDiscountModel;
@@ -50,15 +49,25 @@ class ProductWidget extends StatelessWidget {
         }
       }
 
-      double discountedOnProductPrice = productPlanDiscountModel != null &&
-              productPlanDiscountModel.planId != null
-          ? PriceConverter.convertWithDiscount(
-              context,
-              product!.price!,
-              productPlanDiscountModel.discount!,
-              productPlanDiscountModel.discountType!)
-          : PriceConverter.convertWithDiscount(context, product!.price!,
-              product!.discount!, product!.discountType!);
+      double discountedOnProductPrice = min(
+        productPlanDiscountModel != null &&
+                productPlanDiscountModel.planId != null
+            ? PriceConverter.convertWithDiscount(
+                context,
+                product!.price!,
+                productPlanDiscountModel.discount!,
+                productPlanDiscountModel.discountType!,
+              )
+            : double.infinity,
+        PriceConverter.convertWithDiscount(
+          context,
+          product!.price!,
+          product!.discount!,
+          product!.discountType!,
+        ),
+      );
+
+
       double originalPrice = PriceConverter.convertWithDiscount(
           context, product!.price!, 0.0, 'amount');
 
@@ -96,6 +105,7 @@ class ProductWidget extends StatelessWidget {
                     child: CachedNetworkImage(
                       height: 170,
                       fit: BoxFit.cover,
+                      width: double.infinity,
                       imageUrl:
                           '${Provider.of<SplashProvider>(context, listen: false).baseUrls!.productImageUrl}/${product!.image}',
                       cacheKey:
@@ -142,15 +152,19 @@ class ProductWidget extends StatelessWidget {
                       top: 8,
                       left: 8,
                       child: Container(
-                          padding: EdgeInsets.symmetric(horizontal: 14 , vertical: 2),
+                          padding:
+                              EdgeInsets.symmetric(horizontal: 14, vertical: 2),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(20),
                             color: Colors.green,
                           ),
-                          child: Text(getTranslated('new', context) , 
-                          style: TextStyle(fontSize: 14 ,fontWeight: FontWeight.w500,
-                            color: ColorResources.getCardColor(context)
-                          ),)),
+                          child: Text(
+                            getTranslated('new', context),
+                            style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                                color: ColorResources.getCardColor(context)),
+                          )),
                     ),
                 ],
               ),
@@ -172,7 +186,7 @@ class ProductWidget extends StatelessWidget {
                       children: [
                         if (discountedOnProductPrice != originalPrice)
                           Row(
-                          children: [
+                            children: [
                               Text(
                                 "${splashProvider.configModel!.currencySymbol ?? '\$'}${Helpers.formatTextWithNum(originalPrice.toString())}",
                                 style: TextStyle(
@@ -186,9 +200,9 @@ class ProductWidget extends StatelessWidget {
                                           .withOpacity(0.4),
                                 ),
                               ),
-                            SizedBox(width: 5),
-                          ],
-                        ),
+                              SizedBox(width: 5),
+                            ],
+                          ),
                         Text(
                           "${splashProvider.configModel!.currencySymbol ?? '\$'}${Helpers.formatTextWithNum(discountedOnProductPrice.toString())}",
                           style: TextStyle(

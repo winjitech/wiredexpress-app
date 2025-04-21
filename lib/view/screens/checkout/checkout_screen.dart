@@ -413,6 +413,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           MaterialPageRoute(
               builder: (BuildContext context) => PaymentWebView(
                     url: '${AppConstants.baseUrl}/paypal/create/${orderID}',
+                    fromCheckoutScreen: true,
                   )));
     } else {
       ScaffoldMessenger.of(context).showSnackBar(

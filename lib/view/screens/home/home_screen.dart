@@ -35,13 +35,18 @@ class _HomeScreenState extends State<HomeScreen> {
       GlobalKey<ScaffoldMessengerState>();
 
   Future<void> _loadData(BuildContext context, bool reload) async {
-    final authProvider = Provider.of<CustomAuthProvider>(context, listen: false);
+    final authProvider =
+        Provider.of<CustomAuthProvider>(context, listen: false);
     final splashProvider = Provider.of<SplashProvider>(context, listen: false);
-    final subscriptionProvider = Provider.of<SubscriptionProvider>(context, listen: false);
-    final profileProvider = Provider.of<ProfileProvider>(context, listen: false);
-    final wishListProvider = Provider.of<WishListProvider>(context, listen: false);
+    final subscriptionProvider =
+        Provider.of<SubscriptionProvider>(context, listen: false);
+    final profileProvider =
+        Provider.of<ProfileProvider>(context, listen: false);
+    final wishListProvider =
+        Provider.of<WishListProvider>(context, listen: false);
     final cartProvider = Provider.of<CartProvider>(context, listen: false);
-    final categoryProvider = Provider.of<CategoryProvider>(context, listen: false);
+    final categoryProvider =
+        Provider.of<CategoryProvider>(context, listen: false);
     final bannerProvider = Provider.of<BannerProvider>(context, listen: false);
     final placeOrder = Provider.of<PlaceOrderProvider>(context, listen: false);
     final location = Provider.of<LocationProvider>(context, listen: false);
@@ -55,7 +60,7 @@ class _HomeScreenState extends State<HomeScreen> {
           DateTime expireDate = DateTime.parse(subscriptionExpireDate);
           DateTime now = DateTime.now();
           DateTime yesterday = DateTime(now.year, now.month, now.day)
-              .subtract(Duration(days: 1));
+              .subtract(const Duration(days: 1));
 
           bool isExpiredYesterday = expireDate.year == yesterday.year &&
               expireDate.month == yesterday.month &&

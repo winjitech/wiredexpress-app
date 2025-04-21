@@ -447,5 +447,10 @@
   "off_per_item_on_orders_of" : "Off per item on orders of",
   "units": "Units",
   "get": "Get",
-  "total_products_discount": "Total products discount"
+  "total_products_discount": "Total products discount",
+  "estimated_distance" : "Estimated distance",
+  "estimated_duration" : "Estimated duration",
+  "as_promotional_discount" : "as a promotional discount",
+  "as_plan_discount": "as a plan discount"
+
 }

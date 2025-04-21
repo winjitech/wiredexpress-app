@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:wired_express/data/helper/helpers.dart';
 import 'package:wired_express/data/model/response/tiered_pricing_model.dart';
+import 'package:wired_express/data/model/response/userinfo_model.dart';
 import 'package:wired_express/localization/language_constrants.dart';
 import 'package:wired_express/provider/auth_provider.dart';
 import 'package:wired_express/provider/profile_provider.dart';
@@ -28,6 +29,16 @@ class PriceConverter {
       price = price - ((discount / 100) * price);
     }
     return price;
+  }
+  static double calculateDiscountAmount(
+      BuildContext? context, double price, double discount, String discountType) {
+    double discountAmount = 0;
+    if (discountType == 'amount') {
+      discountAmount = discount;
+    } else if (discountType == 'percent') {
+      discountAmount = (discount / 100) * price;
+    }
+    return discountAmount;
   }
 
   static double calculation(
@@ -57,7 +68,8 @@ class PriceConverter {
         Provider.of<CustomAuthProvider>(context, listen: false);
     final profileProvider =
         Provider.of<ProfileProvider>(context, listen: false);
-    final userInfo = profileProvider.userInfoModel;
+    UserInfoModel? userInfo = profileProvider.userInfoModel;
+    int userPlanId = userInfo!.userSubscription!.planId!;
 
     if (authProvider.isLoggedIn()! &&
         userInfo != null &&
@@ -66,38 +78,89 @@ class PriceConverter {
     }
 
     TiredPricingModel? matchedPricing;
+    List<TiredPricingModel>? matchedPricingWithoutPlanId = [];
+    List<TiredPricingModel>? matchedPricingWithPlanId = [];
 
     for (var pricing in tieredPricing) {
-      if (pricing.minQuantity! <= quantity) {
-        if (!isHaveBulkOrderDiscounts && pricing.planId != null) {
-          continue;
-        }
+      if (pricing.planId == null) {
+        matchedPricingWithoutPlanId!.add(pricing);
+      }
+      if (pricing.planId != null && userPlanId == pricing.planId) {
+        print("pricing == ${pricing.toJson()}");
+        matchedPricingWithPlanId!.add(pricing);
+      }
+    }
 
-        if (matchedPricing == null ||
-            pricing.minQuantity! > matchedPricing.minQuantity!) {
+    if (matchedPricingWithPlanId.isNotEmpty && isHaveBulkOrderDiscounts) {
+      for (var pricing in matchedPricingWithPlanId) {
+        if (pricing.minQuantity! <= quantity) {
           matchedPricing = pricing;
-        } else if (pricing.minQuantity! == matchedPricing.minQuantity!) {
-          if (isHaveBulkOrderDiscounts &&
-              userInfo != null &&
-              pricing.planId == userInfo.userSubscription!.planId) {
-            matchedPricing = pricing;
+        } else if (matchedPricing == null) {
+          for (var pricing in matchedPricingWithoutPlanId) {
+            if (pricing.minQuantity! <= quantity) {
+              matchedPricing = pricing;
+            }
           }
         }
       }
     }
+    print(
+        "matchedPricingWithoutPlanId == ${matchedPricingWithoutPlanId.length}");
+    print("matchedPricingWithPlanId == ${matchedPricingWithPlanId.length}");
 
     if (matchedPricing != null) {
-      print('Matched Pricing Model: minQuantity=${matchedPricing.minQuantity}, '
-          'discountPrice=${matchedPricing.discountPrice}');
+      print('Matched Pricing Model: ${matchedPricing.toJson()}');
     }
 
     return matchedPricing;
   }
+  // static TiredPricingModel? getMatchedTieredPricingModel(BuildContext context,
+  //     List<TiredPricingModel> tieredPricing, int quantity) {
+  //   bool isHaveBulkOrderDiscounts = false;
+  //   final authProvider =
+  //   Provider.of<CustomAuthProvider>(context, listen: false);
+  //   final profileProvider =
+  //   Provider.of<ProfileProvider>(context, listen: false);
+  //   final userInfo = profileProvider.userInfoModel;
+  //
+  //   if (authProvider.isLoggedIn()! &&
+  //       userInfo != null &&
+  //       userInfo.bulkOrderDiscounts == 1) {
+  //     isHaveBulkOrderDiscounts = true;
+  //   }
+  //
+  //   TiredPricingModel? matchedPricing;
+  //
+  //   for (var pricing in tieredPricing) {
+  //     if (pricing.minQuantity! <= quantity) {
+  //       if (isHaveBulkOrderDiscounts && pricing.planId != null) {
+  //         continue;
+  //       }
+  //
+  //       if (matchedPricing == null ||
+  //           pricing.minQuantity! > matchedPricing.minQuantity!) {
+  //         matchedPricing = pricing;
+  //       } else if (pricing.minQuantity! == matchedPricing.minQuantity!) {
+  //         if (isHaveBulkOrderDiscounts &&
+  //             userInfo != null &&
+  //             pricing.planId == userInfo.userSubscription!.planId) {
+  //           matchedPricing = pricing;
+  //         }
+  //       }
+  //     }
+  //   }
+  //
+  //   if (matchedPricing != null) {
+  //     print('Matched Pricing Model: minQuantity=${matchedPricing.minQuantity}, '
+  //         'discountPrice=${matchedPricing.discountPrice}');
+  //   }
+  //
+  //   return matchedPricing;
+  // }
 
   static double? getProductFinalPrice(BuildContext context,
       List<TiredPricingModel> tieredPricing, double? price, int quantity) {
     double basePrice = price ?? 0.0;
-
     TiredPricingModel? matchedPricing =
         getMatchedTieredPricingModel(context, tieredPricing, quantity);
 

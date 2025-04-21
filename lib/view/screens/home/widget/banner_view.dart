@@ -22,81 +22,90 @@ class _BannerViewState extends State<BannerView> {
   @override
   Widget build(BuildContext context) {
     return Column(children: [
-      SizedBox(
-        height: 180,
-        child: Consumer<BannerProvider>(builder: (context, banner, child) {
-          return banner.bannerList != null
-              ? banner.bannerList!.length > 0
-                  ? CarouselSlider.builder(
-                      carouselController: carouselController,
-                      options: CarouselOptions(
-                        height: ResponsiveHelper.isMobile(context) ? 240 : 260,
-                        viewportFraction:
-                            ResponsiveHelper.isDesktop(context) ? 0.2 : 0.99,
-                        enlargeFactor:
-                            ResponsiveHelper.isDesktop(context) ? 0.2 : 0.99,
-                        autoPlay: true,
-                        enlargeCenterPage: true,
-                        disableCenter: true,
-                        onPageChanged: (index, reason) {},
-                      ),
-                      itemCount: banner.bannerList!.length,
-                      itemBuilder: (context, index, _) {
-                        return Center(
-                          child: GestureDetector(
-                            onTap: () {
-                              if (banner.bannerList![index].productId != null) {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (BuildContext? context) =>
-                                            ProductDetailsScreen(
-                                                productId: banner
-                                                    .bannerList![index]
-                                                    .productId)));
-                              } else if (banner.bannerList![index].categoryId !=
-                                  null) {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (_) => CategoryScreen(
-                                            categoryModel: banner
-                                                .bannerList![index].category)));
-                              }
-                            },
-                            child: Stack(
-                              children: [
-                                Center(
-                                  child: Container(
-                                    height: 180,
-                                    width: MediaQuery.of(context).size.width,
-                                    margin: EdgeInsets.only(right: 0),
-                                    decoration: BoxDecoration(
-                                      image: DecorationImage(
-                                          image: NetworkImage(
-                                              '${Provider.of<SplashProvider>(context, listen: false).baseUrls!.bannerImageUrl}/${banner.bannerList![index].image}'),
-                                          fit: BoxFit.cover),
-                                      color: ColorResources
-                                          .getScaffoldBackgroundColor(context),
-                                      borderRadius: BorderRadius.circular(10),
+      Consumer<BannerProvider>(builder: (context, banner, child) {
+        if (banner.bannerList != null && banner.bannerList!.isEmpty) {
+          return SizedBox();
+        }
+        return SizedBox(
+            height: 180,
+            child: banner.bannerList != null
+                ? banner.bannerList!.length > 0
+                    ? CarouselSlider.builder(
+                        carouselController: carouselController,
+                        options: CarouselOptions(
+                            height:
+                                ResponsiveHelper.isMobile(context) ? 240 : 260,
+                            viewportFraction:
+                                ResponsiveHelper.isDesktop(context)
+                                    ? 0.2
+                                    : 0.99,
+                            enlargeFactor: ResponsiveHelper.isDesktop(context)
+                                ? 0.2
+                                : 0.99,
+                            autoPlay: true,
+                            enlargeCenterPage: true,
+                            disableCenter: true,
+                            onPageChanged: (index, reason) {}),
+                        itemCount: banner.bannerList!.length,
+                        itemBuilder: (context, index, _) {
+                          return Center(
+                            child: GestureDetector(
+                              onTap: () {
+                                if (banner.bannerList![index].productId !=
+                                    null) {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (BuildContext? context) =>
+                                              ProductDetailsScreen(
+                                                  productId: banner
+                                                      .bannerList![index]
+                                                      .productId)));
+                                } else if (banner
+                                        .bannerList![index].categoryId !=
+                                    null) {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (_) => CategoryScreen(
+                                              categoryModel: banner
+                                                  .bannerList![index]
+                                                  .category)));
+                                }
+                              },
+                              child: Stack(
+                                children: [
+                                  Center(
+                                    child: Container(
+                                      height: 180,
+                                      width: MediaQuery.of(context).size.width,
+                                      margin: EdgeInsets.only(right: 0),
+                                      decoration: BoxDecoration(
+                                        image: DecorationImage(
+                                            image: NetworkImage(
+                                                '${Provider.of<SplashProvider>(context, listen: false).baseUrls!.bannerImageUrl}/${banner.bannerList![index].image}'),
+                                            fit: BoxFit.cover),
+                                        color: ColorResources
+                                            .getScaffoldBackgroundColor(
+                                                context),
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
                                     ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
-                          ),
-                        );
-                      },
-                    )
-                  : Center(
-                      child: Text(
-                      getTranslated('no_banner_available', context),
-                      style: TextStyle(
-                          color: ColorResources.getTextColor(context)),
-                    ))
-              : BannerShimmer();
-        }),
-      ),
+                          );
+                        },
+                      )
+                    : Center(
+                        child: Text(
+                        getTranslated('no_banner_available', context),
+                        style: TextStyle(
+                            color: ColorResources.getTextColor(context)),
+                      ))
+                : BannerShimmer());
+      }),
     ]);
   }
 }

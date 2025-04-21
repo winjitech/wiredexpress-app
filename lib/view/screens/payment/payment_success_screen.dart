@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:wired_express/provider/subscription_provider.dart';
 import 'package:wired_express/utill/color_resources.dart';
 import 'package:wired_express/utill/dimensions.dart';
 import 'package:wired_express/utill/styles.dart';
@@ -8,13 +10,14 @@ import 'package:wired_express/view/screens/dashboard/dashboard_screen.dart';
 import 'package:wired_express/view/screens/order/order_screen.dart';
 
 class PaymentSuccessScreen extends StatelessWidget {
-  final bool? success;
-  PaymentSuccessScreen({@required this.success});
+  final bool success, fromCheckoutScreen;
+
+  PaymentSuccessScreen(
+      {required this.success, required this.fromCheckoutScreen});
 
   @override
   Widget build(BuildContext? context) {
     return Scaffold(
-      //appBar: ResponsiveHelper.isDesktop(context)? PreferredSize(child: MainAppBar(), preferredSize: Size.fromHeight(80)):null,
       body: Center(
         child: Container(
           width: 1170,
@@ -33,35 +36,36 @@ class PaymentSuccessScreen extends StatelessWidget {
                 size: 80,
               ),
             ),
-
             SizedBox(height: Dimensions.PADDING_SIZE_LARGE),
-
             Text(
-              success! ? 'Payment succeed!' : 'Payment Failed',
+              success ? 'Payment succeed!' : 'Payment Failed',
               style: rubikMedium.copyWith(fontSize: Dimensions.FONT_SIZE_LARGE),
             ),
-            SizedBox(height: Dimensions.PADDING_SIZE_SMALL),
-
-            // Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-            //   Text('${getTranslated('subscription_id', context)}:', style: rubikRegular.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL)),
-            //   SizedBox(width: Dimensions.PADDING_SIZE_EXTRA_SMALL),
-            //   Text('$subscriptionId', style: rubikMedium.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL)),
-            // ]),
-
             SizedBox(height: 30),
-
             Padding(
               padding: EdgeInsets.all(Dimensions.PADDING_SIZE_LARGE),
               child: CustomButton(
                   backgroundColor: ColorResources.getPrimaryColor(context),
-                  text: success! ? 'Back' : 'Home',
+                  text: success ? 'Back' : 'Home',
                   onTap: () {
-                    if (success!) {
-                      Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                              builder: (BuildContext? context) =>
-                                  DashboardScreen(pageIndex: 0)));
+                    if (success) {
+                      if (fromCheckoutScreen) {
+                        Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (BuildContext? context) =>
+                                    DashboardScreen(pageIndex: 0)));
+                      } else {
+                        Provider.of<SubscriptionProvider>(context,
+                                listen: false)
+                            .getSubscriptionPlans(context);
+
+                        Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (BuildContext? context) =>
+                                    DashboardScreen(pageIndex: 3)));
+                      }
                     } else {
                       Navigator.pushReplacement(
                           context,

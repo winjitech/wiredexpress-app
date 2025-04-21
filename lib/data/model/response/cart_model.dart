@@ -9,21 +9,18 @@ class CartModel {
   int? _quantity;
 
   ProductModel? _product;
-  TiredPricingModel? _tieredPricing;
 
   CartModel({
     required int? id,
     required int? productId,
     required int? quantity,
     required ProductModel? product,
-    required TiredPricingModel? tieredPricing,
   }) {
     _id = id;
     _productId = productId;
     _quantity = quantity;
 
     _product = product;
-    _tieredPricing = tieredPricing;
   }
 
   int? get id => _id;
@@ -31,7 +28,6 @@ class CartModel {
   int? get quantity => _quantity;
 
   ProductModel? get product => _product;
-  TiredPricingModel? get tieredPricing => _tieredPricing;
   set quantity(int? value) {
     _quantity = value;
   }
@@ -43,9 +39,6 @@ class CartModel {
 
     _product =
         json['product'] != null ? ProductModel.fromJson(json['product']) : null;
-    _tieredPricing = json['tiered_pricing'] != null
-        ? TiredPricingModel.fromJson(json['tiered_pricing'])
-        : null;
   }
 
   Map<String, dynamic> toJson() {
@@ -57,9 +50,7 @@ class CartModel {
     if (_product != null) {
       data['product'] = _product!.toJson();
     }
-    if (_tieredPricing != null) {
-      data['tiered_pricing'] = _tieredPricing!.toJson();
-    }
+
     return data;
   }
 }

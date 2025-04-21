@@ -80,12 +80,7 @@ class _CartProductDetailsScreenState extends State<CartProductDetailsScreen> {
                                         id: widget.cart!.id!,
                                         productId: product.id,
                                         quantity: productProvider.quantity,
-                                        product: product,
-                                        tieredPricing: PriceConverter
-                                            .getMatchedTieredPricingModel(
-                                                context,
-                                                tiredPricing,
-                                                productProvider.quantity ?? 1));
+                                        product: product);
 
                                     cartProvider
                                         .addToCartList(cartModel)

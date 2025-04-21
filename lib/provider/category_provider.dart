@@ -127,9 +127,7 @@ class CategoryProvider extends ChangeNotifier {
       _categoryProductListOffsetList.add(offset);
       ApiResponse apiResponse = await categoryRepo!.getCategoryProductList(
           offset, categoryID,
-          planId: showProductsEarlyAccess == 1
-              ? userInfo!.userSubscription!.planId
-              : null);
+          showEarlyAccess: showProductsEarlyAccess);
 
       if (apiResponse.response != null &&
           apiResponse.response!.statusCode == 200) {

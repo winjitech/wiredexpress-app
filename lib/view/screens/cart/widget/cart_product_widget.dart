@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:wired_express/data/helper/helpers.dart';
@@ -39,15 +40,10 @@ class CartProductWidget extends StatelessWidget {
         print('cart here -- ${jsonEncode(cart)}');
 
         ProductModel product = cart!.product!;
-        int quantity = cart!.quantity!;
+        int? quantity = cart!.quantity ?? 1;
+        List<TiredPricingModel> tiredPricing = product.tiredPricing ?? [];
         MoqSettingModel? moqSetting = product.moqSetting;
-
         int minOrderQuantity = moqSetting?.minimumOrderQuantity ?? 1;
-        print("minOrderQuantity == ${minOrderQuantity}");
-
-        TiredPricingModel? tiredPricing =
-            cart!.tieredPricing ?? TiredPricingModel();
-        double priceBeforeDisc = product.price!;
         ProductPlanDiscountModel? productPlanDiscountModel;
         if (profileProvider.userInfoModel != null &&
             profileProvider.userInfoModel!.exclusiveDiscounts == 1) {
@@ -66,26 +62,63 @@ class CartProductWidget extends StatelessWidget {
             productPlanDiscountModel = ProductPlanDiscountModel();
           }
         }
+        double originalPrice = product.price!;
 
-        double discountedOnProductPrice = productPlanDiscountModel != null &&
-                productPlanDiscountModel.planId != null
-            ? PriceConverter.convertWithDiscount(
-                context,
-                product.price!,
-                productPlanDiscountModel.discount!,
-                productPlanDiscountModel.discountType!)
-            : PriceConverter.convertWithDiscount(context, product.price!,
-                product.discount!, product.discountType!);
+        TiredPricingModel? tiredPricingModel;
 
-        double priceAfterTieredPricing =
-            PriceConverter.getProductFinalPriceWithTieredPricing(
-                    tiredPricing, discountedOnProductPrice) ??
-                0.0;
-        double finalProductPrice = priceAfterTieredPricing * quantity;
+        double priceAfterProductPlanDiscount =
+            productPlanDiscountModel != null &&
+                    productPlanDiscountModel.planId != null
+                ? PriceConverter.convertWithDiscount(
+                    context,
+                    originalPrice,
+                    productPlanDiscountModel.discount!,
+                    productPlanDiscountModel.discountType!)
+                : originalPrice;
+        print(
+            "priceAfterProductPlanDiscount -- ${priceAfterProductPlanDiscount}");
+        double priceAfterNormalDiscountOnProduct =
+            PriceConverter.convertWithDiscount(context, originalPrice,
+                product.discount!, product!.discountType!);
+        print(
+            "priceAfterNormalDiscountOnProduct -- ${priceAfterNormalDiscountOnProduct}");
+
+        double priceAfterTiredPricing = PriceConverter.getProductFinalPrice(
+                context, tiredPricing, originalPrice, quantity ?? 1) ??
+            0.0;
+        print("priceAfterTiredPricing -- ${priceAfterTiredPricing}");
+        double finalPriceWithoutQuantity = min(
+          priceAfterProductPlanDiscount,
+          min(priceAfterNormalDiscountOnProduct, priceAfterTiredPricing),
+        );
+        print("finalPriceWithoutQuantity -- ${finalPriceWithoutQuantity}");
+        String discountMessage;
+
+        if (finalPriceWithoutQuantity == priceAfterProductPlanDiscount) {
+          discountMessage =
+              '${getTranslated('get', context)} ${PriceConverter.calculateDiscountAmount(context, originalPrice, productPlanDiscountModel!.discount ?? 0.0, productPlanDiscountModel.discountType ?? "amount")} ${getTranslated('off_per_item_on_orders_of', context).toLowerCase()} ${getTranslated('as_plan_discount', context)}';
+        } else if (finalPriceWithoutQuantity ==
+            priceAfterNormalDiscountOnProduct) {
+          discountMessage =
+              '${getTranslated('get', context)} ${PriceConverter.calculateDiscountAmount(context, originalPrice, product.discount ?? 0.0, product.discountType ?? "amount")} ${getTranslated('off_per_item_on_orders_of', context).toLowerCase()} ${getTranslated('as_promotional_discount', context)}';
+        } else if (finalPriceWithoutQuantity == priceAfterTiredPricing) {
+          tiredPricingModel = PriceConverter.getMatchedTieredPricingModel(
+              context, tiredPricing, quantity ?? 1);
+          discountMessage =
+              '${getTranslated('get', context)} ${Helpers.formatTextWithNum(tiredPricingModel!.discountPrice!)} ${getTranslated('off_per_item_on_orders_of', context).toLowerCase()} ${tiredPricingModel.minQuantity ?? "this"}+ ${getTranslated('units', context).toLowerCase()}';
+        } else {
+          discountMessage = "none";
+        }
+
+        print(discountMessage);
+
+        double finalPriceWithQuantity = finalPriceWithoutQuantity * quantity!;
+        double originalPriceWithQuantity = originalPrice * quantity!;
+        print('Final Price With Quantity: $finalPriceWithQuantity');
+        print('Original Price With Quantity: $originalPriceWithQuantity');
 
         String currency = splashProvider.configModel!.currencySymbol ?? '\$';
-        bool haveDiscount = (priceBeforeDisc * quantity) != finalProductPrice;
-
+        bool haveDiscount = finalPriceWithQuantity != originalPriceWithQuantity;
         return GestureDetector(
           onTap: () => Navigator.push(
             context,
@@ -143,7 +176,7 @@ class CartProductWidget extends StatelessWidget {
                                 children: [
                                   if (haveDiscount)
                                     Text(
-                                      '$currency${Helpers.formatTextWithNum((priceBeforeDisc * quantity).toString())}',
+                                      '$currency${Helpers.formatTextWithNum(originalPriceWithQuantity.toString())}',
                                       style: TextStyle(
                                         color:
                                             ColorResources.getTextColor(context)
@@ -159,7 +192,7 @@ class CartProductWidget extends StatelessWidget {
                                     width: 5,
                                   ),
                                   Text(
-                                    '$currency${Helpers.formatTextWithNum(finalProductPrice.toString())}',
+                                    '$currency${Helpers.formatTextWithNum(finalPriceWithQuantity.toString())}',
                                     style: TextStyle(
                                       color:
                                           ColorResources.getTextColor(context),
@@ -211,9 +244,7 @@ class CartProductWidget extends StatelessWidget {
                                           )
                                         : GestureDetector(
                                             onTap: () {
-                                              if (quantity >
-                                                  minOrderQuantity) {
-                                                print("ikdhfjodifjs");
+                                              if (quantity > minOrderQuantity) {
                                                 List<TiredPricingModel>
                                                     tiredPricing =
                                                     product.tiredPricing ?? [];
@@ -221,16 +252,13 @@ class CartProductWidget extends StatelessWidget {
                                                 if (quantity > 1) {
                                                   cartProvider.updateQuantity(
                                                       cartIndex!, quantity - 1);
-                                                  CartModel cartModel = CartModel(
-                                                      id: cart!.id,
-                                                      productId: product.id,
-                                                      quantity: quantity - 1,
-                                                      product: product,
-                                                      tieredPricing: PriceConverter
-                                                          .getMatchedTieredPricingModel(
-                                                              context,
-                                                              tiredPricing,
-                                                              quantity - 1));
+                                                  CartModel cartModel =
+                                                      CartModel(
+                                                          id: cart!.id,
+                                                          productId: product.id,
+                                                          quantity:
+                                                              quantity - 1,
+                                                          product: product);
 
                                                   cartProvider
                                                       .addToCartList(cartModel)
@@ -287,12 +315,7 @@ class CartProductWidget extends StatelessWidget {
                                             id: cart!.id,
                                             productId: product.id,
                                             quantity: quantity + 1,
-                                            product: product,
-                                            tieredPricing: PriceConverter
-                                                .getMatchedTieredPricingModel(
-                                                    context,
-                                                    tiredPricing,
-                                                    quantity + 1));
+                                            product: product);
 
                                         cartProvider
                                             .addToCartList(cartModel)

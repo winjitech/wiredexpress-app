@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -14,6 +16,7 @@ import 'package:wired_express/provider/product_provider.dart';
 import 'package:wired_express/provider/profile_provider.dart';
 import 'package:wired_express/provider/splash_provider.dart';
 import 'package:wired_express/provider/wishlist_provider.dart';
+import 'package:wired_express/utill/app_constants.dart';
 import 'package:wired_express/utill/color_resources.dart';
 import 'package:wired_express/utill/dimensions.dart';
 import 'package:wired_express/utill/styles.dart';
@@ -56,25 +59,64 @@ class ProductDetailsBodyView extends StatelessWidget {
           productPlanDiscountModel = ProductPlanDiscountModel();
         }
       }
+      double originalPrice = product.price!;
 
-      double discountedOnProductPrice = productPlanDiscountModel != null &&
+      TiredPricingModel? tiredPricingModel;
+
+      double priceAfterProductPlanDiscount = productPlanDiscountModel != null &&
               productPlanDiscountModel.planId != null
           ? PriceConverter.convertWithDiscount(
               context,
-              product.price!,
+              originalPrice,
               productPlanDiscountModel.discount!,
               productPlanDiscountModel.discountType!)
-          : PriceConverter.convertWithDiscount(context, product!.price!,
+          : originalPrice;
+      print(
+          "priceAfterProductPlanDiscount -- ${priceAfterProductPlanDiscount}");
+      double priceAfterNormalDiscountOnProduct =
+          PriceConverter.convertWithDiscount(context, originalPrice,
               product.discount!, product!.discountType!);
-      double originalPrice = PriceConverter.convertWithDiscount(
-          context, product.price!, 0.0, 'amount');
-      double price = PriceConverter.getProductFinalPrice(context, tiredPricing,
-              discountedOnProductPrice, productProvider.quantity ?? 1) ??
-          0.0;
+      print(
+          "priceAfterNormalDiscountOnProduct -- ${priceAfterNormalDiscountOnProduct}");
 
-      double priceWithQuantity = price * productProvider.quantity!;
-      double priceWithQuantityWithoutDiscount =
-          price * productProvider.quantity!;
+      double priceAfterTiredPricing = PriceConverter.getProductFinalPrice(
+              context,
+              tiredPricing,
+              originalPrice,
+              productProvider.quantity ?? 1) ??
+          0.0;
+      print("priceAfterTiredPricing -- ${priceAfterTiredPricing}");
+      double finalPriceWithoutQuantity = min(
+        priceAfterProductPlanDiscount,
+        min(priceAfterNormalDiscountOnProduct, priceAfterTiredPricing),
+      );
+      print("finalPriceWithoutQuantity -- ${finalPriceWithoutQuantity}");
+      String discountMessage;
+
+      if (finalPriceWithoutQuantity == priceAfterProductPlanDiscount) {
+        discountMessage =
+            '${getTranslated('get', context)} ${PriceConverter.calculateDiscountAmount(context, originalPrice, productPlanDiscountModel!.discount ?? 0.0, productPlanDiscountModel.discountType ?? "amount")} ${getTranslated('off_per_item_on_orders_of', context).toLowerCase()} ${getTranslated('as_plan_discount', context)}';
+      } else if (finalPriceWithoutQuantity ==
+          priceAfterNormalDiscountOnProduct) {
+        discountMessage =
+            '${getTranslated('get', context)} ${PriceConverter.calculateDiscountAmount(context, originalPrice, product.discount ?? 0.0, product.discountType ?? "amount")} ${getTranslated('off_per_item_on_orders_of', context).toLowerCase()} ${getTranslated('as_promotional_discount', context)}';
+      } else if (finalPriceWithoutQuantity == priceAfterTiredPricing) {
+        tiredPricingModel = PriceConverter.getMatchedTieredPricingModel(
+            context, tiredPricing, productProvider.quantity ?? 1);
+        discountMessage =
+            '${getTranslated('get', context)} ${Helpers.formatTextWithNum(tiredPricingModel!.discountPrice!)} ${getTranslated('off_per_item_on_orders_of', context).toLowerCase()} ${tiredPricingModel.minQuantity ?? "this"}+ ${getTranslated('units', context).toLowerCase()}';
+      } else {
+        discountMessage = "none";
+      }
+
+      print(discountMessage);
+
+      double finalPriceWithQuantity =
+          finalPriceWithoutQuantity * productProvider.quantity!;
+      double originalPriceWithQuantity =
+          originalPrice * productProvider.quantity!;
+      print('Final Price With Quantity: $finalPriceWithQuantity');
+      print('Original Price With Quantity: $originalPriceWithQuantity');
 
       DateTime currentTime = splashProvider.currentTime;
       DateTime start =
@@ -89,12 +131,6 @@ class ProductDetailsBodyView extends StatelessWidget {
       }
 
       bool isAvailable = true;
-      TiredPricingModel? tiredPricingModel =
-          PriceConverter.getMatchedTieredPricingModel(
-              context, tiredPricing, productProvider.quantity ?? 1);
-      bool? haveTiredPricingDiscount =
-          tiredPricingModel != null && tiredPricingModel.productId != null;
-      print("haveTiredPricingDiscount == $haveTiredPricingDiscount");
       String description = '';
       description = product.description ?? '';
       return Scrollbar(
@@ -105,15 +141,12 @@ class ProductDetailsBodyView extends StatelessWidget {
               child: Column(
                 children: [
                   GestureDetector(
-                    onTap: () {
-                      String url =
-                          '${splashProvider.baseUrls!.productImageUrl}/${product.image}';
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                  ImagePreview(imageURL: url)));
-                    },
+                    onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => ImagePreview(
+                                imageURL:
+                                    '${splashProvider.baseUrls!.productImageUrl}/${product.image}'))),
                     child: Image.network(
                       '${splashProvider.baseUrls!.productImageUrl}/${product.image}',
                       fit: BoxFit.cover,
@@ -144,32 +177,30 @@ class ProductDetailsBodyView extends StatelessWidget {
                         const SizedBox(height: 15),
                         Row(
                           children: [
-                            if (discountedOnProductPrice != originalPrice)
-                              Row(
-                                children: [
-                                  Text(
-                                    "${splashProvider.configModel!.currencySymbol ?? '\$'}${Helpers.formatTextWithNum(originalPrice.toString())}",
-                                    style: TextStyle(
-                                      color:
-                                          ColorResources.getTextColor(context)
-                                              .withOpacity(0.4),
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: 15,
-                                      decoration: TextDecoration.lineThrough,
-                                      decorationColor:
-                                          ColorResources.getTextColor(context)
-                                              .withOpacity(0.4),
-                                    ),
-                                  ),
-                                  SizedBox(width: 5),
-                                ],
-                              ),
-                            Text(
-                              "${splashProvider.configModel!.currencySymbol ?? '\$'}${Helpers.formatTextWithNum(discountedOnProductPrice.toString())}",
-                              style: TextStyle(
+                            if (originalPrice != finalPriceWithoutQuantity)
+                              Text(
+                                "$currency${Helpers.formatTextWithNum(originalPrice.toString())}",
+                                style: TextStyle(
+                                  color: ColorResources.getTextColor(context)
+                                      .withOpacity(0.4),
                                   fontSize: 16,
-                                  color: ColorResources.getTextColor(context),
-                                  fontWeight: FontWeight.w600),
+                                  fontWeight: FontWeight.w600,
+                                  decoration: TextDecoration.lineThrough,
+                                  decorationColor:
+                                      ColorResources.getTextColor(context)
+                                          .withOpacity(0.4),
+                                ),
+                              ),
+                            SizedBox(
+                              width: 5,
+                            ),
+                            Text(
+                              "$currency${Helpers.formatTextWithNum(finalPriceWithoutQuantity.toString())}",
+                              style: TextStyle(
+                                color: ColorResources.getTextColor(context),
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
                             const Spacer(),
                             Container(
@@ -238,21 +269,7 @@ class ProductDetailsBodyView extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            price > discountedOnProductPrice
-                                ? Padding(
-                                    padding: const EdgeInsets.all(0),
-                                    child: Text(
-                                      PriceConverter.convertPrice(
-                                          context, price),
-                                      style: const TextStyle(
-                                          color: Colors.black45,
-                                          fontWeight: FontWeight.normal,
-                                          fontSize: 16,
-                                          decoration:
-                                              TextDecoration.lineThrough),
-                                    ),
-                                  )
-                                : const SizedBox(),
+                            SizedBox(),
                             Column(
                               children: [
                                 const SizedBox(
@@ -302,11 +319,11 @@ class ProductDetailsBodyView extends StatelessWidget {
                           ],
                         ),
                         const SizedBox(height: 20),
-                        if (tiredPricingModel != null)
+                        if (discountMessage != "none")
                           Column(
                             children: [
                               Text(
-                                '${getTranslated('get', context)} ${Helpers.formatTextWithNum(tiredPricingModel.discountPrice!)} ${getTranslated('off_per_item_on_orders_of', context).toLowerCase()} ${tiredPricingModel.minQuantity ?? "this"}+ ${getTranslated('units', context).toLowerCase()}',
+                                discountMessage,
                                 textAlign: TextAlign.justify,
                                 style: TextStyle(
                                   fontWeight: FontWeight.w600,
@@ -339,33 +356,31 @@ class ProductDetailsBodyView extends StatelessWidget {
                                   color: ColorResources.getTextColor(context))),
                           const SizedBox(
                               width: Dimensions.PADDING_SIZE_EXTRA_SMALL),
-                          if (((product.price! * productProvider.quantity!)) !=
-                              priceWithQuantity)
-                            Row(
-                              children: [
-                                Text(
-                                  "${splashProvider.configModel!.currencySymbol ?? '\$'}${Helpers.formatTextWithNum((product.price! * productProvider.quantity!).toString())}",
-                                  style: TextStyle(
-                                    color: ColorResources.getTextColor(context)
-                                        .withOpacity(0.4),
-                                    fontWeight: FontWeight.w500,
-                                    fontSize: 15,
-                                    decoration: TextDecoration.lineThrough,
-                                    decorationColor:
-                                        ColorResources.getTextColor(context)
-                                            .withOpacity(0.4),
-                                  ),
-                                ),
-                                const SizedBox(width: 5),
-                              ],
-                            ),
-                          Text(
-                            PriceConverter.convertPrice(
-                                context, priceWithQuantity),
-                            style: TextStyle(
+                          if (originalPriceWithQuantity !=
+                              finalPriceWithQuantity)
+                            Text(
+                              "$currency${Helpers.formatTextWithNum(originalPriceWithQuantity.toString())}",
+                              style: TextStyle(
+                                color: ColorResources.getTextColor(context)
+                                    .withOpacity(0.4),
                                 fontSize: 16,
-                                color: ColorResources.getPrimaryColor(context),
-                                fontWeight: FontWeight.w600),
+                                fontWeight: FontWeight.w600,
+                                decoration: TextDecoration.lineThrough,
+                                decorationColor:
+                                    ColorResources.getTextColor(context)
+                                        .withOpacity(0.4),
+                              ),
+                            ),
+                          SizedBox(
+                            width: 5,
+                          ),
+                          Text(
+                            "$currency${Helpers.formatTextWithNum(finalPriceWithQuantity.toString())}",
+                            style: TextStyle(
+                              color: ColorResources.getPrimaryColor(context),
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                         ]),
                       ],
