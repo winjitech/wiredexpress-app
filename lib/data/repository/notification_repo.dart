@@ -11,7 +11,7 @@ class NotificationRepo {
 
   Future<ApiResponse> getNotificationList() async {
     try {
-      final response = await dioClient!.get('${AppConstants.NOTIFICATION_URI}');
+      final response = await dioClient!.get('${AppConstants.notificationUrl}');
       return ApiResponse.withSuccess(response);
     } catch (e) {
       return ApiResponse.withError(ApiErrorHandler.getMessage(e));

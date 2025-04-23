@@ -19,7 +19,7 @@ class DioClient {
          this.sharedPreferences,
       }) {
 
-    token = sharedPreferences!.getString(AppConstants.TOKEN);
+    token = sharedPreferences!.getString(AppConstants.token);
     print(token);
     dio = dioC ?? Dio();
     dio!

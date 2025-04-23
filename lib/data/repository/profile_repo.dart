@@ -38,7 +38,7 @@ class ProfileRepo {
 
   Future<ApiResponse> getUserInfo() async {
     try {
-      final response = await dioClient!.get(AppConstants.CUSTOMER_INFO_URI);
+      final response = await dioClient!.get(AppConstants.customerInfoUrl);
       return ApiResponse.withSuccess(response);
     } catch (e) {
       return ApiResponse.withError(ApiErrorHandler.getMessage(e));
@@ -50,7 +50,7 @@ class ProfileRepo {
     http.MultipartRequest request = http.MultipartRequest(
         'POST',
         Uri.parse(
-            '${AppConstants.BASE_URL}${AppConstants.UPDATE_PROFILE_URI}'));
+            '${AppConstants.baseUrl}${AppConstants.updateProfileUrl}'));
     request.headers.addAll(<String, String>{'Authorization': 'Bearer $token'});
 
     Map<String, String> _fields = Map();

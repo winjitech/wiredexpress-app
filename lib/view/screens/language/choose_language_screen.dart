@@ -8,7 +8,6 @@ import 'package:wired_express/utill/color_resources.dart';
 import 'package:wired_express/view/base/custom_button.dart';
 import 'package:wired_express/view/base/custom_snackbar.dart';
 import 'package:wired_express/view/screens/auth/login_screen.dart';
-import 'package:wired_express/view/screens/language/widget/search_widget.dart';
 import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
@@ -42,11 +41,7 @@ class ChooseLanguageScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 20),
-            Padding(
-              padding: EdgeInsets.only(left: 5, right: 5),
-              child: SearchWidget(),
-            ),
-            const SizedBox(height: 20),
+
             Consumer<LanguageProvider>(
                 builder: (context, languageProvider, child) => Expanded(
                     child: ListView.builder(

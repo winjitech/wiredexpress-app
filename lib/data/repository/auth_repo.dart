@@ -20,7 +20,7 @@ class AuthRepo {
   Future<ApiResponse> registration(SignUpModel signUpModel) async {
     try {
       Response response = await dioClient!.post(
-        AppConstants.REGISTER_URI,
+        AppConstants.registerUrl,
         data: signUpModel.toJson(),
       );
       return ApiResponse.withSuccess(response);
@@ -32,7 +32,7 @@ class AuthRepo {
   Future<ApiResponse> login({String? email, String? password}) async {
     try {
       Response response = await dioClient!.post(
-        AppConstants.LOGIN_URI,
+        AppConstants.loginUrl,
         data: {"email": email, "password": password},
       );
       return ApiResponse.withSuccess(response);
@@ -45,7 +45,7 @@ class AuthRepo {
   Future<ApiResponse> loginByPhone({String? firebaseToken}) async {
     try {
       Response response = await dioClient!.post(
-        AppConstants.LOGIN_BY_PHONE_URI,
+        AppConstants.loginByPhoneUrl,
         data: {"firebasetoken": firebaseToken},
       );
       return ApiResponse.withSuccess(response);
@@ -76,10 +76,10 @@ class AuthRepo {
         _deviceToken = await _saveDeviceToken();
       }
       print('device token --- ${_deviceToken}');
-      FirebaseMessaging.instance.subscribeToTopic(AppConstants.TOPIC);
-      FirebaseMessaging.instance.subscribeToTopic('Specific_TOPIC');
+      FirebaseMessaging.instance.subscribeToTopic(AppConstants.topic);
+      FirebaseMessaging.instance.subscribeToTopic('specificTopic');
       Response response = await dioClient!.post(
-        AppConstants.TOKEN_URI,
+        AppConstants.tokenUrl,
         data: {"_method": "put", "cm_firebase_token": _deviceToken},
       );
       return ApiResponse.withSuccess(response);
@@ -100,7 +100,7 @@ class AuthRepo {
   Future<ApiResponse> forgetPassword(String email) async {
     try {
       Response response = await dioClient!
-          .post(AppConstants.FORGET_PASSWORD_URI, data: {"email": email});
+          .post(AppConstants.forgotPasswordUrl, data: {"email": email});
       return ApiResponse.withSuccess(response);
     } catch (e) {
       return ApiResponse.withError(ApiErrorHandler.getMessage(e));
@@ -109,7 +109,7 @@ class AuthRepo {
 
   Future<ApiResponse> verifyToken(String email, String token) async {
     try {
-      Response response = await dioClient!.post(AppConstants.VERIFY_TOKEN_URI,
+      Response response = await dioClient!.post(AppConstants.verifyTokenUrl,
           data: {"email": email, "reset_token": token});
       return ApiResponse.withSuccess(response);
     } catch (e) {
@@ -121,7 +121,7 @@ class AuthRepo {
       String resetToken, String password, String confirmPassword) async {
     try {
       Response response = await dioClient!.post(
-        AppConstants.RESET_PASSWORD_URI,
+        AppConstants.resetPasswordUrl,
         data: {
           "_method": "put",
           "reset_token": resetToken,
@@ -138,7 +138,7 @@ class AuthRepo {
   Future<ApiResponse> checkEmail(String email) async {
     try {
       Response response =
-          await dioClient!.post('${AppConstants.CHECK_EMAIL_URI}?email=$email');
+          await dioClient!.post('${AppConstants.checkEmailUrl}?email=$email');
       return ApiResponse.withSuccess(response);
     } catch (e) {
       return ApiResponse.withError(ApiErrorHandler.getMessage(e));
@@ -147,7 +147,7 @@ class AuthRepo {
 
   Future<ApiResponse> verifyEmail(String email, String token) async {
     try {
-      Response response = await dioClient!.post(AppConstants.VERIFY_EMAIL_URI,
+      Response response = await dioClient!.post(AppConstants.verifyEmailUrl,
           data: {"email": email, "token": token});
       return ApiResponse.withSuccess(response);
     } catch (e) {
@@ -158,7 +158,7 @@ class AuthRepo {
   Future<ApiResponse> checkPassword(String token, String password) async {
     try {
       final response = await dioClient!.post(
-          '${AppConstants.CHECK_PASSWORD_URI}?token=$token&password=$password');
+          '${AppConstants.checkPasswordUrl}?token=$token&password=$password');
       return ApiResponse.withSuccess(response);
     } catch (e) {
       return ApiResponse.withError(ApiErrorHandler.getMessage(e));
@@ -168,7 +168,7 @@ class AuthRepo {
   Future<ApiResponse> deleteAccount(String token) async {
     try {
       final response = await dioClient!
-          .delete('${AppConstants.DELETE_ACCOUNT}?token=$token');
+          .delete('${AppConstants.deleteAccountUrl}?token=$token');
       return ApiResponse.withSuccess(response);
     } catch (e) {
       return ApiResponse.withError(ApiErrorHandler.getMessage(e));
@@ -184,7 +184,7 @@ class AuthRepo {
     };
 
     try {
-      await sharedPreferences!.setString(AppConstants.TOKEN, token);
+      await sharedPreferences!.setString(AppConstants.token, token);
     } catch (e) {
       throw e;
     }
@@ -192,52 +192,52 @@ class AuthRepo {
 
   String getUserToken() {
     print('------------------------------------------------------------------');
-    print(sharedPreferences!.getString(AppConstants.TOKEN));
+    print(sharedPreferences!.getString(AppConstants.token));
     print('------------------------------------------------------------------');
-    return sharedPreferences!.getString(AppConstants.TOKEN) ?? "";
+    return sharedPreferences!.getString(AppConstants.token) ?? "";
   }
 
   bool isLoggedIn() {
-    return sharedPreferences!.containsKey(AppConstants.TOKEN);
+    return sharedPreferences!.containsKey(AppConstants.token);
   }
 
   Future<bool> clearSharedData() async {
     if (!kIsWeb) {
-      await FirebaseMessaging.instance.unsubscribeFromTopic(AppConstants.TOPIC);
+      await FirebaseMessaging.instance.unsubscribeFromTopic(AppConstants.topic);
     }
-    await sharedPreferences!.remove(AppConstants.TOKEN);
-    await sharedPreferences!.remove(AppConstants.CART_LIST);
-    await sharedPreferences!.remove(AppConstants.USER_ADDRESS);
-    await sharedPreferences!.remove(AppConstants.SEARCH_ADDRESS);
+    await sharedPreferences!.remove(AppConstants.token);
+    await sharedPreferences!.remove(AppConstants.cartList);
+    await sharedPreferences!.remove(AppConstants.userAddress);
+    await sharedPreferences!.remove(AppConstants.searchAddress);
     return true;
   }
 
   // for  Remember Email
   Future<void> saveUserNumberAndPassword(String email, String password) async {
     try {
-      await sharedPreferences!.setString(AppConstants.USER_PASSWORD, password);
-      await sharedPreferences!.setString(AppConstants.USER_EMAIL, email);
+      await sharedPreferences!.setString(AppConstants.userPassword, password);
+      await sharedPreferences!.setString(AppConstants.userEmail, email);
     } catch (e) {
       throw e;
     }
   }
 
   String getUserNumber() {
-    return sharedPreferences!.getString(AppConstants.USER_EMAIL) ?? "";
+    return sharedPreferences!.getString(AppConstants.userEmail) ?? "";
   }
 
   String getUserPassword() {
-    return sharedPreferences!.getString(AppConstants.USER_PASSWORD) ?? "";
+    return sharedPreferences!.getString(AppConstants.userPassword) ?? "";
   }
 
   Future<bool> clearUserNumberAndPassword() async {
-    await sharedPreferences!.remove(AppConstants.USER_PASSWORD);
-    return await sharedPreferences!.remove(AppConstants.USER_EMAIL);
+    await sharedPreferences!.remove(AppConstants.userPassword);
+    return await sharedPreferences!.remove(AppConstants.userEmail);
   }
 
   Future<void> saveUserAddressId(int id) async {
     try {
-      await sharedPreferences!.setInt(AppConstants.SAVE_ADDRESS_ID, id);
+      await sharedPreferences!.setInt(AppConstants.addressId, id);
     } catch (e) {
       print('Error saving address ID: $e');
       rethrow;
@@ -246,7 +246,7 @@ class AuthRepo {
 
   Future<bool> clearUserAddressId() async {
     try {
-      return await sharedPreferences!.remove(AppConstants.SAVE_ADDRESS_ID);
+      return await sharedPreferences!.remove(AppConstants.addressId);
     } catch (e) {
       print('Error clearing address ID: $e');
       rethrow;
@@ -255,7 +255,7 @@ class AuthRepo {
 
   int? getUserAddressId() {
     try {
-      final addressId = sharedPreferences!.get(AppConstants.SAVE_ADDRESS_ID);
+      final addressId = sharedPreferences!.get(AppConstants.addressId);
       if (addressId is String) {
         return int.tryParse(addressId) ?? 0;
       } else if (addressId is int) {

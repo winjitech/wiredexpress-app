@@ -2,105 +2,98 @@ import 'package:wired_express/data/model/response/language_model.dart';
 import 'package:wired_express/utill/images.dart';
 
 class AppConstants {
-  static const String APP_NAME = 'Wired Express';
-  // 192.168.1.3 or 172.18.128.1
-  //192.168.0.112
-  //static const String BASE_URL = 'https://192.168.1.7/wired_express';
+  static const String appName = 'Wired Express';
 
-  static const String BASE_URL = 'https://staging.wiredexpress01.com';
-  static const String CATEGORY_URI = '/api/v1/categories';
-  static const String CATEGORY_FEATURED_URI = '/api/v1/categories/featured';
-  static const String BANNER_URI = '/api/v1/banners';
+  //static const String baseUrl = 'https://192.168.8.104/wired_express';
 
-  static const String ELECTRICIANS_URI = '/api/v1/nearby-electricians';
+  static const String baseUrl = 'https://staging.wiredexpress01.com';
+  static const String categoryUrl = '/api/v1/categories';
+  static const String categoryFeaturedUrl = '/api/v1/categories/featured';
+  static const String bannerUrl = '/api/v1/banners';
 
-  static const String POPULAR_PRODUCT_URI = '/api/v1/products/latest';
-  static const String PRODUCTS_LIST_URI = '/api/v1/products/category';
-  static const String CATEGORY_PRODUCT_URI = '/api/v1/categories/products/';
-  static const String CONFIG_URI = '/api/v1/config';
-  static const String TRACK_URI = '/api/v1/customer/order/track';
-  static const String MESSAGE_URI = '/api/v1/customer/message/get';
-  static const String SEND_MESSAGE_URI = '/api/v1/customer/message/send';
-  static const String FORGET_PASSWORD_URI = '/api/v1/auth/forgot-password';
-  static const String VERIFY_TOKEN_URI = '/api/v1/auth/verify-token';
-  static const String RESET_PASSWORD_URI = '/api/v1/auth/reset-password';
-  static const String VERIFY_PHONE_URI = '/api/v1/auth/verify-phone';
-  static const String CHECK_EMAIL_URI = '/api/v1/auth/check-email';
-  static const String VERIFY_EMAIL_URI = '/api/v1/auth/verify-email';
-  static const String REGISTER_URI = '/api/v1/auth/register';
-  static const String LOGIN_URI = '/api/v1/auth/login';
-  static const String LOGIN_BY_PHONE_URI = '/api/v1/auth/loginbyphone';
-  static const String TOKEN_URI = '/api/v1/customer/cm-firebase-token';
-  static const String PLACE_ORDER_URI = '/api/v1/customer/order/place';
-  static const String ADDRESS_LIST_URI = '/api/v1/customer/address/list';
-  static const String REMOVE_ADDRESS_URI = '/api/v1/customer/address/delete?address_id=';
-  static const String ADD_ADDRESS_URI = '/api/v1/customer/address/add';
-  static const String UPDATE_ADDRESS_URI = '/api/v1/customer/address/update/';
-  static const String CUSTOMER_INFO_URI = '/api/v1/customer/info';
+  static const String electriciansUrl = '/api/v1/nearby-electricians';
 
-  static const String COUPON_URI = '/api/v1/coupon/list';
-  static const String COUPON_APPLY_URI = '/api/v1/coupon/apply?code=';
-  static const String HISTORY_ORDER_LIST_URI = '/api/v1/customer/order/history-list';
-  static const String RUNNING_ORDER_LIST_URI = '/api/v1/customer/order/running-list';
+  static const String popularProductUrl = '/api3/v1/products/latest';
+  static const String productsListUrl = '/api/v1/products/category';
+  static const String categoryProductUrl = '/api/v1/categories/products/';
+  static const String configUrl = '/api/v1/config';
+  static const String trackUrl = '/api/v1/customer/order/track';
+  static const String messageUrl = '/api/v1/customer/message/get';
+  static const String sendMessageUrl = '/api/v1/customer/message/send';
+  static const String forgotPasswordUrl = '/api/v1/auth/forgot-password';
+  static const String verifyTokenUrl = '/api/v1/auth/verify-token';
+  static const String resetPasswordUrl = '/api/v1/auth/reset-password';
+  static const String verifyPhoneUrl = '/api/v1/auth/verify-phone';
+  static const String checkEmailUrl = '/api/v1/auth/check-email';
+  static const String verifyEmailUrl = '/api/v1/auth/verify-email';
+  static const String registerUrl = '/api/v1/auth/register';
+  static const String loginUrl = '/api/v1/auth/login';
+  static const String loginByPhoneUrl = '/api/v1/auth/loginbyphone';
+  static const String tokenUrl = '/api/v1/customer/cm-firebase-token';
+  static const String placeOrderUrl = '/api/v1/customer/order/place';
+  static const String addressListUrl = '/api/v1/customer/address/list';
+  static const String removeAddressUrl = '/api/v1/customer/address/delete?address_id=';
+  static const String addAddressUrl = '/api/v1/customer/address/add';
+  static const String updateAddressUrl = '/api/v1/customer/address/update/';
+  static const String customerInfoUrl = '/api/v1/customer/info';
 
-  static const String ORDER_CANCEL_URI = '/api/v1/customer/order/cancel';
-  static const String UPDATE_METHOD_URI = '/api/v1/customer/order/payment-method';
-  static const String ORDER_DETAILS_URI = '/api/v1/customer/order/details?order_id=';
-  static const String WISH_LIST_GET_URI = '/api/v1/customer/wish-list';
-  static const String WISH_LIST_PRODUCTIDS_URI = '/api/v1/customer/wish-list/product-ids';
+  static const String couponUrl = '/api/v1/coupon/list';
+  static const String couponApplyUrl = '/api/v1/coupon/apply?code=';
+  static const String historyOrderListUrl = '/api/v1/customer/order/history-list';
+  static const String runningOrderListUrl = '/api/v1/customer/order/running-list';
 
-  static const String ADD_WISH_LIST_URI = '/api/v1/customer/wish-list/add-to-wishlist';
-  static const String REMOVE_WISH_LIST_URI = '/api/v1/customer/wish-list/remove?product_id=';
-  static const String NOTIFICATION_URI = '/api/v1/notifications';
-  static const String UPDATE_PROFILE_URI = '/api/v1/customer/update-profile';
+  static const String orderCancelUrl = '/api/v1/customer/order/cancel';
+  static const String updateMethodUrl = '/api/v1/customer/order/payment-method';
+  static const String orderDetailsUrl = '/api/v1/customer/order/details?order_id=';
+  static const String wishListUrl = '/api/v1/customer/wish-list';
+  static const String wishListIdsUrl = '/api/v1/customer/wish-list/product-ids';
+
+  static const String addToWishListUrl = '/api/v1/customer/wish-list/add-to-wishlist';
+  static const String removeFromWishListUrl = '/api/v1/customer/wish-list/remove?product_id=';
+  static const String notificationUrl = '/api/v1/notifications';
+  static const String updateProfileUrl = '/api/v1/customer/update-profile';
 
 
-  static const String SEARCH_URI = '/api/v1/products/search';
-  static const String SEND_SEARCH_URI = '/api/v1/customer/search';
-  static const String REVIEW_URI = '/api/v1/products/reviews/submit';
-  static const String PRODUCT_DETAILS_URI = '/api/v1/products/details/';
-  static const String LAST_LOCATION_URI = '/api/v1/delivery-man/last-location?order_id=';
-  static const String DELIVER_MAN_REVIEW_URI = '/api/v1/delivery-man/reviews/submit';
-  static const String UPDATE_VERSION_CODE_URI = '/api/v1/customer/update-version';
-  static const String SEND_IMAGE_URI = '/api/v1/customer/message/send-image';
-  static const String GET_SEARCHED_FOOD = '/api/v1/nutrition/search';
-  static const String FILTERED_PRODUCTS = '/api/v1/products/filtered-products';
-  static const String CHECK_PASSWORD_URI = '/api/v1/customer/check-password';
-  static const String DELETE_ACCOUNT = '/api/v1/customer/delete-account';
-  static const String CART_LIST_PRODUCTIDS_URI = '/api/v1/customer/cart/product-ids';
-  static const String CART_LIST_URI = '/api/v1/customer/cart';
-  static const String ADD_CART_URI = '/api/v1/customer/cart/add-to-cart';
-  static const String REMOVE_CART_URI = '/api/v1/customer/cart/remove';
-  static const String API_KEY = 'AIzaSyDittP8hJ4T6bhdHQv601p0RVlYHN-D_hc'; // TEMPORARY
+  static const String searchUrl = '/api/v1/products/search';
+  static const String sendSearchUrl = '/api/v1/customer/search';
+  static const String reviewUrl = '/api/v1/products/reviews/submit';
+  static const String productDetailsUrl = '/api/v1/products/details/';
+  static const String lastLocationUrl = '/api/v1/delivery-man/last-location?order_id=';
+  static const String deliveryManReviewUrl = '/api/v1/delivery-man/reviews/submit';
+  static const String updateVersionUrl = '/api/v1/customer/update-version';
+  static const String sendImageUrl = '/api/v1/customer/message/send-image';
+  static const String filteredProductsUrl = '/api/v1/products/filtered-products';
+  static const String checkPasswordUrl = '/api/v1/customer/check-password';
+  static const String deleteAccountUrl = '/api/v1/customer/delete-account';
+  static const String cartListIdsUrl = '/api/v1/customer/cart/product-ids';
+  static const String cartListUrl = '/api/v1/customer/cart';
+  static const String addToCartUrl = '/api/v1/customer/cart/add-to-cart';
+  static const String removeFromCartUrl = '/api/v1/customer/cart/remove';
+  static const String apiKey = 'AIzaSyDittP8hJ4T6bhdHQv601p0RVlYHN-D_hc';
 
-  /// deliveryman chat
-  static const String DM_MESSAGE_URI = '/api/v1/customer/dm-message/get';
-  static const String DM_SEND_MESSAGE_URI = '/api/v1/customer/dm-message/send';
-  static const String DM_SEND_IMAGE_URI = '/api/v1/customer/dm-message/send-image';
 
   /// subscription
-  static const String GET_SUBSCRIPTION_PLANS_URI = '/api/v1/customer/subscription/subscription-plans';
-  static const String SUBSCRIBE_USER_URI = '/api/v1/customer/subscription/subscribe-user';
-  static const String CANCEL_SUBSCRIPTION_URI = '/api/v1/customer/subscription/cancel-subscription';
+  static const String getSubscriptionPlansUrl = '/api/v1/customer/subscription/subscription-plans';
+  static const String subscriptionUserUrl = '/api/v1/customer/payment/subscribe';
+  static const String cancelSubscriptionUrl = '/api/v1/customer/payment/cancel-subscription';
+  static const String subscriptionDetailsUrl =  '/api/v1/customer/payment/details';
 
-  static const String GET_LAST_DELIVERY_COORDINATES_URI = '/api/v1/delivery-man/get-last-delivery-coordinates?order_id=';
+  static const String getLastDeliveryCoordinatesUrl = '/api/v1/delivery-man/get-last-delivery-coordinates?order_id=';
 
   /// Shared Key
-  static const String THEME = 'theme';
-  static const String TOKEN = 'token';
-  static const String COUNTRY_CODE = 'country_code';
-  static const String LANGUAGE_CODE = 'language_code';
-  static const String CART_LIST = 'cart_list';
-  static const String USER_PASSWORD = 'user_password';
-  static const String USER_ADDRESS = 'user_address';
-  static const String USER_EMAIL = 'USER_EMAIL';
-  static const String SEARCH_ADDRESS = 'search_address';
-  static const String TOPIC = 'notify';
-  static const String Specific_TOPIC = 'notify_specific';
-  static const String SAVE_ADDRESS_ID = 'address_id';
-
+  static const String theme = 'theme';
+  static const String token = 'token';
   static const String countryCode = 'country_code';
   static const String languageCode = 'language_code';
+  static const String cartList = 'cart_list';
+  static const String userPassword = 'user_password';
+  static const String userAddress = 'user_address';
+  static const String userEmail = 'userEmail';
+  static const String searchAddress = 'search_address';
+  static const String topic = 'notify';
+  static const String specificTopic = 'notify_specific';
+  static const String addressId = 'address_id';
+
 
   static List<LanguageModel> languages = [
     LanguageModel(

@@ -64,8 +64,10 @@ class ProductDetailsBodyView extends StatelessWidget {
               product.price!,
               productPlanDiscountModel.discount!,
               productPlanDiscountModel.discountType!)
-          : PriceConverter.convertWithDiscount(context, product.price!,
-              product.discount!, product.discountType!);
+          : PriceConverter.convertWithDiscount(context, product!.price!,
+              product.discount!, product!.discountType!);
+      double originalPrice = PriceConverter.convertWithDiscount(
+          context, product.price!, 0.0, 'amount');
       double price = PriceConverter.getProductFinalPrice(context, tiredPricing,
               discountedOnProductPrice, productProvider.quantity ?? 1) ??
           0.0;
@@ -93,190 +95,284 @@ class ProductDetailsBodyView extends StatelessWidget {
       bool? haveTiredPricingDiscount =
           tiredPricingModel != null && tiredPricingModel.productId != null;
       print("haveTiredPricingDiscount == $haveTiredPricingDiscount");
-      return Stack(
+      String description = '';
+      description = product.description ?? '';
+      return Scrollbar(
+          child: Stack(
         children: [
-          Column(
-            children: [
-              GestureDetector(
-                onTap: () {
-                  String url =
-                      '${splashProvider.baseUrls!.productImageUrl}/${product.image}';
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => ImagePreview(imageURL: url)));
-                },
-                child: Image.network(
-                  '${splashProvider.baseUrls!.productImageUrl}/${product.image}',
-                  fit: BoxFit.cover,
-                  height: 450,
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.all(25),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
+          SingleChildScrollView(
+              padding: EdgeInsets.zero,
+              child: Column(
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      String url =
+                          '${splashProvider.baseUrls!.productImageUrl}/${product.image}';
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  ImagePreview(imageURL: url)));
+                    },
+                    child: Image.network(
+                      '${splashProvider.baseUrls!.productImageUrl}/${product.image}',
+                      fit: BoxFit.cover,
+                      height: 450,
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(25),
+                    child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Expanded(
-                          child: Text(
-                            product.name!,
-                            textAlign: TextAlign.justify,
-                            style: const TextStyle(
-                                color: Colors.black45,
-                                fontSize: 18,
-                                fontWeight: FontWeight.w600),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 15),
-                    Row(
-                      children: [
-                        Text(
-                            '$currency${Helpers.formatTextWithNum(discountedOnProductPrice.toString())}',
-                            style: TextStyle(
-                                color: ColorResources.getTextColor(context),
-                                fontWeight: FontWeight.normal,
-                                fontSize: 16),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis),
-                        const Spacer(),
-                        Container(
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(5)),
-                          child: Row(children: [
-                            GestureDetector(
-                              onTap: () {
-                                if (productProvider.quantity! >
-                                    minOrderQuantity) {
-                                  productProvider.setQuantity(
-                                      productProvider.quantity! - 1);
-                                }
-                              },
-                              child: Container(
-                                  width: 25,
-                                  height: 25,
-                                  decoration: BoxDecoration(
-                                      color: ColorResources.getScaffoldColor(
-                                          context),
-                                      borderRadius: BorderRadius.circular(50)),
-                                  child: Icon(Icons.remove,
-                                      size: 20,
-                                      color: ColorResources
-                                          .getScaffoldBackgroundColor(
-                                              context))),
-                            ),
-                            Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 10),
-                              child: Text(productProvider.quantity.toString(),
-                                  style: rubikMedium.copyWith(
-                                    fontSize: 25,
-                                    fontWeight: FontWeight.w500,
-                                    color: ColorResources.getTextColor(context),
-                                  )),
-                            ),
-                            GestureDetector(
-                              onTap: () => productProvider
-                                  .setQuantity(productProvider.quantity! + 1),
-                              child: Container(
-                                width: 25,
-                                height: 25,
-                                decoration: BoxDecoration(
-                                    color: ColorResources.getScaffoldColor(
-                                        context),
-                                    borderRadius: BorderRadius.circular(50)),
-                                child: Icon(
-                                  Icons.add,
-                                  size: 20,
-                                  color:
-                                      ColorResources.getScaffoldBackgroundColor(
-                                          context),
-                                ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              child: Text(
+                                product.name!,
+                                textAlign: TextAlign.justify,
+                                style: const TextStyle(
+                                    color: Colors.black45,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w600),
                               ),
                             ),
-                          ]),
-                        ),
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        price > discountedOnProductPrice
-                            ? Padding(
-                                padding: const EdgeInsets.all(0),
-                                child: Text(
-                                  PriceConverter.convertPrice(context, price),
-                                  style: const TextStyle(
-                                      color: Colors.black45,
-                                      fontWeight: FontWeight.normal,
-                                      fontSize: 16,
-                                      decoration: TextDecoration.lineThrough),
-                                ),
-                              )
-                            : const SizedBox(),
-                        Column(
-                          children: [
-                            const SizedBox(
-                              height: 5,
-                            ),
-                            RatingBar(
-                                rating: product.rating!.length > 0
-                                    ? double.parse(product.rating![0].average!)
-                                    : 0.0,
-                                size: 18),
                           ],
                         ),
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    Row(children: [
-                      Text('${getTranslated('total_amount', context)}:',
-                          style: rubikMedium.copyWith(
-                              fontSize: Dimensions.FONT_SIZE_LARGE,
-                              color: ColorResources.getTextColor(context))),
-                      const SizedBox(
-                          width: Dimensions.PADDING_SIZE_EXTRA_SMALL),
-                      if (((product.price! * productProvider.quantity!)) !=
-                          priceWithQuantity)
+                        const SizedBox(height: 15),
                         Row(
                           children: [
-                            Text(
-                              "${splashProvider.configModel!.currencySymbol ?? '\$'}${Helpers.formatTextWithNum((product.price! * productProvider.quantity!).toString())}",
-                              style: TextStyle(
-                                color: ColorResources.getTextColor(context)
-                                    .withOpacity(0.4),
-                                fontWeight: FontWeight.w500,
-                                fontSize: 15,
-                                decoration: TextDecoration.lineThrough,
-                                decorationColor:
-                                    ColorResources.getTextColor(context)
-                                        .withOpacity(0.4),
+                            if (discountedOnProductPrice != originalPrice)
+                              Row(
+                                children: [
+                                  Text(
+                                    "${splashProvider.configModel!.currencySymbol ?? '\$'}${Helpers.formatTextWithNum(originalPrice.toString())}",
+                                    style: TextStyle(
+                                      color:
+                                          ColorResources.getTextColor(context)
+                                              .withOpacity(0.4),
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 15,
+                                      decoration: TextDecoration.lineThrough,
+                                      decorationColor:
+                                          ColorResources.getTextColor(context)
+                                              .withOpacity(0.4),
+                                    ),
+                                  ),
+                                  SizedBox(width: 5),
+                                ],
                               ),
+                            Text(
+                              "${splashProvider.configModel!.currencySymbol ?? '\$'}${Helpers.formatTextWithNum(discountedOnProductPrice.toString())}",
+                              style: TextStyle(
+                                  fontSize: 16,
+                                  color: ColorResources.getTextColor(context),
+                                  fontWeight: FontWeight.w600),
                             ),
-                            SizedBox(width: 5),
+                            const Spacer(),
+                            Container(
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(5)),
+                              child: Row(children: [
+                                GestureDetector(
+                                  onTap: () {
+                                    if (productProvider.quantity! >
+                                        minOrderQuantity) {
+                                      productProvider.setQuantity(
+                                          productProvider.quantity! - 1);
+                                    }
+                                  },
+                                  child: Container(
+                                      width: 25,
+                                      height: 25,
+                                      decoration: BoxDecoration(
+                                          color:
+                                              ColorResources.getScaffoldColor(
+                                                  context),
+                                          borderRadius:
+                                              BorderRadius.circular(50)),
+                                      child: Icon(Icons.remove,
+                                          size: 20,
+                                          color: ColorResources
+                                              .getScaffoldBackgroundColor(
+                                                  context))),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 10),
+                                  child:
+                                      Text(productProvider.quantity.toString(),
+                                          style: rubikMedium.copyWith(
+                                            fontSize: 25,
+                                            fontWeight: FontWeight.w500,
+                                            color: ColorResources.getTextColor(
+                                                context),
+                                          )),
+                                ),
+                                GestureDetector(
+                                  onTap: () => productProvider.setQuantity(
+                                      productProvider.quantity! + 1),
+                                  child: Container(
+                                    width: 25,
+                                    height: 25,
+                                    decoration: BoxDecoration(
+                                        color: ColorResources.getScaffoldColor(
+                                            context),
+                                        borderRadius:
+                                            BorderRadius.circular(50)),
+                                    child: Icon(
+                                      Icons.add,
+                                      size: 20,
+                                      color: ColorResources
+                                          .getScaffoldBackgroundColor(context),
+                                    ),
+                                  ),
+                                ),
+                              ]),
+                            ),
                           ],
                         ),
-                      Text(
-                        PriceConverter.convertPrice(context, priceWithQuantity),
-                        style: TextStyle(
-                            fontSize: 16,
-                            color: ColorResources.getPrimaryColor(context),
-                            fontWeight: FontWeight.w600),
-                      ),
-                    ]),
-                  ],
-                ),
-              )
-            ],
-          ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            price > discountedOnProductPrice
+                                ? Padding(
+                                    padding: const EdgeInsets.all(0),
+                                    child: Text(
+                                      PriceConverter.convertPrice(
+                                          context, price),
+                                      style: const TextStyle(
+                                          color: Colors.black45,
+                                          fontWeight: FontWeight.normal,
+                                          fontSize: 16,
+                                          decoration:
+                                              TextDecoration.lineThrough),
+                                    ),
+                                  )
+                                : const SizedBox(),
+                            Column(
+                              children: [
+                                const SizedBox(
+                                  height: 5,
+                                ),
+                                RatingBar(
+                                    rating: product.rating!.length > 0
+                                        ? double.parse(
+                                            product.rating![0].average!)
+                                        : 0.0,
+                                    size: 18),
+                              ],
+                            ),
+                          ],
+                        ),
+                        product.description != null
+                            ? Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const SizedBox(height: 20),
+                                  Text(
+                                    getTranslated('description', context),
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 16),
+                                  ),
+                                ],
+                              )
+                            : const SizedBox(),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Text(
+                              description,
+                              textAlign: TextAlign.justify,
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  color: ColorResources.getTextColor(context)
+                                      .withOpacity(0.6),
+                                  fontSize: 15),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 20),
+                        if (tiredPricingModel != null)
+                          Column(
+                            children: [
+                              Text(
+                                '${getTranslated('get', context)} ${Helpers.formatTextWithNum(tiredPricingModel.discountPrice!)} ${getTranslated('off_per_item_on_orders_of', context).toLowerCase()} ${tiredPricingModel.minQuantity ?? "this"}+ ${getTranslated('units', context).toLowerCase()}',
+                                textAlign: TextAlign.justify,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  color:
+                                      ColorResources.getPrimaryColor(context),
+                                  fontSize: 14,
+                                ),
+                              ),
+                              const SizedBox(height: 5),
+                            ],
+                          ),
+                        if (minOrderQuantity != 1)
+                          Column(
+                            children: [
+                              Text(
+                                  "${getTranslated('min_order_quantity_is', context)} $minOrderQuantity",
+                                  textAlign: TextAlign.justify,
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.orange,
+                                      fontSize: 14)),
+                              const SizedBox(height: 5),
+                            ],
+                          ),
+                        Row(children: [
+                          Text('${getTranslated('total_amount', context)}:',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 16,
+                                  color: ColorResources.getTextColor(context))),
+                          const SizedBox(
+                              width: Dimensions.PADDING_SIZE_EXTRA_SMALL),
+                          if (((product.price! * productProvider.quantity!)) !=
+                              priceWithQuantity)
+                            Row(
+                              children: [
+                                Text(
+                                  "${splashProvider.configModel!.currencySymbol ?? '\$'}${Helpers.formatTextWithNum((product.price! * productProvider.quantity!).toString())}",
+                                  style: TextStyle(
+                                    color: ColorResources.getTextColor(context)
+                                        .withOpacity(0.4),
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 15,
+                                    decoration: TextDecoration.lineThrough,
+                                    decorationColor:
+                                        ColorResources.getTextColor(context)
+                                            .withOpacity(0.4),
+                                  ),
+                                ),
+                                const SizedBox(width: 5),
+                              ],
+                            ),
+                          Text(
+                            PriceConverter.convertPrice(
+                                context, priceWithQuantity),
+                            style: TextStyle(
+                                fontSize: 16,
+                                color: ColorResources.getPrimaryColor(context),
+                                fontWeight: FontWeight.w600),
+                          ),
+                        ]),
+                      ],
+                    ),
+                  ),
+                ],
+              )),
           Positioned(
               top: 15,
               left: 15,
@@ -286,7 +382,7 @@ class ProductDetailsBodyView extends StatelessWidget {
                   child: Container(
                     width: 40,
                     height: 40,
-                    padding: EdgeInsets.all(8),
+                    padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
                       color: ColorResources.getScaffoldBackgroundColor(context),
                       shape: BoxShape.circle,
@@ -329,7 +425,7 @@ class ProductDetailsBodyView extends StatelessWidget {
                   child: Container(
                     width: 40,
                     height: 40,
-                    padding: EdgeInsets.all(8),
+                    padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
                       color: ColorResources.getScaffoldBackgroundColor(context),
                       shape: BoxShape.circle,
@@ -357,7 +453,7 @@ class ProductDetailsBodyView extends StatelessWidget {
                 ),
               ))
         ],
-      );
+      ));
     });
   }
 }

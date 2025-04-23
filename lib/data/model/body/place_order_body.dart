@@ -116,61 +116,53 @@ class PlaceOrderBody {
 }
 
 class ProductCart {
-  String? _productId;
-  String? _price;
+  String _productId;
+  String _price;
 
-  double? _discountAmount;
-  int? _quantity;
-  double? _taxAmount;
-  TiredPricingModel? _tieredPricing;
+  double _discountAmount;
+  int _quantity;
+  double _taxAmount;
+  TiredPricingModel _tieredPricing;
 
   ProductCart(
-    String? productId,
-    String? price,
-    double? discountAmount,
-    int? quantity,
-    double? taxAmount,
-    TiredPricingModel? tieredPricing,
-  ) {
-    this._productId = productId;
-    this._price = price;
+      {required String productId,
+      required String price,
+      required double discountAmount,
+      required int quantity,
+      required double taxAmount,
+      required TiredPricingModel tieredPricing})
+      : _productId = productId,
+        _price = price,
+        _discountAmount = discountAmount,
+        _quantity = quantity,
+        _taxAmount = taxAmount,
+        _tieredPricing = tieredPricing;
 
-    this._discountAmount = discountAmount;
-    this._quantity = quantity;
-    this._taxAmount = taxAmount;
-    this._tieredPricing = tieredPricing;
-  }
+  String get productId => _productId;
+  String get price => _price;
+  double get discountAmount => _discountAmount;
+  int get quantity => _quantity;
+  double get taxAmount => _taxAmount;
+  TiredPricingModel get tieredPricing => _tieredPricing;
 
-  String? get productId => _productId;
-  String? get price => _price;
-  double? get discountAmount => _discountAmount;
-  int? get quantity => _quantity;
-  double? get taxAmount => _taxAmount;
-  TiredPricingModel? get tieredPricing => _tieredPricing;
+  ProductCart.fromJson(Map<String, dynamic> json)
+      : _productId = json['product_id'],
+        _price = json['price'],
+        _discountAmount = json['discount_amount'],
+        _quantity = json['quantity'],
+        _taxAmount = json['tax_amount'],
+        _tieredPricing = json['tiered_pricing'] != null
+            ? TiredPricingModel.fromJson(json['tiered_pricing'])
+            : throw Exception('TieredPricingModel is required');
 
-  ProductCart.fromJson(Map<String?, dynamic> json) {
-    _productId = json['product_id'];
-    _price = json['price'];
-
-    _discountAmount = json['discount_amount'];
-    _quantity = json['quantity'];
-    _taxAmount = json['tax_amount'];
-    _tieredPricing = json['tiered_pricing'] != null
-        ? TiredPricingModel.fromJson(json['tiered_pricing'])
-        : null;
-  }
-
-  Map<String?, dynamic> toJson() {
-    final Map<String?, dynamic> data = new Map<String?, dynamic>();
-    data['product_id'] = this._productId;
-    data['price'] = this._price;
-
-    data['discount_amount'] = this._discountAmount;
-    data['quantity'] = this._quantity;
-    data['tax_amount'] = this._taxAmount;
-    if (_tieredPricing != null) {
-      data['tiered_pricing'] = _tieredPricing!.toJson();
-    }
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = {};
+    data['product_id'] = _productId;
+    data['price'] = _price;
+    data['discount_amount'] = _discountAmount;
+    data['quantity'] = _quantity;
+    data['tax_amount'] = _taxAmount;
+    data['tiered_pricing'] = _tieredPricing.toJson();
     return data;
   }
 }

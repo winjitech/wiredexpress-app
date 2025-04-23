@@ -23,32 +23,35 @@ class UserInfoModel {
   int? freeDelivery;
   int? nearbyElectricians;
   int? productsEarlyAccess;
-  UserSubscriptionModel? userSubscription;
+  String? subscriptionExpireDate;
+  UserSubscriptionPlanModel? userSubscription;
 
-  UserInfoModel(
-      {this.id,
-      this.fName,
-      this.lName,
-      this.email,
-      this.image,
-      this.isPhoneVerified,
-      this.emailVerifiedAt,
-      this.createdAt,
-      this.updatedAt,
-      this.emailVerificationToken,
-      this.phone,
-      this.cmFirebaseToken,
-      this.updateVersion,
-      this.approved,
-      this.hasActiveSubscription,
-      this.purchasesPoints,
-      this.scheduledDelivery,
-      this.bulkOrderDiscounts,
-      this.exclusiveDiscounts,
-      this.freeDelivery,
-      this.nearbyElectricians,
-      this.userSubscription,
-      this.productsEarlyAccess});
+  UserInfoModel({
+    this.id,
+    this.fName,
+    this.lName,
+    this.email,
+    this.image,
+    this.isPhoneVerified,
+    this.emailVerifiedAt,
+    this.createdAt,
+    this.updatedAt,
+    this.emailVerificationToken,
+    this.phone,
+    this.cmFirebaseToken,
+    this.updateVersion,
+    this.approved,
+    this.hasActiveSubscription,
+    this.purchasesPoints,
+    this.scheduledDelivery,
+    this.bulkOrderDiscounts,
+    this.exclusiveDiscounts,
+    this.freeDelivery,
+    this.nearbyElectricians,
+    this.productsEarlyAccess,
+    this.subscriptionExpireDate,
+    this.userSubscription,
+  });
 
   UserInfoModel.fromJson(Map<String?, dynamic> json) {
     id = json['id'];
@@ -75,9 +78,10 @@ class UserInfoModel {
     freeDelivery = json['free_delivery'];
     nearbyElectricians = json['nearby_electricians'];
     productsEarlyAccess = json['products_early_access'];
+    subscriptionExpireDate = json['subscription_expire_date'];
 
     userSubscription = json['user_subscription'] != null
-        ? UserSubscriptionModel.fromJson(json['user_subscription'])
+        ? UserSubscriptionPlanModel.fromJson(json['user_subscription'])
         : null;
   }
 
@@ -105,6 +109,7 @@ class UserInfoModel {
     data['free_delivery'] = freeDelivery;
     data['nearby_electricians'] = nearbyElectricians;
     data['products_early_access'] = productsEarlyAccess;
+    data['subscription_expire_date'] = subscriptionExpireDate;
     if (userSubscription != null) {
       data['user_subscription'] = userSubscription?.toJson();
     }

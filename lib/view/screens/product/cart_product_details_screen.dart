@@ -13,7 +13,6 @@ import 'package:wired_express/utill/color_resources.dart';
 import 'package:wired_express/view/base/circular_indicator_widget.dart';
 import 'package:wired_express/view/base/custom_button.dart';
 import 'package:wired_express/view/base/custom_snackbar.dart';
-import 'package:wired_express/view/base/cart_product_bottom_sheet.dart';
 import 'package:wired_express/view/screens/product/widget/product_details_body_view.dart';
 
 class CartProductDetailsScreen extends StatefulWidget {
@@ -48,7 +47,6 @@ class _CartProductDetailsScreenState extends State<CartProductDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
         backgroundColor: ColorResources.getScaffoldBackgroundColor(context),
         key: _scaffoldKey,
@@ -62,133 +60,87 @@ class _CartProductDetailsScreenState extends State<CartProductDetailsScreen> {
               ProductModel product = productProvider.productDetailsModel!;
               List<TiredPricingModel> tiredPricing = product.tiredPricing ?? [];
 
-              return Scrollbar(
-                child: SingleChildScrollView(
-                  padding: EdgeInsets.zero,
-                  child: Column(
-                    children: [
-                      ProductDetailsBodyView(product: product),
-                      Padding(
-                        padding: EdgeInsets.all(25),
-                        child: Column(
-                          children: [
-                            !cartProvider.cartLoading
-                                ? Column(children: [
-                                    CustomButton(
-                                      text: getTranslated(
-                                          'update_in_cart', context),
-                                      backgroundColor:
-                                          ColorResources.getPrimaryColor(
-                                              context),
-                                      onTap: () {
-                                        CartModel cartModel = CartModel(
-                                            id: widget.cart!.id!,
-                                            productId: product.id,
-                                            quantity: productProvider.quantity,
-                                            product: product,
-                                            tieredPricing: PriceConverter
-                                                .getMatchedTieredPricingModel(context ,
-                                                tiredPricing,
-                                                    productProvider.quantity ??
-                                                        1));
-
-                                        cartProvider
-                                            .addToCartList(cartModel)
-                                            .then((value) {
-                                          cartProvider.initCartList(context);
-                                          cartProvider
-                                              .initCartListProductIds(context);
-                                          showCustomSnackBar(
-                                              getTranslated(
-                                                  'updated_successfully',
-                                                  context),
-                                              context,
-                                              isError: false);
-                                          Navigator.pop(context);
-                                        });
-                                      },
-                                    ),
-                                    SizedBox(height: 15),
-                                    MaterialButton(
-                                        onPressed: () {
-                                          cartProvider
-                                              .removeFromCartList(
-                                                  widget.cart!.id!,
-                                                  product.id!,
-                                                  (message) {})
-                                              .then((value) {
-                                            cartProvider.initCartList(context);
-                                            cartProvider.initCartListProductIds(
-                                                context);
-                                            showCustomSnackBar(
-                                                getTranslated(
-                                                    'delete_from_cart_successful',
-                                                    context),
+              return Column(
+                children: [
+                  Expanded(child: ProductDetailsBodyView(product: product)),
+                  Container(
+                    padding: EdgeInsets.all(15),
+                    color: ColorResources.getScaffoldBackgroundColor(context),
+                    child: Column(
+                      children: [
+                        !cartProvider.cartLoading
+                            ? Column(children: [
+                                CustomButton(
+                                  text:
+                                      getTranslated('update_in_cart', context),
+                                  backgroundColor:
+                                      ColorResources.getPrimaryColor(context),
+                                  onTap: () {
+                                    CartModel cartModel = CartModel(
+                                        id: widget.cart!.id!,
+                                        productId: product.id,
+                                        quantity: productProvider.quantity,
+                                        product: product,
+                                        tieredPricing: PriceConverter
+                                            .getMatchedTieredPricingModel(
                                                 context,
-                                                isError: false);
-                                            Navigator.pop(context);
-                                          });
-                                        },
-                                        color: Colors.transparent,
-                                        padding: EdgeInsets.zero,
-                                        elevation: 0,
-                                        minWidth:
-                                            MediaQuery.of(context).size.width,
-                                        height: 50,
-                                        shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(40),
-                                            side:
-                                                BorderSide(color: Colors.red)),
-                                        child: Text(
+                                                tiredPricing,
+                                                productProvider.quantity ?? 1));
+
+                                    cartProvider
+                                        .addToCartList(cartModel)
+                                        .then((value) {
+                                      cartProvider.initCartList(context);
+                                      cartProvider
+                                          .initCartListProductIds(context);
+                                      showCustomSnackBar(
+                                          getTranslated(
+                                              'updated_successfully', context),
+                                          context,
+                                          isError: false);
+                                      Navigator.pop(context);
+                                    });
+                                  },
+                                ),
+                                SizedBox(height: 15),
+                                MaterialButton(
+                                    onPressed: () {
+                                      cartProvider
+                                          .removeFromCartList(
+                                              widget.cart!.id!, product.id!)
+                                          .then((value) {
+                                        cartProvider.initCartList(context);
+                                        cartProvider
+                                            .initCartListProductIds(context);
+                                        showCustomSnackBar(
                                             getTranslated(
-                                                'delete_from_cart', context),
-                                            style:
-                                                TextStyle(color: Colors.red))),
-                                  ])
-                                : CustomCircularIndicator(
-                                    color: ColorResources.getScaffoldColor(
-                                        context)),
-                            SizedBox(
-                              height: 25,
-                            ),
-                            GestureDetector(
-                              onTap: () => showModalBottomSheet(
-                                useSafeArea: true,
-                                isScrollControlled: true,
-                                backgroundColor: Colors.transparent,
-                                context: context,
-                                builder: (BuildContext context) =>
-                                    CartProductDetailsBottomSheet(
-                                        product: product, cart: widget.cart!),
-                              ),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(getTranslated('specification', context),
-                                      style: TextStyle(
-                                          fontSize: 18,
-                                          color: ColorResources.getTextColor(
-                                                  context)
-                                              .withOpacity(0.6),
-                                          fontWeight: FontWeight.w500)),
-                                  const SizedBox(width: 10),
-                                  Icon(
-                                    Icons.arrow_forward_ios_rounded,
-                                    size: 15,
-                                    color: ColorResources.getTextColor(context)
-                                        .withOpacity(0.6),
-                                  )
-                                ],
-                              ),
-                            )
-                          ],
-                        ),
-                      )
-                    ],
-                  ),
-                ),
+                                                'delete_from_cart_successful',
+                                                context),
+                                            context,
+                                            isError: false);
+                                        Navigator.pop(context);
+                                      });
+                                    },
+                                    color: Colors.transparent,
+                                    padding: EdgeInsets.zero,
+                                    elevation: 0,
+                                    minWidth: MediaQuery.of(context).size.width,
+                                    height: 50,
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(40),
+                                        side: BorderSide(color: Colors.red)),
+                                    child: Text(
+                                        getTranslated(
+                                            'delete_from_cart', context),
+                                        style: TextStyle(color: Colors.red))),
+                              ])
+                            : CustomCircularIndicator(
+                                color:
+                                    ColorResources.getScaffoldColor(context)),
+                      ],
+                    ),
+                  )
+                ],
               );
             },
           );

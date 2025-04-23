@@ -1,19 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:wired_express/data/model/response/address_model.dart';
-import 'package:wired_express/helper/responsive_helper.dart';
 import 'package:wired_express/localization/language_constrants.dart';
 import 'package:wired_express/provider/theme_provider.dart';
-import 'package:wired_express/theme/dark_theme.dart';
-import 'package:wired_express/theme/light_theme.dart';
 import 'package:wired_express/utill/color_resources.dart';
 import 'package:wired_express/utill/dimensions.dart';
 import 'package:wired_express/utill/images.dart';
 import 'package:wired_express/utill/styles.dart';
 import 'package:wired_express/view/base/custom_app_bar.dart';
-import 'package:wired_express/view/base/main_app_bar.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'dart:typed_data';
 import 'dart:ui';
 
 import 'package:provider/provider.dart';
@@ -49,7 +44,6 @@ class _MapWidgetState extends State<MapWidget> {
 
   @override
   Widget build(BuildContext context) {
-    //  final address = Provider.of<SplashProvider>(context).;
     return Scaffold(
       backgroundColor: ColorResources.getScaffoldBackgroundColor(context!),
       appBar: CustomAppBar(title: getTranslated('delivery_address', context)),

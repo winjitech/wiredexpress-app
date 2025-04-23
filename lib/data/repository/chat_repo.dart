@@ -14,7 +14,7 @@ class ChatRepo {
   Future<ApiResponse> getChatList() async {
 
     try {
-      final response = await dioClient!.get(AppConstants.MESSAGE_URI);
+      final response = await dioClient!.get(AppConstants.messageUrl);
       return ApiResponse.withSuccess(response);
     } catch (e) {
       return ApiResponse.withError(ApiErrorHandler.getMessage(e));
@@ -23,7 +23,7 @@ class ChatRepo {
 
 
   Future<http.StreamedResponse> sendMessage(String message, String token) async {
-    http.MultipartRequest request = http.MultipartRequest('POST', Uri.parse('${AppConstants.BASE_URL}${AppConstants.SEND_MESSAGE_URI}'));
+    http.MultipartRequest request = http.MultipartRequest('POST', Uri.parse('${AppConstants.baseUrl}${AppConstants.sendMessageUrl}'));
     request.headers.addAll(<String,String>{'Authorization': 'Bearer $token'});
 
     Map<String, String> _fields = Map();
@@ -36,7 +36,7 @@ class ChatRepo {
   }
 
   Future<http.StreamedResponse> sendImage(File file, String token, String message) async {
-    http.MultipartRequest request = http.MultipartRequest('POST', Uri.parse('${AppConstants.BASE_URL}${AppConstants.SEND_IMAGE_URI}?message=$message'));
+    http.MultipartRequest request = http.MultipartRequest('POST', Uri.parse('${AppConstants.baseUrl}${AppConstants.sendImageUrl}?message=$message'));
     request.headers.addAll(<String,String>{'Authorization': 'Bearer ${token}'});
     if(file != null) {
       print('image --');

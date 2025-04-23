@@ -4,8 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer_animation/shimmer_animation.dart';
-import 'package:wired_express/data/model/response/address_model.dart';
-import 'package:wired_express/helper/responsive_helper.dart';
+import 'package:wired_express/data/model/response/userinfo_model.dart';
 import 'package:wired_express/localization/language_constrants.dart';
 import 'package:wired_express/provider/auth_provider.dart';
 import 'package:wired_express/provider/banner_provider.dart';
@@ -19,11 +18,7 @@ import 'package:wired_express/provider/subscription_provider.dart';
 import 'package:wired_express/provider/theme_provider.dart';
 import 'package:wired_express/provider/wishlist_provider.dart';
 import 'package:wired_express/utill/color_resources.dart';
-import 'package:wired_express/utill/dimensions.dart';
-import 'package:wired_express/view/base/circular_indicator_widget.dart';
 import 'package:wired_express/view/base/custom_main_appbar.dart';
-import 'package:wired_express/view/base/no_data_screen.dart';
-import 'package:wired_express/view/base/product_widget.dart';
 import 'package:wired_express/view/screens/drawer/drawer_screen.dart';
 import 'package:wired_express/view/screens/home/widget/banner_view.dart';
 import 'package:wired_express/view/screens/home/widget/category_product_view.dart';
@@ -40,27 +35,73 @@ class _HomeScreenState extends State<HomeScreen> {
       GlobalKey<ScaffoldMessengerState>();
 
   Future<void> _loadData(BuildContext context, bool reload) async {
-    final authProvider =
-        Provider.of<CustomAuthProvider>(context, listen: false);
+    final authProvider = Provider.of<CustomAuthProvider>(context, listen: false);
     final splashProvider = Provider.of<SplashProvider>(context, listen: false);
-    final subscriptionProvider =
-        Provider.of<SubscriptionProvider>(context, listen: false);
-    final profileProvider =
-        Provider.of<ProfileProvider>(context, listen: false);
-    final wishListProvider =
-        Provider.of<WishListProvider>(context, listen: false);
+    final subscriptionProvider = Provider.of<SubscriptionProvider>(context, listen: false);
+    final profileProvider = Provider.of<ProfileProvider>(context, listen: false);
+    final wishListProvider = Provider.of<WishListProvider>(context, listen: false);
     final cartProvider = Provider.of<CartProvider>(context, listen: false);
-    final categoryProvider =
-        Provider.of<CategoryProvider>(context, listen: false);
+    final categoryProvider = Provider.of<CategoryProvider>(context, listen: false);
     final bannerProvider = Provider.of<BannerProvider>(context, listen: false);
     final placeOrder = Provider.of<PlaceOrderProvider>(context, listen: false);
     final location = Provider.of<LocationProvider>(context, listen: false);
 
-    if (authProvider.isLoggedIn() ?? false) {
-      if (profileProvider.userInfoModel != null &&
-          profileProvider.userInfoModel!.freeDelivery == 1) {
-        _showFreeDeliverySnackBar();
+    if (authProvider.isLoggedIn()!) {
+      UserInfoModel? userInfo = profileProvider.userInfoModel;
+
+      if (userInfo != null) {
+        String? subscriptionExpireDate = userInfo.subscriptionExpireDate;
+        if (subscriptionExpireDate != null) {
+          DateTime expireDate = DateTime.parse(subscriptionExpireDate);
+          DateTime now = DateTime.now();
+          DateTime yesterday = DateTime(now.year, now.month, now.day)
+              .subtract(Duration(days: 1));
+
+          bool isExpiredYesterday = expireDate.year == yesterday.year &&
+              expireDate.month == yesterday.month &&
+              expireDate.day == yesterday.day;
+
+          if (isExpiredYesterday) {
+            String? subscriptionId =
+                userInfo.userSubscription?.paypalSubscriptionId;
+            if (subscriptionId != null) {
+              subscriptionProvider
+                  .subscriptionDetails(context, subscriptionId)
+                  .then((_) {
+                if (subscriptionProvider.subscriptionStatus == "CANCELLED") {
+                  subscriptionProvider
+                      .cancelSubscription(context, subscriptionId)
+                      .then((_) => profileProvider.getUserInfo(context));
+                }
+              });
+            }
+          }
+        }
+
+        // if (userInfo.freeDelivery == 1) {
+        //   _showFreeDeliverySnackBar();
+        // }
+
+        if (userInfo.nearbyElectricians == 1 &&
+            location.addressList?.isNotEmpty == true) {
+          final userAddressId = authProvider.getUserAddressId();
+          final matchedAddress = location.addressList!.firstWhere(
+            (element) =>
+                element.id ==
+                (userAddressId == 0
+                    ? location.addressList![0].id
+                    : userAddressId),
+            orElse: () => location.addressList![0],
+          );
+
+          splashProvider.getNearbyElectricians(
+            context,
+            matchedAddress.latitude!,
+            matchedAddress.longitude!,
+          );
+        }
       }
+
       subscriptionProvider.getSubscriptionPlans(context);
       profileProvider.getUserInfo(context);
 
@@ -68,25 +109,6 @@ class _HomeScreenState extends State<HomeScreen> {
       wishListProvider.initWishListProductIds(context);
       cartProvider.initCartList(context);
       cartProvider.initCartListProductIds(context);
-
-      if (profileProvider.userInfoModel?.nearbyElectricians == 1 &&
-          location.addressList?.isNotEmpty == true) {
-        int? userAddressId = authProvider.getUserAddressId();
-        AddressModel matchedAddress = location.addressList!.firstWhere(
-          (element) =>
-              element.id ==
-              (userAddressId == 0
-                  ? location.addressList![0].id
-                  : userAddressId),
-          orElse: () => location.addressList![0],
-        );
-
-        splashProvider.getNearbyElectricians(
-          context,
-          matchedAddress.latitude!,
-          matchedAddress.longitude!,
-        );
-      }
     }
 
     categoryProvider.getCategoryList(context, reload);
@@ -208,7 +230,8 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                             ),
                           if (authProvider.isLoggedIn()! &&
-                              profileProvider.userInfoModel?.nearbyElectricians ==
+                              profileProvider
+                                      .userInfoModel?.nearbyElectricians ==
                                   1 &&
                               splashProvider.nearbyElectriciansList != null &&
                               splashProvider.nearbyElectriciansList!.isNotEmpty)
@@ -225,7 +248,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                 child: Container(
                                   padding: const EdgeInsets.all(15),
                                   decoration: BoxDecoration(
-                                      color: ColorResources.getCardColor(context),
+                                      color:
+                                          ColorResources.getCardColor(context),
                                       borderRadius: BorderRadius.circular(10),
                                       boxShadow: [
                                         BoxShadow(
@@ -245,8 +269,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                           getTranslated(
                                               'nearby_electricians', context),
                                           style: TextStyle(
-                                              color: ColorResources.getTextColor(
-                                                  context),
+                                              color:
+                                                  ColorResources.getTextColor(
+                                                      context),
                                               fontWeight: FontWeight.w600,
                                               fontSize: 16))
                                     ],

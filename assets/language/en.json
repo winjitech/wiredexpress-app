@@ -442,5 +442,10 @@
   "navigate": "Navigate",
   "you_have_free_delivery" : "You have free delivery",
   "free_delivery" : "Free delivery",
-  "no_any_product_available" : "No any product available!"
+  "no_any_product_available" : "No any product available!",
+  "min_order_quantity_is" : "Min order quantity is",
+  "off_per_item_on_orders_of" : "Off per item on orders of",
+  "units": "Units",
+  "get": "Get",
+  "total_products_discount": "Total products discount"
 }

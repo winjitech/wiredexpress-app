@@ -118,8 +118,8 @@ class _PaymentWebViewState extends State<PaymentWebView> {
             debugPrint('Page started loading: $url');
           },
           onPageFinished: (String url) async {
-            bool _isSuccess = url.contains('https://wiredexpress01.com/payment-success') && url.contains(AppConstants.BASE_URL);
-            bool _isFailed = url.contains('https://wiredexpress01/payment-fail') && url.contains(AppConstants.BASE_URL);
+            bool _isSuccess = url.contains('https://wiredexpress01.com/payment-success') && url.contains(AppConstants.baseUrl);
+            bool _isFailed = url.contains('https://wiredexpress01/payment-fail') && url.contains(AppConstants.baseUrl);
             if(_isSuccess)  {
               Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext? context)=>
                   PaymentSuccessScreen(success: true)));

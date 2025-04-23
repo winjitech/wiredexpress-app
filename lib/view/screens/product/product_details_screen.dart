@@ -15,7 +15,6 @@ import 'package:wired_express/utill/color_resources.dart';
 import 'package:wired_express/view/base/circular_indicator_widget.dart';
 import 'package:wired_express/view/base/custom_button.dart';
 import 'package:wired_express/view/base/custom_snackbar.dart';
-import 'package:wired_express/view/base/product_bottom_sheet.dart';
 import 'package:wired_express/view/screens/product/widget/product_details_body_view.dart';
 
 class ProductDetailsScreen extends StatefulWidget {
@@ -64,104 +63,51 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
 
               if (productProvider.productDetailsLoading ||
                   productProvider.productDetailsModel == null) {
-                return CustomCircularIndicator();
+                return const CustomCircularIndicator();
               }
               ProductModel product = productProvider.productDetailsModel!;
               List<TiredPricingModel> tiredPricing = product.tiredPricing ?? [];
 
-              return Scrollbar(
-                child: SingleChildScrollView(
-                  padding: EdgeInsets.zero,
-                  child: Column(
-                    children: [
-                      ProductDetailsBodyView(product: product),
-                      Padding(
-                        padding: EdgeInsets.all(25),
-                        child: Column(
-                          children: [
-                            if (isLoggedIn)
-                              cartProvider.cartLoading == true
-                                  ? CustomCircularIndicator(
-                                      color: ColorResources.getScaffoldColor(
-                                          context))
-                                  : CustomButton(
-                                      text:
-                                          getTranslated('add_to_cart', context),
-                                      onTap: () {
-                                        CartModel cartModel = CartModel(
-                                            id: 0,
-                                            productId: product.id,
-                                            product: product,
-                                            quantity: productProvider.quantity,
-                                            tieredPricing: PriceConverter
-                                                .getMatchedTieredPricingModel(context ,
-                                                    tiredPricing,
-                                                    productProvider.quantity ??
-                                                        1));
-
-                                        cartProvider
-                                            .addToCartList(cartModel)
-                                            .then((value) {
-                                          cartProvider.initCartList(context);
-                                          cartProvider
-                                              .initCartListProductIds(context);
-                                          showCustomSnackBar(
-                                              getTranslated(
-                                                  'added_cart_successfully',
-                                                  context),
-                                              context,
-                                              isError: false);
-                                          Navigator.pop(context);
-                                        });
-                                      },
-                                    ),
-                            SizedBox(height: 15),
-                            GestureDetector(
-                              onTap: () => showModalBottomSheet(
-                                useSafeArea: true,
-                                isScrollControlled: true,
-                                backgroundColor: Colors.transparent,
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return ProductDetailsBottomSheet(
+              return Column(
+                children: [
+                  Expanded(child: ProductDetailsBodyView(product: product)),
+                  if (isLoggedIn)
+                    Container(
+                      padding: EdgeInsets.all(15),
+                      color: ColorResources.getScaffoldBackgroundColor(context),
+                      child: cartProvider.cartLoading == true
+                          ? CustomCircularIndicator(
+                              color: ColorResources.getScaffoldColor(context))
+                          : CustomButton(
+                              text: getTranslated('add_to_cart', context),
+                              onTap: () {
+                                CartModel cartModel = CartModel(
+                                    id: 0,
+                                    productId: product.id,
                                     product: product,
-                                    callback: (CartModel cartModel) {
-                                      ScaffoldMessenger.of(context!)
-                                          .showSnackBar(SnackBar(
-                                              content: Text(getTranslated(
-                                                  'added_to_cart', context)),
-                                              backgroundColor: Colors.green));
-                                    },
-                                  );
-                                },
-                              ),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(getTranslated('specification', context),
-                                      style: TextStyle(
-                                          fontSize: 18,
-                                          color: ColorResources.getTextColor(
-                                                  context)
-                                              .withOpacity(0.6),
-                                          fontWeight: FontWeight.w500)),
-                                  const SizedBox(width: 10),
-                                  Icon(
-                                    Icons.arrow_forward_ios_rounded,
-                                    size: 15,
-                                    color: ColorResources.getTextColor(context)
-                                        .withOpacity(0.6),
-                                  )
-                                ],
-                              ),
-                            )
-                          ],
-                        ),
-                      )
-                    ],
-                  ),
-                ),
+                                    quantity: productProvider.quantity,
+                                    tieredPricing: PriceConverter
+                                        .getMatchedTieredPricingModel(
+                                            context,
+                                            tiredPricing,
+                                            productProvider.quantity ?? 1));
+
+                                cartProvider
+                                    .addToCartList(cartModel)
+                                    .then((value) {
+                                  cartProvider.initCartList(context);
+                                  cartProvider.initCartListProductIds(context);
+                                  showCustomSnackBar(
+                                      getTranslated(
+                                          'added_cart_successfully', context),
+                                      context,
+                                      isError: false);
+                                  Navigator.pop(context);
+                                });
+                              },
+                            ),
+                    )
+                ],
               );
             },
           );

@@ -10,7 +10,7 @@ class BannerRepo {
 
   Future<ApiResponse> getBannerList() async {
     try {
-      final response = await dioClient!.get(AppConstants.BANNER_URI);
+      final response = await dioClient!.get(AppConstants.bannerUrl);
       return ApiResponse.withSuccess(response);
     } catch (e) {
       return ApiResponse.withError(ApiErrorHandler.getMessage(e));
@@ -19,7 +19,7 @@ class BannerRepo {
 
   Future<ApiResponse> getProductDetails(String productID) async {
     try {
-      final response = await dioClient!.get('${AppConstants.PRODUCT_DETAILS_URI}$productID');
+      final response = await dioClient!.get('${AppConstants.productDetailsUrl}$productID');
       return ApiResponse.withSuccess(response);
     } catch (e) {
       return ApiResponse.withError(ApiErrorHandler.getMessage(e));

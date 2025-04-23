@@ -16,7 +16,7 @@ class CartRepo {
 
   Future<ApiResponse> cartList() async {
     try {
-      final response = await dioClient!.get(AppConstants.CART_LIST_URI);
+      final response = await dioClient!.get(AppConstants.cartListUrl);
       print('test 1');
       return ApiResponse.withSuccess(response);
     } catch (e) {
@@ -29,7 +29,7 @@ class CartRepo {
     print('cart=> ${cart.toJson()}');
     try {
       Response response = await dioClient!.post(
-        AppConstants.ADD_CART_URI,
+        AppConstants.addToCartUrl,
         data: cart.toJson(),
       );
       return ApiResponse.withSuccess(response);
@@ -41,7 +41,7 @@ class CartRepo {
   Future<ApiResponse> removeCartList(int cartId) async {
     try {
       final response = await dioClient!
-          .delete('${AppConstants.REMOVE_CART_URI}?cart_id=$cartId');
+          .delete('${AppConstants.removeFromCartUrl}?cart_id=$cartId');
       return ApiResponse.withSuccess(response);
     } catch (e) {
       return ApiResponse.withError(ApiErrorHandler.getMessage(e));
@@ -51,7 +51,7 @@ class CartRepo {
   Future<ApiResponse> getCartProductIds() async {
     try {
       final response =
-          await dioClient!.get(AppConstants.CART_LIST_PRODUCTIDS_URI);
+          await dioClient!.get(AppConstants.cartListIdsUrl);
       return ApiResponse.withSuccess(response);
     } catch (e) {
       return ApiResponse.withError(ApiErrorHandler.getMessage(e));
@@ -60,8 +60,8 @@ class CartRepo {
 
   List<CartModel>? getCartList() {
     List<String>? carts = [];
-    if (sharedPreferences!.containsKey(AppConstants.CART_LIST)) {
-      carts = sharedPreferences!.getStringList(AppConstants.CART_LIST);
+    if (sharedPreferences!.containsKey(AppConstants.cartList)) {
+      carts = sharedPreferences!.getStringList(AppConstants.cartList);
     }
     List<CartModel> cartList = [];
     carts!
@@ -72,6 +72,6 @@ class CartRepo {
   void addToCartList(List<CartModel> cartProductList) {
     List<String> carts = [];
     cartProductList.forEach((cartModel) => carts.add(jsonEncode(cartModel)));
-    sharedPreferences!.setStringList(AppConstants.CART_LIST, carts);
+    sharedPreferences!.setStringList(AppConstants.cartList, carts);
   }
 }

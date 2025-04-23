@@ -11,7 +11,7 @@ class WishListRepo {
 
   Future<ApiResponse> getWishList() async {
     try {
-      final response = await dioClient!.get(AppConstants.WISH_LIST_GET_URI);
+      final response = await dioClient!.get(AppConstants.wishListUrl);
       return ApiResponse.withSuccess(response);
     } catch (e) {
       return ApiResponse.withError(ApiErrorHandler.getMessage(e));
@@ -20,7 +20,7 @@ class WishListRepo {
 
   Future<ApiResponse> getWishListProductIds() async {
     try {
-      final response = await dioClient!.get(AppConstants.WISH_LIST_PRODUCTIDS_URI);
+      final response = await dioClient!.get(AppConstants.wishListIdsUrl);
       return ApiResponse.withSuccess(response);
     } catch (e) {
       return ApiResponse.withError(ApiErrorHandler.getMessage(e));
@@ -29,7 +29,8 @@ class WishListRepo {
 
   Future<ApiResponse> addWishList(int productID) async {
     try {
-      final response = await dioClient!.post('${AppConstants.ADD_WISH_LIST_URI}?product_id=$productID');
+      final response = await dioClient!
+          .post('${AppConstants.addToWishListUrl}?product_id=$productID');
       return ApiResponse.withSuccess(response);
     } catch (e) {
       return ApiResponse.withError(ApiErrorHandler.getMessage(e));
@@ -38,7 +39,8 @@ class WishListRepo {
 
   Future<ApiResponse> removeWishList(int productID) async {
     try {
-      final response = await dioClient!.delete(AppConstants.REMOVE_WISH_LIST_URI + productID.toString());
+      final response = await dioClient!
+          .delete(AppConstants.removeFromWishListUrl + productID.toString());
       return ApiResponse.withSuccess(response);
     } catch (e) {
       return ApiResponse.withError(ApiErrorHandler.getMessage(e));

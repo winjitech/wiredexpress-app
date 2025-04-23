@@ -5,6 +5,7 @@ import 'package:wired_express/data/helper/helpers.dart';
 import 'package:wired_express/data/model/body/place_order_body.dart';
 import 'package:wired_express/data/model/response/cart_model.dart';
 import 'package:wired_express/data/model/response/product_model.dart';
+import 'package:wired_express/data/model/response/product_plan_discount_model.dart';
 import 'package:wired_express/data/model/response/tiered_pricing_model.dart';
 import 'package:wired_express/helper/price_converter.dart';
 import 'package:wired_express/localization/language_constrants.dart';
@@ -16,6 +17,7 @@ import 'package:wired_express/provider/profile_provider.dart';
 import 'package:wired_express/provider/splash_provider.dart';
 import 'package:wired_express/utill/color_resources.dart';
 import 'package:wired_express/utill/dimensions.dart';
+import 'package:wired_express/view/base/circular_indicator_widget.dart';
 import 'package:wired_express/view/base/custom_button.dart';
 import 'package:wired_express/view/base/custom_main_appbar.dart';
 import 'package:wired_express/view/base/custom_snackbar.dart';
@@ -94,6 +96,10 @@ class _CartScreenState extends State<CartScreen> {
                     CustomAuthProvider, CouponProvider>(
                   builder: (context, profileProvider, cartProvider,
                       splashProvider, authProvider, couponProvider, child) {
+                    if (cartProvider.cartListLoading! ||
+                        cartProvider.cartListIdsLoading!) {
+                      return CustomCircularIndicator();
+                    }
                     bool haveFreeDelivery =
                         profileProvider.userInfoModel != null &&
                             profileProvider.userInfoModel!.freeDelivery == 1;
@@ -138,17 +144,49 @@ class _CartScreenState extends State<CartScreen> {
                       ProductModel product = cart.product!;
                       TiredPricingModel? tiredPricing =
                           cart.tieredPricing ?? TiredPricingModel();
+                      ProductPlanDiscountModel? productPlanDiscountModel;
+                      if (isLoggedIn &&
+                          profileProvider.userInfoModel != null &&
+                          profileProvider.userInfoModel!.exclusiveDiscounts ==
+                              1) {
+                        List<ProductPlanDiscountModel> productPlanDiscount =
+                            product.productPlanDiscount ?? [];
+
+                        try {
+                          productPlanDiscountModel =
+                              productPlanDiscount.firstWhere(
+                            (discount) =>
+                                discount.planId ==
+                                profileProvider
+                                    .userInfoModel!.userSubscription!.planId,
+                            orElse: () => ProductPlanDiscountModel(),
+                          );
+                        } catch (e) {
+                          print("Error finding discount: $e");
+                          productPlanDiscountModel = ProductPlanDiscountModel();
+                        }
+                      }
                       double priceBeforeDisc = product.price!;
-                      double priceAfterDiscOnProduct =
-                          PriceConverter.convertWithDiscount(
-                              context,
-                              priceBeforeDisc,
-                              product.discount!,
-                              product.discountType!);
+                      double discountedOnProductPrice =
+                          productPlanDiscountModel != null &&
+                                  productPlanDiscountModel.planId != null
+                              ? PriceConverter.convertWithDiscount(
+                                  context,
+                                  priceBeforeDisc,
+                                  productPlanDiscountModel.discount!,
+                                  productPlanDiscountModel.discountType!)
+                              : PriceConverter.convertWithDiscount(
+                                  context,
+                                  priceBeforeDisc,
+                                  product.discount!,
+                                  product.discountType!);
+
                       double priceAfterTieredPricing =
                           PriceConverter.getProductFinalPriceWithTieredPricing(
-                                  tiredPricing, priceAfterDiscOnProduct) ??
+                                  tiredPricing, discountedOnProductPrice) ??
                               0.0;
+                      print(
+                          "priceAfterTieredPricing == $priceAfterTieredPricing");
                       double finalProductPrice =
                           priceAfterTieredPricing * cart.quantity!;
                       double taxAmount = double.parse(Helpers.formatTextWithNum(
@@ -157,7 +195,7 @@ class _CartScreenState extends State<CartScreen> {
                                   .toString())) *
                           cart.quantity!;
                       double discountAmount =
-                          (priceBeforeDisc - priceAfterDiscOnProduct) *
+                          (priceBeforeDisc - discountedOnProductPrice) *
                               cart.quantity!;
                       totalDiscountOnProducts += discountAmount;
 
@@ -168,9 +206,14 @@ class _CartScreenState extends State<CartScreen> {
                       totalTax = totalTax + taxAmount;
                       totalItemsPriceAfterDiscOnProducts =
                           totalItemsPriceAfterDiscOnProducts +
-                              priceAfterDiscOnProduct;
-                      totalTiredPricing =
-                          totalTiredPricing + priceAfterTieredPricing;
+                              discountedOnProductPrice;
+
+                      totalTiredPricing = totalTiredPricing +
+                          (tiredPricing != null &&
+                                  tiredPricing.discountPrice != null
+                              ? (double.parse(tiredPricing.discountPrice!) *
+                                  cart.quantity!)
+                              : 0);
                       totalItemsPrice =
                           totalItemsPrice + (priceBeforeDisc * cart.quantity!);
                     });
@@ -259,7 +302,6 @@ class _CartScreenState extends State<CartScreen> {
                                                             .cartList[index],
                                                         cartIndex: index)),
                                             ChooseDeliveryAddressView(),
-
                                             DiscountView(
                                                 totalPointsDiscount:
                                                     totalPointsDiscountAmount,
@@ -277,29 +319,6 @@ class _CartScreenState extends State<CartScreen> {
                                                 context,
                                                 'delivery_fee',
                                                 '(+) $currency$deliveryCharge'),
-                                            // if (haveFreeDelivery)
-                                            //   Center(
-                                            //     child: Container(
-                                            //       margin: const EdgeInsets.symmetric( vertical: 10),
-                                            //       decoration: BoxDecoration(
-                                            //         color: ColorResources.getPrimaryColor(context).withOpacity(0.1),
-                                            //         borderRadius: BorderRadius.circular(10),
-                                            //         border: Border.all(
-                                            //             color: ColorResources.getPrimaryColor(context),
-                                            //             width: 0.5),
-                                            //       ),
-                                            //       padding: const EdgeInsets.symmetric(horizontal: 35, vertical: 4),
-                                            //       child: Text(
-                                            //         "${getTranslated('you_have_free_delivery', context)} (-) $currency${Helpers.formatTextWithNum(officialDeliveryFees.toString())}",textAlign: TextAlign.center,
-                                            //         style: TextStyle(
-                                            //           color: ColorResources.getPrimaryColor(context),
-                                            //           fontWeight: FontWeight.w600,
-                                            //           fontSize: 16,
-                                            //           letterSpacing: 0.5,
-                                            //         ),
-                                            //       ),
-                                            //     ),
-                                            //   ),
                                             Padding(
                                               padding:
                                                   const EdgeInsets.symmetric(
@@ -314,6 +333,10 @@ class _CartScreenState extends State<CartScreen> {
                                             ),
                                             _buildDetailRow(
                                                 context,
+                                                'total_products_discount',
+                                                '(-) $currency${Helpers.formatTextWithNum(totalDiscountOnProducts.toString())}'),
+                                            _buildDetailRow(
+                                                context,
                                                 'tiered_pricing_discount',
                                                 '(-) $currency${Helpers.formatTextWithNum(totalTiredPricing.toString())}'),
                                             if (couponDiscountAmount != 0.0)
@@ -321,7 +344,6 @@ class _CartScreenState extends State<CartScreen> {
                                                   context,
                                                   'coupon_discount',
                                                   '(-)  $currency${Helpers.formatTextWithNum(couponDiscountAmount.toString())}'),
-
                                             if (usePointsDiscountAmount != 0.0)
                                               _buildDetailRow(
                                                   context,
@@ -332,7 +354,6 @@ class _CartScreenState extends State<CartScreen> {
                                                   context,
                                                   'free_delivery',
                                                   '(-)  $currency${Helpers.formatTextWithNum(officialDeliveryFees.toString())}'),
-
                                             Padding(
                                               padding:
                                                   const EdgeInsets.symmetric(
@@ -351,7 +372,6 @@ class _CartScreenState extends State<CartScreen> {
                                                 '$currency${Helpers.formatTextWithNum(totalOrderPrice.toString())}',
                                                 color: ColorResources
                                                     .getPrimaryColor(context)),
-
                                             if (couponProvider
                                                 .useLoyaltyPoints!)
                                               Center(
@@ -394,27 +414,90 @@ class _CartScreenState extends State<CartScreen> {
                                           context);
                                       return;
                                     }
-
                                     List<CartModel>? cartList =
                                         cartProvider.cartList;
                                     List<ProductCart> carts =
                                         cartList.map((cart) {
-                                      double price = cart.product!.price!;
-                                      double discountAmount =
-                                          cart.product!.discountType == 'amount'
-                                              ? cart.product!.discount!
-                                              : (price *
-                                                      cart.product!.discount!) /
-                                                  100;
+                                      ProductModel product = cart.product!;
+                                      TiredPricingModel? tiredPricing =
+                                          cart.tieredPricing ??
+                                              TiredPricingModel();
+                                      ProductPlanDiscountModel?
+                                          productPlanDiscountModel;
+                                      if (isLoggedIn &&
+                                          profileProvider.userInfoModel !=
+                                              null &&
+                                          profileProvider.userInfoModel!
+                                                  .exclusiveDiscounts ==
+                                              1) {
+                                        List<ProductPlanDiscountModel>
+                                            productPlanDiscount =
+                                            product.productPlanDiscount ?? [];
+
+                                        try {
+                                          productPlanDiscountModel =
+                                              productPlanDiscount.firstWhere(
+                                            (discount) =>
+                                                discount.planId ==
+                                                profileProvider.userInfoModel!
+                                                    .userSubscription!.planId,
+                                            orElse: () =>
+                                                ProductPlanDiscountModel(),
+                                          );
+                                        } catch (e) {
+                                          print("Error finding discount: $e");
+                                          productPlanDiscountModel =
+                                              ProductPlanDiscountModel();
+                                        }
+                                      }
+                                      double priceBeforeDisc = product.price!;
+                                      double discountedOnProductPrice =
+                                          productPlanDiscountModel != null &&
+                                                  productPlanDiscountModel
+                                                          .planId !=
+                                                      null
+                                              ? PriceConverter
+                                                  .convertWithDiscount(
+                                                      context,
+                                                      priceBeforeDisc,
+                                                      productPlanDiscountModel
+                                                          .discount!,
+                                                      productPlanDiscountModel
+                                                          .discountType!)
+                                              : PriceConverter
+                                                  .convertWithDiscount(
+                                                      context,
+                                                      priceBeforeDisc,
+                                                      product.discount!,
+                                                      product.discountType!);
+
+                                      double priceAfterTieredPricing = PriceConverter
+                                              .getProductFinalPriceWithTieredPricing(
+                                                  tiredPricing,
+                                                  discountedOnProductPrice) ??
+                                          0.0;
+                                      double finalProductPrice =
+                                          priceAfterTieredPricing *
+                                              cart.quantity!;
+                                      double taxAmount = double.parse(Helpers
+                                              .formatTextWithNum(PriceConverter
+                                                      .convertPercentageToAmount(
+                                                          finalProductPrice,
+                                                          product.tax!)
+                                                  .toString())) *
+                                          cart.quantity!;
+                                      double discountAmount = (priceBeforeDisc -
+                                              discountedOnProductPrice) *
+                                          cart.quantity!;
 
                                       return ProductCart(
-                                        cart.product!.id.toString(),
-                                        price.toString(),
-                                        discountAmount,
-                                        cart.quantity,
-                                        cart.product!.tax,
-                                        cart.tieredPricing,
-                                      );
+                                          productId: product.id.toString(),
+                                          price: finalProductPrice.toString(),
+                                          discountAmount: discountAmount,
+                                          quantity: cart.quantity!,
+                                          taxAmount: taxAmount,
+                                          tieredPricing: cart.tieredPricing ??
+                                              TiredPricingModel());
                                     }).toList();
 
                                     PlaceOrderBody placeOrder = PlaceOrderBody(

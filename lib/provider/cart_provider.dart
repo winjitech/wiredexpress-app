@@ -1,17 +1,11 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:hive_flutter/adapters.dart';
-import 'package:wired_express/data/helper/helpers.dart';
 import 'package:wired_express/data/model/response/base/api_response.dart';
 import 'package:wired_express/data/model/response/cart_model.dart';
-import 'package:wired_express/data/model/response/product_model.dart';
 import 'package:wired_express/data/repository/cart_repo.dart';
 
 class CartProvider extends ChangeNotifier {
   final CartRepo? cartRepo;
   CartProvider({@required this.cartRepo});
-
-  double? _amount = 0.0;
 
   List<CartModel> _cartList = [];
   List<CartModel> get cartList => _cartList;
@@ -20,14 +14,9 @@ class CartProvider extends ChangeNotifier {
   bool get loading => _loading;
   List<int> _cartIdList = [];
   List<int> get cartIdList => _cartIdList;
-  double? get amount => _amount;
-
-  String _product = '';
-  String? get product => _product;
 
   void removeFromCart(CartModel cart) {
     _cartList.remove(cart);
-    // _amount = _amount! - (cart.discountedPrice! * cart.quantity!);
 
     notifyListeners();
   }
@@ -40,40 +29,46 @@ class CartProvider extends ChangeNotifier {
 
   void clearCartList() {
     _cartList = [];
-    _amount = 0;
     cartRepo!.addToCartList(_cartList);
     notifyListeners();
   }
 
-  Future<void> initCartList(BuildContext context) async {
-    _loading = true;
+  bool? _cartListLoading = false;
+  bool? get cartListLoading => _cartListLoading;
+
+  Future<void> initCartList(BuildContext context,
+      {bool showLoading = true}) async {
+    if (showLoading) {
+      _cartListLoading = true;
+    }
     notifyListeners();
+
     ApiResponse? apiResponse = await cartRepo!.cartList();
     _cartList = [];
+
     if (apiResponse.response != null &&
         apiResponse.response!.statusCode == 200) {
       apiResponse.response!.data.forEach((item) {
         _cartList.add(CartModel.fromJson(item));
       });
+      _cartListLoading = false;
 
-      _loading = false;
       notifyListeners();
-    } else {
-      _loading = false;
-      notifyListeners();
-      // String errorMessage = "Failed to load cart data";
-
-      // ScaffoldMessenger.of(context)
-      //     .showSnackBar(SnackBar(content: Text(errorMessage)));
     }
+    _cartListLoading = false;
 
     notifyListeners();
   }
 
-  Future<void> initCartListProductIds(BuildContext context) async {
-    _loading = true;
-    notifyListeners();
+  bool? _cartListIdsLoading = false;
+  bool? get cartListIdsLoading => _cartListIdsLoading;
 
+  Future<void> initCartListProductIds(BuildContext context,
+      {bool showLoading = true}) async {
+    if (showLoading) {
+      _cartListIdsLoading = true;
+    }
+    notifyListeners();
     try {
       ApiResponse apiResponse = await cartRepo!.getCartProductIds();
 
@@ -90,14 +85,19 @@ class CartProvider extends ChangeNotifier {
             print("Data is not a List. Value: ${apiResponse.response!.data}");
           }
         }
-        _loading = false;
+        _cartListIdsLoading = false;
+        notifyListeners();
       } else {
-        _loading = false;
+        _cartListIdsLoading = false;
+        notifyListeners();
+
         print('Api error: ${apiResponse.error.toString()}');
         throw Error();
       }
     } catch (error) {
-      _loading = false;
+      _cartListIdsLoading = false;
+      notifyListeners();
+
       print("Error occurred: $error");
     }
   }
@@ -126,8 +126,7 @@ class CartProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> removeFromCartList(
-      int cartId, int productId, Function feedbackMessage) async {
+  Future<void> removeFromCartList(int cartId, int productId) async {
     _cartLoading = true;
     notifyListeners();
 
@@ -136,7 +135,6 @@ class CartProvider extends ChangeNotifier {
         apiResponse.response!.statusCode == 200) {
       Map map = apiResponse.response!.data;
       String message = map['message'];
-      feedbackMessage(message);
       int _idIndex = _cartIdList.indexOf(productId);
       _cartIdList.removeAt(_idIndex);
       _cartLoading = false;
@@ -144,7 +142,6 @@ class CartProvider extends ChangeNotifier {
       //  _wishList.removeAt(_idIndex);
     } else {
       print('${apiResponse.error.toString()}');
-      feedbackMessage('${apiResponse.error.toString()}');
     }
     notifyListeners();
   }

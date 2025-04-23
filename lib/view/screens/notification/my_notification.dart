@@ -104,7 +104,7 @@ class MyNotification {
     String _orderID = '0';
     // String _image = 'http://localhost/tiejet/public/storage/notifications/${messageA['image']}';
     String _image = message['image'].startsWith('http') ? message['image']
-        : '${AppConstants.BASE_URL}/public/storage/notifications/${message['image']}';
+        : '${AppConstants.baseUrl}/public/storage/notifications/${message['image']}';
     final String largeIconPath = await _downloadAndSaveFile(_image, 'largeIcon');
     final String bigPicturePath = await _downloadAndSaveFile(_image, 'bigPicture');
     final BigPictureStyleInformation bigPictureStyleInformation = BigPictureStyleInformation(

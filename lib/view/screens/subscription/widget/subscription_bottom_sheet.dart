@@ -1,7 +1,7 @@
 import 'dart:async';
-
 import 'package:wired_express/data/model/response/subscription_feature_model.dart';
 import 'package:wired_express/data/model/response/subscription_model.dart';
+import 'package:wired_express/data/model/response/user_subscription_model.dart';
 import 'package:wired_express/localization/language_constrants.dart';
 import 'package:wired_express/provider/profile_provider.dart';
 import 'package:wired_express/provider/subscription_provider.dart';
@@ -13,11 +13,12 @@ import 'package:wired_express/utill/styles.dart';
 import 'package:wired_express/view/base/Custom_button.dart';
 import 'package:wired_express/view/base/circular_indicator_widget.dart';
 import 'package:wired_express/view/base/custom_snackbar.dart';
+import 'package:wired_express/view/screens/payment/payment_webview.dart';
 
 class SubscriptionBottomSheet extends StatefulWidget {
-  final SubscriptionModel subscription;
+  final SubscriptionPlanModel plan;
 
-  const SubscriptionBottomSheet({super.key, required this.subscription});
+  const SubscriptionBottomSheet({super.key, required this.plan});
 
   @override
   State<SubscriptionBottomSheet> createState() =>
@@ -26,19 +27,12 @@ class SubscriptionBottomSheet extends StatefulWidget {
 
 class _SubscriptionBottomSheetState extends State<SubscriptionBottomSheet> {
   @override
-  void initState() {
-    super.initState();
-
-    Timer(const Duration(seconds: 0), () {});
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Consumer2<SubscriptionProvider, ProfileProvider>(
       builder: (context, subscriptionProvider, profileProvider, child) {
-        SubscriptionModel subscription = widget.subscription;
-        bool userUseThisPlan = subscription.usePlan!;
-        List<SubscriptionFeatureModel>? features = subscription.features ?? [];
+        SubscriptionPlanModel plan = widget.plan;
+        bool userUseThisPlan = plan.usePlan!;
+        List<SubscriptionFeatureModel>? features = plan.features ?? [];
         bool hasActiveSubscription =
             profileProvider.userInfoModel!.hasActiveSubscription!;
 
@@ -135,11 +129,10 @@ class _SubscriptionBottomSheetState extends State<SubscriptionBottomSheet> {
                           );
                         },
                       ),
-
                       if (subscriptionProvider.cancelSubscriptionLoading ==
                               true ||
                           subscriptionProvider.subscribeUserLoading == true)
-                        CustomCircularIndicator()
+                        const CustomCircularIndicator()
                       else
                         Column(
                           children: [
@@ -153,7 +146,11 @@ class _SubscriptionBottomSheetState extends State<SubscriptionBottomSheet> {
                                 if (userUseThisPlan) {
                                   subscriptionProvider
                                       .cancelSubscription(
-                                          context, subscription.id!)
+                                          context,
+                                          profileProvider
+                                              .userInfoModel!
+                                              .userSubscription!
+                                              .paypalSubscriptionId!)
                                       .then((onValue) {
                                     if (onValue.isSuccess) {
                                       subscriptionProvider
@@ -168,120 +165,227 @@ class _SubscriptionBottomSheetState extends State<SubscriptionBottomSheet> {
                                       Navigator.pop(context);
                                     }
                                   });
-                                } else if(hasActiveSubscription && !userUseThisPlan){   showDialog(
-                                    context: context,
-                                    barrierDismissible: false,
-                                    builder: (context) => Dialog(
-                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                                      child:     Consumer2<SubscriptionProvider, ProfileProvider>(
-    builder: (context, subscriptionProvider, profileProvider, child) {return  Container(
-                                          width: 300,
-                                          decoration: BoxDecoration(
-                                              color: ColorResources.getScaffoldColor(context!),
-                                              borderRadius: BorderRadius.circular(10)),
-                                          child: Column(mainAxisSize: MainAxisSize.min, children: [
-                                            SizedBox(height: 20),
-                                            CircleAvatar(
-                                              radius: 30,
-                                              backgroundColor: Colors.white,
-                                              child: Icon(Icons.contact_support,
-                                                  color: ColorResources.getScaffoldColor(context), size: 50),
-                                            ),
-                                            Padding(
-                                              padding: EdgeInsets.all(Dimensions.PADDING_SIZE_LARGE),
-                                              child: Text(getTranslated('you_have_active_subscription', context),
-                                                  style: TextStyle(
-                                                      color: Colors.white54,
-                                                      fontWeight: FontWeight.w500,
-                                                      fontSize: 15),
-                                                  textAlign: TextAlign.center),
-                                            ),
-                                            Divider(height: 0, color: ColorResources.getHintColor(context)),
-
-                                            subscriptionProvider.cancelSubscriptionLoading == true ||
-                                                subscriptionProvider.subscribeUserLoading == true
-
-                                                ?Padding(
-                                                  padding: const EdgeInsets.all(15),
-                                                  child: CustomCircularIndicator(),
-                                                ):
-
-                                            Row(children: [
-                                              Expanded(
-                                                  child: GestureDetector(
-                                                    onTap: () {
-                                                      subscriptionProvider
-                                                          .subscribeUser(context,
-                                                          subscription.id!)
-                                                          .then((onValue) {
-                                                        if (onValue.isSuccess) {
-                                                          subscriptionProvider
-                                                              .getSubscriptionPlans(
-                                                              context);
-                                                          profileProvider
-                                                              .getUserInfo(context);
-                                                          Navigator.pop(context);
-                                                          Navigator.pop(context);
-
-                                                        } else {
-                                                          showCustomSnackBar(
-                                                              getTranslated(
-                                                                  'something_went_wrong',
-                                                                  context),
-                                                              context);
-                                                          Navigator.pop(context);
-                                                          Navigator.pop(context);
-
-                                                        }
-                                                      });
-                                                    },
-                                                    child: Container(
-                                                      padding: EdgeInsets.all(Dimensions.PADDING_SIZE_SMALL),
-                                                      alignment: Alignment.center,
-                                                      decoration: BoxDecoration(
-                                                          borderRadius: BorderRadius.only(
-                                                              bottomLeft: Radius.circular(10))),
-                                                      child: Text(getTranslated('yes', context),
-                                                          style: rubikBold.copyWith(color: Colors.white)),
-                                                    ),
-                                                  )),
-                                              Expanded(
-                                                  child: GestureDetector(
-                                                    onTap: () => Navigator.pop(context),
-                                                    child: Container(
-                                                      padding: EdgeInsets.all(Dimensions.PADDING_SIZE_SMALL),
-                                                      alignment: Alignment.center,
-                                                      decoration: BoxDecoration(
-                                                        color: Colors.white,
-                                                        borderRadius: BorderRadius.only(
-                                                            bottomRight: Radius.circular(10)),
+                                } else if (hasActiveSubscription &&
+                                    !userUseThisPlan) {
+                                  showDialog(
+                                      context: context,
+                                      barrierDismissible: false,
+                                      builder: (context) => Dialog(
+                                          shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(10)),
+                                          child: Consumer2<SubscriptionProvider,
+                                                  ProfileProvider>(
+                                              builder: (context,
+                                                  subscriptionProvider,
+                                                  profileProvider,
+                                                  child) {
+                                            return Container(
+                                                width: 300,
+                                                decoration: BoxDecoration(
+                                                    color: ColorResources
+                                                        .getScaffoldColor(
+                                                            context!),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            10)),
+                                                child: Column(
+                                                    mainAxisSize:
+                                                        MainAxisSize.min,
+                                                    children: [
+                                                      const SizedBox(
+                                                          height: 20),
+                                                      CircleAvatar(
+                                                        radius: 30,
+                                                        backgroundColor:
+                                                            Colors.white,
+                                                        child: Icon(Icons.contact_support,
+                                                            color: ColorResources
+                                                                .getScaffoldColor(
+                                                                    context),
+                                                            size: 50),
                                                       ),
-                                                      child: Text(getTranslated('no', context),
-                                                          style: rubikBold.copyWith(
-                                                              color: ColorResources.getScaffoldColor(context))),
-                                                    ),
-                                                  )),
-                                            ])
-
-                                          ])
-                                      );})
-                                    ));
-
-                                }else {
+                                                      Padding(
+                                                        padding: const EdgeInsets
+                                                            .all(Dimensions
+                                                                .PADDING_SIZE_LARGE),
+                                                        child: Text(
+                                                            getTranslated(
+                                                                'you_have_active_subscription',
+                                                                context),
+                                                            style: const TextStyle(
+                                                                color: Colors
+                                                                    .white54,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w500,
+                                                                fontSize: 15),
+                                                            textAlign: TextAlign
+                                                                .center),
+                                                      ),
+                                                      Divider(
+                                                          height: 0,
+                                                          color: ColorResources
+                                                              .getHintColor(
+                                                                  context)),
+                                                      subscriptionProvider
+                                                                      .cancelSubscriptionLoading ==
+                                                                  true ||
+                                                              subscriptionProvider
+                                                                      .subscribeUserLoading ==
+                                                                  true
+                                                          ? const Padding(
+                                                              padding:
+                                                                  EdgeInsets
+                                                                      .all(15),
+                                                              child:
+                                                                  CustomCircularIndicator(),
+                                                            )
+                                                          : Row(children: [
+                                                              Expanded(
+                                                                  child:
+                                                                      GestureDetector(
+                                                                onTap: () {
+                                                                  UserSubscriptionPlanModel userSub = UserSubscriptionPlanModel(
+                                                                      planId: plan
+                                                                          .id,
+                                                                      paypalPlanId:
+                                                                          plan
+                                                                              .paypalPlanId,
+                                                                      givenName:
+                                                                          "${profileProvider.userInfoModel!.fName ?? ''}${profileProvider.userInfoModel!.lName ?? ''}",
+                                                                      lastName:
+                                                                          profileProvider.userInfoModel!.lName ??
+                                                                              '',
+                                                                      email: profileProvider
+                                                                              .userInfoModel!
+                                                                              .email ??
+                                                                          '',
+                                                                      paypalSubscriptionId:
+                                                                          '');
+                                                                  subscriptionProvider
+                                                                      .subscribeUser(
+                                                                          context,
+                                                                          userSub)
+                                                                      .then(
+                                                                          (onValue) {
+                                                                    if (onValue
+                                                                        .isSuccess) {
+                                                                      Navigator.pop(
+                                                                          context);
+                                                                      Navigator.pop(
+                                                                          context);
+                                                                      subscriptionProvider
+                                                                          .getSubscriptionPlans(
+                                                                              context);
+                                                                      Navigator.push(
+                                                                          context,
+                                                                          MaterialPageRoute(
+                                                                              builder: (BuildContext context) => PaymentWebView(url: subscriptionProvider.approveUrl)));
+                                                                    } else {
+                                                                      showCustomSnackBar(
+                                                                          getTranslated(
+                                                                              'something_went_wrong',
+                                                                              context),
+                                                                          context);
+                                                                      Navigator.pop(
+                                                                          context);
+                                                                      Navigator.pop(
+                                                                          context);
+                                                                    }
+                                                                  });
+                                                                },
+                                                                child:
+                                                                    Container(
+                                                                  padding: const EdgeInsets
+                                                                      .all(
+                                                                      Dimensions
+                                                                          .PADDING_SIZE_SMALL),
+                                                                  alignment:
+                                                                      Alignment
+                                                                          .center,
+                                                                  decoration: const BoxDecoration(
+                                                                      borderRadius:
+                                                                          BorderRadius.only(
+                                                                              bottomLeft: Radius.circular(10))),
+                                                                  child: Text(
+                                                                      getTranslated(
+                                                                          'yes',
+                                                                          context),
+                                                                      style: rubikBold.copyWith(
+                                                                          color:
+                                                                              Colors.white)),
+                                                                ),
+                                                              )),
+                                                              Expanded(
+                                                                  child:
+                                                                      GestureDetector(
+                                                                onTap: () =>
+                                                                    Navigator.pop(
+                                                                        context),
+                                                                child:
+                                                                    Container(
+                                                                  padding: const EdgeInsets
+                                                                      .all(
+                                                                      Dimensions
+                                                                          .PADDING_SIZE_SMALL),
+                                                                  alignment:
+                                                                      Alignment
+                                                                          .center,
+                                                                  decoration:
+                                                                      const BoxDecoration(
+                                                                    color: Colors
+                                                                        .white,
+                                                                    borderRadius:
+                                                                        BorderRadius.only(
+                                                                            bottomRight:
+                                                                                Radius.circular(10)),
+                                                                  ),
+                                                                  child: Text(
+                                                                      getTranslated(
+                                                                          'no',
+                                                                          context),
+                                                                      style: rubikBold.copyWith(
+                                                                          color:
+                                                                              ColorResources.getScaffoldColor(context))),
+                                                                ),
+                                                              )),
+                                                            ])
+                                                    ]));
+                                          })));
+                                } else {
+                                  UserSubscriptionPlanModel userSub =
+                                      UserSubscriptionPlanModel(
+                                          planId: plan.id,
+                                          paypalPlanId: plan.paypalPlanId,
+                                          givenName:
+                                              "${profileProvider.userInfoModel!.fName ?? ''}${profileProvider.userInfoModel!.lName ?? ''}",
+                                          lastName: profileProvider
+                                                  .userInfoModel!.lName ??
+                                              '',
+                                          email: profileProvider
+                                                  .userInfoModel!.email ??
+                                              '',
+                                          paypalSubscriptionId: '');
                                   subscriptionProvider
-                                      .subscribeUser(
-                                      context, subscription.id!)
+                                      .subscribeUser(context, userSub)
                                       .then((onValue) {
                                     if (onValue.isSuccess) {
+                                      Navigator.pop(context);
+
                                       subscriptionProvider
                                           .getSubscriptionPlans(context);
-                                      profileProvider.getUserInfo(context);
-                                      Navigator.pop(context);
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (BuildContext context) =>
+                                                  PaymentWebView(
+                                                      url: subscriptionProvider
+                                                          .approveUrl)));
                                     } else {
                                       showCustomSnackBar(
                                           getTranslated(
-                                              'something_went_wrong',
-                                              context),
+                                              'something_went_wrong', context),
                                           context);
                                       Navigator.pop(context);
                                     }

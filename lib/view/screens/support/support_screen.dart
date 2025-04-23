@@ -75,28 +75,10 @@ class SupportScreen extends StatelessWidget {
                             'tel:${Provider.of<SplashProvider>(context, listen: false).configModel!.storePhone!}');
                       },
                       child: Text(getTranslated('call_now', context),
-                          style:
-                          TextStyle(
-                                    color: ColorResources.getScaffoldColor(context),
-                                    fontSize: Dimensions.FONT_SIZE_LARGE,
-                                  )),
-                    )),
-                    SizedBox(width: 10),
-                    Expanded(
-                        child: SizedBox(
-                      height: 50,
-                      child: CustomButton(
-                        text: getTranslated('send_a_message', context),
-                        onTap: () async {
-                          // Provider.of<ChatProvider>(context, listen: false)
-                          //     .refresh(context, true);
-                          // Navigator.push(
-                          //     context,
-                          //     MaterialPageRoute(
-                          //         builder: (BuildContext? context) =>
-                          //             ChatScreen()));
-                        },
-                      ),
+                          style: TextStyle(
+                            color: ColorResources.getScaffoldColor(context),
+                            fontSize: Dimensions.FONT_SIZE_LARGE,
+                          )),
                     )),
                   ]),
                 ]),
