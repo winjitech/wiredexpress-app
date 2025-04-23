@@ -67,7 +67,6 @@ class ProductWidget extends StatelessWidget {
         ),
       );
 
-
       double originalPrice = PriceConverter.convertWithDiscount(
           context, product!.price!, 0.0, 'amount');
 
@@ -174,13 +173,14 @@ class ProductWidget extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    // Text(
+                    //   product!.id!.toString(),
+                    //   maxLines: 2,
+                    //   overflow: TextOverflow.ellipsis,
+                    //   style: const TextStyle(
+                    //       fontWeight: FontWeight.bold, fontSize: 15),
+                    // ),
                     Text(
-                      product!.id!.toString(),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                          fontWeight: FontWeight.bold, fontSize: 15),
-                    ),   Text(
                       product!.name!,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
