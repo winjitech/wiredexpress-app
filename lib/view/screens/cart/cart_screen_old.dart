@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
 import 'package:wired_express/data/helper/helpers.dart';
@@ -143,10 +142,7 @@ class _CartScreenState extends State<CartScreen> {
 
                     cartProvider.cartList.forEach((cart) {
                       ProductModel product = cart.product!;
-                      List<TiredPricingModel> tiredPricing =
-                          product.tiredPricing ?? [];
-
-                      TiredPricingModel? tiredPricingModel;
+                      TiredPricingModel? tiredPricing ;
                       ProductPlanDiscountModel? productPlanDiscountModel;
                       if (isLoggedIn &&
                           profileProvider.userInfoModel != null &&
@@ -169,97 +165,56 @@ class _CartScreenState extends State<CartScreen> {
                           productPlanDiscountModel = ProductPlanDiscountModel();
                         }
                       }
-                      double originalPrice = product.price!;
-
-                      double priceAfterProductPlanDiscount =
+                      double priceBeforeDisc = product.price!;
+                      double discountedOnProductPrice =
                           productPlanDiscountModel != null &&
                                   productPlanDiscountModel.planId != null
                               ? PriceConverter.convertWithDiscount(
                                   context,
-                                  originalPrice,
+                                  priceBeforeDisc,
                                   productPlanDiscountModel.discount!,
                                   productPlanDiscountModel.discountType!)
-                              : originalPrice;
-                      print(
-                          "priceAfterProductPlanDiscount -- $priceAfterProductPlanDiscount");
-                      double priceAfterNormalDiscountOnProduct =
-                          PriceConverter.convertWithDiscount(
-                              context,
-                              originalPrice,
-                              product.discount!,
-                              product.discountType!);
-                      print(
-                          "priceAfterNormalDiscountOnProduct -- $priceAfterNormalDiscountOnProduct");
-
-                      double priceAfterTiredPricing =
-                          PriceConverter.getProductFinalPrice(
+                              : PriceConverter.convertWithDiscount(
                                   context,
-                                  tiredPricing,
-                                  originalPrice,
-                                  cart.quantity ?? 1) ??
+                                  priceBeforeDisc,
+                                  product.discount!,
+                                  product.discountType!);
+
+                      double priceAfterTieredPricing =
+                          PriceConverter.getProductFinalPriceWithTieredPricing(
+                                  tiredPricing, discountedOnProductPrice) ??
                               0.0;
                       print(
-                          "priceAfterTiredPricing -- $priceAfterTiredPricing");
-                      double finalPriceWithoutQuantity = min(
-                        priceAfterProductPlanDiscount,
-                        min(priceAfterNormalDiscountOnProduct,
-                            priceAfterTiredPricing),
-                      );
-                      print(
-                          "finalPriceWithoutQuantity -- $finalPriceWithoutQuantity");
-                      double finalPriceWithQuantity =
-                          finalPriceWithoutQuantity * cart.quantity!;
-                      double originalPriceWithQuantity =
-                          originalPrice * cart.quantity!;
-                      if (finalPriceWithoutQuantity == priceAfterTiredPricing) {
-                        tiredPricingModel =
-                            PriceConverter.getMatchedTieredPricingModel(
-                                context, tiredPricing, cart.quantity ?? 1);
-                      } else if (finalPriceWithoutQuantity ==
-                          priceAfterProductPlanDiscount) {
-                        totalDiscountOnProducts = totalDiscountOnProducts +
-                            (PriceConverter.calculateDiscountAmount(
-                                    context,
-                                    originalPrice,
-                                    productPlanDiscountModel!.discount ?? 0.0,
-                                    productPlanDiscountModel.discountType ??
-                                        "amount") *
-                                cart.quantity!);
-                      } else if (finalPriceWithoutQuantity ==
-                          priceAfterNormalDiscountOnProduct) {
-                        totalDiscountOnProducts = totalDiscountOnProducts +
-                            (PriceConverter.calculateDiscountAmount(
-                                    context,
-                                    originalPrice,
-                                    product.discount ?? 0.0,
-                                    product.discountType ?? "amount") *
-                                cart.quantity!);
-                      }
+                          "priceAfterTieredPricing == $priceAfterTieredPricing");
+                      double finalProductPrice =
+                          priceAfterTieredPricing * cart.quantity!;
                       double taxAmount = double.parse(Helpers.formatTextWithNum(
                               PriceConverter.convertPercentageToAmount(
-                                      finalPriceWithQuantity, product.tax!)
+                                      finalProductPrice, product.tax!)
                                   .toString())) *
                           cart.quantity!;
+                      double discountAmount =
+                          (priceBeforeDisc - discountedOnProductPrice) *
+                              cart.quantity!;
+                      totalDiscountOnProducts += discountAmount;
 
-                      print(
-                          "finalPriceWithQuantity == $finalPriceWithQuantity");
+                      print("finalProductPrice == $finalProductPrice");
 
                       totalProductsPrice =
-                          totalProductsPrice + finalPriceWithQuantity;
+                          totalProductsPrice + finalProductPrice;
                       totalTax = totalTax + taxAmount;
                       totalItemsPriceAfterDiscOnProducts =
                           totalItemsPriceAfterDiscOnProducts +
-                              originalPriceWithQuantity;
+                              discountedOnProductPrice;
 
                       totalTiredPricing = totalTiredPricing +
-                          (tiredPricingModel != null &&
-                                  tiredPricingModel.discountPrice != null
-                              ? (double.parse(
-                                      tiredPricingModel.discountPrice!) *
+                          (tiredPricing != null &&
+                                  tiredPricing.discountPrice != null
+                              ? (double.parse(tiredPricing.discountPrice!) *
                                   cart.quantity!)
                               : 0);
                       totalItemsPrice =
-                          totalItemsPrice + (originalPriceWithQuantity);
+                          totalItemsPrice + (priceBeforeDisc * cart.quantity!);
                     });
                     subTotalOrderPrice = totalProductsPrice + totalTax;
                     if (couponProvider.couponDiscount == null &&
@@ -463,10 +418,7 @@ class _CartScreenState extends State<CartScreen> {
                                     List<ProductCart> carts =
                                         cartList.map((cart) {
                                       ProductModel product = cart.product!;
-                                      List<TiredPricingModel> tiredPricing =
-                                          product.tiredPricing ?? [];
-
-                                      TiredPricingModel? tiredPricingModel;
+                                      TiredPricingModel? tiredPricing ;
                                       ProductPlanDiscountModel?
                                           productPlanDiscountModel;
                                       if (isLoggedIn &&
@@ -495,9 +447,8 @@ class _CartScreenState extends State<CartScreen> {
                                               ProductPlanDiscountModel();
                                         }
                                       }
-                                      double originalPrice = product.price!;
-
-                                      double priceAfterProductPlanDiscount =
+                                      double priceBeforeDisc = product.price!;
+                                      double discountedOnProductPrice =
                                           productPlanDiscountModel != null &&
                                                   productPlanDiscountModel
                                                           .planId !=
@@ -505,92 +456,43 @@ class _CartScreenState extends State<CartScreen> {
                                               ? PriceConverter
                                                   .convertWithDiscount(
                                                       context,
-                                                      originalPrice,
+                                                      priceBeforeDisc,
                                                       productPlanDiscountModel
                                                           .discount!,
                                                       productPlanDiscountModel
                                                           .discountType!)
-                                              : originalPrice;
-                                      print(
-                                          "priceAfterProductPlanDiscount -- $priceAfterProductPlanDiscount");
-                                      double priceAfterNormalDiscountOnProduct =
-                                          PriceConverter.convertWithDiscount(
-                                              context,
-                                              originalPrice,
-                                              product.discount!,
-                                              product.discountType!);
-                                      print(
-                                          "priceAfterNormalDiscountOnProduct -- $priceAfterNormalDiscountOnProduct");
+                                              : PriceConverter
+                                                  .convertWithDiscount(
+                                                      context,
+                                                      priceBeforeDisc,
+                                                      product.discount!,
+                                                      product.discountType!);
 
-                                      double priceAfterTiredPricing =
-                                          PriceConverter.getProductFinalPrice(
-                                                  context,
+                                      double priceAfterTieredPricing = PriceConverter
+                                              .getProductFinalPriceWithTieredPricing(
                                                   tiredPricing,
-                                                  originalPrice,
-                                                  cart.quantity ?? 1) ??
-                                              0.0;
-                                      print(
-                                          "priceAfterTiredPricing -- $priceAfterTiredPricing");
-                                      double finalPriceWithoutQuantity = min(
-                                        priceAfterProductPlanDiscount,
-                                        min(priceAfterNormalDiscountOnProduct,
-                                            priceAfterTiredPricing),
-                                      );
-                                      print(
-                                          "finalPriceWithoutQuantity -- $finalPriceWithoutQuantity");
-                                      double finalPriceWithQuantity =
-                                          finalPriceWithoutQuantity *
+                                                  discountedOnProductPrice) ??
+                                          0.0;
+                                      double finalProductPrice =
+                                          priceAfterTieredPricing *
                                               cart.quantity!;
-                                      double originalPriceWithQuantity =
-                                          originalPrice * cart.quantity!;
-                                      double discountAmount = 0.0;
-                                      if (finalPriceWithoutQuantity ==
-                                          priceAfterTiredPricing) {
-                                        tiredPricingModel = PriceConverter
-                                            .getMatchedTieredPricingModel(
-                                                context,
-                                                tiredPricing,
-                                                cart.quantity ?? 1);
-                                      } else if (finalPriceWithoutQuantity ==
-                                          priceAfterProductPlanDiscount) {
-                                        discountAmount = PriceConverter
-                                                .calculateDiscountAmount(
-                                                    context,
-                                                    originalPrice,
-                                                    productPlanDiscountModel!
-                                                            .discount ??
-                                                        0.0,
-                                                    productPlanDiscountModel
-                                                            .discountType ??
-                                                        "amount") *
-                                            cart.quantity!;
-                                      } else if (finalPriceWithoutQuantity ==
-                                          priceAfterNormalDiscountOnProduct) {
-                                        discountAmount = PriceConverter
-                                                .calculateDiscountAmount(
-                                                    context,
-                                                    originalPrice,
-                                                    product.discount ?? 0.0,
-                                                    product.discountType ??
-                                                        "amount") *
-                                            cart.quantity!;
-                                      }
                                       double taxAmount = double.parse(Helpers
                                               .formatTextWithNum(PriceConverter
                                                       .convertPercentageToAmount(
-                                                          finalPriceWithQuantity,
+                                                          finalProductPrice,
                                                           product.tax!)
                                                   .toString())) *
+                                          cart.quantity!;
+                                      double discountAmount = (priceBeforeDisc -
+                                              discountedOnProductPrice) *
                                           cart.quantity!;
 
                                       return ProductCart(
                                           productId: product.id.toString(),
-                                          price:
-                                              finalPriceWithQuantity.toString(),
+                                          price: finalProductPrice.toString(),
                                           discountAmount: discountAmount,
                                           quantity: cart.quantity!,
-                                          taxAmount: taxAmount,
-                                          tieredPricing: tiredPricingModel);
+                                          taxAmount: taxAmount);
                                     }).toList();
 
                                     PlaceOrderBody placeOrder = PlaceOrderBody(

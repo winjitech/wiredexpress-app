@@ -14,7 +14,6 @@ import 'package:wired_express/view/screens/payment/payment_success_screen.dart';
 
 // #enddocregion platform_imports
 
-
 const String kNavigationExamplePage = '''
 <!DOCTYPE html><html>
 <head><title>Navigation Delegate Example</title></head>
@@ -71,13 +70,10 @@ const String kTransparentBackgroundPage = '''
 ''';
 
 class PaymentWebView extends StatefulWidget {
+  final String url;
+  final bool fromCheckoutScreen;
 
-  final String? url;
-
-  PaymentWebView({
-
-    @required this.url
-  });
+  PaymentWebView({required this.url, required this.fromCheckoutScreen});
 
   @override
   State<PaymentWebView> createState() => _PaymentWebViewState();
@@ -92,7 +88,8 @@ class _PaymentWebViewState extends State<PaymentWebView> {
     super.initState();
     selectedUrl = widget.url;
     // #docregion platform_features
-    PlatformWebViewControllerCreationParams params = PlatformWebViewControllerCreationParams();
+    PlatformWebViewControllerCreationParams params =
+        PlatformWebViewControllerCreationParams();
     if (WebViewPlatform.instance is WebKitWebViewPlatform) {
       params = WebKitWebViewControllerCreationParams(
         allowsInlineMediaPlayback: true,
@@ -103,7 +100,7 @@ class _PaymentWebViewState extends State<PaymentWebView> {
     }
 
     final WebViewController controller =
-    WebViewController.fromPlatformCreationParams(params);
+        WebViewController.fromPlatformCreationParams(params);
     // #enddocregion platform_features
 
     controller
@@ -118,15 +115,28 @@ class _PaymentWebViewState extends State<PaymentWebView> {
             debugPrint('Page started loading: $url');
           },
           onPageFinished: (String url) async {
-            bool _isSuccess = url.contains('https://wiredexpress01.com/payment-success') && url.contains(AppConstants.baseUrl);
-            bool _isFailed = url.contains('https://wiredexpress01/payment-fail') && url.contains(AppConstants.baseUrl);
-            if(_isSuccess)  {
-              Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext? context)=>
-                  PaymentSuccessScreen(success: true)));
+
+            bool _isSuccess = url.contains(
+                    'https://staging.wiredexpress01.com/payment-success') &&
+                url.contains(AppConstants.baseUrl);
+            bool _isFailed = url.contains(
+                    'https://staging.wiredexpress01.com/payment-fail') &&
+                url.contains(AppConstants.baseUrl);
+            if (_isSuccess) {
+              Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                      builder: (BuildContext? context) => PaymentSuccessScreen(
+                          success: true,
+                          fromCheckoutScreen: widget.fromCheckoutScreen)));
             }
-            if(_isFailed)  {
-              Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext? context)=>
-                  PaymentSuccessScreen(success: false)));
+            if (_isFailed) {
+              Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                      builder: (BuildContext? context) => PaymentSuccessScreen(
+                          success: false,
+                          fromCheckoutScreen: widget.fromCheckoutScreen)));
             }
 
             debugPrint('is failed: $_isFailed');
@@ -173,8 +183,10 @@ Page resource error:
   }
 
   Future<bool> _onWillPop() async {
-    Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext? context) =>
-        DashboardScreen(pageIndex: 0)));
+    Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+            builder: (BuildContext? context) => DashboardScreen(pageIndex: 0)));
     return true;
   }
 
@@ -186,14 +198,15 @@ Page resource error:
         backgroundColor: Colors.white,
         appBar: AppBar(
           elevation: 0.3,
-          title:  Text(getTranslated('PAYMENT', context!), style: TextStyle(color: Colors.black87)),
+          title: Text(getTranslated('PAYMENT', context!),
+              style: TextStyle(color: Colors.black87)),
           backgroundColor: Colors.white,
           automaticallyImplyLeading: false,
           leading: IconButton(
             icon: Icon(Icons.arrow_back, color: Colors.black),
             onPressed: () {
               Navigator.of(context).pushReplacement(MaterialPageRoute(
-                  builder: (_) => DashboardScreen(pageIndex: 1)));
+                  builder: (_) => DashboardScreen(pageIndex: 0)));
             },
           ),
         ),

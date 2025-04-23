@@ -38,12 +38,12 @@ class CategoryRepo {
   }
 
   Future<ApiResponse> getCategoryProductList(String offset, String categoryID,
-      {int? planId}) async {
+      {int? showEarlyAccess}) async {
     try {
       String url =
           '${AppConstants.categoryProductUrl}?limit=20&offset=$offset&category_id=$categoryID';
-      if (planId != null) {
-        url += '&plan_id=$planId';
+      if (showEarlyAccess != null) {
+        url += '&show_early_access=$showEarlyAccess';
       }
 
       final response = await dioClient!.get(url);

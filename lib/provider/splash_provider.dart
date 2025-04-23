@@ -134,6 +134,7 @@ class SplashProvider extends ChangeNotifier {
         ElectricianModel itemModel = ElectricianModel.fromJson(item);
         _nearbyElectriciansList!.add(itemModel);
       });
+      print("_nearbyElectriciansList === ${_nearbyElectriciansList!.length}");
       _responseModel = ResponseModel(true, 'successful');
       _nearbyElectriciansListLoading = false;
       notifyListeners();

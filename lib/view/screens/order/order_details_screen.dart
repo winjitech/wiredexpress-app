@@ -85,8 +85,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                   ((orderDetails.productDetails!.price!) *
                       orderDetails.quantity!);
               print("itemsPrice == $itemsPrice");
-              discount = discount +
-                  (orderDetails.discountOnProduct!);
+              discount = discount + (orderDetails.discountOnProduct!);
               tax = tax + (orderDetails.taxAmount! * orderDetails.quantity!);
             }
           }
@@ -257,18 +256,19 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                                                     const EdgeInsets.all(10),
                                                 child: Row(children: [
                                                   ClipRRect(
-                                                    borderRadius: BorderRadius.circular(10),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            10),
                                                     child: CachedNetworkImage(
-                                                      height: 80,  width:
-                                                    80,
+                                                      height: 80,
+                                                      width: 80,
                                                       fit: BoxFit.cover,
                                                       imageUrl:
-                                                      '${Provider.of<SplashProvider>(context, listen: false).baseUrls!.productImageUrl}/${order.orderDetails![index].productDetails!.image}',
+                                                          '${Provider.of<SplashProvider>(context, listen: false).baseUrls!.productImageUrl}/${order.orderDetails![index].productDetails!.image}',
                                                       cacheKey:
-                                                      '${Provider.of<SplashProvider>(context, listen: false).baseUrls!.productImageUrl}/${order.orderDetails![index].productDetails!.image}',
+                                                          '${Provider.of<SplashProvider>(context, listen: false).baseUrls!.productImageUrl}/${order.orderDetails![index].productDetails!.image}',
                                                     ),
                                                   ),
-
                                                   SizedBox(
                                                       width: Dimensions
                                                           .PADDING_SIZE_SMALL),

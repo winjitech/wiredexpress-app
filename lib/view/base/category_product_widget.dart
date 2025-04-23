@@ -117,7 +117,7 @@ class CategoryProductWidget extends StatelessWidget {
                             '${Provider.of<SplashProvider>(context, listen: false).baseUrls!.productImageUrl}/${product!.image}',
                       ),
                     ),
-                    SizedBox(width: 20),
+                    const SizedBox(width: 20),
                     Expanded(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -127,7 +127,7 @@ class CategoryProductWidget extends StatelessWidget {
                             product!.name!,
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
+                            style: const TextStyle(
                                 fontWeight: FontWeight.bold, fontSize: 15),
                           ),
                           RatingBar(
@@ -154,7 +154,7 @@ class CategoryProductWidget extends StatelessWidget {
                                                 .withOpacity(0.4),
                                       ),
                                     ),
-                                  SizedBox(width: 5),
+                                  const SizedBox(width: 5),
                                 ],
                               ),
                               Text(
@@ -177,8 +177,8 @@ class CategoryProductWidget extends StatelessWidget {
                 top: 0,
                 right: 0,
                 child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 15, vertical: 2),
-                    decoration: BoxDecoration(
+                    padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 2),
+                    decoration: const BoxDecoration(
                       borderRadius: BorderRadius.only(
                           topRight: Radius.circular(10),
                           bottomLeft: Radius.circular(10)),
@@ -206,9 +206,9 @@ class CategoryProductWidget extends StatelessWidget {
                       }
                     },
                     child: Container(
-                      padding: EdgeInsets.all(6),
+                      padding: const EdgeInsets.all(6),
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.only(
+                        borderRadius: const BorderRadius.only(
                             topLeft: Radius.circular(10),
                             bottomRight: Radius.circular(10)),
                         color:

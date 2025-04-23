@@ -247,63 +247,32 @@ class _SubscriptionBottomSheetState extends State<SubscriptionBottomSheet> {
                                                                       GestureDetector(
                                                                 onTap: () {
                                                                   UserSubscriptionPlanModel userSub = UserSubscriptionPlanModel(
-                                                                      planId: plan
-                                                                          .id,
-                                                                      paypalPlanId:
-                                                                          plan
-                                                                              .paypalPlanId,
-                                                                      givenName:
-                                                                          "${profileProvider.userInfoModel!.fName ?? ''}${profileProvider.userInfoModel!.lName ?? ''}",
-                                                                      lastName:
-                                                                          profileProvider.userInfoModel!.lName ??
-                                                                              '',
-                                                                      email: profileProvider
-                                                                              .userInfoModel!
-                                                                              .email ??
-                                                                          '',
-                                                                      paypalSubscriptionId:
-                                                                          '');
-                                                                  subscriptionProvider
-                                                                      .subscribeUser(
-                                                                          context,
-                                                                          userSub)
-                                                                      .then(
-                                                                          (onValue) {
-                                                                    if (onValue
-                                                                        .isSuccess) {
-                                                                      Navigator.pop(
-                                                                          context);
-                                                                      Navigator.pop(
-                                                                          context);
-                                                                      subscriptionProvider
-                                                                          .getSubscriptionPlans(
-                                                                              context);
-                                                                      Navigator.push(
-                                                                          context,
+                                                                      planId: plan.id,
+                                                                      paypalPlanId: plan.paypalPlanId,
+                                                                      givenName: "${profileProvider.userInfoModel!.fName ?? ''}${profileProvider.userInfoModel!.lName ?? ''}",
+                                                                      lastName: profileProvider.userInfoModel!.lName ?? '',
+                                                                      email: profileProvider.userInfoModel!.email ?? '',
+                                                                      paypalSubscriptionId: '');
+                                                                  subscriptionProvider.subscribeUser(context, userSub)
+                                                                      .then((onValue) {
+                                                                    if (onValue.isSuccess) {
+                                                                      Navigator.pop(context);
+                                                                      Navigator.pop(context);
+                                                                      subscriptionProvider.getSubscriptionPlans(context);
+                                                                      Navigator.push(context,
                                                                           MaterialPageRoute(
-                                                                              builder: (BuildContext context) => PaymentWebView(url: subscriptionProvider.approveUrl)));
+                                                                              builder: (BuildContext context) => PaymentWebView(url: subscriptionProvider.approveUrl!, fromCheckoutScreen: false,)));
                                                                     } else {
-                                                                      showCustomSnackBar(
-                                                                          getTranslated(
-                                                                              'something_went_wrong',
-                                                                              context),
-                                                                          context);
-                                                                      Navigator.pop(
-                                                                          context);
-                                                                      Navigator.pop(
-                                                                          context);
+                                                                      showCustomSnackBar(getTranslated('something_went_wrong', context), context);
+                                                                      Navigator.pop(context);
+                                                                      Navigator.pop(context);
                                                                     }
                                                                   });
                                                                 },
-                                                                child:
-                                                                    Container(
-                                                                  padding: const EdgeInsets
-                                                                      .all(
-                                                                      Dimensions
-                                                                          .PADDING_SIZE_SMALL),
-                                                                  alignment:
-                                                                      Alignment
-                                                                          .center,
+                                                                child: Container(
+                                                                  padding: const EdgeInsets.all(
+                                                                      Dimensions.PADDING_SIZE_SMALL),
+                                                                  alignment: Alignment.center,
                                                                   decoration: const BoxDecoration(
                                                                       borderRadius:
                                                                           BorderRadius.only(
@@ -380,8 +349,10 @@ class _SubscriptionBottomSheetState extends State<SubscriptionBottomSheet> {
                                           MaterialPageRoute(
                                               builder: (BuildContext context) =>
                                                   PaymentWebView(
-                                                      url: subscriptionProvider
-                                                          .approveUrl)));
+                                                    url: subscriptionProvider
+                                                        .approveUrl!,
+                                                    fromCheckoutScreen: false,
+                                                  )));
                                     } else {
                                       showCustomSnackBar(
                                           getTranslated(

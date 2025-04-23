@@ -67,10 +67,8 @@ class SearchProvider with ChangeNotifier {
     _rating = -1;
     notifyListeners();
 
-    ApiResponse apiResponse = await searchRepo!.getSearchProductList(query,
-        planId: showProductsEarlyAccess == 1
-            ? userInfo!.userSubscription!.planId
-            : null);
+    ApiResponse apiResponse = await searchRepo!
+        .getSearchProductList(query, showEarlyAccess: showProductsEarlyAccess);
     if (apiResponse.response != null &&
         apiResponse.response!.statusCode == 200) {
       if (query.isEmpty) {

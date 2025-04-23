@@ -85,12 +85,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                     id: 0,
                                     productId: product.id,
                                     product: product,
-                                    quantity: productProvider.quantity,
-                                    tieredPricing: PriceConverter
-                                        .getMatchedTieredPricingModel(
-                                            context,
-                                            tiredPricing,
-                                            productProvider.quantity ?? 1));
+                                    quantity: productProvider.quantity);
 
                                 cartProvider
                                     .addToCartList(cartModel)

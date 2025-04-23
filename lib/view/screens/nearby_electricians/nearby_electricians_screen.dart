@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -38,13 +40,34 @@ class _NearbyElectriciansScreenState extends State<NearbyElectriciansScreen> {
     await launchUrl(launchUri);
   }
 
-  void _launchMaps(double lat, double long) async {
-    final Uri launchUri = Uri(
-      scheme: 'https',
-      host: 'www.google.com',
-      path: 'maps/@$lat,$long,15z',
-    );
-    await launchUrl(launchUri);
+  Future<void> _launchMaps(double lat, double long) async {
+    Uri launchUri;
+
+    if (Platform.isIOS) {
+      // Apple Maps URL scheme
+      launchUri = Uri(
+        scheme: 'https',
+        host: 'maps.apple.com',
+        path: '/',
+        queryParameters: {
+          'q': '$lat,$long',
+          'z': '15', // Zoom level (optional)
+        },
+      );
+    } else {
+      // Default to Google Maps
+      launchUri = Uri(
+        scheme: 'https',
+        host: 'www.google.com',
+        path: '/maps/@$lat,$long,15z',
+      );
+    }
+
+    if (await canLaunchUrl(launchUri)) {
+      await launchUrl(launchUri);
+    } else {
+      throw 'Could not launch maps';
+    }
   }
 
   @override

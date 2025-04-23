@@ -118,20 +118,19 @@ class PlaceOrderBody {
 class ProductCart {
   String _productId;
   String _price;
-
   double _discountAmount;
   int _quantity;
   double _taxAmount;
-  TiredPricingModel _tieredPricing;
+  TiredPricingModel? _tieredPricing;
 
-  ProductCart(
-      {required String productId,
-      required String price,
-      required double discountAmount,
-      required int quantity,
-      required double taxAmount,
-      required TiredPricingModel tieredPricing})
-      : _productId = productId,
+  ProductCart({
+    required String productId,
+    required String price,
+    required double discountAmount,
+    required int quantity,
+    required double taxAmount,
+    TiredPricingModel? tieredPricing,
+  })  : _productId = productId,
         _price = price,
         _discountAmount = discountAmount,
         _quantity = quantity,
@@ -143,7 +142,7 @@ class ProductCart {
   double get discountAmount => _discountAmount;
   int get quantity => _quantity;
   double get taxAmount => _taxAmount;
-  TiredPricingModel get tieredPricing => _tieredPricing;
+  TiredPricingModel? get tieredPricing => _tieredPricing;
 
   ProductCart.fromJson(Map<String, dynamic> json)
       : _productId = json['product_id'],
@@ -153,7 +152,7 @@ class ProductCart {
         _taxAmount = json['tax_amount'],
         _tieredPricing = json['tiered_pricing'] != null
             ? TiredPricingModel.fromJson(json['tiered_pricing'])
-            : throw Exception('TieredPricingModel is required');
+            : null;
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = {};
@@ -162,7 +161,9 @@ class ProductCart {
     data['discount_amount'] = _discountAmount;
     data['quantity'] = _quantity;
     data['tax_amount'] = _taxAmount;
-    data['tiered_pricing'] = _tieredPricing.toJson();
+    if (_tieredPricing != null) {
+      data['tiered_pricing'] = _tieredPricing!.toJson();
+    }
     return data;
   }
 }

@@ -1,4 +1,3 @@
-import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:wired_express/data/datasource/remote/dio/dio_client.dart';
@@ -12,11 +11,11 @@ class SearchRepo {
   final SharedPreferences? sharedPreferences;
   SearchRepo({@required this.dioClient, @required this.sharedPreferences});
 
-  Future<ApiResponse> getSearchProductList(String query, {int? planId}) async {
+  Future<ApiResponse> getSearchProductList(String query, {int? showEarlyAccess}) async {
     try {
       String url = '${AppConstants.searchUrl}?name=$query';
-      if (planId != null) {
-        url += '&plan_id=$planId';
+      if (showEarlyAccess != null) {
+        url += '&show_early_access=$showEarlyAccess';
       }
       final response = await dioClient!.get(url);
 
