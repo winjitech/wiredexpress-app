@@ -30,8 +30,9 @@ class PriceConverter {
     }
     return price;
   }
-  static double calculateDiscountAmount(
-      BuildContext? context, double price, double discount, String discountType) {
+
+  static double calculateDiscountAmount(BuildContext? context, double price,
+      double discount, String discountType) {
     double discountAmount = 0;
     if (discountType == 'amount') {
       discountAmount = discount;
@@ -63,6 +64,8 @@ class PriceConverter {
 
   static TiredPricingModel? getMatchedTieredPricingModel(BuildContext context,
       List<TiredPricingModel> tieredPricing, int quantity) {
+    print("quantity ==  == ${quantity}");
+
     bool isHaveBulkOrderDiscounts = false;
     final authProvider =
         Provider.of<CustomAuthProvider>(context, listen: false);
@@ -90,17 +93,17 @@ class PriceConverter {
         matchedPricingWithPlanId!.add(pricing);
       }
     }
-
     if (matchedPricingWithPlanId.isNotEmpty && isHaveBulkOrderDiscounts) {
       for (var pricing in matchedPricingWithPlanId) {
         if (pricing.minQuantity! <= quantity) {
           matchedPricing = pricing;
-        } else if (matchedPricing == null) {
-          for (var pricing in matchedPricingWithoutPlanId) {
-            if (pricing.minQuantity! <= quantity) {
-              matchedPricing = pricing;
-            }
-          }
+        }
+      }
+    }
+    if (matchedPricing == null) {
+      for (var pricing in matchedPricingWithoutPlanId) {
+        if (pricing.minQuantity! <= quantity) {
+          matchedPricing = pricing;
         }
       }
     }
@@ -160,6 +163,7 @@ class PriceConverter {
 
   static double? getProductFinalPrice(BuildContext context,
       List<TiredPricingModel> tieredPricing, double? price, int quantity) {
+    print("quantity == ${quantity}");
     double basePrice = price ?? 0.0;
     TiredPricingModel? matchedPricing =
         getMatchedTieredPricingModel(context, tieredPricing, quantity);

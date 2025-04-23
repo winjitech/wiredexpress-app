@@ -42,8 +42,10 @@ class CartProductWidget extends StatelessWidget {
         ProductModel product = cart!.product!;
         int? quantity = cart!.quantity ?? 1;
         List<TiredPricingModel> tiredPricing = product.tiredPricing ?? [];
-        MoqSettingModel? moqSetting = product.moqSetting;
-        int minOrderQuantity = moqSetting?.minimumOrderQuantity ?? 1;
+        // MoqSettingModel? moqSetting = product.moqSetting;
+        // int minOrderQuantity = moqSetting?.minimumOrderQuantity ?? 1;
+        // MoqSettingModel? moqSetting = product.moqSetting;
+        int minOrderQuantity = product.minimumOrderQuantity ?? 1;
         ProductPlanDiscountModel? productPlanDiscountModel;
         if (profileProvider.userInfoModel != null &&
             profileProvider.userInfoModel!.exclusiveDiscounts == 1) {

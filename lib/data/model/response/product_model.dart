@@ -66,7 +66,6 @@ class ProductModel {
   int? _status;
   String? _createdAt;
   String? _updatedAt;
-  List<CategoryId>? _categoryIds;
   double? _discount;
   String? _discountType;
   String? _taxType;
@@ -75,9 +74,9 @@ class ProductModel {
   String? _matchedTag;
   String? _availability;
   int? _isEarlyProduct;
-  MoqSettingModel? _moqSetting;
+  // MoqSettingModel? _moqSetting;
   List<ProductPlanDiscountModel>? _productPlanDiscount;
-
+  int? _minimumOrderQuantity;
   ProductModel(
       {int? id,
       String? name,
@@ -91,7 +90,6 @@ class ProductModel {
       int? status,
       String? createdAt,
       String? updatedAt,
-      List<CategoryId>? categoryIds,
       double? discount,
       String? discountType,
       String? taxType,
@@ -99,9 +97,10 @@ class ProductModel {
       List<Rating>? rating,
       String? matchedTag,
       String? availability,
-      MoqSettingModel? moqSetting,
+      // MoqSettingModel? moqSetting,
       int? isEarlyProduct,
-      List<ProductPlanDiscountModel>? productPlanDiscount}) {
+      List<ProductPlanDiscountModel>? productPlanDiscount,
+      int? minimumOrderQuantity}) {
     this._id = id;
     this._name = name;
     this._description = description;
@@ -114,7 +113,6 @@ class ProductModel {
     this._status = status;
     this._createdAt = createdAt;
     this._updatedAt = updatedAt;
-    this._categoryIds = categoryIds;
     this._discount = discount;
     this._discountType = discountType;
     this._taxType = taxType;
@@ -122,9 +120,10 @@ class ProductModel {
     this._rating = rating;
     this._matchedTag = matchedTag;
     this._availability = availability;
-    this._moqSetting = moqSetting;
+    // this._moqSetting = moqSetting;
     this._productPlanDiscount = productPlanDiscount;
     this._isEarlyProduct = isEarlyProduct;
+    this._minimumOrderQuantity = minimumOrderQuantity;
   }
 
   int? get id => _id;
@@ -139,7 +138,6 @@ class ProductModel {
   int? get status => _status;
   String? get createdAt => _createdAt;
   String? get updatedAt => _updatedAt;
-  List<CategoryId>? get categoryIds => _categoryIds;
   double? get discount => _discount;
   String? get discountType => _discountType;
   String? get taxType => _taxType;
@@ -147,11 +145,11 @@ class ProductModel {
   int? get setMenu => _setMenu;
   List<Rating>? get rating => _rating;
   String? get availability => _availability;
-  MoqSettingModel? get moqSetting => _moqSetting;
+  // MoqSettingModel? get moqSetting => _moqSetting;
   List<ProductPlanDiscountModel>? get productPlanDiscount =>
       _productPlanDiscount;
   int? get isEarlyProduct => _isEarlyProduct;
-
+  int? get minimumOrderQuantity => _minimumOrderQuantity;
   ProductModel.fromJson(Map<String?, dynamic> json) {
     _id = json['id'];
     _name = json['name'];
@@ -179,12 +177,6 @@ class ProductModel {
     _status = json['status'];
     _createdAt = json['created_at'];
     _updatedAt = json['updated_at'];
-    if (json['category_ids'] != null) {
-      _categoryIds = [];
-      json['category_ids']!.forEach((v) {
-        _categoryIds!.add(new CategoryId.fromJson(v));
-      });
-    }
 
     _discount = (json['discount'] as num).toDouble();
     _discountType = json['discount_type'];
@@ -201,9 +193,10 @@ class ProductModel {
     } else {
       _rating = [];
     }
-    _moqSetting = json['moq_setting'] != null
-        ? MoqSettingModel.fromJson(json['moq_setting'])
-        : null;
+    // _moqSetting = json['moq_setting'] != null
+    //     ? MoqSettingModel.fromJson(json['moq_setting'])
+    //     : null;
+    _minimumOrderQuantity = json['minimum_order_quantity'];
   }
 
   Map<String?, dynamic> toJson() {
@@ -230,9 +223,6 @@ class ProductModel {
     data['status'] = this._status;
     data['created_at'] = this._createdAt;
     data['updated_at'] = this._updatedAt;
-    if (this._categoryIds != null) {
-      data['category_ids'] = this._categoryIds!.map((v) => v.toJson()).toList();
-    }
 
     data['discount'] = this._discount;
     data['discount_type'] = this._discountType;
@@ -244,64 +234,10 @@ class ProductModel {
     if (this._rating != null) {
       data['rating'] = this._rating!.map((v) => v.toJson()).toList();
     }
-    if (this._moqSetting != null) {
-      data['moq_setting'] = this._moqSetting!.toJson();
-    }
-    return data;
-  }
-}
-
-class CategoryId {
-  String? _id;
-  int? _position;
-
-  CategoryId({String? id, int? position}) {
-    this._id = id;
-    this._position = position;
-  }
-
-  String? get id => _id;
-  int? get position => _position;
-
-  CategoryId.fromJson(Map<String?, dynamic> json) {
-    _id = json['id'];
-    _position = json['position'];
-  }
-
-  Map<String?, dynamic> toJson() {
-    final Map<String?, dynamic> data = new Map<String?, dynamic>();
-    data['id'] = this._id;
-    data['position'] = this._position;
-    return data;
-  }
-}
-
-class ChoiceOption {
-  String? _name;
-  String? _title;
-  List<dynamic>? _options;
-
-  ChoiceOption({String? name, String? title, List<String>? options}) {
-    this._name = name;
-    this._title = title;
-    this._options = options;
-  }
-
-  String? get name => _name;
-  String? get title => _title;
-  List<dynamic>? get options => _options;
-
-  ChoiceOption.fromJson(Map<String?, dynamic> json) {
-    _name = json['name'];
-    _title = json['title'];
-    _options = json['options'];
-  }
-
-  Map<String?, dynamic> toJson() {
-    final Map<String?, dynamic> data = new Map<String?, dynamic>();
-    data['name'] = this._name;
-    data['title'] = this._title;
-    data['options'] = this._options;
+    // if (this._moqSetting != null) {
+    //   data['moq_setting'] = this._moqSetting!.toJson();
+    // }
+    data['minimum_order_quantity'] = this._minimumOrderQuantity;
     return data;
   }
 }

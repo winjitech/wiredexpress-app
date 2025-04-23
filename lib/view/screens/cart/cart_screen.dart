@@ -584,13 +584,14 @@ class _CartScreenState extends State<CartScreen> {
                                           cart.quantity!;
 
                                       return ProductCart(
-                                          productId: product.id.toString(),
-                                          price:
-                                              finalPriceWithQuantity.toString(),
-                                          discountAmount: discountAmount,
-                                          quantity: cart.quantity!,
-                                          taxAmount: taxAmount,
-                                          tieredPricing: tiredPricingModel);
+                                        productId: product.id.toString(),
+                                        price:
+                                            finalPriceWithQuantity.toString(),
+                                        discountAmount: discountAmount,
+                                        quantity: cart.quantity!,
+                                        taxAmount: taxAmount,
+                                        tieredPricing: tiredPricingModel,
+                                      );
                                     }).toList();
 
                                     PlaceOrderBody placeOrder = PlaceOrderBody(
@@ -617,7 +618,11 @@ class _CartScreenState extends State<CartScreen> {
                                                 : 0,
                                         remainingUserPoints:
                                             remainingUserPoints,
-                                        deliveryCharge: deliveryCharge);
+                                        deliveryCharge: deliveryCharge,
+                                        priorityDelivery: profileProvider
+                                                .userInfoModel!
+                                                .priorityBulkOrderFulfillment ??
+                                            0);
 
                                     print(
                                         "placeOrder == ${placeOrder.toJson()}");

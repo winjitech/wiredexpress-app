@@ -38,14 +38,16 @@ class ProductDetailsBodyView extends StatelessWidget {
       String currency = splashProvider.configModel!.currencySymbol ?? '\$';
 
       List<TiredPricingModel> tiredPricing = product.tiredPricing ?? [];
-      MoqSettingModel? moqSetting = product.moqSetting;
-      int minOrderQuantity = moqSetting?.minimumOrderQuantity ?? 1;
+      // MoqSettingModel? moqSetting = product.moqSetting;
+      // int minOrderQuantity = moqSetting?.minimumOrderQuantity ?? 1;
+      int minOrderQuantity = product.minimumOrderQuantity ?? 1;
       ProductPlanDiscountModel? productPlanDiscountModel;
       if (isLoggedIn &&
           profileProvider.userInfoModel != null &&
           profileProvider.userInfoModel!.exclusiveDiscounts == 1) {
         List<ProductPlanDiscountModel> productPlanDiscount =
             product.productPlanDiscount ?? [];
+
 
         try {
           productPlanDiscountModel = productPlanDiscount.firstWhere(

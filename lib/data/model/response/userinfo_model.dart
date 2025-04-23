@@ -24,6 +24,7 @@ class UserInfoModel {
   int? nearbyElectricians;
   int? productsEarlyAccess;
   String? subscriptionExpireDate;
+  int? priorityBulkOrderFulfillment;
   UserSubscriptionPlanModel? userSubscription;
 
   UserInfoModel({
@@ -50,6 +51,7 @@ class UserInfoModel {
     this.nearbyElectricians,
     this.productsEarlyAccess,
     this.subscriptionExpireDate,
+    this.priorityBulkOrderFulfillment,
     this.userSubscription,
   });
 
@@ -79,6 +81,7 @@ class UserInfoModel {
     nearbyElectricians = json['nearby_electricians'];
     productsEarlyAccess = json['products_early_access'];
     subscriptionExpireDate = json['subscription_expire_date'];
+    priorityBulkOrderFulfillment = json['priority_bulk_order_fulfillment'];
 
     userSubscription = json['user_subscription'] != null
         ? UserSubscriptionPlanModel.fromJson(json['user_subscription'])
@@ -110,6 +113,8 @@ class UserInfoModel {
     data['nearby_electricians'] = nearbyElectricians;
     data['products_early_access'] = productsEarlyAccess;
     data['subscription_expire_date'] = subscriptionExpireDate;
+    data['priority_bulk_order_fulfillment'] = priorityBulkOrderFulfillment;
+
     if (userSubscription != null) {
       data['user_subscription'] = userSubscription?.toJson();
     }

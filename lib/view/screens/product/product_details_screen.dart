@@ -40,7 +40,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
           .getProductDetails(context, widget.productId!)
           .then((onValue) {
         int minOrderQuantity = productProvider
-                .productDetailsModel?.moqSetting?.minimumOrderQuantity ??
+                .productDetailsModel?.minimumOrderQuantity ??
             1;
 
         productProvider.setQuantity(minOrderQuantity);
