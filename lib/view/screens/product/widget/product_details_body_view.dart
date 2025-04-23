@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:wired_express/data/helper/helpers.dart';
-import 'package:wired_express/data/model/response/moq_setting_model.dart';
 import 'package:wired_express/data/model/response/product_model.dart';
 import 'package:wired_express/data/model/response/product_plan_discount_model.dart';
 import 'package:wired_express/data/model/response/tiered_pricing_model.dart';
@@ -16,7 +15,6 @@ import 'package:wired_express/provider/product_provider.dart';
 import 'package:wired_express/provider/profile_provider.dart';
 import 'package:wired_express/provider/splash_provider.dart';
 import 'package:wired_express/provider/wishlist_provider.dart';
-import 'package:wired_express/utill/app_constants.dart';
 import 'package:wired_express/utill/color_resources.dart';
 import 'package:wired_express/utill/dimensions.dart';
 import 'package:wired_express/utill/styles.dart';
@@ -95,7 +93,7 @@ class ProductDetailsBodyView extends StatelessWidget {
       String discountMessage;
 
       if (finalPriceWithoutQuantity == priceAfterProductPlanDiscount) {
-        final discount = productPlanDiscountModel?.discount ?? 0;
+        double discount = productPlanDiscountModel?.discount ?? 0;
 
         if (discount > 0) {
           discountMessage = '${getTranslated('get', context)} '
@@ -107,7 +105,7 @@ class ProductDetailsBodyView extends StatelessWidget {
         }
       } else if (finalPriceWithoutQuantity ==
           priceAfterNormalDiscountOnProduct) {
-        final discount = product.discount ?? 0;
+        double discount = product.discount ?? 0;
 
         if (discount > 0) {
           discountMessage = '${getTranslated('get', context)} '
