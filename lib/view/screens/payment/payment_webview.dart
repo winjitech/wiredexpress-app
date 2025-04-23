@@ -113,11 +113,14 @@ class _PaymentWebViewState extends State<PaymentWebView> {
           onPageStarted: (String url) =>
               debugPrint('Page started loading: $url'),
           onPageFinished: (String url) async {
-            bool isSuccess = url.contains(
-                    'https://staging.wiredexpress01.com/payment-success') &&
+            bool isSuccess = url.contains(!widget.fromCheckoutScreen
+                    ? "https://staging.wiredexpress01.com/paypal/subscription/success"
+                    : 'https://staging.wiredexpress01.com/payment-success') &&
                 url.contains(AppConstants.baseUrl);
             bool isFailed = url.contains(
-                    'https://staging.wiredexpress01.com/payment-fail') &&
+                widget.fromCheckoutScreen
+                    ? "https://staging.wiredexpress01.com/paypal/subscription/fail"
+                    : 'https://staging.wiredexpress01.com/payment-fail') &&
                 url.contains(AppConstants.baseUrl);
             if (isSuccess) {
               Navigator.pushReplacement(
