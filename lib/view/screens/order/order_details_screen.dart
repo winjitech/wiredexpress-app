@@ -449,7 +449,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                                                       fontSize: Dimensions
                                                           .FONT_SIZE_LARGE)),
                                               Text(
-                                                  '${splashProvider.configModel!.currencySymbol} ${Helpers.formatTextWithNum(widget.orderModel!.couponDiscountAmount!.toString())}',
+                                                  '(-) ${splashProvider.configModel!.currencySymbol}${Helpers.formatTextWithNum(widget.orderModel!.couponDiscountAmount!.toString())}',
                                                   style: rubikMedium.copyWith(
                                                       color: ColorResources
                                                           .getTextColor(
@@ -480,7 +480,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                                                       fontSize: Dimensions
                                                           .FONT_SIZE_LARGE)),
                                               Text(
-                                                  '${splashProvider.configModel!.currencySymbol} ${Helpers.formatTextWithNum(widget.orderModel!.loyaltyPointsDiscountAmount!.toString())}',
+                                                  '(-) ${splashProvider.configModel!.currencySymbol}${Helpers.formatTextWithNum(widget.orderModel!.loyaltyPointsDiscountAmount!.toString())}',
                                                   style: rubikMedium.copyWith(
                                                       color: ColorResources
                                                           .getTextColor(
