@@ -121,12 +121,16 @@ class ProductDetailsBodyView extends StatelessWidget {
           tiredPricing,
           productProvider.quantity ?? 1,
         );
+        discountMessage = '${tiredPricingModel!.minQuantity ?? "this"} '
+            '${getTranslated('items', context)} +: '
+            '$currency${Helpers.formatTextWithNum(tiredPricingModel.discountPrice!)} '
+            '${getTranslated('off_per_item', context)}';
 
-        discountMessage = '${getTranslated('get', context)} '
-            '${Helpers.formatTextWithNum(tiredPricingModel!.discountPrice!)} '
-            '${getTranslated('off_per_item_on_orders_of', context).toLowerCase()} '
-            '${tiredPricingModel.minQuantity ?? "this"}+ '
-            '${getTranslated('units', context).toLowerCase()}';
+        // discountMessage = '${getTranslated('get', context)} '
+        //     '${Helpers.formatTextWithNum(tiredPricingModel!.discountPrice!)} '
+        //     '${getTranslated('off_per_item_on_orders_of', context).toLowerCase()} '
+        //     '${tiredPricingModel.minQuantity ?? "this"}+ '
+        //     '${getTranslated('units', context).toLowerCase()}';
       } else {
         discountMessage = "none";
       }
@@ -370,6 +374,7 @@ class ProductDetailsBodyView extends StatelessWidget {
                               const SizedBox(height: 5),
                             ],
                           ),
+
                         Row(children: [
                           Text('${getTranslated('total_amount', context)}:',
                               style: TextStyle(

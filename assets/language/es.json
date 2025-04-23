@@ -450,7 +450,8 @@
   "as_promotional_discount": "como descuento promocional",
   "as_plan_discount": "como descuento por plan",
   "back": "Atrás",
-  "payment_succeed": "¡Pago realizado con éxito!"
+  "payment_succeed": "¡Pago realizado con éxito!",
+  "off_per_item": "Descuento por artículo"
 
 
 }
