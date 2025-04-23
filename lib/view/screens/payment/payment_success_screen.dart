@@ -64,7 +64,7 @@ class PaymentSuccessScreen extends StatelessWidget {
                             context,
                             MaterialPageRoute(
                                 builder: (BuildContext? context) =>
-                                    DashboardScreen(pageIndex: 3)));
+                                    DashboardScreen(pageIndex: 4)));
                       }
                     } else {
                       Navigator.pushReplacement(
