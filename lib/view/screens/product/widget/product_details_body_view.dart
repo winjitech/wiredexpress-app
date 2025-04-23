@@ -374,7 +374,6 @@ class ProductDetailsBodyView extends StatelessWidget {
                               const SizedBox(height: 5),
                             ],
                           ),
-
                         Row(children: [
                           Text('${getTranslated('total_amount', context)}:',
                               style: TextStyle(

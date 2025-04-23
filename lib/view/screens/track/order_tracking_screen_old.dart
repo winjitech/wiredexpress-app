@@ -14,7 +14,6 @@ import 'package:widget_to_marker/widget_to_marker.dart';
 import 'package:flutter/services.dart';
 import 'package:wired_express/view/base/custom_app_bar.dart';
 import 'package:wired_express/view/screens/track/direction_repository.dart';
-import 'package:wired_express/view/screens/track/directions.dart';
 
 class OrderTrackingScreen extends StatefulWidget {
   final String? orderID;
@@ -42,7 +41,6 @@ class OrderTrackingScreenState extends State<OrderTrackingScreen> {
   var _nightStyle;
   String? _estimatedDistance;
   String? _estimatedDuration;
-  // Set<Polyline> _polylines = HashSet<Polyline>();
 
   @override
   void initState() {
@@ -60,24 +58,6 @@ class OrderTrackingScreenState extends State<OrderTrackingScreen> {
     _moveMarkerTimer?.cancel();
     super.dispose();
   }
-  // void _setPolyline(Directions directions) {
-  //   final polylinePoints = directions.polylinePoints;
-  //   if (polylinePoints == null || polylinePoints.isEmpty) return;
-  //
-  //   final List<LatLng> points = polylinePoints
-  //       .map((point) => LatLng(point.latitude, point.longitude))
-  //       .toList();
-  //
-  //   _polylines.clear();
-  //   _polylines.add(Polyline(
-  //     polylineId: const PolylineId('route'),
-  //     color: Colors.blue,
-  //     width: 5,
-  //     points: points,
-  //   ));
-  //
-  //   setState(() {});
-  // }
 
   Future _loadMapStyles() async {
     _lightStyle =
@@ -130,8 +110,6 @@ class OrderTrackingScreenState extends State<OrderTrackingScreen> {
       print('Distance: $_estimatedDistance');
       print('Duration: $_estimatedDuration');
     });
-    // _setPolyline(directions);
-
   }
 
   Future<void> _initializeMarker(LatLng position) async {
@@ -230,7 +208,6 @@ class OrderTrackingScreenState extends State<OrderTrackingScreen> {
                                 : const LatLng(0, 0),
                             zoom: 10,
                           ),
-                          // polylines: _polylines,
                           markers: _markers,
                           onMapCreated: (GoogleMapController controller) {
                             _mapController = controller;
