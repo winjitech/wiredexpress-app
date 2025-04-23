@@ -62,9 +62,68 @@ class PriceConverter {
     return (percentage / 100) * price;
   }
 
-  static TiredPricingModel? getMatchedTieredPricingModel(BuildContext context,
-      List<TiredPricingModel> tieredPricing, int quantity) {
-    print("quantity ==  == ${quantity}");
+  // static TiredPricingModel? getMatchedTieredPricingModel(BuildContext context,
+  //     List<TiredPricingModel> tieredPricing, int quantity) {
+  //   print("quantity ==  == ${quantity}");
+  //
+  //   bool isHaveBulkOrderDiscounts = false;
+  //   final authProvider =
+  //       Provider.of<CustomAuthProvider>(context, listen: false);
+  //   final profileProvider =
+  //       Provider.of<ProfileProvider>(context, listen: false);
+  //   UserInfoModel? userInfo = profileProvider.userInfoModel;
+  //   int userPlanId = userInfo!.userSubscription!.planId!;
+  //
+  //   if (authProvider.isLoggedIn()! &&
+  //       userInfo != null &&
+  //       userInfo.bulkOrderDiscounts == 1) {
+  //     isHaveBulkOrderDiscounts = true;
+  //   }
+  //
+  //   TiredPricingModel? matchedPricing;
+  //   List<TiredPricingModel>? matchedPricingWithoutPlanId = [];
+  //   List<TiredPricingModel>? matchedPricingWithPlanId = [];
+  //
+  //   for (var pricing in tieredPricing) {
+  //     if (pricing.planId == null) {
+  //       matchedPricingWithoutPlanId.add(pricing);
+  //     }
+  //     if (pricing.planId != null && userPlanId == pricing.planId) {
+  //       print("pricing == ${pricing.toJson()}");
+  //       matchedPricingWithPlanId.add(pricing);
+  //     }
+  //   }
+  //   if (matchedPricingWithPlanId.isNotEmpty && isHaveBulkOrderDiscounts) {
+  //     for (var pricing in matchedPricingWithPlanId) {
+  //       if (pricing.minQuantity! <= quantity) {
+  //         matchedPricing = pricing;
+  //       }
+  //     }
+  //   }
+  //   if (matchedPricing == null) {
+  //     for (var pricing in matchedPricingWithoutPlanId) {
+  //       if (pricing.minQuantity! <= quantity) {
+  //         matchedPricing = pricing;
+  //       }
+  //     }
+  //   }
+  //   print(
+  //       "matchedPricingWithoutPlanId == ${matchedPricingWithoutPlanId.length}");
+  //   print("matchedPricingWithPlanId == ${matchedPricingWithPlanId.length}");
+  //
+  //   if (matchedPricing != null) {
+  //     print('Matched Pricing Model: ${matchedPricing.toJson()}');
+  //   }
+  //
+  //   return matchedPricing;
+  // }
+
+  static TiredPricingModel? getMatchedTieredPricingModel(
+    BuildContext context,
+    List<TiredPricingModel> tieredPricing,
+    int quantity,
+  ) {
+    print("quantity == $quantity");
 
     bool isHaveBulkOrderDiscounts = false;
     final authProvider =
@@ -81,34 +140,36 @@ class PriceConverter {
     }
 
     TiredPricingModel? matchedPricing;
-    List<TiredPricingModel>? matchedPricingWithoutPlanId = [];
-    List<TiredPricingModel>? matchedPricingWithPlanId = [];
+    List<TiredPricingModel> matchedPricingWithoutPlanId = [];
+    List<TiredPricingModel> matchedPricingWithPlanId = [];
 
     for (var pricing in tieredPricing) {
       if (pricing.planId == null) {
-        matchedPricingWithoutPlanId!.add(pricing);
+        matchedPricingWithoutPlanId.add(pricing);
       }
       if (pricing.planId != null && userPlanId == pricing.planId) {
         print("pricing == ${pricing.toJson()}");
-        matchedPricingWithPlanId!.add(pricing);
+        matchedPricingWithPlanId.add(pricing);
       }
     }
-    if (matchedPricingWithPlanId.isNotEmpty && isHaveBulkOrderDiscounts) {
-      for (var pricing in matchedPricingWithPlanId) {
-        if (pricing.minQuantity! <= quantity) {
-          matchedPricing = pricing;
-        }
-      }
 
+    List<TiredPricingModel> sortedPricingWithPlan = matchedPricingWithPlanId
+        .where((p) => p.minQuantity! <= quantity)
+        .toList()
+      ..sort((a, b) => b.minQuantity!.compareTo(a.minQuantity!));
 
+    List<TiredPricingModel> sortedPricingWithoutPlan =
+        matchedPricingWithoutPlanId
+            .where((p) => p.minQuantity! <= quantity)
+            .toList()
+          ..sort((a, b) => b.minQuantity!.compareTo(a.minQuantity!));
+
+    if (isHaveBulkOrderDiscounts && sortedPricingWithPlan.isNotEmpty) {
+      matchedPricing = sortedPricingWithPlan.first;
+    } else if (sortedPricingWithoutPlan.isNotEmpty) {
+      matchedPricing = sortedPricingWithoutPlan.first;
     }
-    if (matchedPricing == null) {
-      for (var pricing in matchedPricingWithoutPlanId) {
-        if (pricing.minQuantity! <= quantity) {
-          matchedPricing = pricing;
-        }
-      }
-    }
+
     print(
         "matchedPricingWithoutPlanId == ${matchedPricingWithoutPlanId.length}");
     print("matchedPricingWithPlanId == ${matchedPricingWithPlanId.length}");
@@ -119,49 +180,6 @@ class PriceConverter {
 
     return matchedPricing;
   }
-  // static TiredPricingModel? getMatchedTieredPricingModel(BuildContext context,
-  //     List<TiredPricingModel> tieredPricing, int quantity) {
-  //   bool isHaveBulkOrderDiscounts = false;
-  //   final authProvider =
-  //   Provider.of<CustomAuthProvider>(context, listen: false);
-  //   final profileProvider =
-  //   Provider.of<ProfileProvider>(context, listen: false);
-  //   final userInfo = profileProvider.userInfoModel;
-  //
-  //   if (authProvider.isLoggedIn()! &&
-  //       userInfo != null &&
-  //       userInfo.bulkOrderDiscounts == 1) {
-  //     isHaveBulkOrderDiscounts = true;
-  //   }
-  //
-  //   TiredPricingModel? matchedPricing;
-  //
-  //   for (var pricing in tieredPricing) {
-  //     if (pricing.minQuantity! <= quantity) {
-  //       if (isHaveBulkOrderDiscounts && pricing.planId != null) {
-  //         continue;
-  //       }
-  //
-  //       if (matchedPricing == null ||
-  //           pricing.minQuantity! > matchedPricing.minQuantity!) {
-  //         matchedPricing = pricing;
-  //       } else if (pricing.minQuantity! == matchedPricing.minQuantity!) {
-  //         if (isHaveBulkOrderDiscounts &&
-  //             userInfo != null &&
-  //             pricing.planId == userInfo.userSubscription!.planId) {
-  //           matchedPricing = pricing;
-  //         }
-  //       }
-  //     }
-  //   }
-  //
-  //   if (matchedPricing != null) {
-  //     print('Matched Pricing Model: minQuantity=${matchedPricing.minQuantity}, '
-  //         'discountPrice=${matchedPricing.discountPrice}');
-  //   }
-  //
-  //   return matchedPricing;
-  // }
 
   static double? getProductFinalPrice(BuildContext context,
       List<TiredPricingModel> tieredPricing, double? price, int quantity) {
