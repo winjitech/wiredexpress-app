@@ -87,7 +87,9 @@ class ProductDetailsBodyView extends StatelessWidget {
               originalPrice,
               productProvider.quantity ?? 1) ??
           0.0;
+
       print("priceAfterTiredPricing -- ${priceAfterTiredPricing}");
+
       double finalPriceWithoutQuantity = min(
         priceAfterProductPlanDiscount,
         min(priceAfterNormalDiscountOnProduct, priceAfterTiredPricing),
@@ -96,19 +98,24 @@ class ProductDetailsBodyView extends StatelessWidget {
       String discountMessage;
 
       if (finalPriceWithoutQuantity == priceAfterProductPlanDiscount) {
-        discountMessage =
-            '${getTranslated('get', context)} ${PriceConverter.calculateDiscountAmount(context, originalPrice, productPlanDiscountModel!.discount ?? 0.0, productPlanDiscountModel.discountType ?? "amount")} ${getTranslated('off_per_item_on_orders_of', context).toLowerCase()} ${getTranslated('as_plan_discount', context)}';
+        discountMessage = '';
+        if(productPlanDiscountModel!=null){
+          double? discountAmount = PriceConverter.calculateDiscountAmount(context, originalPrice, productPlanDiscountModel!.discount ?? 0.0, productPlanDiscountModel.discountType ?? "amount");
+          discountMessage = '${getTranslated('exclusive_discount', context)}: ${currency}${discountAmount} ${getTranslated('off', context)} ${getTranslated('per_item', context)}';
+      // '${getTranslated('get', context)} ${PriceConverter.calculateDiscountAmount(context, originalPrice, productPlanDiscountModel!.discount ?? 0.0, productPlanDiscountModel.discountType ?? "amount")} ${getTranslated('off_per_item_on_orders_of', context).toLowerCase()} ${getTranslated('as_plan_discount', context)}';
+        }
+
       } else if (finalPriceWithoutQuantity ==
           priceAfterNormalDiscountOnProduct) {
         discountMessage =
-            '${getTranslated('get', context)} ${PriceConverter.calculateDiscountAmount(context, originalPrice, product.discount ?? 0.0, product.discountType ?? "amount")} ${getTranslated('off_per_item_on_orders_of', context).toLowerCase()} ${getTranslated('as_promotional_discount', context)}';
+            '';
       } else if (finalPriceWithoutQuantity == priceAfterTiredPricing) {
         tiredPricingModel = PriceConverter.getMatchedTieredPricingModel(
             context, tiredPricing, productProvider.quantity ?? 1);
         discountMessage =
-            '${getTranslated('get', context)} ${Helpers.formatTextWithNum(tiredPricingModel!.discountPrice!)} ${getTranslated('off_per_item_on_orders_of', context).toLowerCase()} ${tiredPricingModel.minQuantity ?? "this"}+ ${getTranslated('units', context).toLowerCase()}';
+            '${getTranslated('get', context)} ${currency}${Helpers.formatTextWithNum(tiredPricingModel!.discountPrice!)} ${getTranslated('off_per_item_on_orders_of', context).toLowerCase()} ${tiredPricingModel.minQuantity ?? "this"}+ ${getTranslated('units', context).toLowerCase()}';
       } else {
-        discountMessage = "none";
+        discountMessage = "";
       }
 
       print(discountMessage);
