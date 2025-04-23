@@ -18,6 +18,7 @@ class PlaceOrderBody {
   int? _usePoints;
   double? _remainingUserPoints;
   double? _deliveryCharge;
+  int? _priorityDelivery;
 
   PlaceOrderBody({
     required List<ProductCart> cart,
@@ -35,6 +36,7 @@ class PlaceOrderBody {
     required int usePoints,
     required double remainingUserPoints,
     required double deliveryCharge,
+    required int priorityDelivery,
   }) {
     this._cart = cart;
     this._couponDiscountAmount = couponDiscountAmount;
@@ -51,6 +53,7 @@ class PlaceOrderBody {
     this._usePointsDiscountAmount = usePointsDiscountAmount;
     this._remainingUserPoints = remainingUserPoints;
     this._deliveryCharge = deliveryCharge;
+    this._priorityDelivery = priorityDelivery;
   }
 
   List<ProductCart>? get cart => _cart;
@@ -68,6 +71,7 @@ class PlaceOrderBody {
   double? get usePointsDiscountAmount => _usePointsDiscountAmount;
   double? get remainingUserPoints => _remainingUserPoints;
   double? get deliveryCharge => _deliveryCharge;
+  int? get priorityDelivery => _priorityDelivery;
 
   PlaceOrderBody.fromJson(Map<String?, dynamic> json) {
     if (json['cart'] != null) {
@@ -90,6 +94,7 @@ class PlaceOrderBody {
     _usePoints = json['use_points'];
     _remainingUserPoints = json['remaining_user_points'];
     _deliveryCharge = json['delivery_charge'];
+    _priorityDelivery = json['priority_delivery'];
   }
 
   Map<String?, dynamic> toJson() {
@@ -111,6 +116,7 @@ class PlaceOrderBody {
     data['use_points'] = this._usePoints;
     data['remaining_user_points'] = this._remainingUserPoints;
     data['delivery_charge'] = this._deliveryCharge;
+    data['priority_delivery'] = this._priorityDelivery;
     return data;
   }
 }
@@ -134,8 +140,7 @@ class ProductCart {
         _price = price,
         _discountAmount = discountAmount,
         _quantity = quantity,
-        _taxAmount = taxAmount,
-        _tieredPricing = tieredPricing;
+        _taxAmount = taxAmount;
 
   String get productId => _productId;
   String get price => _price;
@@ -164,6 +169,7 @@ class ProductCart {
     if (_tieredPricing != null) {
       data['tiered_pricing'] = _tieredPricing!.toJson();
     }
+
     return data;
   }
 }

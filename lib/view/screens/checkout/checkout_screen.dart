@@ -342,7 +342,11 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                                   remainingUserPoints: widget
                                                       .orderBody!
                                                       .remainingUserPoints!,
-                                                  deliveryCharge: widget.orderBody!.deliveryCharge!);
+                                                  deliveryCharge: widget.orderBody!.deliveryCharge!,
+                                                  priorityDelivery: profileProvider
+                                                      .userInfoModel!
+                                                      .priorityBulkOrderFulfillment ??
+                                                      0);
 
                                           print(
                                               "placeOrder == ${placeOrder.toJson()}");

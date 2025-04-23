@@ -108,21 +108,18 @@ class _PaymentWebViewState extends State<PaymentWebView> {
       ..setBackgroundColor(const Color(0x00000000))
       ..setNavigationDelegate(
         NavigationDelegate(
-          onProgress: (int progress) {
-            debugPrint('WebView is loading (progress : $progress%)');
-          },
-          onPageStarted: (String url) {
-            debugPrint('Page started loading: $url');
-          },
+          onProgress: (int progress) =>
+              debugPrint('WebView is loading (progress : $progress%)'),
+          onPageStarted: (String url) =>
+              debugPrint('Page started loading: $url'),
           onPageFinished: (String url) async {
-
-            bool _isSuccess = url.contains(
+            bool isSuccess = url.contains(
                     'https://staging.wiredexpress01.com/payment-success') &&
                 url.contains(AppConstants.baseUrl);
-            bool _isFailed = url.contains(
+            bool isFailed = url.contains(
                     'https://staging.wiredexpress01.com/payment-fail') &&
                 url.contains(AppConstants.baseUrl);
-            if (_isSuccess) {
+            if (isSuccess) {
               Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
@@ -130,7 +127,7 @@ class _PaymentWebViewState extends State<PaymentWebView> {
                           success: true,
                           fromCheckoutScreen: widget.fromCheckoutScreen)));
             }
-            if (_isFailed) {
+            if (isFailed) {
               Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
@@ -139,7 +136,7 @@ class _PaymentWebViewState extends State<PaymentWebView> {
                           fromCheckoutScreen: widget.fromCheckoutScreen)));
             }
 
-            debugPrint('is failed: $_isFailed');
+            debugPrint('is failed: $isFailed');
             debugPrint('Page finished loading: $url');
           },
           onWebResourceError: (WebResourceError error) {

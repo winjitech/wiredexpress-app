@@ -175,6 +175,12 @@ class ProductWidget extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
+                      product!.id!.toString(),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 15),
+                    ),   Text(
                       product!.name!,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
