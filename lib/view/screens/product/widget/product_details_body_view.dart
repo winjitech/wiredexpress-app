@@ -95,17 +95,40 @@ class ProductDetailsBodyView extends StatelessWidget {
       String discountMessage;
 
       if (finalPriceWithoutQuantity == priceAfterProductPlanDiscount) {
-        discountMessage =
-            '${getTranslated('get', context)} ${PriceConverter.calculateDiscountAmount(context, originalPrice, productPlanDiscountModel!.discount ?? 0.0, productPlanDiscountModel.discountType ?? "amount")} ${getTranslated('off_per_item_on_orders_of', context).toLowerCase()} ${getTranslated('as_plan_discount', context)}';
+        final discount = productPlanDiscountModel?.discount ?? 0;
+
+        if (discount > 0) {
+          discountMessage = '${getTranslated('get', context)} '
+              '${PriceConverter.calculateDiscountAmount(context, originalPrice, discount, productPlanDiscountModel?.discountType ?? "amount")} '
+              '${getTranslated('off_per_item_on_orders_of', context).toLowerCase()} '
+              '${getTranslated('as_plan_discount', context)}';
+        } else {
+          discountMessage = "none";
+        }
       } else if (finalPriceWithoutQuantity ==
           priceAfterNormalDiscountOnProduct) {
-        discountMessage =
-            '${getTranslated('get', context)} ${PriceConverter.calculateDiscountAmount(context, originalPrice, product.discount ?? 0.0, product.discountType ?? "amount")} ${getTranslated('off_per_item_on_orders_of', context).toLowerCase()} ${getTranslated('as_promotional_discount', context)}';
+        final discount = product.discount ?? 0;
+
+        if (discount > 0) {
+          discountMessage = '${getTranslated('get', context)} '
+              '${PriceConverter.calculateDiscountAmount(context, originalPrice, discount, product.discountType ?? "amount")} '
+              '${getTranslated('off_per_item_on_orders_of', context).toLowerCase()} '
+              '${getTranslated('as_promotional_discount', context)}';
+        } else {
+          discountMessage = "none";
+        }
       } else if (finalPriceWithoutQuantity == priceAfterTiredPricing) {
         tiredPricingModel = PriceConverter.getMatchedTieredPricingModel(
-            context, tiredPricing, productProvider.quantity ?? 1);
-        discountMessage =
-            '${getTranslated('get', context)} ${Helpers.formatTextWithNum(tiredPricingModel!.discountPrice!)} ${getTranslated('off_per_item_on_orders_of', context).toLowerCase()} ${tiredPricingModel.minQuantity ?? "this"}+ ${getTranslated('units', context).toLowerCase()}';
+          context,
+          tiredPricing,
+          productProvider.quantity ?? 1,
+        );
+
+        discountMessage = '${getTranslated('get', context)} '
+            '${Helpers.formatTextWithNum(tiredPricingModel!.discountPrice!)} '
+            '${getTranslated('off_per_item_on_orders_of', context).toLowerCase()} '
+            '${tiredPricingModel.minQuantity ?? "this"}+ '
+            '${getTranslated('units', context).toLowerCase()}';
       } else {
         discountMessage = "none";
       }
