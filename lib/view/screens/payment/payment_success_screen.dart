@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:wired_express/localization/language_constrants.dart';
 import 'package:wired_express/provider/subscription_provider.dart';
 import 'package:wired_express/utill/color_resources.dart';
 import 'package:wired_express/utill/dimensions.dart';
@@ -36,17 +37,17 @@ class PaymentSuccessScreen extends StatelessWidget {
                 size: 80,
               ),
             ),
-            SizedBox(height: Dimensions.PADDING_SIZE_LARGE),
+            const SizedBox(height: Dimensions.PADDING_SIZE_LARGE),
             Text(
-              success ? 'Payment succeed!' : 'Payment Failed',
+              success ? getTranslated('payment_succeed', context) : getTranslated('payment_failed', context),
               style: rubikMedium.copyWith(fontSize: Dimensions.FONT_SIZE_LARGE),
             ),
-            SizedBox(height: 30),
+            const SizedBox(height: 30),
             Padding(
-              padding: EdgeInsets.all(Dimensions.PADDING_SIZE_LARGE),
+              padding: const EdgeInsets.all(Dimensions.PADDING_SIZE_LARGE),
               child: CustomButton(
                   backgroundColor: ColorResources.getPrimaryColor(context),
-                  text: success ? 'Back' : 'Home',
+                  text: success ? getTranslated('back', context) : getTranslated('home', context),
                   onTap: () {
                     if (success) {
                       if (fromCheckoutScreen) {
@@ -64,7 +65,7 @@ class PaymentSuccessScreen extends StatelessWidget {
                             context,
                             MaterialPageRoute(
                                 builder: (BuildContext? context) =>
-                                    DashboardScreen(pageIndex: 3)));
+                                    DashboardScreen(pageIndex: 4)));
                       }
                     } else {
                       Navigator.pushReplacement(

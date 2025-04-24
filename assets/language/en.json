@@ -452,6 +452,8 @@
   "estimated_duration" : "Estimated duration",
   "as_promotional_discount" : "as a promotional discount",
   "as_plan_discount": "as a plan discount",
+  "back": "Back",
+  "payment_succeed": "Payment succeed!",
   "exclusive_discount": "Exclusive Discount",
-  "per_item": "Per item",
+  "per_item": "Per item"
 }

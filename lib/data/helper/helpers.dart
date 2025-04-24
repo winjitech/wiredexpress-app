@@ -12,9 +12,9 @@ class Helpers {
       if (coupon.discountType == 'percent') {
         if (coupon.maxDiscount != null) {
           _discount =
-          (coupon.discount! * orderAmount / 100) < coupon.maxDiscount!
-              ? (coupon.discount! * orderAmount / 100)
-              : coupon.maxDiscount;
+              (coupon.discount! * orderAmount / 100) < coupon.maxDiscount!
+                  ? (coupon.discount! * orderAmount / 100)
+                  : coupon.maxDiscount;
         } else {
           _discount = coupon.discount! * orderAmount / 100;
         }
@@ -30,7 +30,7 @@ class Helpers {
   static String formatTextWithNum(String text) {
     return text.replaceAllMapped(
       RegExp(r"-?\d+(\.\d+)?"),
-          (match) {
+      (match) {
         String numberStr = match.group(0)!;
         if (numberStr.endsWith(".00")) {
           return numberStr.split('.')[0];
@@ -45,25 +45,26 @@ class Helpers {
       },
     ).replaceAllMapped(
       RegExp(r"(?:^| )(\w)"),
-          (match) => match.group(0)!.toUpperCase(),
+      (match) => match.group(0)!.toUpperCase(),
     );
   }
 
   static String formatTextStatus(String text) {
     return text.replaceAll("_", " ").replaceAllMapped(
-      RegExp(r"(?:^| )(\w)"),
+          RegExp(r"(?:^| )(\w)"),
           (match) => match.group(0)!.toUpperCase(),
-    );
+        );
   }
 
   static Color? statusColor(BuildContext context, String status) {
     if (status == 'pending' ||
-        status == 'waiting_acceptance' ||
+        status == 'waiting_acceptance' || status == 'out_for_delivery' ||
         status == 'requested') {
       return Color(0xFFD5967F);
     }
     if (status == 'accepted' ||
         status == 'on_the_way' ||
+
         status == 'destination_arrived' ||
         status == 'items_received' ||
         status == "in_progress" ||

@@ -449,7 +449,38 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                                                       fontSize: Dimensions
                                                           .FONT_SIZE_LARGE)),
                                               Text(
-                                                  '${splashProvider.configModel!.currencySymbol} ${Helpers.formatTextWithNum(widget.orderModel!.couponDiscountAmount!.toString())}',
+                                                  '(-) ${splashProvider.configModel!.currencySymbol}${Helpers.formatTextWithNum(widget.orderModel!.couponDiscountAmount!.toString())}',
+                                                  style: rubikMedium.copyWith(
+                                                      color: ColorResources
+                                                          .getTextColor(
+                                                              context),
+                                                      fontSize: Dimensions
+                                                          .FONT_SIZE_LARGE)),
+                                            ]),
+                                        SizedBox(height: 10),
+                                      ],
+                                    ),
+                                  if (widget.orderModel!
+                                          .loyaltyPointsDiscountAmount !=
+                                      0.0)
+                                    Column(
+                                      children: [
+                                        Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Text(
+                                                  getTranslated(
+                                                      'loyalty_points_discount',
+                                                      context),
+                                                  style: rubikMedium.copyWith(
+                                                      color: ColorResources
+                                                          .getTextColor(
+                                                              context),
+                                                      fontSize: Dimensions
+                                                          .FONT_SIZE_LARGE)),
+                                              Text(
+                                                  '(-) ${splashProvider.configModel!.currencySymbol}${Helpers.formatTextWithNum(widget.orderModel!.loyaltyPointsDiscountAmount!.toString())}',
                                                   style: rubikMedium.copyWith(
                                                       color: ColorResources
                                                           .getTextColor(

@@ -78,6 +78,7 @@ class OrderModel {
   String? _deliveryDate;
   String? _deliveryTime;
   int? _usePoints;
+  double? _loyaltyPointsDiscountAmount;
 
   OrderModel({
     int? id,
@@ -104,6 +105,7 @@ class OrderModel {
     String? deliveryDate,
     String? deliveryTime,
     int? usePoints,
+    double? loyaltyPointsDiscountAmount,
   }) {
     _id = id;
     _userId = userId;
@@ -129,6 +131,7 @@ class OrderModel {
     _deliveryDate = deliveryDate;
     _deliveryTime = deliveryTime;
     _usePoints = usePoints;
+    _loyaltyPointsDiscountAmount = loyaltyPointsDiscountAmount;
   }
 
   int? get id => _id;
@@ -156,6 +159,7 @@ class OrderModel {
   String? get deliveryDate => _deliveryDate;
   String? get deliveryTime => _deliveryTime;
   int? get usePoints => _usePoints;
+  double? get loyaltyPointsDiscountAmount => _loyaltyPointsDiscountAmount;
 
   OrderModel.fromJson(Map<String?, dynamic> json) {
     _id = json['id'];
@@ -172,6 +176,11 @@ class OrderModel {
     _createdAt = json['created_at'];
     _updatedAt = json['updated_at'];
     _deliveryManId = json['delivery_man_id'];
+    _loyaltyPointsDiscountAmount =
+        json['loyalty_points_discount_amount'] != null
+            ? (json['loyalty_points_discount_amount'] as num).toDouble()
+            : null;
+
     _deliveryCharge = (json['delivery_charge'] as num).toDouble();
     _orderNote = json['order_note'];
     _detailsCount = json['details_count'] as int? ?? 0;
@@ -217,6 +226,7 @@ class OrderModel {
     data['delivery_date'] = _deliveryDate;
     data['delivery_time'] = _deliveryTime;
     data['use_points'] = _usePoints;
+    data['loyalty_points_discount_amount'] = _loyaltyPointsDiscountAmount;
 
     if (_details != null) {
       data['details'] = _details!.map((v) => v.toJson()).toList();
@@ -246,17 +256,17 @@ class Details {
   String? _image;
   Details(
       {int? id,
-        int? productId,
-        int? orderId,
-        double? price,
-        ProductModel? productDetails,
-        double? discountOnProduct,
-        String? discountType,
-        int? quantity,
-        double? taxAmount,
-        String? createdAt,
-        String? updatedAt,
-        String? image}) {
+      int? productId,
+      int? orderId,
+      double? price,
+      ProductModel? productDetails,
+      double? discountOnProduct,
+      String? discountType,
+      int? quantity,
+      double? taxAmount,
+      String? createdAt,
+      String? updatedAt,
+      String? image}) {
     this._id = id;
     this._image = image;
     this._productId = productId;
@@ -374,7 +384,6 @@ class DeliveryAddress {
   String? get updatedAt => _updatedAt;
   String? get contactPersonNumber => _contactPersonNumber;
   String? get contactPersonName => _contactPersonName;
-
 
   DeliveryAddress.fromJson(Map<String?, dynamic> json) {
     _id = json['id'];
