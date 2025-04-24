@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:wired_express/data/model/response/order_model.dart';
+import 'package:wired_express/data/model/response/response_model.dart';
 import 'package:wired_express/localization/language_constrants.dart';
 import 'package:wired_express/provider/order_provider.dart';
 import 'package:wired_express/provider/theme_provider.dart';
@@ -20,10 +21,7 @@ class OrderTrackingScreen extends StatefulWidget {
   final String? orderID;
   final OrderModel? track;
 
-  OrderTrackingScreen({
-    @required this.orderID,
-    @required this.track,
-  });
+  OrderTrackingScreen({@required this.orderID, @required this.track});
 
   @override
   OrderTrackingScreenState createState() => OrderTrackingScreenState();
@@ -93,10 +91,11 @@ class OrderTrackingScreenState extends State<OrderTrackingScreen> {
         .getLastDeliveryCoordinates(context, widget.orderID!);
 
     if (response.isSuccess) {
-      final coordinates = Provider.of<OrderProvider>(context, listen: false)
-              .lastDeliveryCoordinates
-              ?.coordinates ??
-          [];
+      List<Map<String, double>> coordinates =
+          Provider.of<OrderProvider>(context, listen: false)
+                  .lastDeliveryCoordinates
+                  ?.coordinates ??
+              [];
 
       _coordinatesList = coordinates
           .map((coord) => LatLng(coord['latitude']!, coord['longitude']!))
@@ -118,7 +117,7 @@ class OrderTrackingScreenState extends State<OrderTrackingScreen> {
 
   Future<void> _getDistanceAndDuration(
       LatLng origin, LatLng destination) async {
-    final directions = await DirectionsRepository().getDirections(
+    Directions directions = await DirectionsRepository().getDirections(
       origin: origin,
       destination: destination,
     );
@@ -131,16 +130,15 @@ class OrderTrackingScreenState extends State<OrderTrackingScreen> {
       print('Duration: $_estimatedDuration');
     });
     // _setPolyline(directions);
-
   }
 
   Future<void> _initializeMarker(LatLng position) async {
-    final dropOffLocationIcon = await Image(
-      image: const AssetImage(Images.delivery_boy_marker),
-      height: 80,
-      width: 80,
-    ).toBitmapDescriptor(
-        logicalSize: const Size(350, 300), imageSize: const Size(500, 200));
+    final dropOffLocationIcon = await const Image(
+            image: AssetImage(Images.delivery_boy_marker),
+            height: 80,
+            width: 80)
+        .toBitmapDescriptor(
+            logicalSize: const Size(350, 300), imageSize: const Size(500, 200));
     _markers.clear();
     _markers.add(Marker(
         markerId: const MarkerId('delivery_man'),
@@ -150,12 +148,12 @@ class OrderTrackingScreenState extends State<OrderTrackingScreen> {
   }
 
   Future<void> _startMovingMarker() async {
-    final dropOffLocationIcon = await Image(
-      image: const AssetImage(Images.delivery_boy_marker),
-      height: 80,
-      width: 80,
-    ).toBitmapDescriptor(
-        logicalSize: const Size(350, 300), imageSize: const Size(500, 200));
+    BitmapDescriptor dropOffLocationIcon = await const Image(
+            image: AssetImage(Images.delivery_boy_marker),
+            height: 80,
+            width: 80)
+        .toBitmapDescriptor(
+            logicalSize: const Size(350, 300), imageSize: const Size(500, 200));
 
     _moveMarkerTimer =
         Timer.periodic(const Duration(seconds: 2), (timer) async {
@@ -166,20 +164,15 @@ class OrderTrackingScreenState extends State<OrderTrackingScreen> {
       }
 
       _currentCoordinateIndex++;
-      final nextPosition = _coordinatesList[_currentCoordinateIndex];
+      LatLng nextPosition = _coordinatesList[_currentCoordinateIndex];
 
       _markers.clear();
-      _markers.add(
-        Marker(
+      _markers.add(Marker(
           markerId: const MarkerId('delivery_man'),
           position: nextPosition,
-          icon: dropOffLocationIcon,
-        ),
-      );
+          icon: dropOffLocationIcon));
 
-      _mapController?.animateCamera(
-        CameraUpdate.newLatLng(nextPosition),
-      );
+      _mapController?.animateCamera(CameraUpdate.newLatLng(nextPosition));
 
       await _getDistanceAndDuration(nextPosition, dropOff);
 
@@ -189,14 +182,16 @@ class OrderTrackingScreenState extends State<OrderTrackingScreen> {
 
   void _startFetchingNewCoordinates() {
     Timer.periodic(const Duration(seconds: 10), (timer) async {
-      final response = await Provider.of<OrderProvider>(context, listen: false)
-          .getLastDeliveryCoordinates(context, widget.orderID!);
+      ResponseModel response =
+          await Provider.of<OrderProvider>(context, listen: false)
+              .getLastDeliveryCoordinates(context, widget.orderID!);
 
       if (response.isSuccess) {
-        final coordinates = Provider.of<OrderProvider>(context, listen: false)
-                .lastDeliveryCoordinates
-                ?.coordinates ??
-            [];
+        List<Map<String, double>> coordinates =
+            Provider.of<OrderProvider>(context, listen: false)
+                    .lastDeliveryCoordinates
+                    ?.coordinates ??
+                [];
 
         if (coordinates.isNotEmpty) {
           _coordinatesList = coordinates
@@ -224,24 +219,22 @@ class OrderTrackingScreenState extends State<OrderTrackingScreen> {
                   : Stack(
                       children: [
                         GoogleMap(
-                          initialCameraPosition: CameraPosition(
-                            target: _coordinatesList.isNotEmpty
-                                ? _coordinatesList.first
-                                : const LatLng(0, 0),
-                            zoom: 10,
-                          ),
-                          // polylines: _polylines,
-                          markers: _markers,
-                          onMapCreated: (GoogleMapController controller) {
-                            _mapController = controller;
-                            controller.setMapStyle(Provider.of<ThemeProvider>(
-                                        context,
-                                        listen: false)
-                                    .darkTheme
-                                ? _nightStyle
-                                : _lightStyle);
-                          },
-                        ),
+                            initialCameraPosition: CameraPosition(
+                                target: _coordinatesList.isNotEmpty
+                                    ? _coordinatesList.first
+                                    : const LatLng(0, 0),
+                                zoom: 12),
+                            // polylines: _polylines,
+                            markers: _markers,
+                            onMapCreated: (GoogleMapController controller) {
+                              _mapController = controller;
+                              controller.setMapStyle(Provider.of<ThemeProvider>(
+                                          context,
+                                          listen: false)
+                                      .darkTheme
+                                  ? _nightStyle
+                                  : _lightStyle);
+                            }),
                         if (_estimatedDistance != null &&
                             _estimatedDuration != null)
                           Positioned(
@@ -258,23 +251,21 @@ class OrderTrackingScreenState extends State<OrderTrackingScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
                                   Text(
-                                    '${getTranslated('estimated_distance', context)} :  $_estimatedDistance',
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 16,
-                                        color:
-                                            ColorResources.getTextColor(context)
-                                                .withOpacity(0.9)),
-                                  ),
+                                      '${getTranslated('estimated_distance', context)} :  $_estimatedDistance',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16,
+                                          color: ColorResources.getTextColor(
+                                                  context)
+                                              .withOpacity(0.9))),
                                   Text(
-                                    '${getTranslated('estimated_duration', context)} : $_estimatedDuration',
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 16,
-                                        color:
-                                            ColorResources.getTextColor(context)
-                                                .withOpacity(0.9)),
-                                  ),
+                                      '${getTranslated('estimated_duration', context)} : $_estimatedDuration',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16,
+                                          color: ColorResources.getTextColor(
+                                                  context)
+                                              .withOpacity(0.9))),
                                 ],
                               ),
                             ),
