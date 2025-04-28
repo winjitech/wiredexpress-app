@@ -126,15 +126,13 @@ class PriceConverter {
     print("quantity == $quantity");
 
     bool isHaveBulkOrderDiscounts = false;
-    final authProvider =
-        Provider.of<CustomAuthProvider>(context, listen: false);
+    final authProvider = Provider.of<CustomAuthProvider>(context, listen: false);
 
-    final profileProvider =
-        Provider.of<ProfileProvider>(context, listen: false);
+    final profileProvider = Provider.of<ProfileProvider>(context, listen: false);
 
     UserInfoModel? userInfo = profileProvider.userInfoModel;
 
-    int? userPlanId = userInfo!.userSubscription!=null? userInfo!.userSubscription!.planId!: 0;
+    int? userPlanId = userInfo!.userSubscription!=null? userInfo.userSubscription!.planId!: 0;
 
     if (authProvider.isLoggedIn()! &&
         userInfo != null &&

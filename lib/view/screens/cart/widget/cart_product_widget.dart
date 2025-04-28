@@ -96,7 +96,7 @@ class CartProductWidget extends StatelessWidget {
         print("finalPriceWithoutQuantity -- ${finalPriceWithoutQuantity}");
         String discountMessage;
 
-        if (finalPriceWithoutQuantity == priceAfterProductPlanDiscount) {
+        if (finalPriceWithoutQuantity == priceAfterProductPlanDiscount && productPlanDiscountModel!=null) {
           discountMessage =
               '${getTranslated('get', context)} ${PriceConverter.calculateDiscountAmount(context, originalPrice, productPlanDiscountModel!.discount ?? 0.0, productPlanDiscountModel.discountType ?? "amount")} ${getTranslated('off_per_item_on_orders_of', context).toLowerCase()} ${getTranslated('as_plan_discount', context)}';
         } else if (finalPriceWithoutQuantity ==

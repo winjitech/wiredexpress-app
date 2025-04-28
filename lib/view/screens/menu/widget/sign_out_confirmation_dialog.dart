@@ -40,7 +40,7 @@ class SignOutConfirmationDialog extends StatelessWidget {
                   textAlign: TextAlign.center),
             ),
             Divider(height: 0, color: ColorResources.getHintColor(context)),
-            !auth!.isLoading!
+            !auth.isLoading!
                 ? Row(children: [
                     Expanded(
                         child: GestureDetector(
