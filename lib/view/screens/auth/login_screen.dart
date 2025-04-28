@@ -81,8 +81,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                 children: [
                                   Text(
                                     "${getTranslated('welcome_back', context)} \n ${getTranslated('login', context)}",
-                                    style: const TextStyle(
-                                        color: Colors.black,
+                                    style: TextStyle(
+                                        color: ColorResources.getTextColor(
+                                            context),
                                         fontSize: 22,
                                         fontWeight: FontWeight.w700),
                                   ),
@@ -94,6 +95,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                     focusNode: _emailFocus,
                                     nextFocus: _passwordFocus,
                                     inputType: TextInputType.text,
+                                    fillColor:
+                                        ColorResources.getTextFieldFillColor(
+                                            context),
                                     // capitalization: TextCapitalizationtalization.words,
                                   ),
                                   const SizedBox(
@@ -104,30 +108,33 @@ class _LoginScreenState extends State<LoginScreen> {
                                         getTranslated('password', context),
                                     isPassword: true,
                                     controller: _passwordController,
+                                    fillColor:
+                                        ColorResources.getTextFieldFillColor(
+                                            context),
                                     focusNode: _passwordFocus,
                                     isShowSuffixIcon: true,
                                   ),
                                   const SizedBox(
                                     height: 5,
                                   ),
-                                  Align(
-                                    alignment: Alignment.centerLeft,
-                                    child: TextButton(
-                                        onPressed: () {
-                                          Navigator.push(
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      TextButton(
+                                          onPressed: () => Navigator.push(
                                               context,
                                               MaterialPageRoute(
                                                   builder: (BuildContext
                                                           context) =>
-                                                      ForgotPasswordScreen()));
-                                        },
-                                        child: Text(
-                                          getTranslated(
-                                              'forgot_password', context),
-                                          style: TextStyle(
-                                              color: Colors.grey[600],
-                                              fontWeight: FontWeight.w500),
-                                        )),
+                                                      ForgotPasswordScreen())),
+                                          child: Text(
+                                            getTranslated(
+                                                'forgot_password', context),
+                                            style: TextStyle(
+                                                color: Colors.red,
+                                                fontWeight: FontWeight.w500),
+                                          )),
+                                    ],
                                   ),
                                   const SizedBox(
                                     height: 30,
@@ -206,11 +213,27 @@ class _LoginScreenState extends State<LoginScreen> {
                                           }),
                                   const SizedBox(height: 35),
                                   Row(children: [
-                                    const Expanded(child: Divider(thickness: 1)),
+                                    Expanded(
+                                        child: Divider(
+                                            thickness: 1,
+                                            color: ColorResources.getTextColor(
+                                                    context)
+                                                .withOpacity(0.4))),
                                     const SizedBox(width: 15),
-                                    Text(getTranslated('or', context)),
+                                    Text(
+                                      getTranslated('or', context),
+                                      style: TextStyle(
+                                          color: ColorResources.getTextColor(
+                                                  context)
+                                              .withOpacity(0.7)),
+                                    ),
                                     const SizedBox(width: 15),
-                                    const Expanded(child: Divider(thickness: 1))
+                                    Expanded(
+                                        child: Divider(
+                                            thickness: 1,
+                                            color: ColorResources.getTextColor(
+                                                    context)
+                                                .withOpacity(0.4))),
                                   ]),
                                   const SizedBox(height: 5),
                                   TextButton(
@@ -238,12 +261,12 @@ class _LoginScreenState extends State<LoginScreen> {
                                           ),
                                         ],
                                       )),
-                                  const SizedBox(height: 15),
                                   Center(
                                     child: GestureDetector(
                                       onTap: () async {
-                                        final pref = await SharedPreferences
-                                            .getInstance();
+                                        SharedPreferences pref =
+                                            await SharedPreferences
+                                                .getInstance();
                                         await pref.clear();
                                         Navigator.push(
                                             context,
@@ -269,7 +292,6 @@ class _LoginScreenState extends State<LoginScreen> {
                                       ),
                                     ),
                                   ),
-                                  const SizedBox(height: 25),
                                   Align(
                                     alignment: Alignment.bottomCenter,
                                     child: Row(
@@ -281,7 +303,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                         Text(
                                           getTranslated(
                                               'dont_have_account', context),
-                                          style: const TextStyle(
+                                          style: TextStyle(
+                                              color:
+                                                  ColorResources.getTextColor(
+                                                      context),
                                               fontWeight: FontWeight.w400,
                                               fontSize: 15),
                                         ),
@@ -297,8 +322,12 @@ class _LoginScreenState extends State<LoginScreen> {
                                             },
                                             child: Text(
                                               getTranslated('signup', context),
-                                              style: const TextStyle(
+                                              style: TextStyle(
+                                                  color: ColorResources
+                                                      .getPrimaryColor(context),
                                                   fontWeight: FontWeight.w700,
+                                                  decoration:
+                                                      TextDecoration.underline,
                                                   fontSize: 17),
                                             ))
                                       ],

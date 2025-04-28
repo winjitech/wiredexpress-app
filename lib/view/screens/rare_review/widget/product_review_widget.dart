@@ -43,14 +43,13 @@ class ProductReviewWidget extends StatelessWidget {
                       decoration: BoxDecoration(
                         boxShadow: [
                           BoxShadow(
-                            color: Provider.of<ThemeProvider>(context).darkTheme
-                                ? Colors.black.withOpacity(0.4)
-                                : Colors.grey[300]!,
+                            color: ColorResources.getBoxShadow(context),
                             blurRadius: 5,
                             spreadRadius: 1,
                           )
                         ],
-                        color: Colors.white,
+                        color:
+                            ColorResources.getScaffoldBackgroundColor(context),
                         borderRadius: BorderRadius.circular(
                             Dimensions.PADDING_SIZE_SMALL),
                       ),
@@ -77,20 +76,26 @@ class ProductReviewWidget extends StatelessWidget {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Text(
-                                      orderDetailsList![index]
-                                          .productDetails!
-                                          .name!,
-                                      style: rubikMedium,
-                                      maxLines: 2,
-                                      overflow: TextOverflow.ellipsis),
+                                    orderDetailsList![index]
+                                        .productDetails!
+                                        .name!,
+                                    style: TextStyle(
+                                        color: ColorResources.getTextColor(
+                                            context)),
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
                                   SizedBox(height: 10),
                                   Text(
-                                      PriceConverter.convertPrice(
-                                          context,
-                                          orderDetailsList![index]
-                                              .productDetails!
-                                              .price),
-                                      style: rubikBold),
+                                    PriceConverter.convertPrice(
+                                        context,
+                                        orderDetailsList![index]
+                                            .productDetails!
+                                            .price),
+                                    style: TextStyle(
+                                        color: ColorResources.getTextColor(
+                                            context)),
+                                  ),
                                 ],
                               )),
                               Row(children: [
@@ -161,12 +166,13 @@ class ProductReviewWidget extends StatelessWidget {
                           ),
                           SizedBox(height: Dimensions.PADDING_SIZE_LARGE),
                           CustomTextField(
+                            fillColor:
+                                ColorResources.getTextFieldFillColor(context),
                             maxLines: 3,
                             capitalization: TextCapitalization.sentences,
                             isEnabled: !productProvider.submitList[index],
                             hintText: getTranslated(
                                 'write_your_review_here', context),
-                            fillColor: ColorResources.getSearchBg(context),
                             onChanged: (text) {
                               productProvider.setReview(index, text);
                             },

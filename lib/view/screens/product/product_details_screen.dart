@@ -76,8 +76,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                       padding: EdgeInsets.all(15),
                       color: ColorResources.getScaffoldBackgroundColor(context),
                       child: cartProvider.cartLoading == true
-                          ? CustomCircularIndicator(
-                              color: ColorResources.getScaffoldColor(context))
+                          ? CustomCircularIndicator()
                           : CustomButton(
                               text: getTranslated('add_to_cart', context),
                               onTap: () {

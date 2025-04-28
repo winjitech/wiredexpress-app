@@ -28,10 +28,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       centerTitle: true,
       leading: isBackButtonExist!
           ? IconButton(
-              icon: Icon(
-                Icons.arrow_back_ios,
-                size: 18,
-              ),
+              icon: Icon(Icons.arrow_back_ios, size: 18),
               color: ColorResources.getTextColor(context),
               onPressed: () => onBackPressed != null
                   ? onBackPressed!()
@@ -41,10 +38,12 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       actions: [
         filterButton == true
             ? IconButton(
-                onPressed: () { Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (BuildContext context) => CategoriesScreen()));
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (BuildContext context) =>
+                              CategoriesScreen()));
                 },
                 icon: Image.asset(
                   Images.filterIcon,

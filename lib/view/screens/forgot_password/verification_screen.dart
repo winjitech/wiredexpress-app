@@ -41,7 +41,9 @@ class VerificationScreen extends StatelessWidget {
                         child: Text(
                           getTranslated('enter_auth_code', context),
                           style: TextStyle(
-                              fontWeight: FontWeight.w500, fontSize: 23),
+                              fontWeight: FontWeight.w500,
+                              fontSize: 23,
+                              color: ColorResources.getTextColor(context)),
                         ),
                       ),
                       SizedBox(height: 30),
@@ -52,41 +54,54 @@ class VerificationScreen extends StatelessWidget {
                           '${getTranslated('please_enter_4_digit_code', context)}',
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                              color: ColorResources.COLOR_GREY_CHATEAU,
+                              color: ColorResources.getTextColor(context)
+                                  .withOpacity(0.5),
                               fontSize: 21),
                         )),
                       ),
                       Padding(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 39, vertical: 35),
+                            horizontal: 24, vertical: 55),
                         child: PinCodeTextField(
                           length: 4,
                           appContext: context,
+                          textStyle: TextStyle(
+                            color: ColorResources.getTextColor(context),
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600,
+                          ),
                           obscureText: false,
                           keyboardType: TextInputType.number,
                           animationType: AnimationType.fade,
+                          cursorColor: ColorResources.getPrimaryColor(context),
                           pinTheme: PinTheme(
-                            shape: PinCodeFieldShape.circle,
-                            fieldHeight: 63,
-                            fieldWidth: 55,
-                            borderWidth: 1,
-                            borderRadius: BorderRadius.circular(50),
+                            shape: PinCodeFieldShape.box,
+                            fieldHeight:
+                                MediaQuery.of(context).size.width * 0.14,
+                            fieldWidth:
+                                MediaQuery.of(context).size.width * 0.12,
+                            borderWidth: 1.5,
+                            borderRadius: BorderRadius.circular(15),
                             selectedColor:
-                                ColorResources.getScaffoldColor(context),
-                            selectedFillColor: Colors.white,
-                            inactiveFillColor: Colors.white,
+                                ColorResources.getPrimaryColor(context),
+                            selectedFillColor:
+                                ColorResources.getScaffoldBackgroundColor(
+                                    context),
+                            inactiveFillColor:
+                                ColorResources.getScaffoldBackgroundColor(
+                                    context),
                             inactiveColor: Colors.grey[300],
                             activeColor:
-                                ColorResources.getScaffoldColor(context),
-                            activeFillColor: ColorResources.COLOR_WHITE,
+                                ColorResources.getPrimaryColor(context),
+                            activeFillColor:
+                                ColorResources.getScaffoldBackgroundColor(
+                                    context),
                           ),
-                          animationDuration: Duration(milliseconds: 300),
+                          animationDuration: const Duration(milliseconds: 200),
                           backgroundColor: Colors.transparent,
                           enableActiveFill: true,
                           onChanged: authProvider.updateVerificationCode,
-                          beforeTextPaste: (text) {
-                            return true;
-                          },
+                          beforeTextPaste: (text) => true,
                         ),
                       ),
                       SizedBox(height: 150),
@@ -139,8 +154,7 @@ class VerificationScreen extends StatelessWidget {
                                       }
                                     });
                                   } else {
-                                    Provider.of<CustomAuthProvider>(context,
-                                            listen: false)
+                                    authProvider
                                         .verifyToken(emailAddress)
                                         .then((value) {
                                       if (value.isSuccess) {
@@ -169,8 +183,7 @@ class VerificationScreen extends StatelessWidget {
                         child: GestureDetector(
                           onTap: () {
                             if (fromSignUp!) {
-                              Provider.of<CustomAuthProvider>(context,
-                                      listen: false)
+                              authProvider
                                   .checkEmail(context, emailAddress)
                                   .then((value) {
                                 if (value.isSuccess) {
@@ -182,8 +195,7 @@ class VerificationScreen extends StatelessWidget {
                                 } else {}
                               });
                             } else {
-                              Provider.of<CustomAuthProvider>(context,
-                                      listen: false)
+                              authProvider
                                   .forgetPassword(emailAddress)
                                   .then((value) {
                                 if (value.isSuccess) {
@@ -204,8 +216,12 @@ class VerificationScreen extends StatelessWidget {
                             child: Text(
                               getTranslated('resend_code', context),
                               style: TextStyle(
-                                fontSize: 15,
-                                color: ColorResources.getGreyColor(context),
+                                fontSize: 14,
+                                decoration: TextDecoration.underline,
+                                decorationColor:
+                                    ColorResources.getPrimaryColor(context),
+                                color: ColorResources.getPrimaryColor(context),
+                                fontWeight: FontWeight.w500,
                               ),
                             ),
                           ),

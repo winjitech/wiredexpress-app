@@ -178,7 +178,7 @@ class _SelectLocationScreenState extends State<SelectLocationScreen> {
                       height: 35,
                     )),
                 locationProvider.loading
-                    ? CustomCircularIndicator(color:ColorResources.getScaffoldColor(context))
+                    ? CustomCircularIndicator()
                     : SizedBox(),
               ],
             ),

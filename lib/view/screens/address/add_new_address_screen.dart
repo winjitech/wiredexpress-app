@@ -204,9 +204,7 @@ class _AddNewAddressScreenState extends State<AddNewAddressScreen> {
                                         },
                                       ),
                                       locationProvider.loading
-                                          ? CustomCircularIndicator(
-                                              color: ColorResources
-                                                  .getScaffoldColor(context))
+                                          ? CustomCircularIndicator()
                                           : SizedBox(),
                                       Container(
                                           width:
@@ -224,11 +222,9 @@ class _AddNewAddressScreenState extends State<AddNewAddressScreen> {
                                         bottom: 10,
                                         right: 0,
                                         child: GestureDetector(
-                                          onTap: () {
-                                            locationProvider.getCurrentLocation(
+                                          onTap: () => locationProvider.getCurrentLocation(
                                                 mapController: locationProvider
-                                                    .mapController);
-                                          },
+                                                    .mapController),
                                           child: Container(
                                             width: 30,
                                             height: 30,
@@ -293,10 +289,8 @@ class _AddNewAddressScreenState extends State<AddNewAddressScreen> {
                                       locationProvider.getAllAddressType.length,
                                   itemBuilder: (context, index) =>
                                       GestureDetector(
-                                    onTap: () {
-                                      locationProvider
-                                          .updateAddressIndex(index);
-                                    },
+                                    onTap: () => locationProvider
+                                          .updateAddressIndex(index),
                                     child: Container(
                                       padding: EdgeInsets.symmetric(
                                           vertical:
@@ -368,7 +362,7 @@ class _AddNewAddressScreenState extends State<AddNewAddressScreen> {
                                             context)),
                               ),
                               SizedBox(height: 8),
-                              CustomTextField(
+                              CustomTextField(fillColor: ColorResources.getTextFieldFillColor(context),
                                 hintText:
                                     getTranslated('address_line_02', context),
                                 isShowBorder: false,
@@ -391,7 +385,7 @@ class _AddNewAddressScreenState extends State<AddNewAddressScreen> {
                                             context)),
                               ),
                               SizedBox(height: 8),
-                              CustomTextField(
+                              CustomTextField(fillColor: ColorResources.getTextFieldFillColor(context),
                                 hintText: getTranslated(
                                     'enter_contact_person_name', context),
                                 isShowBorder: false,
@@ -415,7 +409,7 @@ class _AddNewAddressScreenState extends State<AddNewAddressScreen> {
                                             context)),
                               ),
                               SizedBox(height: 8),
-                              CustomTextField(
+                              CustomTextField(fillColor: ColorResources.getTextFieldFillColor(context),
                                 hintText: getTranslated(
                                     'enter_contact_person_number', context),
                                 isShowBorder: false,
@@ -560,8 +554,7 @@ class _AddNewAddressScreenState extends State<AddNewAddressScreen> {
                                   }
                                 },
                         )
-                      : CustomCircularIndicator(
-                          color: ColorResources.getScaffoldColor(context)),
+                      : CustomCircularIndicator(),
                 )
               ],
             );

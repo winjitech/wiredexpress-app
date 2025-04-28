@@ -129,9 +129,7 @@ class _CartProductDetailsScreenState extends State<CartProductDetailsScreen> {
                                             'delete_from_cart', context),
                                         style: TextStyle(color: Colors.red))),
                               ])
-                            : CustomCircularIndicator(
-                                color:
-                                    ColorResources.getScaffoldColor(context)),
+                            : CustomCircularIndicator(),
                       ],
                     ),
                   )

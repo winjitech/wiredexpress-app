@@ -92,6 +92,8 @@ class ProductWidget extends StatelessWidget {
                     ProductDetailsScreen(productId: product!.id))),
         child: Container(
           decoration: BoxDecoration(
+            border: Border.all(
+                color: ColorResources.getBorderColor(context), width: 0.4),
             color: ColorResources.getScaffoldBackgroundColor(context),
             borderRadius: BorderRadius.circular(20),
           ),
@@ -100,9 +102,12 @@ class ProductWidget extends StatelessWidget {
               Stack(
                 children: [
                   ClipRRect(
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(20),
+                      topRight: Radius.circular(20),
+                    ),
                     child: CachedNetworkImage(
-                      height: 170,
+                      height: 150,
                       fit: BoxFit.cover,
                       width: double.infinity,
                       imageUrl:
@@ -169,7 +174,7 @@ class ProductWidget extends StatelessWidget {
               ),
               const SizedBox(height: 10),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                padding:  EdgeInsets.symmetric(horizontal: 12),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -177,15 +182,17 @@ class ProductWidget extends StatelessWidget {
                     //   product!.id!.toString(),
                     //   maxLines: 2,
                     //   overflow: TextOverflow.ellipsis,
-                    //   style: const TextStyle(
+                    //   style:TextStyle(color: ColorResources.getTextColor(context),
                     //       fontWeight: FontWeight.bold, fontSize: 15),
                     // ),
                     Text(
                       product!.name!,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                          fontWeight: FontWeight.bold, fontSize: 15),
+                      style: TextStyle(
+                          color: ColorResources.getTextColor(context),
+                          fontWeight: FontWeight.bold,
+                          fontSize: 15),
                     ),
                     const SizedBox(height: 5),
                     Row(
@@ -194,18 +201,17 @@ class ProductWidget extends StatelessWidget {
                           Row(
                             children: [
                               Text(
-                                "${splashProvider.configModel!.currencySymbol ?? '\$'}${Helpers.formatTextWithNum(originalPrice.toString())}",
-                                style: TextStyle(
-                                  color: ColorResources.getTextColor(context)
-                                      .withOpacity(0.4),
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 15,
-                                  decoration: TextDecoration.lineThrough,
-                                  decorationColor:
-                                      ColorResources.getTextColor(context)
-                                          .withOpacity(0.4),
-                                ),
-                              ),
+                                  "${splashProvider.configModel!.currencySymbol ?? '\$'}${Helpers.formatTextWithNum(originalPrice.toString())}",
+                                  style: TextStyle(
+                                      color:
+                                          ColorResources.getTextColor(context)
+                                              .withOpacity(0.4),
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 15,
+                                      decoration: TextDecoration.lineThrough,
+                                      decorationColor:
+                                          ColorResources.getTextColor(context)
+                                              .withOpacity(0.4))),
                               SizedBox(width: 5),
                             ],
                           ),

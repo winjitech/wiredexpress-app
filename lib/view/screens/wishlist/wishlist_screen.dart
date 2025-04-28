@@ -1,189 +1,3 @@
-// import 'dart:async';
-// import 'package:wired_express/provider/theme_provider.dart';
-// import 'package:wired_express/utill/Images.dart';
-// import 'package:wired_express/utill/color_resources.dart';
-//
-// import 'package:flutter/material.dart';
-// import 'package:wired_express/helper/responsive_helper.dart';
-// import 'package:wired_express/localization/language_constrants.dart';
-// import 'package:wired_express/provider/auth_provider.dart';
-// import 'package:wired_express/provider/wishlist_provider.dart';
-// import 'package:wired_express/utill/dimensions.dart';
-// import 'package:wired_express/view/base/custom_app_bar.dart';
-// import 'package:wired_express/view/base/custom_text_field.dart';
-// import 'package:wired_express/view/base/no_data_screen.dart';
-// import 'package:wired_express/view/base/not_logged_in_screen.dart';
-// import 'package:wired_express/view/base/product_widget.dart';
-// import 'package:provider/provider.dart';
-// import 'package:wired_express/view/screens/auth/custom_text_form_field.dart';
-//
-// class WishListScreen extends StatefulWidget {
-//   @override
-//   _WishListScreenState createState() => _WishListScreenState();
-// }
-//
-// class _WishListScreenState extends State<WishListScreen> {
-//   @override
-//   void initState() {
-//     super.initState();
-//     Timer(Duration(seconds: 0), () {
-//       Provider.of<WishListProvider>(context, listen: false)
-//           .initWishList(context);
-//     });
-//   }
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     final bool _isLoggedIn =
-//         Provider.of<CustomAuthProvider>(context, listen: false).isLoggedIn()!;
-//     return Scaffold(
-//       backgroundColor: ColorResources.getScaffoldBackgroundColor(context!),
-//       appBar: CustomAppBar(
-//         title: getTranslated('my_favourite', context),
-//         filterButton: true,
-//       ),
-//       body: _isLoggedIn
-//           ? Consumer<WishListProvider>(
-//               builder: (context, wishlistProvider, child) {
-//                 return wishlistProvider.loading
-//                     ? CustomCircularIndicator(color:ColorResources.getScaffoldColor(context))
-//                     : wishlistProvider.wishList != null &&
-//                             wishlistProvider.wishList!.isNotEmpty
-//                         ? RefreshIndicator(
-//                             onRefresh: () async {
-//                               await Provider.of<WishListProvider>(context,
-//                                       listen: false)
-//                                   .initWishListProductIds(context);
-//                             },
-//                             backgroundColor:
-//                                 ColorResources.getPrimaryColor(context),
-//                             child: Scrollbar(
-//                               child: SingleChildScrollView(
-//                                 child: Center(
-//                                   child: SizedBox(
-//                                      width: MediaQuery.of(context).size.width,
-//                                       child: Column(
-//                                         children: [
-//                                           Padding(
-//                                             padding: const EdgeInsets.all(15),
-//                                             child: TextField(
-//                                               decoration: InputDecoration(
-//                                                 contentPadding:
-//                                                     EdgeInsets.symmetric(
-//                                                         vertical: 16,
-//                                                         horizontal: 22),
-//                                                 border: OutlineInputBorder(
-//                                                     borderRadius:
-//                                                         BorderRadius.circular(
-//                                                             10.0),
-//                                                     borderSide: BorderSide(
-//                                                         width: 0,
-//                                                         color: Colors
-//                                                             .transparent)),
-//                                                 focusedBorder:
-//                                                     OutlineInputBorder(
-//                                                         borderRadius:
-//                                                             BorderRadius
-//                                                                 .circular(10.0),
-//                                                         borderSide: BorderSide(
-//                                                             width: 0,
-//                                                             color: Colors
-//                                                                 .transparent)),
-//                                                 enabledBorder:
-//                                                     OutlineInputBorder(
-//                                                         borderRadius:
-//                                                             BorderRadius
-//                                                                 .circular(10.0),
-//                                                         borderSide: BorderSide(
-//                                                             width: 0,
-//                                                             color: Colors
-//                                                                 .transparent)),
-//                                                 isDense: true,
-//                                                 prefixIcon: Icon(
-//                                                   Icons.search_sharp,
-//                                                   size: 25,
-//                                                 ),
-//                                                 hintText: getTranslated(
-//                                                     'search', context),
-//                                                 fillColor: Colors.grey[150],
-//                                                 // fillColor: Provider.of<ThemeProvider>(context, listen: false).darkTheme
-//                                                 //     ? Colors.black
-//                                                 //     : Colors.white,
-//                                                 hintStyle: Theme.of(context)
-//                                                     .textTheme
-//                                                     .headline2!
-//                                                     .copyWith(
-//                                                         fontSize: 14,
-//                                                         color: ColorResources
-//                                                             .COLOR_BLACK,
-//                                                         fontWeight:
-//                                                             FontWeight.w400),
-//                                                 filled: true,
-//                                               ),
-//                                               style: Theme.of(context)
-//                                                   .textTheme
-//                                                   .headline2!
-//                                                   .copyWith(
-//                                                       color:
-//                                                           Provider.of<ThemeProvider>(
-//                                                                       context,
-//                                                                       listen:
-//                                                                           false)
-//                                                                   .darkTheme
-//                                                               ? Colors.white
-//                                                               : Colors.black,
-//                                                       fontSize: 12),
-//                                             ),
-//                                           ),
-//                                           GridView.builder(
-//                                               key: UniqueKey(),
-//                                               gridDelegate:
-//                                                   SliverGridDelegateWithFixedCrossAxisCount(
-//                                                       crossAxisSpacing: 15,
-//                                                       mainAxisSpacing: 15,
-//                                                       mainAxisExtent: 231,
-//                                                       crossAxisCount: 2),
-//                                               physics:
-//                                                   NeverScrollableScrollPhysics(),
-//                                               shrinkWrap: true,
-//                                               itemCount: wishlistProvider
-//                                                   .wishList!.length,
-//                                               padding: EdgeInsets.all(15),
-//                                               itemBuilder: (context, index) {
-//                                                 return ProductWidget(
-//                                                     product: wishlistProvider
-//                                                         .wishList![index]
-//                                                         .product);
-//                                                 ;
-//                                               }),
-//                                         ],
-//                                       )
-//
-//                                       // ListView.builder(
-//                                       //   physics: NeverScrollableScrollPhysics(),
-//                                       //   shrinkWrap: true,
-//                                       //   itemCount:
-//                                       //       wishlistProvider.wishList!.length,
-//                                       //   padding: EdgeInsets.all(
-//                                       //       Dimensions.PADDING_SIZE_SMALL),
-//                                       //   itemBuilder: (context, index) {
-//                                       //     return ProductWidget(
-//                                       //         product: wishlistProvider
-//                                       //             .wishList![index].product);
-//                                       //   },
-//                                       // ),
-//                                       ),
-//                                 ),
-//                               ),
-//                             ),
-//                           )
-//                         : NoDataScreen();
-//               },
-//             )
-//           : NotLoggedInScreen(),
-//     );
-//   }
-// }
 import 'dart:async';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
 import 'package:wired_express/data/model/response/wishlist_model.dart';
@@ -216,7 +30,7 @@ class _WishListScreenState extends State<WishListScreen> {
   @override
   void initState() {
     super.initState();
-    Timer(Duration(seconds: 0), () {
+    Timer(const Duration(seconds: 0), () {
       Provider.of<WishListProvider>(context, listen: false)
           .initWishList(context);
     });
@@ -265,15 +79,15 @@ class _WishListScreenState extends State<WishListScreen> {
               },
               icon: Icon(
                 Icons.close,
-                color: Colors.white,
+                color: ColorResources.getTextColor(context),
                 size: 36,
               )),
         )),
         childDecoration: BoxDecoration(borderRadius: BorderRadius.circular(40)),
         controller: advancedDrawerController,
         animationCurve: Curves.easeInOutExpo,
-        animationDuration: Duration(milliseconds: 400),
-        backdropColor: ColorResources.getScaffoldColor(context),
+        animationDuration: const Duration(milliseconds: 400),
+        backdropColor: ColorResources.getTextFieldFillColor(context),
         drawer: DrawerScreen(),
         child: Scaffold(
           backgroundColor: ColorResources.getScaffoldBackgroundColor(context!),
@@ -285,8 +99,7 @@ class _WishListScreenState extends State<WishListScreen> {
               ? Consumer<WishListProvider>(
                   builder: (context, wishlistProvider, child) {
                     return wishlistProvider.loading
-                        ? CustomCircularIndicator(
-                            color: ColorResources.getScaffoldColor(context))
+                        ? CustomCircularIndicator()
                         : wishlistProvider.wishList != null &&
                                 wishlistProvider.wishList!.isNotEmpty
                             ? RefreshIndicator(
@@ -312,47 +125,56 @@ class _WishListScreenState extends State<WishListScreen> {
                                                   controller: _searchController,
                                                   decoration: InputDecoration(
                                                     contentPadding:
-                                                        EdgeInsets.symmetric(
+                                                        const EdgeInsets
+                                                            .symmetric(
                                                             vertical: 16,
                                                             horizontal: 22),
                                                     border: OutlineInputBorder(
                                                         borderRadius:
                                                             BorderRadius
                                                                 .circular(10.0),
-                                                        borderSide: BorderSide(
-                                                            width: 0,
-                                                            color: Colors
-                                                                .transparent)),
+                                                        borderSide:
+                                                            const BorderSide(
+                                                                width: 0,
+                                                                color: Colors
+                                                                    .transparent)),
                                                     focusedBorder: OutlineInputBorder(
                                                         borderRadius:
                                                             BorderRadius
                                                                 .circular(10.0),
-                                                        borderSide: BorderSide(
-                                                            width: 0,
-                                                            color: Colors
-                                                                .transparent)),
+                                                        borderSide:
+                                                            const BorderSide(
+                                                                width: 0,
+                                                                color: Colors
+                                                                    .transparent)),
                                                     enabledBorder: OutlineInputBorder(
                                                         borderRadius:
                                                             BorderRadius
                                                                 .circular(10.0),
-                                                        borderSide: BorderSide(
-                                                            width: 0,
-                                                            color: Colors
-                                                                .transparent)),
+                                                        borderSide:
+                                                            const BorderSide(
+                                                                width: 0,
+                                                                color: Colors
+                                                                    .transparent)),
                                                     isDense: true,
                                                     prefixIcon: Icon(
+                                                        color: ColorResources
+                                                                .getTextColor(
+                                                                    context)
+                                                            .withOpacity(0.4),
                                                         Icons.search_sharp,
                                                         size: 25),
                                                     hintText: getTranslated(
                                                         'search', context),
-                                                    fillColor: Colors.grey[150],
-                                                    // fillColor: Provider.of<ThemeProvider>(context, listen: false).darkTheme
-                                                    //     ? Colors.black
-                                                    //     : Colors.white,
+                                                    fillColor: ColorResources
+                                                        .getTextFieldFillColor(
+                                                            context),
                                                     hintStyle: TextStyle(
                                                         fontSize: 14,
                                                         color: ColorResources
-                                                            .COLOR_BLACK,
+                                                                .getTextColor(
+                                                                    context)
+                                                            .withOpacity(0.4),
                                                         fontWeight:
                                                             FontWeight.w400),
                                                     filled: true,
@@ -361,14 +183,9 @@ class _WishListScreenState extends State<WishListScreen> {
                                                     filterWishList(value);
                                                   },
                                                   style: TextStyle(
-                                                      color:
-                                                          Provider.of<ThemeProvider>(
-                                                                      context,
-                                                                      listen:
-                                                                          false)
-                                                                  .darkTheme
-                                                              ? Colors.white
-                                                              : Colors.black,
+                                                      color: ColorResources
+                                                          .getTextColor(
+                                                              context),
                                                       fontSize: 12),
                                                 ),
                                               ),
@@ -389,7 +206,7 @@ class _WishListScreenState extends State<WishListScreen> {
                                                             : 2,
                                                   ),
                                                   physics:
-                                                      NeverScrollableScrollPhysics(),
+                                                      const NeverScrollableScrollPhysics(),
                                                   shrinkWrap: true,
                                                   itemCount: _searchController
                                                           .text

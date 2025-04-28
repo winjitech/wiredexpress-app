@@ -209,7 +209,8 @@ class OrderTrackingScreenState extends State<OrderTrackingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return Scaffold(        backgroundColor: ColorResources.getScaffoldBackgroundColor(context!),
+
         appBar: CustomAppBar(title: getTranslated('track_order', context)),
         body: Column(
           children: [

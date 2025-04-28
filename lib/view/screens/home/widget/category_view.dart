@@ -79,26 +79,23 @@ class CategoryView extends StatelessWidget {
                                               maxLines: 1,
                                               overflow: TextOverflow.ellipsis,
                                               style: TextStyle(
+                                                  color: ColorResources
+                                                      .getTextColor(context),
                                                   fontWeight: FontWeight.bold,
                                                   fontSize: 19),
                                             ),
-                                            SizedBox(
-                                              height: 5,
-                                            ),
-                                            Text(
-                                              '',
-                                              style: TextStyle(
-                                                  color: Colors.black38,
-                                                  fontWeight: FontWeight.w500,
-                                                  fontSize: 15),
-                                            )
                                           ]),
                                         ),
                                       ));
                                 })
                             : Center(
-                                child: Text(getTranslated(
-                                    'no_category_available', context)))
+                                child: Text(
+                                getTranslated('no_category_available', context),
+                                style: TextStyle(
+                                    color: ColorResources.getTextColor(context),
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16),
+                              ))
                         : CategoryShimmer(),
                   ),
                 ),
@@ -137,9 +134,8 @@ class CategoryShimmer extends StatelessWidget {
                       shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(
-                          color: Provider.of<ThemeProvider>(context).darkTheme
-                              ? Colors.black.withOpacity(0.4)
-                              : Colors.grey[300]!,
+                          color: ColorResources.getBoxShadow(context),
+
                           blurRadius: 5,
                           spreadRadius: 1,
                         )
@@ -178,9 +174,8 @@ class CategoryAllShimmer extends StatelessWidget {
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
-                      color: Provider.of<ThemeProvider>(context).darkTheme
-                          ? Colors.black.withOpacity(0.4)
-                          : Colors.grey[300]!,
+                      color: ColorResources.getBoxShadow(context),
+
                       blurRadius: 5,
                       spreadRadius: 1,
                     )

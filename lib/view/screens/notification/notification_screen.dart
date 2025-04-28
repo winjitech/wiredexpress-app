@@ -103,7 +103,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                         child: SizedBox(
                           width: MediaQuery.of(context).size.width,
                           child: notificationProvider.loading!
-                              ? CustomCircularIndicator(color:ColorResources.getScaffoldColor(context))
+                              ? CustomCircularIndicator()
                               : notificationProvider.notificationList!.length ==
                                       0
                                   ? Padding(
@@ -767,16 +767,8 @@ class _NotificationScreenState extends State<NotificationScreen> {
                                                           context),
                                                       boxShadow: [
                                                         BoxShadow(
-                                                          color: Provider.of<
-                                                              ThemeProvider>(
-                                                              context)
-                                                              .darkTheme
-                                                              ? Colors
-                                                              .black
-                                                              .withOpacity(
-                                                              0.4)
-                                                              : Colors.grey[
-                                                          300]!,
+                                                          color: ColorResources.getBoxShadow(context),
+
                                                           blurRadius: 5,
                                                           spreadRadius: 1,
                                                         )

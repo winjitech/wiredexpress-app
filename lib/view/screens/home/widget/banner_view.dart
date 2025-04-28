@@ -81,6 +81,7 @@ class _BannerViewState extends State<BannerView> {
                                       width: MediaQuery.of(context).size.width,
                                       margin: EdgeInsets.only(right: 0),
                                       decoration: BoxDecoration(
+
                                         image: DecorationImage(
                                             image: NetworkImage(
                                                 '${Provider.of<SplashProvider>(context, listen: false).baseUrls!.bannerImageUrl}/${banner.bannerList![index].image}'),
@@ -143,10 +144,8 @@ class BannerShimmer extends StatelessWidget {
                           borderRadius: BorderRadius.circular(10),
                           boxShadow: [
                             BoxShadow(
-                              color:
-                                  Provider.of<ThemeProvider>(context).darkTheme
-                                      ? Colors.black.withOpacity(0.4)
-                                      : Colors.grey[300]!,
+                              color: ColorResources.getBoxShadow(context),
+
                               blurRadius: 5,
                               spreadRadius: 1,
                             )

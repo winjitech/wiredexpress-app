@@ -18,7 +18,8 @@ class PaymentSuccessScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext? context) {
-    return Scaffold(
+    return Scaffold(        backgroundColor: ColorResources.getScaffoldBackgroundColor(context!),
+
       body: Center(
         child: Container(
           width: 1170,

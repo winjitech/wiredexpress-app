@@ -192,8 +192,8 @@ class ProductDetailsBodyView extends StatelessWidget {
                               child: Text(
                                 product.name!,
                                 textAlign: TextAlign.justify,
-                                style: const TextStyle(
-                                    color: Colors.black45,
+                                style: TextStyle(
+                                    color: ColorResources.getTextColor(context),
                                     fontSize: 18,
                                     fontWeight: FontWeight.w600),
                               ),
@@ -217,9 +217,7 @@ class ProductDetailsBodyView extends StatelessWidget {
                                           .withOpacity(0.4),
                                 ),
                               ),
-                            SizedBox(
-                              width: 5,
-                            ),
+                            SizedBox(width: 5),
                             Text(
                               "$currency${Helpers.formatTextWithNum(finalPriceWithoutQuantity.toString())}",
                               style: TextStyle(
@@ -245,16 +243,15 @@ class ProductDetailsBodyView extends StatelessWidget {
                                       width: 25,
                                       height: 25,
                                       decoration: BoxDecoration(
-                                          color:
-                                              ColorResources.getScaffoldColor(
-                                                  context),
+                                          color: ColorResources.getTextColor(
+                                                  context)
+                                              .withOpacity(0.2),
                                           borderRadius:
                                               BorderRadius.circular(50)),
                                       child: Icon(Icons.remove,
                                           size: 20,
-                                          color: ColorResources
-                                              .getScaffoldBackgroundColor(
-                                                  context))),
+                                          color: ColorResources.getTextColor(
+                                              context))),
                                 ),
                                 Padding(
                                   padding: const EdgeInsets.symmetric(
@@ -275,16 +272,15 @@ class ProductDetailsBodyView extends StatelessWidget {
                                     width: 25,
                                     height: 25,
                                     decoration: BoxDecoration(
-                                        color: ColorResources.getScaffoldColor(
-                                            context),
+                                        color:
+                                            ColorResources.getTextColor(context)
+                                                .withOpacity(0.2),
                                         borderRadius:
                                             BorderRadius.circular(50)),
-                                    child: Icon(
-                                      Icons.add,
-                                      size: 20,
-                                      color: ColorResources
-                                          .getScaffoldBackgroundColor(context),
-                                    ),
+                                    child: Icon(Icons.add,
+                                        size: 20,
+                                        color: ColorResources.getTextColor(
+                                            context)),
                                   ),
                                 ),
                               ]),
@@ -319,7 +315,9 @@ class ProductDetailsBodyView extends StatelessWidget {
                                   const SizedBox(height: 20),
                                   Text(
                                     getTranslated('description', context),
-                                    style: const TextStyle(
+                                    style: TextStyle(
+                                        color: ColorResources.getTextColor(
+                                            context),
                                         fontWeight: FontWeight.w600,
                                         fontSize: 16),
                                   ),

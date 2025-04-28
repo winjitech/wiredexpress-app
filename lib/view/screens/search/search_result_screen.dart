@@ -30,17 +30,17 @@ class SearchResultScreen extends StatelessWidget {
       backgroundColor: ColorResources.getScaffoldBackgroundColor(context!),
       appBar: ResponsiveHelper.isDesktop(context)
           ? PreferredSize(
-              child: MainAppBar(), preferredSize: Size.fromHeight(80))
+              preferredSize: const Size.fromHeight(80), child: MainAppBar())
           : null,
       body: SafeArea(
         child: Padding(
-            padding:
-                EdgeInsets.symmetric(horizontal: Dimensions.PADDING_SIZE_SMALL),
+            padding: const EdgeInsets.symmetric(
+                horizontal: Dimensions.PADDING_SIZE_SMALL),
             child: Consumer<SearchProvider>(
               builder: (context, searchProvider, child) => Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SizedBox(height: 15),
+                  const SizedBox(height: 15),
                   isServiceSearch == 0
                       ? GestureDetector(
                           onTap: () async {
@@ -52,12 +52,14 @@ class SearchResultScreen extends StatelessWidget {
                                 color:
                                     ColorResources.getScaffoldBackgroundColor(
                                         context),
+                                height: 45,
                                 child: Row(
                                   children: [
-                                    SizedBox(
+                                    const SizedBox(
                                       width: 7,
                                     ),
-                                    Container(
+                                    SizedBox(
+                                      width: 300,
                                       child: Text(
                                         '$searchString',
                                         textAlign: TextAlign.start,
@@ -67,49 +69,39 @@ class SearchResultScreen extends StatelessWidget {
                                             color: ColorResources.getTextColor(
                                                 context)),
                                       ),
-                                      width: 300,
                                     ),
                                     Container(
-                                      decoration: BoxDecoration(
-                                          image: DecorationImage(
-                                        image: AssetImage(
-                                          'assets/icon/search.png',
-                                        ),
-                                      )),
-                                      height: 20,
-                                      width: 20,
-                                    ),
-                                    SizedBox(
-                                      width: 10,
-                                    ),
+                                        decoration: const BoxDecoration(
+                                            image: DecorationImage(
+                                                image: AssetImage(
+                                                    'assets/icon/search.png'))),
+                                        height: 20,
+                                        width: 20),
+                                    const SizedBox(width: 10),
                                   ],
                                 ),
-                                height: 45,
                               ),
                             ],
                           ))
-                      : SizedBox(),
-                  SizedBox(height: 10),
+                      : const SizedBox(),
+                  const SizedBox(height: 10),
                   if (isServiceSearch == 0)
                     searchProvider.searchProductList != null
                         ? Center(
                             child: SizedBox(
-                              width: MediaQuery.of(context).size.width,
-                              child: Text(
-                                '${searchProvider.searchProductList!.length} ${getTranslated('product_found', context)}',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyMedium!
-                                    .copyWith(
-                                        fontSize: 16,
-                                        color:
-                                            ColorResources.getGreyBunkerColor(
-                                                    context)
-                                                .withOpacity(0.2)),
-                              ),
-                            ),
+                                width: MediaQuery.of(context).size.width,
+                                child: Text(
+                                    '${searchProvider.searchProductList!.length} ${getTranslated('product_found', context)}',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium!
+                                        .copyWith(
+                                            fontSize: 16,
+                                            color: ColorResources
+                                                    .getGreyBunkerColor(context)
+                                                .withOpacity(0.2)))),
                           )
-                        : SizedBox.shrink()
+                        : const SizedBox.shrink()
                   else
                     Center(
                       child: SizedBox(
@@ -117,14 +109,14 @@ class SearchResultScreen extends StatelessWidget {
                         child: Row(
                           children: [
                             IconButton(
-                              icon: Icon(
+                              icon: const Icon(
                                 Icons.arrow_back_ios,
                                 size: 18,
                               ),
                               color: ColorResources.getGreyBunkerColor(context),
                               onPressed: () => Navigator.pop(context),
                             ),
-                            SizedBox(
+                            const SizedBox(
                               width: 5,
                             ),
                             Text(
@@ -141,14 +133,14 @@ class SearchResultScreen extends StatelessWidget {
                         ),
                       ),
                     ),
-                  SizedBox(height: 13),
+                  const SizedBox(height: 13),
                   Expanded(
                     child: searchProvider.searchProductList != null
                         ? searchProvider.searchProductList!.length > 0
                             ? Scrollbar(
                                 child: SingleChildScrollView(
                                   padding: EdgeInsets.zero,
-                                  physics: BouncingScrollPhysics(),
+                                  physics: const BouncingScrollPhysics(),
                                   child: Center(
                                     child: Padding(
                                       padding: const EdgeInsets.all(10),
@@ -167,7 +159,8 @@ class SearchResultScreen extends StatelessWidget {
                                         itemCount: searchProvider
                                             .searchProductList!.length,
                                         shrinkWrap: true,
-                                        physics: NeverScrollableScrollPhysics(),
+                                        physics:
+                                            const NeverScrollableScrollPhysics(),
                                         padding: EdgeInsets.zero,
                                         itemBuilder: (context, index) =>
                                             CategoryProductWidget(

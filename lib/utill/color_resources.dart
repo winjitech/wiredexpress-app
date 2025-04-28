@@ -49,11 +49,6 @@ class ColorResources {
         : Color(0xFF25282B);
   }
 
-  static Color getScaffoldBackgroundColor(BuildContext context) {
-    return Provider.of<ThemeProvider>(context, listen: false).darkTheme
-        ? Colors.black
-        : Colors.white;
-  }
 
   static Color getTextColor(BuildContext context) {
     return Provider.of<ThemeProvider>(context, listen: false).darkTheme
@@ -72,9 +67,8 @@ class ColorResources {
         ? Color(0xFFAAA8A8)
         : Color(0xFF252525);
   }
-
   static Color getSecondaryColor(BuildContext context) {
-    return Provider.of<ThemeProvider>(context).darkTheme
+    return Provider.of<ThemeProvider>(context, listen: false).darkTheme
         ? Color(0xFF0055A4)
         : Color(0xFF007BFF);
   }
@@ -82,6 +76,11 @@ class ColorResources {
     return Provider.of<ThemeProvider>(context, listen: false).darkTheme
         ? Color(0xFF1A1A1A)
         : Colors.grey[200];
+  }
+  static Color getScaffoldBackgroundColor(BuildContext context) {
+    return Provider.of<ThemeProvider>(context, listen: false).darkTheme
+        ? Color(0xFF252525)
+        : Colors.white;
   }
 
   static Color getBorderColor(BuildContext context) {

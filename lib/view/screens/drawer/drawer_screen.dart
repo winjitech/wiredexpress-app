@@ -38,13 +38,20 @@ class _DrawerScreenState extends State<DrawerScreen> {
     final bool _isLoggedIn =
         Provider.of<CustomAuthProvider>(context, listen: false).isLoggedIn()!;
 
-    final address =
-        Provider.of<LocationProvider>(context, listen: false).addressList;
-
     return SafeArea(child:
-        Consumer<ProfileProvider>(builder: (context, profileProvider, child) {
-      int? id = Provider.of<CustomAuthProvider>(context, listen: false)
-          .getUserAddressId();
+        Consumer3<ProfileProvider, PlaceOrderProvider, CustomAuthProvider>(
+            builder: (context, profileProvider, placeOrder, auth, child) {
+      List<AddressModel>? address =
+          Provider.of<LocationProvider>(context, listen: false).addressList;
+
+      int? id = auth.getUserAddressId();
+      AddressModel? matchedAddress;
+
+      try {
+        matchedAddress = address?.firstWhere((element) => element.id == id);
+      } catch (e) {
+        matchedAddress = null;
+      }
 
       return Padding(
           padding: const EdgeInsets.all(30),
@@ -59,7 +66,7 @@ class _DrawerScreenState extends State<DrawerScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       profileProvider.userInfoModel != null &&
-                          profileProvider.userInfoModel!.image == null
+                              profileProvider.userInfoModel!.image == null
                           ? const SizedBox(
                               height: 70,
                               width: 70,
@@ -81,48 +88,34 @@ class _DrawerScreenState extends State<DrawerScreen> {
                           ? Text(
                               '${profileProvider.userInfoModel!.fName!} ${profileProvider.userInfoModel!.lName!}' ??
                                   '',
-                              style: const TextStyle(
-                                  color: Colors.white,
+                              style: TextStyle(
+                                  color: ColorResources.getTextColor(context),
                                   fontSize: 22,
                                   fontWeight: FontWeight.w500))
                           : const SizedBox(),
                       const SizedBox(height: 5),
-                      Consumer<CustomAuthProvider>(
-                        builder: (context, custom, child) {
-                          try {
-                            if (address == null || address.isEmpty ||id == 0 ) {
-                              return const SizedBox();
-                            }
-                            AddressModel matchedAddress = address.firstWhere(
-                              (element) => element.id == id,
-                            );
-
-                            if (matchedAddress != null) {
-                              return Text(
-                                matchedAddress.address.toString(),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(
-                                    color: Colors.white, fontSize: 15),
-                              );
-                            } else {
-                              return const SizedBox();
-                            }
-                          } catch (e) {
-                            return const SizedBox();
-                          }
-                        },
-                      ),
+                      if (matchedAddress != null)
+                        Text(
+                          matchedAddress.address.toString(),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                              color: ColorResources.getTextColor(context),
+                              fontSize: 15)
+                        )
                     ],
                   ),
                 if (!_isLoggedIn)
                   Text(getTranslated('guest', context),
-                      style: const TextStyle(
-                          color: Colors.white,
+                      style: TextStyle(
+                          color: ColorResources.getTextColor(context),
                           fontSize: 22,
                           fontWeight: FontWeight.w500)),
                 const SizedBox(height: 10),
-                const Divider(color: Colors.white, thickness: 1),
+                Divider(
+                    color:
+                        ColorResources.getTextColor(context).withOpacity(0.4),
+                    thickness: 0.5),
                 const SizedBox(height: 10),
                 TextButton(
                     onPressed: () {
@@ -133,34 +126,30 @@ class _DrawerScreenState extends State<DrawerScreen> {
                                   DashboardScreen(pageIndex: 0)));
                     },
                     child: Text(getTranslated('shopping', context),
-                        style: const TextStyle(
-                            color: Colors.white,
+                        style: TextStyle(
+                            color: ColorResources.getTextColor(context),
                             fontSize: 20,
                             fontWeight: FontWeight.w500))),
                 TextButton(
-                    onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (BuildContext context) =>
-                                  CategoriesScreen()));
-                    },
+                    onPressed: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (BuildContext context) =>
+                                CategoriesScreen())),
                     child: Text(getTranslated('categories', context),
-                        style: const TextStyle(
-                            color: Colors.white,
+                        style: TextStyle(
+                            color: ColorResources.getTextColor(context),
                             fontSize: 20,
                             fontWeight: FontWeight.w500))),
                 TextButton(
-                    onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (BuildContext context) =>
-                                  DashboardScreen(pageIndex: 1)));
-                    },
+                    onPressed: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (BuildContext context) =>
+                                DashboardScreen(pageIndex: 1))),
                     child: Text(getTranslated('my_cart', context),
-                        style: const TextStyle(
-                            color: Colors.white,
+                        style: TextStyle(
+                            color: ColorResources.getTextColor(context),
                             fontSize: 20,
                             fontWeight: FontWeight.w500))),
                 TextButton(
@@ -172,15 +161,12 @@ class _DrawerScreenState extends State<DrawerScreen> {
                                   DashboardScreen(pageIndex: 3)));
                     },
                     child: Text(getTranslated('wishlist', context),
-                        style: const TextStyle(
-                            color: Colors.white,
+                        style: TextStyle(
+                            color: ColorResources.getTextColor(context),
                             fontSize: 20,
                             fontWeight: FontWeight.w500))),
                 TextButton(
                     onPressed: () {
-                      final placeOrder = Provider.of<PlaceOrderProvider>(
-                          context,
-                          listen: false);
                       placeOrder.runningOrderList == null ||
                               placeOrder.runningOrderList!.isEmpty
                           ? showCustomSnackBar(
@@ -209,8 +195,8 @@ class _DrawerScreenState extends State<DrawerScreen> {
                                   .then((value) => Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => OrderTrackingScreen(orderID: Provider.of<PlaceOrderProvider>(context, listen: false).runningOrderList![0].id!.toString(), track: Provider.of<PlaceOrderProvider>(context, listen: false).runningOrderList![0]))));
                     },
                     child: Text(getTranslated('track_order', context),
-                        style: const TextStyle(
-                            color: Colors.white,
+                        style: TextStyle(
+                            color: ColorResources.getTextColor(context),
                             fontSize: 20,
                             fontWeight: FontWeight.w500))),
                 TextButton(
@@ -222,8 +208,8 @@ class _DrawerScreenState extends State<DrawerScreen> {
                                   SupportScreen()));
                     },
                     child: Text(getTranslated('help_and_support', context),
-                        style: const TextStyle(
-                            color: Colors.white,
+                        style: TextStyle(
+                            color: ColorResources.getTextColor(context),
                             fontSize: 20,
                             fontWeight: FontWeight.w500))),
                 TextButton(
@@ -234,13 +220,16 @@ class _DrawerScreenState extends State<DrawerScreen> {
                               builder: (BuildContext context) =>
                                   TermsScreen()));
                     },
-                    child: const Text('FAQ',
+                    child: Text('FAQ',
                         style: TextStyle(
-                            color: Colors.white,
+                            color: ColorResources.getTextColor(context),
                             fontSize: 20,
                             fontWeight: FontWeight.w500))),
                 const SizedBox(height: 10),
-                const Divider(color: Colors.white, thickness: 1),
+                Divider(
+                    color:
+                        ColorResources.getTextColor(context).withOpacity(0.4),
+                    thickness: 0.5),
                 const SizedBox(height: 10),
                 TextButton(
                     onPressed: () {
@@ -260,7 +249,7 @@ class _DrawerScreenState extends State<DrawerScreen> {
                             _isLoggedIn ? 'logout' : 'login', context),
                         style: TextStyle(
                             color: _isLoggedIn
-                                ? Colors.white
+                                ? ColorResources.getTextColor(context)
                                 : ColorResources.getPrimaryColor(context),
                             fontSize: 20,
                             fontWeight: FontWeight.w500)))

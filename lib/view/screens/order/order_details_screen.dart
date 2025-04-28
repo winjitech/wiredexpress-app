@@ -178,8 +178,10 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                                     )
                                   ]),
                                   Divider(
-                                    thickness: 1,
-                                  ),
+                                      thickness: 1,
+                                      color:
+                                          ColorResources.getTextColor(context)
+                                              .withOpacity(0.4)),
                                   Row(
                                     children: [
                                       Container(
@@ -237,14 +239,9 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                                                       BorderRadius.circular(10),
                                                   boxShadow: [
                                                     BoxShadow(
-                                                        color: Provider.of<
-                                                                        ThemeProvider>(
-                                                                    context)
-                                                                .darkTheme
-                                                            ? Colors.black
-                                                                .withOpacity(
-                                                                    0.4)
-                                                            : Colors.grey[300]!,
+                                                        color: ColorResources
+                                                            .getBoxShadow(
+                                                                context),
                                                         blurRadius: 5,
                                                         spreadRadius: 1)
                                                   ],
@@ -355,8 +352,10 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                                   ),
                                   SizedBox(height: 10),
                                   Divider(
-                                    thickness: 1,
-                                  ),
+                                      thickness: 1,
+                                      color:
+                                          ColorResources.getTextColor(context)
+                                              .withOpacity(0.4)),
                                   SizedBox(height: 10),
                                   Row(
                                       mainAxisAlignment:
@@ -568,8 +567,10 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                                       ]),
                                   SizedBox(height: 10),
                                   Divider(
-                                    thickness: 1,
-                                  ),
+                                      thickness: 1,
+                                      color:
+                                          ColorResources.getTextColor(context)
+                                              .withOpacity(0.4)),
                                   SizedBox(height: 10),
                                   Row(
                                       mainAxisAlignment:
@@ -582,8 +583,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                                                 fontSize: 18,
                                                 fontWeight: FontWeight.w600,
                                                 color: ColorResources
-                                                    .getScaffoldColor(
-                                                        context))),
+                                                    .getPrimaryColor(context))),
                                         Text(
                                             PriceConverter.convertPrice(context,
                                                 widget.orderModel!.orderAmount),
@@ -591,11 +591,14 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                                                 fontSize: 18,
                                                 fontWeight: FontWeight.w600,
                                                 color: ColorResources
-                                                    .getScaffoldColor(
-                                                        context))),
+                                                    .getPrimaryColor(context))),
                                       ]),
                                   SizedBox(height: 10),
-                                  Divider(thickness: 1),
+                                  Divider(
+                                      thickness: 1,
+                                      color:
+                                          ColorResources.getTextColor(context)
+                                              .withOpacity(0.4)),
                                   SizedBox(height: 10),
                                   (widget.orderModel!.orderNote != null &&
                                           widget.orderModel!.orderNote!
@@ -775,12 +778,14 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                               child: CustomButton(
                                 text: getTranslated('review', context),
                                 onTap: () {
-                                  Navigator.pushNamed(
-                                      context, Routes.getRateReviewRoute(),
-                                      arguments: RateReviewScreen(
-                                        orderDetailsList: order.orderDetails!,
-                                        // deliveryMan: order.trackModel!.deliveryMan!,
-                                      ));
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (BuildContext context) =>
+                                              RateReviewScreen(
+                                                orderDetailsList:
+                                                    order.orderDetails!,
+                                              )));
                                 },
                               ),
                             ),

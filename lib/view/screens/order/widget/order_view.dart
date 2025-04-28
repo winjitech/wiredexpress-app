@@ -14,6 +14,7 @@ import 'package:wired_express/utill/color_resources.dart';
 import 'package:wired_express/utill/dimensions.dart';
 import 'package:wired_express/utill/images.dart';
 import 'package:wired_express/utill/styles.dart';
+import 'package:wired_express/view/base/Custom_button.dart';
 import 'package:wired_express/view/base/no_data_screen.dart';
 import 'package:wired_express/view/screens/order/order_details_screen.dart';
 import 'package:wired_express/view/screens/order/widget/order_cancel_dialog.dart';
@@ -124,12 +125,9 @@ class _OrderViewState extends State<OrderView> {
                                                                               10),
                                                                   boxShadow: [
                                                                     BoxShadow(
-                                                                      color: Provider.of<ThemeProvider>(context)
-                                                                              .darkTheme
-                                                                          ? Colors
-                                                                              .black
-                                                                              .withOpacity(0.4)
-                                                                          : Colors.grey[300]!,
+                                                                      color: ColorResources
+                                                                          .getBoxShadow(
+                                                                              context),
                                                                       blurRadius:
                                                                           5,
                                                                       spreadRadius:
@@ -146,15 +144,21 @@ class _OrderViewState extends State<OrderView> {
                                                               child: Row(
                                                                   children: [
                                                                     ClipRRect(
-                                                                      borderRadius: BorderRadius.circular(10),
-                                                                      child: CachedNetworkImage(
-                                                                        height: 120,  width:
-                                                                      120,
-                                                                        fit: BoxFit.cover,
+                                                                      borderRadius:
+                                                                          BorderRadius.circular(
+                                                                              10),
+                                                                      child:
+                                                                          CachedNetworkImage(
+                                                                        height:
+                                                                            120,
+                                                                        width:
+                                                                            120,
+                                                                        fit: BoxFit
+                                                                            .cover,
                                                                         imageUrl:
-                                                                        '${Provider.of<SplashProvider>(context, listen: false).baseUrls!.productImageUrl}/${order.details![0].productDetails!.image}',
+                                                                            '${Provider.of<SplashProvider>(context, listen: false).baseUrls!.productImageUrl}/${order.details![0].productDetails!.image}',
                                                                         cacheKey:
-                                                                        '${Provider.of<SplashProvider>(context, listen: false).baseUrls!.productImageUrl}/${order.details![0].productDetails!.image}',
+                                                                            '${Provider.of<SplashProvider>(context, listen: false).baseUrls!.productImageUrl}/${order.details![0].productDetails!.image}',
                                                                       ),
                                                                     ),
                                                                     SizedBox(
@@ -173,7 +177,7 @@ class _OrderViewState extends State<OrderView> {
                                                                                   '${getTranslated('order_id', context)}:${order.id}',
                                                                                   maxLines: 1,
                                                                                   overflow: TextOverflow.ellipsis,
-                                                                                  style: TextStyle(color: ColorResources.getScaffoldColor(context), fontWeight: FontWeight.w500, fontSize: 16),
+                                                                                  style: TextStyle(color: ColorResources.getTextColor(context), fontWeight: FontWeight.w500, fontSize: 16),
                                                                                 ),
                                                                               ),
                                                                             ],
@@ -209,8 +213,8 @@ class _OrderViewState extends State<OrderView> {
                                                                           SizedBox(
                                                                               height: 1),
                                                                           order.detailsCount == 1
-                                                                              ? Text('${order.details![0].productDetails!.name}', maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(color: Colors.black54, fontWeight: FontWeight.w500, fontSize: 15))
-                                                                              : Text('${order.detailsCount} ${getTranslated('items', context)}', style: TextStyle(color: Colors.black54, fontWeight: FontWeight.w500, fontSize: 15)),
+                                                                              ? Text('${order.details![0].productDetails!.name}', maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(color: ColorResources.getTextColor(context).withOpacity(0.5), fontWeight: FontWeight.w500, fontSize: 15))
+                                                                              : Text('${order.detailsCount} ${getTranslated('items', context)}', style: TextStyle(color: ColorResources.getTextColor(context).withOpacity(0.5), fontWeight: FontWeight.w500, fontSize: 15)),
                                                                           SizedBox(
                                                                               height: 2),
                                                                           Text(
@@ -224,41 +228,41 @@ class _OrderViewState extends State<OrderView> {
                                                                                 fontWeight: FontWeight.w500,
                                                                                 fontSize: 15),
                                                                           ),
+
                                                                           if (order.orderStatus == "out_for_delivery" ||
                                                                               order.orderStatus == "processing")
-                                                                            TextButton(
-                                                                              style: TextButton.styleFrom(
-                                                                                padding: EdgeInsets.zero,
-                                                                                backgroundColor: ColorResources.getScaffoldColor(context),
-                                                                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40)),
-                                                                                minimumSize: Size(MediaQuery.of(context).size.width, 38),
-                                                                              ),
-                                                                              onPressed: () {
-                                                                                orderProvider.trackOrder(order.id.toString(), order, context, true);
-                                                                                Navigator.push(
-                                                                                  context,
-                                                                                  MaterialPageRoute(
-                                                                                    builder: (context) => OrderTrackingScreen(
-                                                                                      orderID: order.id.toString(),
-                                                                                      track: order,
-                                                                                    ),
-                                                                                  ),
-                                                                                );
-                                                                              },
-                                                                              child: Text(
+                                                                          CustomButton(
+                                                                            text:
                                                                                 getTranslated('track_order', context),
-                                                                                style: TextStyle(color: Colors.white),
-                                                                              ),
-                                                                            ),
+                                                                            height:
+                                                                                35,
+                                                                            textSize:
+                                                                                16,
+                                                                            onTap:
+                                                                                () {
+                                                                              orderProvider.trackOrder(order.id.toString(), order, context, true);
+                                                                              Navigator.push(
+                                                                                context,
+                                                                                MaterialPageRoute(
+                                                                                  builder: (context) => OrderTrackingScreen(
+                                                                                    orderID: order.id.toString(),
+                                                                                    track: order,
+                                                                                  ),
+                                                                                ),
+                                                                              );
+                                                                            },
+                                                                          ),
+
                                                                           !orderProvider.showCancelled
                                                                               ? order.orderStatus == 'pending'
-                                                                                  ? MaterialButton(
-                                                                                      padding: EdgeInsets.all(0),
-                                                                                      elevation: 0,
-                                                                                      minWidth: MediaQuery.of(context).size.width,
-                                                                                      color: Colors.grey[200],
-                                                                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40)),
-                                                                                      onPressed: () => showDialog(
+                                                                                  ? CustomButton(
+                                                                                      text: getTranslated('cancel_order', context),
+                                                                                      height: 35,
+                                                                                      textSize: 16,
+                                                                                      backgroundColor: Colors.transparent,
+                                                                                      textColor: Colors.red,
+                                                                                      borderColor: Colors.red,
+                                                                                      onTap: () => showDialog(
                                                                                           context: context,
                                                                                           barrierDismissible: false,
                                                                                           builder: (context) => OrderCancelDialog(
@@ -271,10 +275,6 @@ class _OrderViewState extends State<OrderView> {
                                                                                                   }
                                                                                                 },
                                                                                               )),
-                                                                                      child: Text(
-                                                                                        getTranslated('cancel_order', context),
-                                                                                        style: TextStyle(color: Colors.black),
-                                                                                      ),
                                                                                     )
                                                                                   : SizedBox()
                                                                               : Center(
@@ -288,7 +288,7 @@ class _OrderViewState extends State<OrderView> {
                                                                                     borderRadius: BorderRadius.circular(10),
                                                                                   ),
                                                                                   child: Text(getTranslated('order_cancelled', context), style: rubikBold.copyWith(color: ColorResources.getPrimaryColor(context))),
-                                                                                ))
+                                                                                )),
                                                                         ]))
                                                                   ])))),
                                                   SizedBox(height: 15)

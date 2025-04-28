@@ -15,7 +15,6 @@ import 'package:wired_express/view/base/custom_text_field.dart';
 import 'package:wired_express/view/screens/auth/login_screen.dart';
 import 'package:provider/provider.dart';
 
-
 class CreateNewPasswordScreen extends StatelessWidget {
   final String? resetToken;
   final String? email;
@@ -51,7 +50,9 @@ class CreateNewPasswordScreen extends StatelessWidget {
                           getTranslated('enter_password_to_create', context),
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                              fontWeight: FontWeight.w500, fontSize: 23),
+                              color: ColorResources.getTextColor(context),
+                              fontWeight: FontWeight.w500,
+                              fontSize: 23),
                         ),
                       ),
                       Padding(
@@ -65,7 +66,9 @@ class CreateNewPasswordScreen extends StatelessWidget {
                             Text(
                               getTranslated('new_password', context),
                               style: TextStyle(
-                                  fontWeight: FontWeight.w500, fontSize: 19),
+                                  color: ColorResources.getTextColor(context),
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 19),
                             ),
                             SizedBox(height: Dimensions.PADDING_SIZE_SMALL),
                             CustomTextField(
@@ -73,6 +76,8 @@ class CreateNewPasswordScreen extends StatelessWidget {
                               isPassword: true,
                               focusNode: _passwordFocus,
                               nextFocus: _confirmPasswordFocus,
+                              fillColor:
+                                  ColorResources.getTextFieldFillColor(context),
                               isShowSuffixIcon: true,
                               inputAction: TextInputAction.next,
                               controller: _passwordController,
@@ -82,13 +87,17 @@ class CreateNewPasswordScreen extends StatelessWidget {
                             Text(
                               getTranslated('confirm_password', context),
                               style: TextStyle(
-                                  fontWeight: FontWeight.w500, fontSize: 19),
+                                  color: ColorResources.getTextColor(context),
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 19),
                             ),
                             SizedBox(height: Dimensions.PADDING_SIZE_SMALL),
                             CustomTextField(
                               hintText: getTranslated('password_hint', context),
                               isPassword: true,
                               isShowSuffixIcon: true,
+                              fillColor:
+                                  ColorResources.getTextFieldFillColor(context),
                               focusNode: _confirmPasswordFocus,
                               controller: _confirmPasswordController,
                               inputAction: TextInputAction.done,
@@ -177,7 +186,9 @@ class CreateNewPasswordScreen extends StatelessWidget {
                                       }
                                     },
                                   )
-                                : CustomCircularIndicator(color:ColorResources.getScaffoldColor(context)),
+                                : CustomCircularIndicator(
+                                    color: ColorResources.getPrimaryColor(
+                                        context)),
                           ],
                         ),
                       )

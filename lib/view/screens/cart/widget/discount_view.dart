@@ -57,8 +57,10 @@ class DiscountView extends StatelessWidget {
             ),
           SizedBox(height: 15),
           Text(getTranslated('promo_code', context),
-              style:
-                  const TextStyle(fontWeight: FontWeight.w600, fontSize: 20)),
+              style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 20,
+                  color: ColorResources.getTextColor(context))),
           const SizedBox(height: 10),
           Row(
             children: [
@@ -66,6 +68,7 @@ class DiscountView extends StatelessWidget {
                 child: CustomTextField(
                   hintText: getTranslated('enter_promo_code', context),
                   controller: couponController,
+                  fillColor: ColorResources.getTextFieldFillColor(context),
                   inputType: TextInputType.text,
                 ),
               ),
@@ -107,20 +110,21 @@ class DiscountView extends StatelessWidget {
                         getTranslated('enter_a_Coupon_code', context), context);
                   }
                 },
-                color: ColorResources.getScaffoldColor(context),
+                color: ColorResources.getPrimaryColor(context),
                 child: couponProvider.couponDiscountAmount! <= 0
                     ? !couponProvider.applyCouponLoading! ||
                             !couponProvider.removeCouponLoading!
-                        ? Text(getTranslated('enter', context),
-                            style: rubikMedium.copyWith(color: Colors.white))
-                        : CustomCircularIndicator(color: Colors.white)
-                    : const Icon(Icons.clear, color: Colors.white),
+                        ? Text(getTranslated('apply', context),
+                            style: rubikMedium.copyWith(
+                                color: ColorResources.getCardColor(context)))
+                        : CustomCircularIndicator(
+                            color: ColorResources.getCardColor(context))
+                    : Icon(Icons.clear,
+                        color: ColorResources.getCardColor(context)),
               ),
             ],
           ),
-          SizedBox(
-            height: 15,
-          ),
+          SizedBox(height: 15),
         ],
       );
     });

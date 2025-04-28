@@ -69,7 +69,7 @@ class MessageBubble extends StatelessWidget {
                         ),
                         color: isMe
                             ? ColorResources.getHintColor(context)
-                            : Color(0xffffe5ee),
+                            : ColorResources.getTextColor(context).withOpacity(0.4),
                       ),
                       child: Column(
                         crossAxisAlignment: isMe

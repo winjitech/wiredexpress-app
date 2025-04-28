@@ -278,8 +278,7 @@ class _AddressBottomSheetState extends State<AddressBottomSheet> {
                                   ],
                                 ),
                               )
-                        : CustomCircularIndicator(
-                            color: ColorResources.getScaffoldColor(context));
+                        : CustomCircularIndicator();
                   },
                 ),
                 const SizedBox(height: 20),

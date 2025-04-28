@@ -35,7 +35,7 @@ class CustomTextField extends StatefulWidget {
   final String? labelText;
 
   CustomTextField({
-    this.hintText ,
+    this.hintText,
     this.labelText,
     this.controller,
     this.focusNode,
@@ -128,9 +128,10 @@ class _CustomTextFieldState extends State<CustomTextField> {
         ),
         isDense: true, labelText: widget.labelText,
 
-        labelStyle: TextStyle(fontSize: 13, color: ColorResources.COLOR_GREY_CHATEAU),
-        hintText: widget.hintText??getTranslated('write_something', context),
-        fillColor: Colors.grey[150],
+        labelStyle:
+            TextStyle(fontSize: 13, color: ColorResources.COLOR_GREY_CHATEAU),
+        hintText: widget.hintText ?? getTranslated('write_something', context),
+        fillColor: widget.fillColor ?? Colors.grey[150],
         // fillColor: Provider.of<ThemeProvider>(context, listen: false).darkTheme
         //     ? Colors.black
         //     : Colors.white,

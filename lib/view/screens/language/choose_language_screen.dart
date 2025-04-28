@@ -25,6 +25,7 @@ class ChooseLanguageScreen extends StatelessWidget {
         .initializeAllLanguages(context);
 
     return Scaffold(
+      backgroundColor: ColorResources.getScaffoldBackgroundColor(context!),
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -33,15 +34,14 @@ class ChooseLanguageScreen extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(left: 5, top: 5),
               child: Text(
-                getTranslated('choose_the_language', context)!,
-                style: Theme.of(context)
-                    .textTheme
-                    .displaySmall!
-                    .copyWith(fontSize: 22),
+                getTranslated('choose_the_language', context),
+                style: TextStyle(
+                    color: ColorResources.getTextColor(context),
+                    fontWeight: FontWeight.w600,
+                    fontSize: 18),
               ),
             ),
             const SizedBox(height: 20),
-
             Consumer<LanguageProvider>(
                 builder: (context, languageProvider, child) => Expanded(
                     child: ListView.builder(
@@ -57,8 +57,6 @@ class ChooseLanguageScreen extends StatelessWidget {
                       padding: const EdgeInsets.only(
                           left: 15, right: 15, bottom: 15),
                       child: CustomButton(
-                        backgroundColor:
-                            ColorResources.getScaffoldColor(context),
                         text: getTranslated('save', context),
                         onTap: () {
                           if (languageProvider.languages.isNotEmpty &&
@@ -102,25 +100,23 @@ class ChooseLanguageScreen extends StatelessWidget {
       required LanguageProvider languageProvider,
       int? index}) {
     return GestureDetector(
-      onTap: () {
-        languageProvider.changeSelectIndex(index);
-      },
+      onTap: () => languageProvider.changeSelectIndex(index),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 20),
         decoration: BoxDecoration(
           color: languageProvider.selectIndex == index
-              ? ColorResources.getScaffoldColor(context).withOpacity(.15)
+              ? ColorResources.getTextColor(context).withOpacity(0.1)
               : null,
           border: Border(
               top: BorderSide(
                   width: languageProvider.selectIndex == index ? 1.0 : 0.0,
                   color: languageProvider.selectIndex == index
-                      ? ColorResources.getScaffoldColor(context)
+                      ? ColorResources.getTextColor(context).withOpacity(0.4)
                       : Colors.transparent),
               bottom: BorderSide(
                   width: languageProvider.selectIndex == index ? 1.0 : 0.0,
                   color: languageProvider.selectIndex == index
-                      ? ColorResources.getScaffoldColor(context)
+                      ? ColorResources.getTextColor(context).withOpacity(0.4)
                       : Colors.transparent)),
         ),
         child: Container(
@@ -128,12 +124,13 @@ class ChooseLanguageScreen extends StatelessWidget {
           decoration: BoxDecoration(
             border: Border(
                 bottom: BorderSide(
-                    width: 1.0,
-                    color: languageProvider.selectIndex == index
-                        ? Colors.transparent
-                        : (languageProvider.selectIndex! - 1) == (index! - 1)
-                            ? Colors.transparent
-                            : ColorResources.getScaffoldColor(context))),
+              width: 1.0,
+              color: languageProvider.selectIndex == index
+                  ? Colors.transparent
+                  : (languageProvider.selectIndex! - 1) == (index! - 1)
+                      ? Colors.transparent
+                      : ColorResources.getTextColor(context).withOpacity(0.4),
+            )),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -142,12 +139,12 @@ class ChooseLanguageScreen extends StatelessWidget {
                 children: [
                   Image.asset(languageModel.imageUrl!, width: 34, height: 34),
                   const SizedBox(width: 30),
-                  Text(
-                    languageModel.languageName!,
-                    style: Theme.of(context).textTheme.displayMedium!.copyWith(
-                        fontSize: 17,
-                        color: Theme.of(context).textTheme.bodyLarge!.color),
-                  ),
+                  Text(languageModel.languageName!,
+                      style:
+                          Theme.of(context).textTheme.displayMedium!.copyWith(
+                                fontSize: 17,
+                                color: ColorResources.getTextColor(context),
+                              )),
                 ],
               ),
               languageProvider.selectIndex == index
@@ -155,7 +152,8 @@ class ChooseLanguageScreen extends StatelessWidget {
                       Images.done,
                       width: 17,
                       height: 17,
-                      color: ColorResources.getScaffoldColor(context),
+                      color:
+                          ColorResources.getTextColor(context).withOpacity(0.4),
                     )
                   : const SizedBox.shrink()
             ],

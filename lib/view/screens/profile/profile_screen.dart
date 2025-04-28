@@ -667,13 +667,13 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   FocusNode? _firstNameFocus;
   FocusNode? _lastNameFocus;
- // FocusNode? _emailFocus;
+  // FocusNode? _emailFocus;
   FocusNode? _phoneNumberFocus;
   FocusNode? _passwordFocus;
   FocusNode? _confirmPasswordFocus;
   TextEditingController? _firstNameController;
   TextEditingController? _lastNameController;
- // TextEditingController? _emailController;
+  // TextEditingController? _emailController;
   TextEditingController? _phoneNumberController;
   TextEditingController? _passwordController;
   TextEditingController? _confirmPasswordController;
@@ -695,13 +695,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     _firstNameFocus = FocusNode();
     _lastNameFocus = FocusNode();
-   // _emailFocus = FocusNode();
+    // _emailFocus = FocusNode();
     _phoneNumberFocus = FocusNode();
     _passwordFocus = FocusNode();
     _confirmPasswordFocus = FocusNode();
     _firstNameController = TextEditingController();
     _lastNameController = TextEditingController();
-   // _emailController = TextEditingController();
+    // _emailController = TextEditingController();
     _phoneNumberController = TextEditingController();
     _passwordController = TextEditingController();
     _confirmPasswordController = TextEditingController();
@@ -713,7 +713,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       _firstNameController!.text = _userInfoModel.fName ?? '';
       _lastNameController!.text = _userInfoModel.lName ?? '';
       _phoneNumberController!.text = _userInfoModel.phone ?? '';
-     // _emailController!.text = _userInfoModel.email ?? '';
+      // _emailController!.text = _userInfoModel.email ?? '';
     }
   }
 
@@ -770,10 +770,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                     .PADDING_SIZE_LARGE),
                                             alignment: Alignment.center,
                                             decoration: BoxDecoration(
-                                              color: ColorResources.COLOR_WHITE,
+                                              color: ColorResources
+                                                  .getTextFieldFillColor(
+                                                      context),
                                               border: Border.all(
                                                   color: ColorResources
-                                                      .COLOR_GREY_CHATEAU,
+                                                          .getTextColor(context)
+                                                      .withOpacity(0.2),
                                                   width: 3),
                                               shape: BoxShape.circle,
                                             ),
@@ -824,8 +827,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                                             .person,
                                                                         size:
                                                                             30,
-                                                                        color: Colors
-                                                                            .black54)),
+                                                                        color: ColorResources.getTextColor(context)
+                                                                            .withOpacity(0.4))),
                                                   ),
                                                   Positioned(
                                                     bottom: 15,
@@ -842,13 +845,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                             shape:
                                                                 BoxShape.circle,
                                                             color: ColorResources
-                                                                .BORDER_COLOR,
+                                                                .getTextFieldFillColor(
+                                                                    context),
                                                             border: Border.all(
-                                                                width: 2,
-                                                                color: ColorResources
-                                                                    .COLOR_GREY_CHATEAU),
+                                                              width: 2,
+                                                              color: ColorResources
+                                                                      .getTextColor(
+                                                                          context)
+                                                                  .withOpacity(
+                                                                      0.4),
+                                                            ),
                                                           ),
                                                           child: Icon(
+                                                              color: ColorResources
+                                                                      .getTextColor(
+                                                                          context)
+                                                                  .withOpacity(
+                                                                      0.7),
                                                               Icons.edit,
                                                               size: 13),
                                                         )),
@@ -858,21 +871,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                             ),
                                           ),
 
-                                          SizedBox(height: 28),
+                                          SizedBox(height: 35),
 
-                                          SizedBox(
-                                              height: Dimensions
-                                                  .PADDING_SIZE_LARGE),
-                                          // for first name section
                                           Text(
                                             getTranslated(
                                                 'first_name', context),
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .titleMedium!
-                                                .copyWith(
-                                                  fontWeight: FontWeight.w400,
-                                                ),
+                                            style: TextStyle(
+                                                color:
+                                                    ColorResources.getTextColor(
+                                                        context),
+                                                fontWeight: FontWeight.w500,
+                                                fontSize: 16),
                                           ),
                                           SizedBox(
                                               height: Dimensions
@@ -884,6 +893,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                             focusNode: _firstNameFocus,
                                             nextFocus: _lastNameFocus,
                                             inputType: TextInputType.name,
+                                            fillColor: ColorResources
+                                                .getTextFieldFillColor(context),
                                             capitalization:
                                                 TextCapitalization.words,
                                           ),
@@ -894,18 +905,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                           // for last name section
                                           Text(
                                             getTranslated('last_name', context),
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .titleMedium!
-                                                .copyWith(
-                                                  fontWeight: FontWeight.w400,
-                                                ),
+                                            style: TextStyle(
+                                                color:
+                                                    ColorResources.getTextColor(
+                                                        context),
+                                                fontWeight: FontWeight.w500,
+                                                fontSize: 16),
                                           ),
                                           SizedBox(
                                               height: Dimensions
                                                   .PADDING_SIZE_SMALL),
                                           CustomTextField(
-                                            hintText: '',
+                                            hintText: '',   fillColor: ColorResources
+                                              .getTextFieldFillColor(context),
                                             isShowBorder: false,
                                             controller: _lastNameController,
                                             focusNode: _lastNameFocus,
@@ -918,36 +930,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                               height: Dimensions
                                                   .PADDING_SIZE_LARGE),
 
-                                          // for email section
-                                          // Text(
-                                          //   getTranslated('email', context),
-                                          //   style: Theme.of(context)
-                                          //       .textTheme
-                                          //       .titleMedium!
-                                          //       .copyWith(
-                                          //         fontWeight: FontWeight.w400,
-                                          //       ),
-                                          // ),
-                                          // SizedBox(
-                                          //     height: Dimensions
-                                          //         .PADDING_SIZE_SMALL),
-                                          // CustomTextField(
-                                          //   hintText: getTranslated(
-                                          //       'demo_gmail', context),
-                                          //   isShowBorder: false,
-                                          //   controller: _emailController,
-                                          //   focusNode: _emailFocus,
-                                          //   nextFocus: _phoneNumberFocus,
-                                          //   inputType:
-                                          //       TextInputType.emailAddress,
-                                          // ),
-                                          SizedBox(
-                                              height: Dimensions
-                                                  .PADDING_SIZE_LARGE),
 
-                                          SizedBox(
-                                              height: Dimensions
-                                                  .PADDING_SIZE_LARGE),
                                         ],
                                       ),
                                     ),
@@ -999,12 +982,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                               profileProvider
                                                   .getUserInfo(context);
                                               showCustomSnackBar(
-                                                  getTranslated('profile_updated', context), context,
+                                                  getTranslated(
+                                                      'profile_updated',
+                                                      context),
+                                                  context,
                                                   isError: false);
                                               Navigator.pop(context);
                                             } else {
                                               showCustomSnackBar(
-                                                  getTranslated('something_went_wrong', context),
+                                                  getTranslated(
+                                                      'something_went_wrong',
+                                                      context),
                                                   context,
                                                   isError: true);
                                             }
@@ -1119,11 +1107,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       ),
                                     ),
                                   )
-                                : CustomCircularIndicator(color:ColorResources.getScaffoldColor(context)),
+                                : CustomCircularIndicator(),
                           ],
                         ),
                       )
-                    : CustomCircularIndicator(color:ColorResources.getScaffoldColor(context));
+                    : CustomCircularIndicator();
               },
             )
           : NotLoggedInScreen(),

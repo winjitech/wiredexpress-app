@@ -86,6 +86,13 @@ class _ChatScreenState extends State<ChatScreen> {
                         ),
                   Expanded(
                     child: RefreshIndicator(
+                      key: _refreshIndicatorKey,
+                      displacement: 0,
+                      color: ColorResources.COLOR_WHITE,
+                      backgroundColor: ColorResources.getPrimaryColor(context),
+                      onRefresh: () {
+                        return chat.refresh(context, true);
+                      },
                       child: chat.chatList != null
                           ? chat.chatList!.length > 0
                               ? Scrollbar(
@@ -136,13 +143,6 @@ class _ChatScreenState extends State<ChatScreen> {
                                 ),
                               ),
                             ),
-                      key: _refreshIndicatorKey,
-                      displacement: 0,
-                      color: ColorResources.COLOR_WHITE,
-                      backgroundColor: ColorResources.getPrimaryColor(context),
-                      onRefresh: () {
-                        return chat.refresh(context, true);
-                      },
                     ),
                   ),
 

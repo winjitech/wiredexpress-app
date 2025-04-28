@@ -104,17 +104,19 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                                         children: [
                                           Text(
                                             getTranslated('password', context),
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .titleMedium!
-                                                .copyWith(
-                                                  fontWeight: FontWeight.w400,
-                                                ),
+                                            style: TextStyle(
+                                                color:
+                                                    ColorResources.getTextColor(
+                                                        context),
+                                                fontWeight: FontWeight.w500,
+                                                fontSize: 16),
                                           ),
                                           SizedBox(
                                               height: Dimensions
                                                   .PADDING_SIZE_SMALL),
                                           CustomTextField(
+                                            fillColor: ColorResources
+                                                .getTextFieldFillColor(context),
                                             hintText: getTranslated(
                                                 'password_hint', context),
                                             isShowBorder: false,
@@ -130,17 +132,19 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                                           Text(
                                             getTranslated(
                                                 'confirm_password', context),
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .titleMedium!
-                                                .copyWith(
-                                                  fontWeight: FontWeight.w400,
-                                                ),
+                                            style: TextStyle(
+                                                color:
+                                                    ColorResources.getTextColor(
+                                                        context),
+                                                fontWeight: FontWeight.w500,
+                                                fontSize: 16),
                                           ),
                                           SizedBox(
                                               height: Dimensions
                                                   .PADDING_SIZE_SMALL),
                                           CustomTextField(
+                                            fillColor: ColorResources
+                                                .getTextFieldFillColor(context),
                                             hintText: getTranslated(
                                                 'password_hint', context),
                                             isShowBorder: false,
@@ -279,11 +283,11 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                                       ),
                                     ),
                                   )
-                                : CustomCircularIndicator(color:ColorResources.getScaffoldColor(context)),
+                                : CustomCircularIndicator(),
                           ],
                         ),
                       )
-                    : CustomCircularIndicator(color:ColorResources.getScaffoldColor(context));
+                    : CustomCircularIndicator();
               },
             )
           : NotLoggedInScreen(),

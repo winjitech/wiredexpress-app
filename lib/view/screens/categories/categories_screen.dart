@@ -76,7 +76,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
             },
             icon: Icon(
               Icons.close,
-              color: Colors.white,
+              color: ColorResources.getTextColor(context),
               size: 36,
             )),
       )),
@@ -84,7 +84,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
       controller: advancedDrawerController,
       animationCurve: Curves.easeInOutExpo,
       animationDuration: Duration(milliseconds: 400),
-      backdropColor: ColorResources.getScaffoldColor(context),
+      backdropColor: ColorResources.getTextFieldFillColor(context),
       drawer: DrawerScreen(),
       child: Scaffold(
         backgroundColor: ColorResources.getScaffoldBackgroundColor(context!),

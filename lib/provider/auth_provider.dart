@@ -379,11 +379,14 @@ class CustomAuthProvider with ChangeNotifier {
     return authRepo!.isLoggedIn();
   }
 
+  bool? _isLogoutLoading = false;
+
+  bool? get isLogoutLoading => _isLogoutLoading;
   Future<bool?> clearSharedData() async {
-    _isLoading = true;
+    _isLogoutLoading = true;
     notifyListeners();
     bool? _isSuccess = await authRepo!.clearSharedData();
-    _isLoading = false;
+    _isLogoutLoading = false;
     notifyListeners();
     return _isSuccess;
   }

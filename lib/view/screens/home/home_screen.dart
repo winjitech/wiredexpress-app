@@ -145,7 +145,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final advancedDrawerController = AdvancedDrawerController();
   @override
   Widget build(BuildContext context) {
-    final ScrollController _scrollController = ScrollController();
+    final ScrollController scrollController = ScrollController();
 
     return AdvancedDrawer(
         rtlOpening: false,
@@ -155,16 +155,15 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Padding(
                 padding: const EdgeInsets.all(15),
                 child: IconButton(
-                    onPressed: () {
-                      closeDrawer();
-                    },
-                    icon: const Icon(Icons.close,
-                        color: Colors.white, size: 36)))),
+                    onPressed: () => closeDrawer(),
+                    icon: Icon(Icons.close,
+                        color: ColorResources.getTextColor(context),
+                        size: 36)))),
         childDecoration: BoxDecoration(borderRadius: BorderRadius.circular(40)),
         controller: advancedDrawerController,
         animationCurve: Curves.easeInOutExpo,
         animationDuration: const Duration(milliseconds: 400),
-        backdropColor: ColorResources.getScaffoldColor(context),
+        backdropColor: ColorResources.getTextFieldFillColor(context),
         drawer: DrawerScreen(),
         child: Scaffold(
             backgroundColor: ColorResources.getScaffoldBackgroundColor(context),
@@ -180,7 +179,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 padding: const EdgeInsets.all(15),
                 child: CustomScrollView(
                     physics: const BouncingScrollPhysics(),
-                    controller: _scrollController,
+                    controller: scrollController,
                     slivers: [
                       SliverToBoxAdapter(
                         child: Consumer<BannerProvider>(
@@ -258,11 +257,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                       borderRadius: BorderRadius.circular(10),
                                       boxShadow: [
                                         BoxShadow(
-                                            color: Provider.of<ThemeProvider>(
-                                                        context)
-                                                    .darkTheme
-                                                ? Colors.black.withOpacity(0.4)
-                                                : Colors.grey[300]!,
+                                            color: ColorResources.getBoxShadow(
+                                                context),
                                             blurRadius: 5,
                                             spreadRadius: 1,
                                             offset: const Offset(0, 2))
@@ -289,7 +285,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               : FilterWidget(categoryProvider),
                           const SizedBox(height: 20),
                           CategoryProductView(
-                            scrollController: _scrollController,
+                            scrollController: scrollController,
                           ),
                         ]);
                       })),

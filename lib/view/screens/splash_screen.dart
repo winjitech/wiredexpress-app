@@ -8,6 +8,7 @@ import 'package:wired_express/provider/category_provider.dart';
 import 'package:wired_express/provider/location_provider.dart';
 import 'package:wired_express/provider/profile_provider.dart';
 import 'package:wired_express/provider/splash_provider.dart';
+import 'package:wired_express/utill/color_resources.dart';
 import 'package:wired_express/view/screens/address/add_new_address_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:wired_express/view/screens/language/choose_language_screen.dart';
@@ -181,21 +182,6 @@ class _SplashScreenState extends State<SplashScreen> {
             ],
           ));
         }));
-    // return Scaffold(
-    //     backgroundColor: ColorResources.getPrimaryColor(context!),
-    //     key: _globalKey,
-    //     body: Consumer<SplashProvider>(builder: (context, splash, child) {
-    //       return Center(
-    //           child: Column(
-    //             mainAxisSize: MainAxisSize.min,
-    //             children: [
-    //               Image.asset(
-    //                   Images.logo_3,
-    //                   // Images.welcome_logo,
-    //
-    //                   height: 175),
-    //             ],
-    //           ));
-    //     }));
+
   }
 }

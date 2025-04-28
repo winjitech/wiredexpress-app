@@ -71,9 +71,9 @@ class _CartScreenState extends State<CartScreen> {
         padding: const EdgeInsets.all(15),
         child: IconButton(
             onPressed: () => closeDrawer(),
-            icon: const Icon(
+            icon: Icon(
               Icons.close,
-              color: Colors.white,
+              color: ColorResources.getTextColor(context),
               size: 36,
             )),
       )),
@@ -81,7 +81,7 @@ class _CartScreenState extends State<CartScreen> {
       controller: advancedDrawerController,
       animationCurve: Curves.easeInOutExpo,
       animationDuration: const Duration(milliseconds: 400),
-      backdropColor: ColorResources.getScaffoldColor(context),
+      backdropColor: ColorResources.getTextFieldFillColor(context),
       drawer: DrawerScreen(),
       child: Scaffold(
         backgroundColor: ColorResources.getScaffoldBackgroundColor(context),
@@ -236,8 +236,8 @@ class _CartScreenState extends State<CartScreen> {
                                 cart.quantity!);
                       }
                       double taxAmount = double.parse(Helpers.formatTextWithNum(
-                              PriceConverter.convertPercentageToAmount(
-                                      finalPriceWithQuantity, product.tax!)
+                              PriceConverter.calculateTaxAmount(
+                                      finalPriceWithQuantity, product.tax!, product.taxType!)
                                   .toString())) *
                           cart.quantity!;
 

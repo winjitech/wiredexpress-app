@@ -12,11 +12,12 @@ import 'package:wired_express/view/screens/drawer/drawer_screen.dart';
 class CustomMainAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String? title;
   final bool? isBackButtonExist;
-  final bool? fromCategory ;
+  final bool? fromCategory;
   final VoidCallback? onMenuPressed;
   CustomMainAppBar(
       {@required this.title,
-      this.isBackButtonExist = true,this.fromCategory= false,
+      this.isBackButtonExist = true,
+      this.fromCategory = false,
       this.onMenuPressed});
 
   @override
@@ -31,27 +32,27 @@ class CustomMainAppBar extends StatelessWidget implements PreferredSizeWidget {
       leading: Padding(
         padding: const EdgeInsets.only(left: 15),
         child: IconButton(
-          icon: Icon(
-            Icons.menu,
-            size: 30,
-          ),
+          icon: Icon(Icons.menu,
+              size: 30, color: ColorResources.getTextColor(context)),
           color: ColorResources.getTextColor(context),
           onPressed: onMenuPressed,
         ),
       ),
       actions: [
-       fromCategory==true?SizedBox(): IconButton(
-            onPressed: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (BuildContext context) => CategoriesScreen()));
-            },
-            icon: Image.asset(
-              Images.filterIcon,
-              height: 80,
-              width: 80,
-            )),
+        fromCategory == true
+            ? SizedBox()
+            : IconButton(
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (BuildContext context) =>
+                              CategoriesScreen()));
+                },
+                icon: Image.asset(Images.filterIcon,
+                    height: 80,
+                    width: 80,
+                    color: ColorResources.getTextColor(context))),
         Padding(
           padding: const EdgeInsets.only(right: 15),
           child: IconButton(
@@ -62,11 +63,10 @@ class CustomMainAppBar extends StatelessWidget implements PreferredSizeWidget {
                         builder: (BuildContext context) =>
                             DashboardScreen(pageIndex: 1)));
               },
-              icon: Image.asset(
-                Images.cartIcon,
-                height: 80,
-                width: 80,
-              )),
+              icon: Image.asset(Images.cartIcon,
+                  height: 80,
+                  width: 80,
+                  color: ColorResources.getTextColor(context))),
         ),
       ],
       backgroundColor: ColorResources.getScaffoldBackgroundColor(context),

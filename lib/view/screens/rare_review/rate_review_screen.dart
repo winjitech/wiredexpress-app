@@ -39,7 +39,7 @@ class _RateReviewScreenState extends State<RateReviewScreen>
         Center(
           child: Container(
             width: MediaQuery.of(context).size.width,
-            color: Colors.white,
+            color: ColorResources.getScaffoldBackgroundColor(context),
             child: TabBar(
               controller: _tabController,
               labelColor: ColorResources.getTextColor(context),

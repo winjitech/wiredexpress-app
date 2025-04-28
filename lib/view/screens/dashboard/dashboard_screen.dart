@@ -71,33 +71,39 @@ class _DashboardScreenState extends State<DashboardScreen> {
         backgroundColor: ColorResources.getScaffoldBackgroundColor(context!),
         key: _scaffoldKey,
         bottomNavigationBar: ResponsiveHelper.isMobile(context)
-            ? BottomNavigationBar(
-                backgroundColor:
-                    ColorResources.getScaffoldBackgroundColor(context),
-                selectedItemColor: ColorResources.getPrimaryColor(context),
-                unselectedItemColor:
-                    Provider.of<ThemeProvider>(context).darkTheme
-                        ? Colors.white
-                        : Colors.grey[700],
-                showUnselectedLabels: true,
-                currentIndex: _pageIndex,
-                type: BottomNavigationBarType.fixed,
-                items: [
-                  _barItem(
-                      Icons.home_outlined, getTranslated('home', context), 0),
-                  _barItem(
-                      Icons.shopping_cart, getTranslated('cart', context), 1),
-                  _barItem(
-                      Icons.shopping_bag, getTranslated('order', context), 2),
-                  _barItem(
-                      Icons.favorite, getTranslated('favourite', context), 3),
-                  _barItem(Icons.person_outline_rounded,
-                      getTranslated('menu', context), 4)
-                ],
-                onTap: (int index) {
-                  _setPage(index);
-                },
-              )
+            ? Container(decoration: BoxDecoration(
+            border: Border(
+        top: BorderSide(width: 0.5, color: ColorResources.getBorderColor(context) ),
+        ),
+      ),
+              child: BottomNavigationBar(
+                  backgroundColor:
+                      ColorResources.getScaffoldBackgroundColor(context),
+                  selectedItemColor: ColorResources.getPrimaryColor(context),
+                  unselectedItemColor:
+                      Provider.of<ThemeProvider>(context).darkTheme
+                          ? Colors.white
+                          : Colors.grey[700],
+                  showUnselectedLabels: true,
+                  currentIndex: _pageIndex,
+                  type: BottomNavigationBarType.fixed,
+                  items: [
+                    _barItem(
+                        Icons.home_outlined, getTranslated('home', context), 0),
+                    _barItem(
+                        Icons.shopping_cart, getTranslated('cart', context), 1),
+                    _barItem(
+                        Icons.shopping_bag, getTranslated('order', context), 2),
+                    _barItem(
+                        Icons.favorite, getTranslated('favourite', context), 3),
+                    _barItem(Icons.person_outline_rounded,
+                        getTranslated('menu', context), 4)
+                  ],
+                  onTap: (int index) {
+                    _setPage(index);
+                  },
+                ),
+            )
             : SizedBox(),
         body: PageView.builder(
           controller: _pageController,

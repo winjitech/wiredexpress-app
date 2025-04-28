@@ -62,7 +62,9 @@ class FilterWidget extends StatelessWidget {
       child: Text(
         text.toUpperCase(),
         style: TextStyle(
-          color: isSelected ? Colors.white : Colors.black,
+          color: isSelected
+              ? ColorResources.getCardColor(context)
+              : ColorResources.getTextColor(context),
           fontSize: 16,
         ),
       ),
@@ -71,8 +73,8 @@ class FilterWidget extends StatelessWidget {
         borderRadius: BorderRadius.circular(40),
       ),
       color: isSelected
-          ? ColorResources.getScaffoldColor(context)
-          : Colors.grey[350],
+          ? ColorResources.getPrimaryColor(context)
+          : ColorResources.getTextFieldFillColor(context),
     );
   }
 }

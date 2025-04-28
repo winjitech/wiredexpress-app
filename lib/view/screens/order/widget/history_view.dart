@@ -124,11 +124,8 @@ class _HistoryViewState extends State<HistoryView> {
                                                                               10),
                                                                   boxShadow: [
                                                                     BoxShadow(
-                                                                        color: Provider.of<ThemeProvider>(context).darkTheme
-                                                                            ? Colors.black.withOpacity(
-                                                                                0.4)
-                                                                            : Colors.grey[
-                                                                                300]!,
+                                                                        color: ColorResources.getBoxShadow(context),
+
                                                                         blurRadius:
                                                                             5,
                                                                         spreadRadius:
@@ -172,7 +169,7 @@ class _HistoryViewState extends State<HistoryView> {
                                                                             children: [
                                                                           Text(
                                                                               '${getTranslated('order_id', context)}:${order.id}',
-                                                                              style: TextStyle(color: ColorResources.getScaffoldColor(context), fontWeight: FontWeight.w500, fontSize: 16)),
+                                                                              style: TextStyle(color:ColorResources.getTextColor(context), fontWeight: FontWeight.w500, fontSize: 16)),
                                                                           Row(
                                                                             children: [
                                                                               Icon(
@@ -208,11 +205,11 @@ class _HistoryViewState extends State<HistoryView> {
                                                                                   '${order.details![0].productDetails!.name}',
                                                                                   maxLines: 1,
                                                                                   overflow: TextOverflow.ellipsis,
-                                                                                  style: TextStyle(color: Colors.black54, fontWeight: FontWeight.w500, fontSize: 15),
+                                                                                  style: TextStyle(color: ColorResources.getTextColor(context).withOpacity(0.5), fontWeight: FontWeight.w500, fontSize: 15),
                                                                                 )
                                                                               : Text(
                                                                                   '${order.detailsCount} ${getTranslated('items', context)}',
-                                                                                  style: TextStyle(color: Colors.black54, fontWeight: FontWeight.w500, fontSize: 15),
+                                                                                  style: TextStyle(color: ColorResources.getTextColor(context).withOpacity(0.5), fontWeight: FontWeight.w500, fontSize: 15),
                                                                                 ),
                                                                           SizedBox(
                                                                             height:

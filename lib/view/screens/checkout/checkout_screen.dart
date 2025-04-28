@@ -112,28 +112,29 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                                     fontSize: Dimensions
                                                         .FONT_SIZE_LARGE)),
                                             Text(
-                                              '(${getTranslated('optional', context).toLowerCase()})',
+                                              ' (${getTranslated('optional', context).toLowerCase()})',
                                               style: rubikMedium.copyWith(
                                                   fontSize: Dimensions
                                                       .FONT_SIZE_LARGE,
                                                   color: ColorResources
-                                                      .getHintColor(context)),
+                                                          .getHintColor(context)
+                                                      .withOpacity(0.6)),
                                             ),
                                           ],
                                         ),
-                                        SizedBox(
-                                          height: 5,
-                                        ),
-                                        CustomTextField(
-                                          controller: _noteController,
-                                          hintText: getTranslated(
-                                              'additional_note', context),
-                                          maxLines: 5,
-                                          inputType: TextInputType.multiline,
-                                          inputAction: TextInputAction.newline,
-                                          capitalization:
-                                              TextCapitalization.sentences,
-                                        ),
+                                        SizedBox(height: 5),
+                                        CustomTextField( fillColor:
+                                        ColorResources.getTextFieldFillColor(
+                                            context),
+                                            controller: _noteController,
+                                            hintText: getTranslated(
+                                                'additional_note', context),
+                                            maxLines: 5,
+                                            inputType: TextInputType.multiline,
+                                            inputAction:
+                                                TextInputAction.newline,
+                                            capitalization:
+                                                TextCapitalization.sentences),
                                         SizedBox(height: 20),
                                         if (profileProvider.userInfoModel!
                                                 .scheduledDelivery ==
@@ -151,9 +152,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                                               context),
                                                       fontSize: Dimensions
                                                           .FONT_SIZE_LARGE)),
-                                              SizedBox(
-                                                height: 15,
-                                              ),
+                                              SizedBox(height: 15),
                                               Row(
                                                 children: [
                                                   Expanded(
@@ -186,20 +185,19 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                                     Row(
                                                       children: [
                                                         Text(
-                                                          getTranslated(
-                                                              'delivery_date',
-                                                              context),
-                                                          style: TextStyle(
-                                                            color: ColorResources
-                                                                    .getTextColor(
-                                                                        context)
-                                                                .withOpacity(
-                                                                    0.9),
-                                                            fontWeight:
-                                                                FontWeight.w500,
-                                                            fontSize: 16,
-                                                          ),
-                                                        ),
+                                                            getTranslated(
+                                                                'delivery_date',
+                                                                context),
+                                                            style: TextStyle(
+                                                                color: ColorResources
+                                                                        .getTextColor(
+                                                                            context)
+                                                                    .withOpacity(
+                                                                        0.9),
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w500,
+                                                                fontSize: 16))
                                                       ],
                                                     ),
                                                     SizedBox(height: 15),
@@ -302,56 +300,26 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                           PlaceOrderBody placeOrder =
                                               PlaceOrderBody(
                                                   cart: widget.orderBody!.cart!,
-                                                  couponDiscountAmount: widget
-                                                      .orderBody!
-                                                      .couponDiscountAmount!,
-                                                  usePointsDiscountAmount: widget
-                                                      .orderBody!
-                                                      .usePointsDiscountAmount!,
+                                                  couponDiscountAmount: widget.orderBody!.couponDiscountAmount!,
+                                                  usePointsDiscountAmount: widget.orderBody!.usePointsDiscountAmount!,
                                                   couponDiscountTitle: '',
-                                                  couponCode: widget
-                                                      .orderBody!.couponCode!,
-                                                  totalTaxAmount: widget
-                                                      .orderBody!
-                                                      .totalTaxAmount!,
-                                                  orderAmount: widget
-                                                      .orderBody!.orderAmount!,
-                                                  deliveryAddressId: widget
-                                                      .orderBody!
-                                                      .deliveryAddressId!,
-                                                  orderType: widget
-                                                      .orderBody!.orderType!,
-                                                  paymentMethod: _isCashActive
-                                                      ? 'cash_on_delivery'
-                                                      : 'credit_card',
-                                                  orderNote: _noteController.text ??
-                                                      '',
-                                                  deliveryDateTime: profileProvider
-                                                              .userInfoModel!
-                                                              .scheduledDelivery ==
-                                                          1
-                                                      ? orderProvider.selectedScheduledValue ==
-                                                              1
-                                                          ? orderProvider
-                                                              .selectedDeliveryDate
-                                                              .toString()
-                                                          : ''
-                                                      : '',
-                                                  usePoints: widget
-                                                      .orderBody!.usePoints!,
-                                                  remainingUserPoints: widget
-                                                      .orderBody!
-                                                      .remainingUserPoints!,
+                                                  couponCode: widget.orderBody!.couponCode!,
+                                                  totalTaxAmount: widget.orderBody!.totalTaxAmount!,
+                                                  orderAmount: widget.orderBody!.orderAmount!,
+                                                  deliveryAddressId: widget.orderBody!.deliveryAddressId!,
+                                                  orderType: widget.orderBody!.orderType!,
+                                                  paymentMethod: _isCashActive ? 'cash_on_delivery' : 'credit_card',
+                                                  orderNote: _noteController.text ?? '',
+                                                  deliveryDateTime: profileProvider.userInfoModel!.scheduledDelivery == 1
+                                                      ? orderProvider.selectedScheduledValue == 1
+                                                          ? orderProvider.selectedDeliveryDate.toString() : '' : '',
+                                                  usePoints: widget.orderBody!.usePoints!,
+                                                  remainingUserPoints: widget.orderBody!.remainingUserPoints!,
                                                   deliveryCharge: widget.orderBody!.deliveryCharge!,
-                                                  priorityDelivery: profileProvider
-                                                      .userInfoModel!
-                                                      .priorityBulkOrderFulfillment ??
-                                                      0);
+                                                  priorityDelivery: profileProvider.userInfoModel!.priorityBulkOrderFulfillment ?? 0);
 
-                                          print(
-                                              "placeOrder == ${placeOrder.toJson()}");
-                                          orderProvider.placeOrder(
-                                              placeOrder, _callback);
+                                          print("placeOrder == ${placeOrder.toJson()}");
+                                          orderProvider.placeOrder(placeOrder, _callback);
                                         }
                                       }),
                                 )

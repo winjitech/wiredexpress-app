@@ -4,7 +4,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:wired_express/data/helper/helpers.dart';
 import 'package:wired_express/data/model/response/cart_model.dart';
-import 'package:wired_express/data/model/response/moq_setting_model.dart';
 import 'package:wired_express/data/model/response/product_model.dart';
 import 'package:wired_express/data/model/response/product_plan_discount_model.dart';
 import 'package:wired_express/data/model/response/tiered_pricing_model.dart';
@@ -14,7 +13,6 @@ import 'package:wired_express/provider/cart_provider.dart';
 import 'package:wired_express/provider/product_provider.dart';
 import 'package:wired_express/provider/profile_provider.dart';
 import 'package:wired_express/provider/splash_provider.dart';
-import 'package:wired_express/provider/theme_provider.dart';
 import 'package:wired_express/utill/color_resources.dart';
 import 'package:wired_express/utill/dimensions.dart';
 import 'package:wired_express/utill/styles.dart';
@@ -78,27 +76,27 @@ class CartProductWidget extends StatelessWidget {
                     productPlanDiscountModel.discountType!)
                 : originalPrice;
         print(
-            "priceAfterProductPlanDiscount -- ${priceAfterProductPlanDiscount}");
+            "priceAfterProductPlanDiscount -- $priceAfterProductPlanDiscount");
         double priceAfterNormalDiscountOnProduct =
             PriceConverter.convertWithDiscount(context, originalPrice,
                 product.discount!, product!.discountType!);
         print(
-            "priceAfterNormalDiscountOnProduct -- ${priceAfterNormalDiscountOnProduct}");
+            "priceAfterNormalDiscountOnProduct -- $priceAfterNormalDiscountOnProduct");
 
         double priceAfterTiredPricing = PriceConverter.getProductFinalPrice(
                 context, tiredPricing, originalPrice, quantity ?? 1) ??
             0.0;
-        print("priceAfterTiredPricing -- ${priceAfterTiredPricing}");
+        print("priceAfterTiredPricing -- $priceAfterTiredPricing");
         double finalPriceWithoutQuantity = min(
           priceAfterProductPlanDiscount,
           min(priceAfterNormalDiscountOnProduct, priceAfterTiredPricing),
         );
-        print("finalPriceWithoutQuantity -- ${finalPriceWithoutQuantity}");
+        print("finalPriceWithoutQuantity -- $finalPriceWithoutQuantity");
         String discountMessage;
 
         if (finalPriceWithoutQuantity == priceAfterProductPlanDiscount) {
           discountMessage =
-              '${getTranslated('get', context)} ${PriceConverter.calculateDiscountAmount(context, originalPrice, productPlanDiscountModel!.discount ?? 0.0, productPlanDiscountModel.discountType ?? "amount")} ${getTranslated('off_per_item_on_orders_of', context).toLowerCase()} ${getTranslated('as_plan_discount', context)}';
+              '${getTranslated('get', context)} ${PriceConverter.calculateDiscountAmount(context, originalPrice, productPlanDiscountModel?.discount ?? 0.0, productPlanDiscountModel?.discountType ?? "amount")} ${getTranslated('off_per_item_on_orders_of', context).toLowerCase()} ${getTranslated('as_plan_discount', context)}';
         } else if (finalPriceWithoutQuantity ==
             priceAfterNormalDiscountOnProduct) {
           discountMessage =
@@ -163,7 +161,8 @@ class CartProductWidget extends StatelessWidget {
                           product.name!,
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
+                          style: TextStyle(
+                            color: ColorResources.getTextColor(context),
                             fontWeight: FontWeight.w600,
                             fontSize: 18,
                           ),
@@ -231,16 +230,17 @@ class CartProductWidget extends StatelessWidget {
                                               height: 25,
                                               decoration: BoxDecoration(
                                                   color: ColorResources
-                                                      .getScaffoldColor(
-                                                          context),
+                                                          .getTextColor(context)
+                                                      .withOpacity(0.2),
                                                   borderRadius:
                                                       BorderRadius.circular(
                                                           50)),
-                                              child: const Icon(
+                                              child: Icon(
                                                 Icons.delete,
                                                 size: 20,
                                                 color:
-                                                    ColorResources.COLOR_WHITE,
+                                                    ColorResources.getTextColor(
+                                                        context),
                                               ),
                                             ),
                                           )
@@ -281,16 +281,17 @@ class CartProductWidget extends StatelessWidget {
                                               height: 25,
                                               decoration: BoxDecoration(
                                                   color: ColorResources
-                                                      .getScaffoldColor(
-                                                          context),
+                                                          .getTextColor(context)
+                                                      .withOpacity(0.2),
                                                   borderRadius:
                                                       BorderRadius.circular(
                                                           50)),
-                                              child: const Icon(
+                                              child: Icon(
                                                 Icons.remove,
                                                 size: 20,
                                                 color:
-                                                    ColorResources.COLOR_WHITE,
+                                                    ColorResources.getTextColor(
+                                                        context),
                                               ),
                                             ),
                                           ),
@@ -333,16 +334,17 @@ class CartProductWidget extends StatelessWidget {
                                         width: 25,
                                         height: 25,
                                         decoration: BoxDecoration(
-                                          color:
-                                              ColorResources.getScaffoldColor(
-                                                  context),
+                                          color: ColorResources.getTextColor(
+                                                  context)
+                                              .withOpacity(0.2),
                                           borderRadius:
                                               BorderRadius.circular(50),
                                         ),
-                                        child: const Icon(
+                                        child: Icon(
                                           Icons.add,
                                           size: 20,
-                                          color: ColorResources.COLOR_WHITE,
+                                          color: ColorResources.getTextColor(
+                                              context),
                                         ),
                                       ),
                                     ),

@@ -1,9 +1,5 @@
-import 'dart:ui';
-
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:wired_express/data/helper/helpers.dart';
 import 'package:wired_express/data/model/response/product_model.dart';
 import 'package:wired_express/data/model/response/product_plan_discount_model.dart';
@@ -11,11 +7,9 @@ import 'package:wired_express/helper/date_converter.dart';
 import 'package:wired_express/helper/price_converter.dart';
 import 'package:wired_express/localization/language_constrants.dart';
 import 'package:wired_express/provider/auth_provider.dart';
-import 'package:wired_express/provider/cart_provider.dart';
 import 'package:wired_express/provider/product_provider.dart';
 import 'package:wired_express/provider/profile_provider.dart';
 import 'package:wired_express/provider/splash_provider.dart';
-import 'package:wired_express/provider/theme_provider.dart';
 import 'package:wired_express/provider/wishlist_provider.dart';
 import 'package:wired_express/utill/color_resources.dart';
 import 'package:wired_express/view/base/rating_bar.dart';
@@ -91,17 +85,12 @@ class CategoryProductWidget extends StatelessWidget {
           children: [
             Container(
                 decoration: BoxDecoration(
-                    color: ColorResources.getScaffoldBackgroundColor(context),
-                    borderRadius: BorderRadius.circular(10),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Provider.of<ThemeProvider>(context).darkTheme
-                            ? Colors.black.withOpacity(0.4)
-                            : Colors.grey[300]!,
-                        blurRadius: 5,
-                        spreadRadius: 1,
-                      )
-                    ]),
+                  border: Border.all(
+                      color: ColorResources.getBorderColor(context),
+                      width: 0.4),
+                  color: ColorResources.getScaffoldBackgroundColor(context),
+                  borderRadius: BorderRadius.circular(10),
+                ),
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Row(children: [
@@ -127,8 +116,10 @@ class CategoryProductWidget extends StatelessWidget {
                             product!.name!,
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 15),
+                            style: TextStyle(
+                                color: ColorResources.getTextColor(context),
+                                fontWeight: FontWeight.bold,
+                                fontSize: 15),
                           ),
                           RatingBar(
                               rating: product!.rating!.length > 0
@@ -177,7 +168,8 @@ class CategoryProductWidget extends StatelessWidget {
                 top: 0,
                 right: 0,
                 child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 2),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 15, vertical: 2),
                     decoration: const BoxDecoration(
                       borderRadius: BorderRadius.only(
                           topRight: Radius.circular(10),
@@ -206,21 +198,20 @@ class CategoryProductWidget extends StatelessWidget {
                       }
                     },
                     child: Container(
-                      padding: const EdgeInsets.all(6),
+                      margin: const EdgeInsets.only(right: 15, bottom: 15),
+                      padding: const EdgeInsets.all(4),
                       decoration: BoxDecoration(
-                        borderRadius: const BorderRadius.only(
-                            topLeft: Radius.circular(10),
-                            bottomRight: Radius.circular(10)),
-                        color:
-                            ColorResources.getScaffoldBackgroundColor(context),
-                      ),
+                          shape: BoxShape.circle,
+                          color: ColorResources.getTextColor(context)
+                              .withOpacity(0.1)),
                       child: Icon(
                         wishListProvider.wishIdList.contains(product!.id)
                             ? Icons.favorite
                             : Icons.favorite_border,
                         color: wishListProvider.wishIdList.contains(product!.id)
                             ? ColorResources.getPrimaryColor(context)
-                            : ColorResources.COLOR_GREY,
+                            : ColorResources.getTextColor(context)
+                                .withOpacity(0.5),
                       ),
                     )),
               ),

@@ -1,20 +1,17 @@
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wired_express/data/model/response/signup_model.dart';
 import 'package:wired_express/localization/language_constrants.dart';
 import 'package:wired_express/provider/auth_provider.dart';
-import 'package:wired_express/provider/cart_provider.dart';
-import 'package:wired_express/provider/wishlist_provider.dart';
 import 'package:wired_express/utill/color_resources.dart';
 import 'package:wired_express/view/base/circular_indicator_widget.dart';
 import 'package:wired_express/view/base/custom_button.dart';
 import 'package:wired_express/view/base/custom_snackbar.dart';
 import 'package:wired_express/view/base/custom_text_field.dart';
-import 'package:wired_express/view/screens/address/add_new_address_screen.dart';
 import 'package:wired_express/view/screens/auth/login_screen.dart';
+import 'package:wired_express/view/screens/auth/login_with_phone_screen.dart';
 import 'package:wired_express/view/screens/dashboard/dashboard_screen.dart';
 import 'package:wired_express/view/screens/forgot_password/verification_screen.dart';
 
@@ -78,19 +75,17 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       child: Align(
                         alignment: Alignment.topLeft,
                         child: GestureDetector(
-                          onTap: () {
-                            Navigator.pop(context);
-                          },
+                          onTap: () => Navigator.pop(context),
                           child: Container(
                               decoration: BoxDecoration(
-                                  color: Colors.grey[200],
+                                  color: ColorResources.getTextColor(context)
+                                      .withOpacity(0.2),
                                   borderRadius: BorderRadius.circular(50)),
                               child: Padding(
                                 padding: const EdgeInsets.all(14),
                                 child: Icon(
                                   Icons.arrow_back_ios_new_outlined,
-                                  color:
-                                      ColorResources.getScaffoldColor(context),
+                                  color: ColorResources.getTextColor(context),
                                   size: 19,
                                 ),
                               )),
@@ -110,14 +105,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  "${getTranslated('signup', context)}",
+                                  getTranslated('signup', context),
                                   style: TextStyle(
-                                      color: Colors.black,
+                                      color:
+                                          ColorResources.getTextColor(context),
                                       fontSize: 22,
                                       fontWeight: FontWeight.w700),
                                 ),
                                 SizedBox(height: 25),
                                 CustomTextField(
+                                  fillColor:
+                                      ColorResources.getTextFieldFillColor(
+                                          context),
                                   hintText:
                                       getTranslated('first_name', context),
                                   controller: _firstNameController,
@@ -130,6 +129,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                   height: 20,
                                 ),
                                 CustomTextField(
+                                  fillColor:
+                                      ColorResources.getTextFieldFillColor(
+                                          context),
                                   hintText: getTranslated('last_name', context),
                                   controller: _lastNameController,
                                   focusNode: _lastNameFocus,
@@ -141,6 +143,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                   height: 20,
                                 ),
                                 CustomTextField(
+                                  fillColor:
+                                      ColorResources.getTextFieldFillColor(
+                                          context),
                                   hintText: getTranslated('email', context),
                                   controller: _emailController,
                                   focusNode: _emailFocus,
@@ -152,6 +157,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                   height: 20,
                                 ),
                                 CustomTextField(
+                                  fillColor:
+                                      ColorResources.getTextFieldFillColor(
+                                          context),
                                   hintText: getTranslated('password', context),
                                   isPassword: true,
                                   controller: _passwordController,
@@ -163,6 +171,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                   height: 20,
                                 ),
                                 CustomTextField(
+                                  fillColor:
+                                      ColorResources.getTextFieldFillColor(
+                                          context),
                                   hintText: getTranslated(
                                       'confirm_password', context),
                                   isPassword: true,
@@ -175,15 +186,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                   height: 20,
                                 ),
                                 authProvider.checkEmailLoading!
-                                    ? CustomCircularIndicator(
-                                        color: ColorResources.getScaffoldColor(
-                                            context))
+                                    ? CustomCircularIndicator()
                                     : CustomButton(
                                         text: getTranslated('signup', context),
                                         onTap: () {
                                           FocusScope.of(context).unfocus();
-                                          String email = _emailController.text.trim();
-                                          String firstName = _firstNameController.text.trim();
+                                          String email =
+                                              _emailController.text.trim();
+                                          String firstName =
+                                              _firstNameController.text.trim();
                                           String lastName =
                                               _lastNameController.text.trim();
 
@@ -270,7 +281,54 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                             });
                                           }
                                         }),
-                                SizedBox(height: 15),
+                                const SizedBox(height: 35),
+                                Row(children: [
+                                  Expanded(
+                                      child: Divider(
+                                          thickness: 1,
+                                          color: ColorResources.getTextColor(
+                                                  context)
+                                              .withOpacity(0.4))),
+                                  const SizedBox(width: 15),
+                                  Text(
+                                    getTranslated('or', context),
+                                    style: TextStyle(
+                                        color:
+                                            ColorResources.getTextColor(context)
+                                                .withOpacity(0.7)),
+                                  ),
+                                  const SizedBox(width: 15),
+                                  Expanded(
+                                      child: Divider(
+                                          thickness: 1,
+                                          color: ColorResources.getTextColor(
+                                                  context)
+                                              .withOpacity(0.4))),
+                                ]),
+                                TextButton(
+                                    onPressed: () {
+                                      FocusScope.of(context).unfocus();
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (BuildContext context) =>
+                                                  LoginWithPhoneScreen()));
+                                    },
+                                    child: Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          getTranslated(
+                                              'login_with_phone', context),
+                                          style: const TextStyle(
+                                              fontWeight: FontWeight.w500,
+                                              fontSize: 16),
+                                        ),
+                                      ],
+                                    )),
                                 Center(
                                   child: GestureDetector(
                                     onTap: () async {
@@ -300,34 +358,44 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                     ),
                                   ),
                                 ),
-                                SizedBox(height: 15),
-                                Row(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      getTranslated('aleady_have_acc', context),
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.w400,
-                                          fontSize: 15),
-                                    ),
-                                    TextButton(
-                                        onPressed: () {
-                                          Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder:
-                                                      (BuildContext context) =>
-                                                          LoginScreen()));
-                                        },
-                                        child: Text(
-                                          getTranslated('login', context),
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.w700,
-                                              fontSize: 17),
-                                        ))
-                                  ],
-                                )
+                                Align(
+                                  alignment: Alignment.bottomCenter,
+                                  child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        getTranslated(
+                                            'aleady_have_acc', context),
+                                        style: TextStyle(
+                                            color: ColorResources.getTextColor(
+                                                context),
+                                            fontWeight: FontWeight.w400,
+                                            fontSize: 15),
+                                      ),
+                                      TextButton(
+                                          onPressed: () {
+                                            Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (BuildContext
+                                                            context) =>
+                                                        LoginScreen()));
+                                          },
+                                          child: Text(
+                                            getTranslated('login', context),
+                                            style: TextStyle(
+                                                color: ColorResources
+                                                    .getPrimaryColor(context),
+                                                fontWeight: FontWeight.w700,
+                                                decoration:
+                                                    TextDecoration.underline,
+                                                fontSize: 17),
+                                          ))
+                                    ],
+                                  ),
+                                ),
                               ],
                             ),
                           ),

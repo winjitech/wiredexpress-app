@@ -29,142 +29,149 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     return Scaffold(
       backgroundColor: ColorResources.getScaffoldBackgroundColor(context!),
       body: Scrollbar(
-        child: Center(
-          child: SizedBox(
-            width: MediaQuery.of(context).size.width,
-            child: Consumer<CustomAuthProvider>(
-              builder: (context, auth, child) {
-                return SafeArea(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(height: 40),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 50),
-                        child: Text(
-                          getTranslated('forget_pass', context),
-                          style: TextStyle(
-                              fontWeight: FontWeight.w500, fontSize: 23),
-                        ),
+        child: Consumer<CustomAuthProvider>(
+          builder: (context, auth, child) {
+            return Center(
+              child: SafeArea(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 40),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 50),
+                      child: Text(
+                        getTranslated('forget_pass', context),
+                        style: TextStyle(
+                            color: ColorResources.getTextColor(context),
+                            fontWeight: FontWeight.w500,
+                            fontSize: 20),
                       ),
-                      SizedBox(height: 30),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 20, right: 20),
-                        child: Center(
-                            child: Text(
-                          getTranslated('please_enter_your_number_to', context),
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                              color: ColorResources.COLOR_GREY_CHATEAU,
-                              fontSize: 21),
-                        )),
-                      ),
-                      Padding(
-                        padding:
-                            const EdgeInsets.all(Dimensions.PADDING_SIZE_LARGE),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            SizedBox(height: 80),
-                            Text(
-                              getTranslated('email', context),
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w500, fontSize: 19),
-                            ),
-                            SizedBox(height: Dimensions.PADDING_SIZE_SMALL),
-                            CustomTextField(
-                              hintText: 'your Email',
-                              isShowBorder: false,
-                              controller: _emailController,
-                              inputType: TextInputType.emailAddress,
-                              inputAction: TextInputAction.done,
-                            ),
-                            SizedBox(height: 50),
-                            !auth.isForgotPasswordLoading!
-                                ? CustomButton(
-                                    text: 'SEND CODE',
-                                    onTap: () {
-                                      FocusScope.of(context).unfocus();
-
-                                      if (_emailController.text.isEmpty) {
-                                        showCustomSnackBar(
-                                            getTranslated(
-                                                'enter_email_address', context),
-                                            context);
-                                      } else if (!_emailController.text
-                                          .contains('@')) {
-                                        showCustomSnackBar(
-                                            getTranslated(
-                                                'enter_valid_email', context),
-                                            context);
-                                      } else {
-                                        Provider.of<CustomAuthProvider>(context,
-                                                listen: false)
-                                            .forgetPassword(
-                                                _emailController.text)
-                                            .then((value) {
-                                          if (value.isSuccess) {
-                                            Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                    builder: (_) =>
-                                                        VerificationScreen(
-                                                          emailAddress:
-                                                              _emailController
-                                                                  .text,
-                                                        )));
-                                          } else {
-                                            showCustomSnackBar(
-                                                value.message, context);
-                                          }
-                                        });
-                                      }
-                                    },
-                                  )
-                                : CustomCircularIndicator(color:ColorResources.getScaffoldColor(context)),
-                          ],
-                        ),
-                      ),
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.all(15.0),
-                          child: Align(
-                            alignment: Alignment.bottomCenter,
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  getTranslated('remember_pass', context),
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.w400,
-                                      fontSize: 15),
-                                ),
-                                TextButton(
-                                    onPressed: () {
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (BuildContext context) =>
-                                                  LoginScreen()));
-                                    },
-                                    child: Text(
-                                     getTranslated('login', context),
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.w700,
-                                          fontSize: 17),
-                                    ))
-                              ],
-                            ),
+                    ),
+                    const SizedBox(height: 30),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 20, right: 20),
+                      child: Center(
+                          child: Text(
+                        getTranslated('please_enter_your_number_to', context),
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            color: ColorResources.getTextColor(context)
+                                .withOpacity(0.5),
+                            fontSize: 18),
+                      )),
+                    ),
+                    Padding(
+                      padding:
+                          const EdgeInsets.all(Dimensions.PADDING_SIZE_LARGE),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const SizedBox(height: 80),
+                          Text(
+                            getTranslated('email', context),
+                            style: TextStyle(
+                                color: ColorResources.getTextColor(context),
+                                fontWeight: FontWeight.w500,
+                                fontSize: 19),
                           ),
-                        ),
+                          const SizedBox(
+                              height: Dimensions.PADDING_SIZE_SMALL),
+                          CustomTextField(
+                            hintText: 'your Email',
+                            fillColor:
+                                ColorResources.getTextFieldFillColor(context),
+                            isShowBorder: false,
+                            controller: _emailController,
+                            inputType: TextInputType.emailAddress,
+                            inputAction: TextInputAction.done,
+                          ),
+                          const SizedBox(height: 50),
+                          !auth.isForgotPasswordLoading!
+                              ? CustomButton(
+                                  text: getTranslated('send', context),
+                                  onTap: () {
+                                    FocusScope.of(context).unfocus();
+
+                                    if (_emailController.text.isEmpty) {
+                                      showCustomSnackBar(
+                                          getTranslated(
+                                              'enter_email_address', context),
+                                          context);
+                                    } else if (!_emailController.text
+                                        .contains('@')) {
+                                      showCustomSnackBar(
+                                          getTranslated(
+                                              'enter_valid_email', context),
+                                          context);
+                                    } else {
+                                      Provider.of<CustomAuthProvider>(context,
+                                              listen: false)
+                                          .forgetPassword(
+                                              _emailController.text)
+                                          .then((value) {
+                                        if (value.isSuccess) {
+                                          Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (_) =>
+                                                      VerificationScreen(
+                                                        emailAddress:
+                                                            _emailController
+                                                                .text,
+                                                      )));
+                                        } else {
+                                          showCustomSnackBar(
+                                              value.message, context);
+                                        }
+                                      });
+                                    }
+                                  },
+                                )
+                              : CustomCircularIndicator(
+                                  color: ColorResources.getPrimaryColor(
+                                      context)),
+                        ],
                       ),
-                    ],
-                  ),
-                );
-              },
-            ),
-          ),
+                    ),
+                    Align(
+                      alignment: Alignment.bottomCenter,
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            getTranslated('remember_pass', context),
+                            style: TextStyle(
+                                color: ColorResources.getTextColor(context),
+                                fontWeight: FontWeight.w400,
+                                fontSize: 15),
+                          ),
+                          TextButton(
+                              onPressed: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (BuildContext context) =>
+                                            LoginScreen()));
+                              },
+                              child: Text(
+                                getTranslated('login', context),
+                                style: TextStyle(
+                                    color: ColorResources.getPrimaryColor(
+                                        context),
+                                    fontWeight: FontWeight.w700,
+                                    decoration: TextDecoration.underline,
+                                    fontSize: 17),
+                              ))
+                        ],
+                      ),
+                    ),
+
+                  ],
+                ),
+              ),
+            );
+          },
         ),
       ),
     );

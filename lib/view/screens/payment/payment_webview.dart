@@ -9,6 +9,7 @@ import 'package:webview_flutter_android/webview_flutter_android.dart';
 import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
 import 'package:wired_express/localization/language_constrants.dart';
 import 'package:wired_express/utill/app_constants.dart';
+import 'package:wired_express/utill/color_resources.dart';
 import 'package:wired_express/view/screens/dashboard/dashboard_screen.dart';
 import 'package:wired_express/view/screens/payment/payment_success_screen.dart';
 
@@ -195,7 +196,8 @@ Page resource error:
     return WillPopScope(
       onWillPop: _onWillPop,
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: ColorResources.getScaffoldBackgroundColor(context!),
+
         appBar: AppBar(
           elevation: 0.3,
           title: Text(getTranslated('PAYMENT', context!),

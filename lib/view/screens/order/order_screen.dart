@@ -64,7 +64,7 @@ class _OrderScreenState extends State<OrderScreen>
               },
               icon: Icon(
                 Icons.close,
-                color: Colors.white,
+                color: ColorResources.getTextColor(context),
                 size: 36,
               )),
         )),
@@ -72,7 +72,7 @@ class _OrderScreenState extends State<OrderScreen>
         controller: advancedDrawerController,
         animationCurve: Curves.easeInOutExpo,
         animationDuration: Duration(milliseconds: 400),
-        backdropColor: ColorResources.getScaffoldColor(context),
+        backdropColor: ColorResources.getTextFieldFillColor(context),
         drawer: DrawerScreen(),
         child: Scaffold(
           backgroundColor: ColorResources.getScaffoldBackgroundColor(context),
@@ -99,10 +99,6 @@ class _OrderScreenState extends State<OrderScreen>
                                     child: Container(
                                       height: 50,
                                       decoration: BoxDecoration(
-                                          color: ResponsiveHelper.isDesktop(
-                                                  context)
-                                              ? Colors.transparent
-                                              : Colors.grey[200],
                                           borderRadius:
                                               BorderRadius.circular(20)),
                                       width: ResponsiveHelper.isDesktop(context)
@@ -114,7 +110,7 @@ class _OrderScreenState extends State<OrderScreen>
                                           controller: _tabController,
                                           indicatorColor: Colors.transparent,
                                           indicatorWeight: 3,
-                                          labelColor: Colors.black,
+                                          labelColor: ColorResources.getTextColor(context),
                                           unselectedLabelColor: Colors.grey,
                                           unselectedLabelStyle:
                                               rubikMedium.copyWith(
@@ -126,13 +122,13 @@ class _OrderScreenState extends State<OrderScreen>
                                               color: ColorResources
                                                   .getScaffoldColor(context)),
                                           indicator: BoxDecoration(
-                                            color: Colors.white,
+                                            color: ColorResources.getPrimaryColor(context),
                                             borderRadius:
                                                 BorderRadius.circular(40),
                                             boxShadow: [
                                               BoxShadow(
-                                                  color: Colors.black
-                                                      .withOpacity(0.1),
+                                                  color: ColorResources.getBoxShadow(context),
+
                                                   blurRadius: 10)
                                             ],
                                           ),

@@ -37,9 +37,8 @@ class AddressWidget extends StatelessWidget {
           decoration: BoxDecoration(
             boxShadow: [
               BoxShadow(
-                color: Provider.of<ThemeProvider>(context).darkTheme
-                    ? Colors.black.withOpacity(0.4)
-                    : Colors.grey[300]!,
+                color: ColorResources.getBoxShadow(context),
+
                 blurRadius: 5,
                 spreadRadius: 1,
               )

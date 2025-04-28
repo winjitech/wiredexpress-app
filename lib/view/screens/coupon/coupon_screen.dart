@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:wired_express/data/helper/helpers.dart';
 import 'package:wired_express/helper/date_converter.dart';
 import 'package:wired_express/helper/responsive_helper.dart';
 import 'package:wired_express/localization/language_constrants.dart';
@@ -42,18 +43,20 @@ class CouponScreen extends StatelessWidget {
                                           listen: false)
                                       .getCouponList(context);
                                 },
-                                backgroundColor: ColorResources.getScaffoldColor(context),
+                                backgroundColor:
+                                    ColorResources.getScaffoldColor(context),
                                 child: Scrollbar(
                                   child: SingleChildScrollView(
                                     child: Center(
                                       child: SizedBox(
-                                        width: MediaQuery.of(context).size.width,
+                                        width:
+                                            MediaQuery.of(context).size.width,
                                         child: ListView.builder(
                                           itemCount: coupon.couponList!.length,
                                           shrinkWrap: true,
                                           physics:
-                                              NeverScrollableScrollPhysics(),
-                                          padding: EdgeInsets.all(
+                                              const NeverScrollableScrollPhysics(),
+                                          padding: const EdgeInsets.all(
                                               Dimensions.PADDING_SIZE_LARGE),
                                           itemBuilder: (context, index) {
                                             print(
@@ -70,7 +73,8 @@ class CouponScreen extends StatelessWidget {
                                                         .visibility ==
                                                     1
                                                 ? Padding(
-                                                    padding: EdgeInsets.only(
+                                                    padding: const EdgeInsets
+                                                        .only(
                                                         bottom: Dimensions
                                                             .PADDING_SIZE_LARGE),
                                                     child: GestureDetector(
@@ -103,23 +107,26 @@ class CouponScreen extends StatelessWidget {
                                                                     .width,
                                                             fit: BoxFit.cover,
                                                             color: ColorResources
-                                                                .getScaffoldColor(context)),
+                                                                .getCardColor(
+                                                                    context)),
                                                         Container(
                                                           height: 100,
                                                           alignment:
                                                               Alignment.center,
                                                           child: Row(children: [
-                                                            SizedBox(width: 50),
+                                                            const SizedBox(
+                                                                width: 50),
                                                             Image.asset(
                                                                 Images
                                                                     .percentage,
                                                                 height: 50,
                                                                 color: ColorResources
-                                                                    .getScaffoldBackgroundColor(
+                                                                    .getTextColor(
                                                                         context),
                                                                 width: 50),
                                                             Padding(
-                                                              padding: EdgeInsets.symmetric(
+                                                              padding: const EdgeInsets
+                                                                  .symmetric(
                                                                   horizontal:
                                                                       Dimensions
                                                                           .PADDING_SIZE_LARGE,
@@ -129,7 +136,7 @@ class CouponScreen extends StatelessWidget {
                                                               child: Image.asset(
                                                                   Images.line,
                                                                   color: ColorResources
-                                                                      .getScaffoldBackgroundColor(
+                                                                      .getTextColor(
                                                                           context),
                                                                   height: 100,
                                                                   width: 5),
@@ -150,26 +157,26 @@ class CouponScreen extends StatelessWidget {
                                                                           .code!,
                                                                       style: rubikRegular.copyWith(
                                                                           color:
-                                                                              ColorResources.getScaffoldBackgroundColor(context)),
+                                                                              ColorResources.getTextColor(context)),
                                                                     ),
-                                                                    SizedBox(
+                                                                    const SizedBox(
                                                                         height:
                                                                             Dimensions.PADDING_SIZE_EXTRA_SMALL),
                                                                     Text(
-                                                                      '${coupon.couponList![index].discount}${coupon.couponList![index].discountType == 'percent' ? '%' : getTranslated('description', context) == "Description" ? 'LE' : 'ج.م'} off',
+                                                                      '${Helpers.formatTextWithNum(coupon.couponList![index].discount.toString())}${coupon.couponList![index].discountType == 'percent' ? '%' : getTranslated('description', context) == "Description" ? 'LE' : 'ج.م'} off',
                                                                       style: rubikMedium.copyWith(
-                                                                          color: ColorResources.getScaffoldBackgroundColor(
+                                                                          color: ColorResources.getTextColor(
                                                                               context),
                                                                           fontSize:
                                                                               Dimensions.FONT_SIZE_EXTRA_LARGE),
                                                                     ),
-                                                                    SizedBox(
+                                                                    const SizedBox(
                                                                         height:
                                                                             Dimensions.PADDING_SIZE_EXTRA_SMALL),
                                                                     Text(
                                                                       '${getTranslated('valid_until', context)} ${DateConverter.isoStringToLocalDateOnly(coupon.couponList![index].expireDate!)}',
                                                                       style: rubikRegular.copyWith(
-                                                                          color: ColorResources.getScaffoldBackgroundColor(
+                                                                          color: ColorResources.getTextColor(
                                                                               context),
                                                                           fontSize:
                                                                               Dimensions.FONT_SIZE_SMALL),
@@ -181,7 +188,7 @@ class CouponScreen extends StatelessWidget {
                                                       ]),
                                                     ),
                                                   )
-                                                : SizedBox();
+                                                : const SizedBox();
                                           },
                                         ),
                                       ),
@@ -190,8 +197,8 @@ class CouponScreen extends StatelessWidget {
                                 ),
                               )
                             : NoDataScreen()
-                        : CustomCircularIndicator(color:ColorResources.getScaffoldColor(context))
-                    : CustomCircularIndicator(color:ColorResources.getScaffoldColor(context));
+                        : CustomCircularIndicator()
+                    : CustomCircularIndicator();
               },
             )
           : NotLoggedInScreen(),

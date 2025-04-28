@@ -41,6 +41,15 @@ class PriceConverter {
     }
     return discountAmount;
   }
+  static double calculateTaxAmount(double price, double tax, String taxType) {
+    double taxAmount = 0.0;
+    if (taxType == 'amount') {
+      taxAmount = tax;
+    } else if (taxType == 'percent') {
+      taxAmount = (tax / 100) * price;
+    }
+    return taxAmount;
+  }
 
   static double calculation(
       double amount, double discount, String type, int quantity) {
@@ -131,7 +140,7 @@ class PriceConverter {
     final profileProvider =
         Provider.of<ProfileProvider>(context, listen: false);
     UserInfoModel? userInfo = profileProvider.userInfoModel;
-    int userPlanId = userInfo!.userSubscription!.planId!;
+    int? userPlanId = userInfo!.userSubscription?.planId!;
 
     if (authProvider.isLoggedIn()! &&
         userInfo != null &&
