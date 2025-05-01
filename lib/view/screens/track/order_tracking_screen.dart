@@ -159,7 +159,7 @@ class OrderTrackingScreenState extends State<OrderTrackingScreen> {
         Timer.periodic(const Duration(seconds: 2), (timer) async {
       if (_currentCoordinateIndex >= _coordinatesList.length - 1) {
         timer.cancel();
-        _startFetchingNewCoordinates();
+       // _startFetchingNewCoordinates();
         return;
       }
 

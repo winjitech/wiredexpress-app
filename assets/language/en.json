@@ -450,10 +450,11 @@
   "total_products_discount": "Total products discount",
   "estimated_distance" : "Estimated distance",
   "estimated_duration" : "Estimated duration",
-  "as_promotional_discount" : "as a promotional discount",
+  "as_promotional_discount" : "",
   "as_plan_discount": "as a plan discount",
   "back": "Back",
   "payment_succeed": "Payment succeed!",
-  "off_per_item": "Off per item"
-
+  "off_per_item": "Off per item",
+  "exclusive_discount": "Exclusive Discount",
+  "per_item": "Per item"
 }

@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:wired_express/localization/language_constrants.dart';
 
@@ -10,21 +9,18 @@ import 'package:wired_express/utill/color_resources.dart';
 import 'package:wired_express/utill/dimensions.dart';
 import 'package:wired_express/utill/styles.dart';
 import 'package:wired_express/view/base/circular_indicator_widget.dart';
-import 'package:wired_express/view/base/custom_button.dart';
-import 'package:wired_express/view/screens/auth/login_screen.dart';
 import 'package:wired_express/view/screens/splash_screen.dart';
 
 class SignOutConfirmationDialog extends StatelessWidget {
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext? context) {
     return Dialog(
-      backgroundColor: ColorResources.getScaffoldBackgroundColor(context),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       child: Container(
-        decoration: BoxDecoration(
-            color: ColorResources.getScaffoldBackgroundColor(context),
-            borderRadius: BorderRadius.circular(15)),
         width: 300,
+        decoration: BoxDecoration(
+            color: ColorResources.getScaffoldColor(context!),
+            borderRadius: BorderRadius.circular(10)),
         child: Consumer<CustomAuthProvider>(builder: (context, auth, child) {
           return Column(mainAxisSize: MainAxisSize.min, children: [
             SizedBox(height: 20),
@@ -43,54 +39,56 @@ class SignOutConfirmationDialog extends StatelessWidget {
                       color: ColorResources.getTextColor(context)),
                   textAlign: TextAlign.center),
             ),
+            Divider(height: 0, color: ColorResources.getHintColor(context)),
             !auth.isLogoutLoading!
-                ? Padding(
-              padding: const EdgeInsets.symmetric(
-                  horizontal: 15.0, vertical: 5),
-              child: Row(children: [
-                Expanded(
-                    child: CustomButton(
-                      radius: 35,
-                      height: 40,
-                      textSize: 16,
-                      backgroundColor:
-                      ColorResources.getScaffoldBackgroundColor(context),
-                      textColor: ColorResources.getPrimaryColor(context),
-                      borderColor: ColorResources.getPrimaryColor(context),
-                      text: getTranslated('yes', context),
+                ? Row(children: [
+                    Expanded(
+                        child: GestureDetector(
                       onTap: () {
-                        Provider.of<CustomAuthProvider>(context,
-                            listen: false)
+                        Provider.of<CustomAuthProvider>(context, listen: false)
                             .clearSharedData()
-                            .then((condition) {
-                          Hive.box('myBox').clear();
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (BuildContext context) =>
-                                      LoginScreen()));
+                            .then((condition) async {
+                          await FirebaseAuth.instance.signOut().then((value) {
+                            Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (BuildContext context) =>
+                                        SplashScreen()));
+                          });
                         });
                       },
+                      child: Container(
+                        padding: EdgeInsets.all(Dimensions.PADDING_SIZE_SMALL),
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.only(
+                                bottomLeft: Radius.circular(10))),
+                        child: Text(getTranslated('yes', context),
+                            style: rubikBold.copyWith(color: Colors.white)),
+                      ),
                     )),
-                SizedBox(
-                  width: 15,
-                ),
-                Expanded(
-                    child: CustomButton(
-                      radius: 35,
-                      height: 40,
-                      textSize: 16,
-                      text: getTranslated('no', context),
-                      onTap: () {
-                        Navigator.pop(context);
-                      },
+                    Expanded(
+                        child: GestureDetector(
+                      onTap: () => Navigator.pop(context),
+                      child: Container(
+                        padding: EdgeInsets.all(Dimensions.PADDING_SIZE_SMALL),
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.only(
+                              bottomRight: Radius.circular(10)),
+                        ),
+                        child: Text(getTranslated('no', context),
+                            style: rubikBold.copyWith(
+                                color:
+                                    ColorResources.getScaffoldColor(context))),
+                      ),
                     )),
-              ]),
-            )
+                  ])
                 : Padding(
-              padding: EdgeInsets.all(Dimensions.PADDING_SIZE_SMALL),
-              child: CustomCircularIndicator(),
-            ),
+                    padding: EdgeInsets.all(Dimensions.PADDING_SIZE_SMALL),
+                    child: CustomCircularIndicator(color: Colors.white),
+                  ),
           ]);
         }),
       ),

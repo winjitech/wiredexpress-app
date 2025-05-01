@@ -83,9 +83,9 @@ class _HomeScreenState extends State<HomeScreen> {
           }
         }
 
-        if (userInfo.freeDelivery == 1) {
-          _showFreeDeliverySnackBar();
-        }
+        // if (userInfo.freeDelivery == 1) {
+        //   _showFreeDeliverySnackBar();
+        // }
 
         if (userInfo.nearbyElectricians == 1 &&
             location.addressList?.isNotEmpty == true) {

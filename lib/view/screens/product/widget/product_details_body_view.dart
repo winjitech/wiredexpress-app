@@ -35,7 +35,7 @@ class ProductDetailsBodyView extends StatelessWidget {
           Provider.of<CustomAuthProvider>(context, listen: false).isLoggedIn()!;
       String currency = splashProvider.configModel!.currencySymbol ?? '\$';
 
-      List<TiredPricingModel> tiredPricing = product.tiredPricing ?? [];
+      List<TiredPricingModel> tiredPricings = product.tiredPricing ?? [];
       // MoqSettingModel? moqSetting = product.moqSetting;
       // int minOrderQuantity = moqSetting?.minimumOrderQuantity ?? 1;
       int minOrderQuantity = product.minimumOrderQuantity ?? 1;
@@ -80,7 +80,7 @@ class ProductDetailsBodyView extends StatelessWidget {
 
       double priceAfterTiredPricing = PriceConverter.getProductFinalPrice(
               context,
-              tiredPricing,
+          tiredPricings,
               originalPrice,
               productProvider.quantity ?? 1) ??
           0.0;
@@ -107,18 +107,24 @@ class ProductDetailsBodyView extends StatelessWidget {
           priceAfterNormalDiscountOnProduct) {
         double discount = product.discount ?? 0;
 
+        tiredPricingModel = PriceConverter.getMatchedTieredPricingModel(
+          context,
+          tiredPricings,
+          productProvider.quantity ?? 1,
+        );
+
         if (discount > 0) {
-          discountMessage = '${getTranslated('get', context)} '
-              '${PriceConverter.calculateDiscountAmount(context, originalPrice, discount, product.discountType ?? "amount")} '
-              '${getTranslated('off_per_item_on_orders_of', context).toLowerCase()} '
-              '${getTranslated('as_promotional_discount', context)}';
+          discountMessage = '';
+              // '${PriceConverter.calculateDiscountAmount(context, originalPrice, discount, product.discountType ?? "amount")} '
+              // '${getTranslated('off_per_item_on_orders_of', context).toLowerCase()} '
+              // '${getTranslated('as_promotional_discount', context)}';
         } else {
           discountMessage = "none";
         }
       } else if (finalPriceWithoutQuantity == priceAfterTiredPricing) {
         tiredPricingModel = PriceConverter.getMatchedTieredPricingModel(
           context,
-          tiredPricing,
+          tiredPricings,
           productProvider.quantity ?? 1,
         );
         discountMessage = '${tiredPricingModel!.minQuantity ?? "this"} '

@@ -451,7 +451,7 @@
   "as_plan_discount": "como descuento por plan",
   "back": "Atrás",
   "payment_succeed": "¡Pago realizado con éxito!",
-  "off_per_item": "Descuento por artículo"
-
-
+  "off_per_item": "Descuento por artículo",
+  "exclusive_discount": "Descuento exclusivo",
+  "per_item": "Por artículo"
 }

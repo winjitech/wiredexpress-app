@@ -236,7 +236,7 @@ class _CartScreenState extends State<CartScreen> {
                                 cart.quantity!);
                       }
                       double taxAmount = double.parse(Helpers.formatTextWithNum(
-                              PriceConverter.calculateTaxAmount(
+                              PriceConverter.calculateDiscountAmount(context,
                                       finalPriceWithQuantity, product.tax!, product.taxType!)
                                   .toString())) *
                           cart.quantity!;
