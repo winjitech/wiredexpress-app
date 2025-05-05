@@ -112,14 +112,27 @@ class CategoryProductWidget extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            product!.name!,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                                color: ColorResources.getTextColor(context),
-                                fontWeight: FontWeight.bold,
-                                fontSize: 15),
+                          Row(
+                            children: [
+                              Text(
+                                product!.name!,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                    color: ColorResources.getTextColor(context),
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 15),
+                              ),
+                              Text(
+                                product!.name!,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                    color: ColorResources.getTextColor(context),
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 15),
+                              ),
+                            ],
                           ),
                           RatingBar(
                               rating: product!.rating!.length > 0

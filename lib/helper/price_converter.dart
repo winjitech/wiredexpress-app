@@ -41,6 +41,14 @@ class PriceConverter {
     }
     return discountAmount;
   }
+  static double calculateTaxAmount(double price, double tax, String taxType) {
+    if (taxType == 'amount') {
+      return tax;
+    } else if (taxType == 'percent') {
+      return (tax / 100) * price;
+    }
+    return 0.0;
+  }
 
   static double calculation(
       double amount, double discount, String type, int quantity) {
@@ -118,6 +126,7 @@ class PriceConverter {
   //   return matchedPricing;
   // }
 
+
   static TiredPricingModel? getMatchedTieredPricingModel(
     BuildContext context,
     List<TiredPricingModel> tieredPricing,
@@ -126,13 +135,17 @@ class PriceConverter {
     print("quantity == $quantity");
 
     bool isHaveBulkOrderDiscounts = false;
-    final authProvider = Provider.of<CustomAuthProvider>(context, listen: false);
+    final authProvider =
+        Provider.of<CustomAuthProvider>(context, listen: false);
 
-    final profileProvider = Provider.of<ProfileProvider>(context, listen: false);
+    final profileProvider =
+        Provider.of<ProfileProvider>(context, listen: false);
 
     UserInfoModel? userInfo = profileProvider.userInfoModel;
 
-    int? userPlanId = userInfo!.userSubscription!=null? userInfo.userSubscription!.planId!: 0;
+    int? userPlanId = userInfo!.userSubscription != null
+        ? userInfo.userSubscription!.planId!
+        : 0;
 
     if (authProvider.isLoggedIn()! &&
         userInfo != null &&
@@ -148,7 +161,9 @@ class PriceConverter {
       if (pricing.planId == null) {
         matchedPricingWithoutPlanId.add(pricing);
       }
-      if (pricing.planId != null && userPlanId!= 0 && userPlanId == pricing.planId) {
+      if (pricing.planId != null &&
+          userPlanId != 0 &&
+          userPlanId == pricing.planId) {
         print("pricing == ${pricing.toJson()}");
         matchedPricingWithPlanId.add(pricing);
       }
