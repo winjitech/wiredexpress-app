@@ -1,0 +1,2 @@
+C:/Users/user/AndroidStudioProjects/WiredExpressNew/android/app/.cxx/RelWithDebInfo/b4q705ge/x86/CMakeFiles/edit_cache.dir
+C:/Users/user/AndroidStudioProjects/WiredExpressNew/android/app/.cxx/RelWithDebInfo/b4q705ge/x86/CMakeFiles/rebuild_cache.dir

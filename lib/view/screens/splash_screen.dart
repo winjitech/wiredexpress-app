@@ -29,7 +29,7 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {
   GlobalKey<ScaffoldMessengerState> _globalKey = GlobalKey();
-  StreamSubscription<ConnectivityResult>? _onConnectivityChanged;
+  StreamSubscription<List<ConnectivityResult>>? _onConnectivityChanged;
   bool? _isLoggedIn;
 
   @override
@@ -44,27 +44,30 @@ class _SplashScreenState extends State<SplashScreen> {
     bool _firstTime = true;
     _onConnectivityChanged = Connectivity()
         .onConnectivityChanged
-        .listen((ConnectivityResult result) {
-      if (!_firstTime) {
-        bool isNotConnected = result != ConnectivityResult.wifi &&
-            result != ConnectivityResult.mobile;
-        isNotConnected
-            ? SizedBox()
-            : _globalKey.currentState!.hideCurrentSnackBar();
-        _globalKey.currentState!.showSnackBar(SnackBar(
-          backgroundColor: isNotConnected ? Colors.red : Colors.green,
-          duration: Duration(seconds: isNotConnected ? 6000 : 3),
-          content: Text(
-            isNotConnected ? 'No connection' : 'Connected',
-            textAlign: TextAlign.center,
-          ),
-        ));
-        if (!isNotConnected) {
-          _route();
+        .listen((List<ConnectivityResult> results) {
+      if (results.isNotEmpty) {
+        ConnectivityResult result = results.first;
+        if (!_firstTime) {
+          bool isNotConnected = result != ConnectivityResult.wifi &&
+              result != ConnectivityResult.mobile;
+          isNotConnected
+              ? const SizedBox()
+              : _globalKey.currentState!.hideCurrentSnackBar();
+          _globalKey.currentState!.showSnackBar(SnackBar(
+            backgroundColor: isNotConnected ? Colors.red : Colors.green,
+            duration: Duration(seconds: isNotConnected ? 6000 : 3),
+            content: Text(
+              isNotConnected ? 'No connection' : 'Connected',
+              textAlign: TextAlign.center,
+            ),
+          ));
+          if (!isNotConnected) {
+            _route();
+          }
         }
-      }
 
-      _firstTime = false;
+        _firstTime = false;
+      }
     });
 
     Timer(Duration(seconds: 0), () {

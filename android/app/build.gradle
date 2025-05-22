@@ -60,11 +60,21 @@ android {
 
     }
 
+    signingConfigs {
+        release {
+            keyAlias "upload"
+            keyPassword "wiredexpress"
+            storeFile file("C:/Users/user/AndroidStudioProjects/WiredExpressNew/upload-keystore.jks")
+            storePassword "wiredexpress"
+        }
+    }
     buildTypes {
         release {
             // TODO: Add your own signing config for the release build.
             // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig signingConfigs.debug
+//            signingConfig signingConfigs.debug
+            signingConfig signingConfigs.release
+
         }
     }
 }
@@ -87,8 +97,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-auth-ktx'
     implementation 'com.google.android.gms:play-services-location:19.0.1'
     implementation 'com.google.android.material:material:1.5.0'
-//    implementation 'com.stripe:stripe-android:17.1.2'
     implementation 'androidx.coordinatorlayout:coordinatorlayout:1.1.0'
-    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.4'
 
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.1.4'
 }

@@ -718,7 +718,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   void _choose() async {
-    final pickedFile = await picker.getImage(
+    final pickedFile = await picker.pickImage(
         source: ImageSource.gallery,
         imageQuality: 50,
         maxHeight: 500,

@@ -236,12 +236,13 @@ class _CartScreenState extends State<CartScreen> {
                                 cart.quantity!);
                       }
 
-                      double taxAmount = double.parse(
+                      double taxAmount =
                               PriceConverter.calculateTaxAmount(
                                       finalPriceWithoutQuantity,
                                       product.tax!,
                                       product.taxType!)
-                                  .toString()) *
+                              *
+
                           cart.quantity!;
 
                       print(

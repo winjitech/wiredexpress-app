@@ -1,0 +1,1 @@
+C:\Users\user\AndroidStudioProjects\WiredExpressNew\build\app\intermediates\cxx\RelWithDebInfo\b4q705ge\obj\armeabi-v7a
