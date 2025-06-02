@@ -21,6 +21,7 @@ import 'package:wired_express/view/screens/coupon/coupon_screen.dart';
 import 'package:wired_express/view/screens/language/choose_language_screen.dart';
 import 'package:wired_express/view/screens/menu/widget/confirm_delete_account_bottom_sheet.dart';
 import 'package:wired_express/view/screens/notification/notification_screen.dart';
+import 'package:wired_express/view/screens/payment/payment_details_screen.dart';
 import 'package:wired_express/view/screens/payment/update_card_screen.dart';
 import 'package:wired_express/view/screens/profile/change_pass_screen.dart';
 import 'package:wired_express/view/screens/profile/profile_screen.dart';
@@ -75,7 +76,8 @@ class _MenuScreenState extends State<MenuScreen> {
                 child: SingleChildScrollView(
                     padding: EdgeInsets.zero,
                     physics: const BouncingScrollPhysics(),
-                    child: mainProvider.loading || paymentProvider.getCardsLoading!
+                    child: mainProvider.loading ||
+                            paymentProvider.getCardsLoading!
                         ? const CustomCircularIndicator()
                         : Center(
                             child: SizedBox(
@@ -232,28 +234,31 @@ class _MenuScreenState extends State<MenuScreen> {
                                     if (_isLoggedIn)
                                       ListTile(
                                         onTap: () {
-                                          if (paymentProvider
-                                              .paymentCardList!.isEmpty) {
-                                            paymentProvider
-                                                .cardUpdateLink(context)
-                                                .then((value) {
-                                              Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                      builder: (_) =>
-                                                          UpdateCardSreen()));
-                                            });
-                                          } else {
-                                            paymentProvider
-                                                .cardUpdateLink(context)
-                                                .then((value) {
-                                              Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                      builder: (_) =>
-                                                          UpdateCardSreen(fromUpdate:true)));
-                                            });
-                                          }
+                                         Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (_) =>
+                                                      PaymentDetailsScreen()));
+                                          // if (paymentProvider
+                                          //     .paymentCardList!.isEmpty) {
+                                          //   paymentProvider
+                                          //       .cardUpdateLink(context)
+                                          //       .then((value) => Navigator.push(
+                                          //           context,
+                                          //           MaterialPageRoute(
+                                          //               builder: (_) =>
+                                          //                   UpdateCardSreen())));
+                                          // } else {
+                                          //   paymentProvider
+                                          //       .cardUpdateLink(context)
+                                          //       .then((value) => Navigator.push(
+                                          //           context,
+                                          //           MaterialPageRoute(
+                                          //               builder: (_) =>
+                                          //                   UpdateCardSreen(
+                                          //                       fromUpdate:
+                                          //                           true))));
+                                          // }
                                         },
                                         leading: Icon(Icons.payment,
                                             color: ColorResources.getTextColor(
