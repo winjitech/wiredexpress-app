@@ -78,7 +78,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                         ? CustomCircularIndicator()
                         : CustomButton(
                             text: getTranslated('add_to_cart', context),
-                            onTap: isLoggedIn
+                            onTap: !isLoggedIn
                                 ? () => Navigator.push(
                                     context,
                                     MaterialPageRoute(
