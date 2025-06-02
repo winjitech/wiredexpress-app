@@ -462,5 +462,6 @@
   "choose_payment_method": "Choose payment method",
   "pay_with_paypal": "Pay with paypal",
   "pay_with_stripe": "Pay with stripe",
-  "payment_details": "Payment details"
+  "payment_details": "Payment details",
+  "card_deleted_successfully": "Card deleted successfully!"
 }

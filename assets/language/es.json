@@ -459,6 +459,8 @@
   "choose_payment_method": "Elige un método de pago",
   "pay_with_paypal": "Pagar con PayPal",
   "pay_with_stripe": "Pagar con Stripe",
-  "payment_details": "Detalles de pago"
+  "payment_details": "Detalles de pago",
+  "card_deleted_successfully": "¡Tarjeta eliminada con éxito!"
+
 
 }

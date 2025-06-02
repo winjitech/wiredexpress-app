@@ -37,7 +37,9 @@ class _RemoveCardBottomSheetState extends State<RemoveCardBottomSheet> {
         void updateDetails() {
           paymentProvider.getPaymentCardList(context, userId);
           Navigator.pop(context);
-          showCustomSnackBar('Card deleted successfully',
+          Navigator.pop(context);
+
+          showCustomSnackBar(getTranslated('card_deleted_successfully', context),
               context, isError: false);
         }
 
