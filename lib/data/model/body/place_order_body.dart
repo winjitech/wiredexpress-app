@@ -19,6 +19,7 @@ class PlaceOrderBody {
   double? _remainingUserPoints;
   double? _deliveryCharge;
   int? _priorityDelivery;
+  String? _cardId;
 
   PlaceOrderBody({
     required List<ProductCart> cart,
@@ -37,6 +38,7 @@ class PlaceOrderBody {
     required double remainingUserPoints,
     required double deliveryCharge,
     required int priorityDelivery,
+    required String cardId,
   }) {
     this._cart = cart;
     this._couponDiscountAmount = couponDiscountAmount;
@@ -54,6 +56,7 @@ class PlaceOrderBody {
     this._remainingUserPoints = remainingUserPoints;
     this._deliveryCharge = deliveryCharge;
     this._priorityDelivery = priorityDelivery;
+    this._cardId = cardId;
   }
 
   List<ProductCart>? get cart => _cart;
@@ -72,12 +75,13 @@ class PlaceOrderBody {
   double? get remainingUserPoints => _remainingUserPoints;
   double? get deliveryCharge => _deliveryCharge;
   int? get priorityDelivery => _priorityDelivery;
+  String? get cardId => _cardId;
 
   PlaceOrderBody.fromJson(Map<String?, dynamic> json) {
     if (json['cart'] != null) {
       _cart = [];
       json['cart']!.forEach((v) {
-        _cart!.add(new ProductCart.fromJson(v));
+        _cart!.add(ProductCart.fromJson(v));
       });
     }
     _couponDiscountAmount = json['coupon_discount_amount'];
@@ -95,28 +99,30 @@ class PlaceOrderBody {
     _remainingUserPoints = json['remaining_user_points'];
     _deliveryCharge = json['delivery_charge'];
     _priorityDelivery = json['priority_delivery'];
+    _cardId = json['card_id'];
   }
 
   Map<String?, dynamic> toJson() {
-    final Map<String?, dynamic> data = new Map<String?, dynamic>();
-    if (this._cart != null) {
-      data['cart'] = this._cart!.map((v) => v.toJson()).toList();
+    final Map<String?, dynamic> data = {};
+    if (_cart != null) {
+      data['cart'] = _cart!.map((v) => v.toJson()).toList();
     }
-    data['coupon_discount_amount'] = this._couponDiscountAmount;
-    data['use_points_discount_amount'] = this._usePointsDiscountAmount;
-    data['coupon_discount_title'] = this._couponDiscountTitle;
-    data['order_amount'] = this._orderAmount;
-    data['total_tax_amount'] = this._totalTaxAmount;
-    data['order_type'] = this._orderType;
-    data['delivery_address_id'] = this._deliveryAddressId;
-    data['payment_method'] = this._paymentMethod;
-    data['order_note'] = this._orderNote;
-    data['coupon_code'] = this._couponCode;
-    data['delivery_date_time'] = this._deliveryDateTime;
-    data['use_points'] = this._usePoints;
-    data['remaining_user_points'] = this._remainingUserPoints;
-    data['delivery_charge'] = this._deliveryCharge;
-    data['priority_delivery'] = this._priorityDelivery;
+    data['coupon_discount_amount'] = _couponDiscountAmount;
+    data['use_points_discount_amount'] = _usePointsDiscountAmount;
+    data['coupon_discount_title'] = _couponDiscountTitle;
+    data['order_amount'] = _orderAmount;
+    data['total_tax_amount'] = _totalTaxAmount;
+    data['order_type'] = _orderType;
+    data['delivery_address_id'] = _deliveryAddressId;
+    data['payment_method'] = _paymentMethod;
+    data['order_note'] = _orderNote;
+    data['coupon_code'] = _couponCode;
+    data['delivery_date_time'] = _deliveryDateTime;
+    data['use_points'] = _usePoints;
+    data['remaining_user_points'] = _remainingUserPoints;
+    data['delivery_charge'] = _deliveryCharge;
+    data['priority_delivery'] = _priorityDelivery;
+    data['card_id'] = _cardId;
     return data;
   }
 }

@@ -70,6 +70,7 @@ dependencies:
   loop_page_view: ^1.2.5
   flutter_polyline_points: ^2.1.0
   package_info_plus: ^8.3.0
+  flutter_inappwebview: ^6.1.5
 
 dev_dependencies:
   flutter_test:

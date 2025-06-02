@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:wired_express/data/model/body/place_order_body.dart';
 import 'package:wired_express/helper/date_converter.dart';
@@ -7,6 +8,7 @@ import 'package:wired_express/provider/auth_provider.dart';
 import 'package:wired_express/provider/cart_provider.dart';
 import 'package:wired_express/provider/location_provider.dart';
 import 'package:wired_express/provider/order_provider.dart';
+import 'package:wired_express/provider/payment_provider.dart';
 import 'package:wired_express/provider/profile_provider.dart';
 import 'package:wired_express/provider/splash_provider.dart';
 import 'package:wired_express/utill/app_constants.dart';
@@ -21,7 +23,10 @@ import 'package:wired_express/view/base/custom_text_field.dart';
 import 'package:wired_express/view/base/not_logged_in_screen.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:wired_express/view/screens/dashboard/dashboard_screen.dart';
 import 'package:wired_express/view/screens/payment/payment_webview.dart';
+import 'package:wired_express/view/screens/payment/update_card_screen.dart';
+import 'package:wired_express/view/screens/payment/widget/remove_card_bottom_sheet.dart';
 
 class CheckoutScreen extends StatefulWidget {
   final PlaceOrderBody? orderBody;
@@ -59,7 +64,11 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           Provider.of<ProfileProvider>(context, listen: false)
               .getUserInfo(context);
         }
-
+        Provider.of<PaymentProvider>(context, listen: false).getPaymentCardList(
+            context,
+            Provider.of<ProfileProvider>(context, listen: false)
+                .userInfoModel!
+                .id!);
         orderProvider.clearPrevData();
         _isCashOnDeliveryActive =
             Provider.of<SplashProvider>(context, listen: false)
@@ -82,9 +91,10 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       key: _scaffoldKey,
       appBar: CustomAppBar(title: getTranslated('checkout', context)),
       body: _isLoggedIn!
-          ? Consumer3<OrderProvider, CartProvider, ProfileProvider>(
+          ? Consumer4<OrderProvider, CartProvider, ProfileProvider,
+              PaymentProvider>(
               builder: (context, orderProvider, cartProvider, profileProvider,
-                  child) {
+                  paymentProvider, child) {
                 return Consumer<LocationProvider>(
                   builder: (context, address, child) {
                     return Column(
@@ -123,9 +133,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                           ],
                                         ),
                                         SizedBox(height: 5),
-                                        CustomTextField( fillColor:
-                                        ColorResources.getTextFieldFillColor(
-                                            context),
+                                        CustomTextField(
+                                            fillColor: ColorResources
+                                                .getTextFieldFillColor(context),
                                             controller: _noteController,
                                             hintText: getTranslated(
                                                 'additional_note', context),
@@ -265,9 +275,231 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                                     ),
                                                     SizedBox(height: 20),
                                                   ],
-                                                )
+                                                ),
+                                              SizedBox(height: 20),
                                             ],
-                                          )
+                                          ),
+                                        paymentProvider.loading! ||
+                                                paymentProvider
+                                                        .paymentCardList ==
+                                                    null
+                                            ? const Center(
+                                                child: SizedBox(
+                                                    height: 20,
+                                                    width: 20,
+                                                    child:
+                                                        CustomCircularIndicator()),
+                                              )
+                                            : Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Padding(
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                            top: 15,
+                                                            left: 16,
+                                                            right: 16),
+                                                    child: Text(
+                                                      getTranslated(
+                                                          'payment_info',
+                                                          context),
+                                                      style:
+                                                          rubikMedium.copyWith(
+                                                        color: ColorResources
+                                                            .getTextColor(
+                                                                context),
+                                                        fontSize: Dimensions
+                                                            .FONT_SIZE_LARGE,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  paymentProvider
+                                                          .paymentCardList!
+                                                          .isEmpty
+                                                      ? Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .only(
+                                                                  left: 16,
+                                                                  right: 16,
+                                                                  top: 10),
+                                                          child:
+                                                              GestureDetector(
+                                                            onTap: () {
+                                                              paymentProvider
+                                                                  .cardUpdateLink(
+                                                                      context)
+                                                                  .then(
+                                                                      (value) {
+                                                                Navigator.push(
+                                                                    context,
+                                                                    MaterialPageRoute(
+                                                                        builder:
+                                                                            (_) =>
+                                                                                UpdateCardSreen()));
+                                                              });
+                                                            },
+                                                            child: Container(
+                                                              width: MediaQuery.of(
+                                                                          context)
+                                                                      .size
+                                                                      .width *
+                                                                  0.35,
+                                                              decoration:
+                                                                  BoxDecoration(
+                                                                borderRadius:
+                                                                    BorderRadius
+                                                                        .circular(
+                                                                            10),
+                                                                border:
+                                                                    Border.all(
+                                                                  color: ColorResources
+                                                                          .getTextColor(
+                                                                              context)
+                                                                      .withOpacity(
+                                                                          0.5),
+                                                                ),
+                                                              ),
+                                                              child: Padding(
+                                                                padding:
+                                                                    const EdgeInsets
+                                                                        .all(
+                                                                        10.0),
+                                                                child: Row(
+                                                                  children: [
+                                                                    Text(
+                                                                        getTranslated(
+                                                                            'add_card_info',
+                                                                            context),
+                                                                        style: TextStyle(
+                                                                            color:
+                                                                                ColorResources.getTextColor(context))),
+                                                                    const SizedBox(
+                                                                        width:
+                                                                            5),
+                                                                    Icon(
+                                                                        Icons
+                                                                            .add,
+                                                                        color: ColorResources.getTextColor(context)
+                                                                            .withOpacity(0.5)),
+                                                                  ],
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        )
+                                                      : const SizedBox(),
+                                                  paymentProvider
+                                                          .paymentCardList!
+                                                          .isEmpty
+                                                      ? const SizedBox()
+                                                      : Column(
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .start,
+                                                          children: [
+                                                            Padding(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                      .only(
+                                                                      left: 16,
+                                                                      right: 16,
+                                                                      top: 16,
+                                                                      bottom:
+                                                                          8),
+                                                              child: Row(
+                                                                children: [
+                                                                  Expanded(
+                                                                    child:
+                                                                        Container(
+                                                                      decoration:
+                                                                          BoxDecoration(
+                                                                        borderRadius:
+                                                                            BorderRadius.circular(10),
+                                                                        border:
+                                                                            Border.all(
+                                                                          color:
+                                                                              ColorResources.getTextColor(context).withOpacity(0.5),
+                                                                        ),
+                                                                      ),
+                                                                      child:
+                                                                          Padding(
+                                                                        padding: const EdgeInsets
+                                                                            .all(
+                                                                            14),
+                                                                        child:
+                                                                            Row(
+                                                                          children: [
+                                                                            Icon(Icons.credit_card,
+                                                                                color: ColorResources.getTextColor(context)),
+                                                                            const SizedBox(width: 30),
+                                                                            Text(
+                                                                              '**** **** **** ${paymentProvider.paymentCardList![0].last4}',
+                                                                              style: TextStyle(color: ColorResources.getTextColor(context)),
+                                                                            ),
+                                                                          ],
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                  const SizedBox(
+                                                                    width: 15,
+                                                                  ),
+                                                                  Row(
+                                                                    children: [
+                                                                      GestureDetector(
+                                                                        onTap: () =>
+                                                                            showModalBottomSheet(
+                                                                          context:
+                                                                              context,
+                                                                          builder: (BuildContext context) =>
+                                                                              RemoveCardBottomSheet(cardId: paymentProvider.paymentCardList![0].id!),
+                                                                          backgroundColor:
+                                                                              Colors.transparent,
+                                                                          isScrollControlled:
+                                                                              true,
+                                                                          barrierColor:
+                                                                              Colors.black54,
+                                                                          isDismissible:
+                                                                              true,
+                                                                          useSafeArea:
+                                                                              true,
+                                                                        ),
+                                                                        child:
+                                                                            const Padding(
+                                                                          padding:
+                                                                              EdgeInsets.all(5),
+                                                                          child: Icon(
+                                                                              Icons.delete,
+                                                                              color: Colors.red),
+                                                                        ),
+                                                                      ),
+                                                                      paymentProvider
+                                                                              .loading!
+                                                                          ? const SizedBox(
+                                                                              height: 20,
+                                                                              width: 20,
+                                                                              child: CustomCircularIndicator(color: Colors.white),
+                                                                            )
+                                                                          : GestureDetector(
+                                                                              onTap: () => paymentProvider.cardUpdateLink(context).then((value) {
+                                                                                Navigator.push(context, MaterialPageRoute(builder: (_) => UpdateCardSreen()));
+                                                                              }),
+                                                                              child: Padding(
+                                                                                padding: const EdgeInsets.all(5),
+                                                                                child: Icon(Icons.edit, color: ColorResources.getTextColor(context).withOpacity(0.5)),
+                                                                              ),
+                                                                            ),
+                                                                    ],
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                ],
+                                              )
                                       ]),
                                 ),
                               ),
@@ -296,30 +528,66 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                                   'select_delivery_date_required',
                                                   context),
                                               context);
+                                        } else if (paymentProvider
+                                            .paymentCardList!.isEmpty) {
+                                          showCustomSnackBar(
+                                              getTranslated(
+                                                  'please_add_your_card_details',
+                                                  context),
+                                              context);
                                         } else {
                                           PlaceOrderBody placeOrder =
                                               PlaceOrderBody(
                                                   cart: widget.orderBody!.cart!,
-                                                  couponDiscountAmount: widget.orderBody!.couponDiscountAmount!,
-                                                  usePointsDiscountAmount: widget.orderBody!.usePointsDiscountAmount!,
+                                                  couponDiscountAmount: widget
+                                                      .orderBody!
+                                                      .couponDiscountAmount!,
+                                                  usePointsDiscountAmount: widget
+                                                      .orderBody!
+                                                      .usePointsDiscountAmount!,
                                                   couponDiscountTitle: '',
-                                                  couponCode: widget.orderBody!.couponCode!,
-                                                  totalTaxAmount: widget.orderBody!.totalTaxAmount!,
-                                                  orderAmount: widget.orderBody!.orderAmount!,
-                                                  deliveryAddressId: widget.orderBody!.deliveryAddressId!,
-                                                  orderType: widget.orderBody!.orderType!,
-                                                  paymentMethod: _isCashActive ? 'cash_on_delivery' : 'credit_card',
-                                                  orderNote: _noteController.text ?? '',
-                                                  deliveryDateTime: profileProvider.userInfoModel!.scheduledDelivery == 1
-                                                      ? orderProvider.selectedScheduledValue == 1
-                                                          ? orderProvider.selectedDeliveryDate.toString() : '' : '',
-                                                  usePoints: widget.orderBody!.usePoints!,
-                                                  remainingUserPoints: widget.orderBody!.remainingUserPoints!,
+                                                  couponCode: widget
+                                                      .orderBody!.couponCode!,
+                                                  totalTaxAmount: widget
+                                                      .orderBody!
+                                                      .totalTaxAmount!,
+                                                  orderAmount: widget
+                                                      .orderBody!.orderAmount!,
+                                                  deliveryAddressId: widget
+                                                      .orderBody!
+                                                      .deliveryAddressId!,
+                                                  orderType: widget
+                                                      .orderBody!.orderType!,
+                                                  // paymentMethod: _isCashActive
+                                                  //     ? 'cash_on_delivery'
+                                                  //     : 'credit_card',
+                                                  paymentMethod: 'credit_card',
+                                                  orderNote:
+                                                      _noteController.text ??
+                                                          '',
+                                                  deliveryDateTime: profileProvider
+                                                              .userInfoModel!
+                                                              .scheduledDelivery ==
+                                                          1
+                                                      ? orderProvider.selectedScheduledValue ==
+                                                              1
+                                                          ? orderProvider
+                                                              .selectedDeliveryDate
+                                                              .toString()
+                                                          : ''
+                                                      : '',
+                                                  usePoints: widget
+                                                      .orderBody!.usePoints!,
+                                                  remainingUserPoints: widget
+                                                      .orderBody!
+                                                      .remainingUserPoints!,
                                                   deliveryCharge: widget.orderBody!.deliveryCharge!,
-                                                  priorityDelivery: profileProvider.userInfoModel!.priorityBulkOrderFulfillment ?? 0);
+                                                  priorityDelivery: profileProvider.userInfoModel!.priorityBulkOrderFulfillment ?? 0,
+                                                  cardId: paymentProvider.paymentCardList != null && paymentProvider.paymentCardList!.isNotEmpty ? paymentProvider.paymentCardList![0].id! : "");
 
-                                          print("placeOrder == ${placeOrder.toJson()}");
-                                          orderProvider.placeOrder(placeOrder, _callback);
+                                          log("placeOrder == ${placeOrder.toJson()}");
+                                          orderProvider.placeOrder(
+                                              placeOrder, _callback);
                                         }
                                       }),
                                 )
@@ -379,17 +647,21 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       bool isSuccess, String message, String orderID, int addressID) async {
     if (isSuccess) {
       Provider.of<ProfileProvider>(context, listen: false).getUserInfo(context);
-
       Navigator.push(
           context,
           MaterialPageRoute(
-              builder: (BuildContext context) => PaymentWebView(
-                    url: '${AppConstants.baseUrl}/paypal/create/${orderID}',
-                    fromCheckoutScreen: true,
-                  )));
+              builder: (BuildContext context) =>
+                  DashboardScreen(pageIndex: 2)));
+      // Navigator.push(
+      //     context,
+      //     MaterialPageRoute(
+      //         builder: (BuildContext context) => PaymentWebView(
+      //               url: '${AppConstants.baseUrl}/paypal/create/${orderID}',
+      //               fromCheckoutScreen: true,
+      //             )));
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(message), backgroundColor: Colors.red));
+      showCustomSnackBar(
+          getTranslated('something_went_wrong', context), context);
     }
   }
 }

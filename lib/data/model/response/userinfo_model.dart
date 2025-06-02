@@ -25,6 +25,7 @@ class UserInfoModel {
   int? productsEarlyAccess;
   String? subscriptionExpireDate;
   int? priorityBulkOrderFulfillment;
+  String? subscriptionWayType;
   UserSubscriptionPlanModel? userSubscription;
 
   UserInfoModel({
@@ -52,6 +53,7 @@ class UserInfoModel {
     this.productsEarlyAccess,
     this.subscriptionExpireDate,
     this.priorityBulkOrderFulfillment,
+    this.subscriptionWayType,
     this.userSubscription,
   });
 
@@ -82,6 +84,7 @@ class UserInfoModel {
     productsEarlyAccess = json['products_early_access'];
     subscriptionExpireDate = json['subscription_expire_date'];
     priorityBulkOrderFulfillment = json['priority_bulk_order_fulfillment'];
+    subscriptionWayType = json['subscription_way_type'];
 
     userSubscription = json['user_subscription'] != null
         ? UserSubscriptionPlanModel.fromJson(json['user_subscription'])
@@ -114,6 +117,7 @@ class UserInfoModel {
     data['products_early_access'] = productsEarlyAccess;
     data['subscription_expire_date'] = subscriptionExpireDate;
     data['priority_bulk_order_fulfillment'] = priorityBulkOrderFulfillment;
+    data['subscription_way_type'] = subscriptionWayType;
 
     if (userSubscription != null) {
       data['user_subscription'] = userSubscription?.toJson();

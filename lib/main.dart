@@ -4,6 +4,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:wired_express/provider/payment_provider.dart';
 import 'package:wired_express/provider/place_order_provider.dart';
 import 'package:wired_express/provider/subscription_provider.dart';
 import 'package:wired_express/provider/timer_provider.dart';
@@ -96,6 +97,7 @@ Future<void> main() async {
       ChangeNotifierProvider(create: (context) => di.sl<MainProvider>()),
       ChangeNotifierProvider(create: (context) => di.sl<PlaceOrderProvider>()),
       ChangeNotifierProvider(create: (context) => di.sl<SubscriptionProvider>()),
+      ChangeNotifierProvider(create: (context) => di.sl<PaymentProvider>()),
 
     ],
     child: MyApp(isWeb: !kIsWeb),

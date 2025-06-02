@@ -9,6 +9,7 @@ import 'package:wired_express/data/repository/location_repo.dart';
 import 'package:wired_express/data/repository/main_repo.dart';
 import 'package:wired_express/data/repository/notification_repo.dart';
 import 'package:wired_express/data/repository/order_repo.dart';
+import 'package:wired_express/data/repository/payment_repo.dart';
 import 'package:wired_express/data/repository/place_order_repo.dart';
 import 'package:wired_express/data/repository/product_repo.dart';
 import 'package:wired_express/data/repository/language_repo.dart';
@@ -28,6 +29,7 @@ import 'package:wired_express/provider/main_provider.dart';
 import 'package:wired_express/provider/notification_provider.dart';
 import 'package:wired_express/provider/order_provider.dart';
 import 'package:wired_express/provider/location_provider.dart';
+import 'package:wired_express/provider/payment_provider.dart';
 import 'package:wired_express/provider/place_order_provider.dart';
 import 'package:wired_express/provider/product_provider.dart';
 import 'package:wired_express/provider/language_provider.dart';
@@ -78,6 +80,7 @@ Future<void> init() async {
   sl.registerLazySingleton(() => WishListRepo(dioClient: sl()));
   sl.registerLazySingleton(() => MainRepo(dioClient: sl()));
   sl.registerLazySingleton(() => SubscriptionRepo(dioClient: sl()));
+  sl.registerLazySingleton(() => PaymentRepo(dioClient: sl(), sharedPreferences: sl()));
 
   // Provider
   sl.registerFactory(() => ThemeProvider(sharedPreferences: sl()));
@@ -104,6 +107,7 @@ Future<void> init() async {
   sl.registerFactory(() => SearchProvider(searchRepo: sl()));
   sl.registerFactory(() => MainProvider(mainRepo: sl()));
   sl.registerFactory(() => SubscriptionProvider(subscriptionRepo: sl()));
+  sl.registerFactory(() => PaymentProvider(sharedPreferences: sl(),paymentRepo: sl()));
 
   // External
   final sharedPreferences = await SharedPreferences.getInstance();

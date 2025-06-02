@@ -332,14 +332,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 Center(
                                   child: GestureDetector(
                                     onTap: () async {
-                                      final pref =
-                                          await SharedPreferences.getInstance();
+                                      final pref = await SharedPreferences.getInstance();
                                       await pref.clear();
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (_) => DashboardScreen(
-                                                  pageIndex: 0)));
+                                      Navigator.push(context, MaterialPageRoute(builder: (_) => DashboardScreen(pageIndex: 0)));
                                     },
                                     child: Padding(
                                       padding: const EdgeInsets.all(8.0),

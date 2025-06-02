@@ -102,8 +102,7 @@ class _NearbyElectriciansScreenState extends State<NearbyElectriciansScreen> {
                                     margin: const EdgeInsets.only(bottom: 15),
                                     decoration: BoxDecoration(
                                       color: ColorResources.getTextFieldFillColor(context),
-                                      borderRadius: BorderRadius.circular(15),
-                                    ),
+                                      borderRadius: BorderRadius.circular(15)),
                                     child: Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
@@ -144,13 +143,13 @@ class _NearbyElectriciansScreenState extends State<NearbyElectriciansScreen> {
                                                   SizedBox(height: 2),
                                                   Row(
                                                     children: [
-                                                      ElevatedButton.icon(
+                                                      Expanded(child: ElevatedButton.icon(
                                                         icon: Icon(
                                                           Icons.phone,
                                                           color: ColorResources.getScaffoldBackgroundColor(context),
                                                         ),
                                                         label: Text(
-                                                          getTranslated('call_now', context),
+                                                          getTranslated('call_now', context),maxLines: 1,overflow: TextOverflow.ellipsis,
                                                           style: TextStyle(
                                                             color: ColorResources.getScaffoldBackgroundColor(context),
                                                             fontSize: 15,
@@ -165,12 +164,12 @@ class _NearbyElectriciansScreenState extends State<NearbyElectriciansScreen> {
                                                           ),
                                                         ),
                                                         onPressed: () => _launchCaller(electrician.phone!),
-                                                      ),
+                                                      ),),
 
-                                                      SizedBox(width: 15,),
-                                                      ElevatedButton.icon(
+                                                      SizedBox(width: 5),
+                                                      Expanded(child:   ElevatedButton.icon(
                                                         icon: Icon(Icons.navigation, color: ColorResources.getScaffoldBackgroundColor(context)),
-                                                        label: Text(getTranslated('navigate', context) ,
+                                                        label: Text(getTranslated('navigate', context) ,maxLines: 1,overflow: TextOverflow.ellipsis,
                                                           style: TextStyle(
                                                               color: ColorResources.getScaffoldBackgroundColor(context),
                                                               fontSize: 15 , fontWeight: FontWeight.w500
@@ -183,7 +182,7 @@ class _NearbyElectriciansScreenState extends State<NearbyElectriciansScreen> {
                                                           ),
                                                         ),
                                                         onPressed: () => _launchMaps(double.parse(electrician.latitude!), double.parse(electrician.longitude!)),
-                                                      ),
+                                                      ),)
                                                     ],
                                                   ),
                                                 ],

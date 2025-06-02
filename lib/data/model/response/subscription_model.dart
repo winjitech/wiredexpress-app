@@ -7,6 +7,7 @@ class SubscriptionPlanModel {
   String? _frequency;
   bool? _usePlan;
   String? _paypalPlanId;
+  String? _stripePlanId;
   List<SubscriptionFeatureModel>? _features;
 
   SubscriptionPlanModel({
@@ -16,6 +17,7 @@ class SubscriptionPlanModel {
     String? frequency,
     bool? usePlan,
     String? paypalPlanId,
+    String? stripePlanId,
     List<SubscriptionFeatureModel>? features,
   }) {
     this._id = id;
@@ -24,6 +26,7 @@ class SubscriptionPlanModel {
     this._frequency = frequency;
     this._usePlan = usePlan;
     this._paypalPlanId = paypalPlanId;
+    this._stripePlanId = stripePlanId;
     this._features = features;
   }
 
@@ -33,6 +36,7 @@ class SubscriptionPlanModel {
   String? get frequency => _frequency;
   bool? get usePlan => _usePlan;
   String? get paypalPlanId => _paypalPlanId;
+  String? get stripePlanId => _stripePlanId;
   List<SubscriptionFeatureModel>? get features => _features;
 
   SubscriptionPlanModel.fromJson(Map<String, dynamic> json) {
@@ -42,6 +46,7 @@ class SubscriptionPlanModel {
     _frequency = json['frequency'];
     _usePlan = json['use_plan'];
     _paypalPlanId = json['paypal_plan_id'];
+    _stripePlanId = json['stripe_price_id'];
     if (json['features'] != null) {
       _features = <SubscriptionFeatureModel>[];
       json['features'].forEach((v) {
@@ -51,13 +56,14 @@ class SubscriptionPlanModel {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+    final Map<String, dynamic> data = <String, dynamic>{};
     data['id'] = this._id;
     data['name'] = this._name;
     data['price'] = this._price;
     data['frequency'] = this._frequency;
     data['use_plan'] = this._usePlan;
     data['paypal_plan_id'] = this._paypalPlanId;
+    data['stripe_price_id'] = this._stripePlanId;
     if (this._features != null) {
       data['features'] = this._features!.map((v) => v.toJson()).toList();
     }

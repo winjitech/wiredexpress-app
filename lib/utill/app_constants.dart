@@ -4,9 +4,10 @@ import 'package:wired_express/utill/images.dart';
 class AppConstants {
   static const String appName = 'Wired Express';
 
-  static const String baseUrl = 'https://192.168.1.7/wired_express';
-  // static const String baseUrl = 'https://wiredexpress01.com';
+  // static const String baseUrl = 'https://192.168.1.7/wired_express';
   // static const String baseUrl = 'https://staging.wiredexpress01.com';
+
+  static const String baseUrl = 'https://wiredexpress01.com';
   static const String categoryUrl = '/api/v1/categories';
   static const String categoryFeaturedUrl = '/api/v1/categories/featured';
   static const String bannerUrl = '/api/v1/banners';
@@ -74,11 +75,24 @@ class AppConstants {
 
   /// subscription
   static const String getSubscriptionPlansUrl = '/api/v1/customer/subscription/subscription-plans';
-  static const String subscriptionUserUrl = '/api/v1/customer/payment/subscribe';
-  static const String cancelSubscriptionUrl = '/api/v1/customer/payment/cancel-subscription';
-  static const String subscriptionDetailsUrl =  '/api/v1/customer/payment/details';
+
+  ///PAYPAL
+  static const String subscriptionUserUrl = '/api/v1/customer/subscription/paypal/subscribe';
+  static const String cancelSubscriptionUrl = '/api/v1/customer/subscription/paypal/cancel-subscription';
+  static const String subscriptionDetailsUrl =  '/api/v1/customer/subscription/paypal/details';
+
+  ///STRIPE
+  static const String stripeSubscriptionUserUrl = '/api/v1/customer/subscription/stripe/subscribe';
+  static const String stripeCancelSubscriptionUrl = '/api/v1/customer/subscription/stripe/cancel-subscription';
+  static const String stripeSubscriptionDetailsUrl =  '/api/v1/customer/subscription/stripe/details';
+
 
   static const String getLastDeliveryCoordinatesUrl = '/api/v1/delivery-man/get-last-delivery-coordinates?order_id=';
+
+  ///payment
+  static const String getAllCardsUrl = '/api/v1/customer/order-payment/get-cards/';
+  static const String deleteCardUrl = '/api/v1/customer/order-payment/remove-card';
+  static const String cardUpdateLinkUrl = '/api/v1/customer/order-payment/update-card-link';
 
   /// Shared Key
   static const String theme = 'theme';

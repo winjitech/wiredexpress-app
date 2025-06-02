@@ -21,10 +21,9 @@ class SubscriptionRepo {
 
   Future<ApiResponse> subscribeUser(
       UserSubscriptionPlanModel userSubscription) async {
+    print("userSubscription ==  ${userSubscription.toJson()}");
 
-    print("userSubscription ==  ${userSubscription.toJson()}") ;
-
-  try {
+    try {
       final response = await dioClient!.post(AppConstants.subscriptionUserUrl,
           data: userSubscription.toJson());
       return ApiResponse.withSuccess(response);
@@ -47,6 +46,37 @@ class SubscriptionRepo {
     try {
       final response = await dioClient!
           .post('${AppConstants.cancelSubscriptionUrl}?subscription_id=$id');
+      return ApiResponse.withSuccess(response);
+    } catch (e) {
+      return ApiResponse.withError(ApiErrorHandler.getMessage(e));
+    }
+  }
+
+  Future<ApiResponse> stripeSubscriptionUser(
+      int planId, String paymentMethodId) async {
+    try {
+      final response = await dioClient!.post(
+          "${AppConstants.stripeSubscriptionUserUrl}?plan_id=$planId&payment_method_id=$paymentMethodId");
+      return ApiResponse.withSuccess(response);
+    } catch (e) {
+      return ApiResponse.withError(ApiErrorHandler.getMessage(e));
+    }
+  }
+
+  Future<ApiResponse> stripeSubscriptionDetails() async {
+    try {
+      final response =
+          await dioClient!.get(AppConstants.stripeSubscriptionDetailsUrl);
+      return ApiResponse.withSuccess(response);
+    } catch (e) {
+      return ApiResponse.withError(ApiErrorHandler.getMessage(e));
+    }
+  }
+
+  Future<ApiResponse> stripeCancelSubscription() async {
+    try {
+      final response =
+          await dioClient!.post(AppConstants.stripeCancelSubscriptionUrl);
       return ApiResponse.withSuccess(response);
     } catch (e) {
       return ApiResponse.withError(ApiErrorHandler.getMessage(e));

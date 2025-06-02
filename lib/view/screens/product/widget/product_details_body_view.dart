@@ -80,7 +80,7 @@ class ProductDetailsBodyView extends StatelessWidget {
 
       double priceAfterTiredPricing = PriceConverter.getProductFinalPrice(
               context,
-          tiredPricings,
+              tiredPricings,
               originalPrice,
               productProvider.quantity ?? 1) ??
           0.0;
@@ -115,9 +115,9 @@ class ProductDetailsBodyView extends StatelessWidget {
 
         if (discount > 0) {
           discountMessage = '';
-              // '${PriceConverter.calculateDiscountAmount(context, originalPrice, discount, product.discountType ?? "amount")} '
-              // '${getTranslated('off_per_item_on_orders_of', context).toLowerCase()} '
-              // '${getTranslated('as_promotional_discount', context)}';
+          // '${PriceConverter.calculateDiscountAmount(context, originalPrice, discount, product.discountType ?? "amount")} '
+          // '${getTranslated('off_per_item_on_orders_of', context).toLowerCase()} '
+          // '${getTranslated('as_promotional_discount', context)}';
         } else {
           discountMessage = "none";
         }
@@ -450,53 +450,55 @@ class ProductDetailsBodyView extends StatelessWidget {
                   ),
                 ),
               )),
-          Positioned(
-              top: 15,
-              right: 15,
-              child: SafeArea(
-                child: GestureDetector(
-                  onTap: () => wishList.wishIdList
-                          .contains(productProvider.productDetailsModel!.id)
-                      ? wishList.removeFromWishList(
-                          productProvider.productDetailsModel!, (message) {
-                          wishList.initWishList(context);
-                          wishList.initWishListProductIds(context);
-                        })
-                      : wishList.addToWishList(
-                          productProvider.productDetailsModel!, (message) {
-                          wishList.initWishList(context);
-                          wishList.initWishListProductIds(context);
-                        }),
-                  child: Container(
-                    width: 40,
-                    height: 40,
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: ColorResources.getScaffoldBackgroundColor(context),
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: ColorResources.getBoxShadow(context),
-                          offset: const Offset(0, 2),
-                          blurRadius: 5,
-                        ),
-                      ],
-                    ),
-                    child: Icon(
-                      size: 25,
-                      wishList.wishIdList
-                              .contains(productProvider.productDetailsModel!.id)
-                          ? Icons.favorite
-                          : Icons.favorite_border,
-                      color: wishList.wishIdList
-                              .contains(productProvider.productDetailsModel!.id)
-                          ? ColorResources.getPrimaryColor(context)
-                          : ColorResources.getTextColor(context)
-                              .withOpacity(0.4),
+          if (isLoggedIn)
+            Positioned(
+                top: 15,
+                right: 15,
+                child: SafeArea(
+                  child: GestureDetector(
+                    onTap: () => wishList.wishIdList
+                            .contains(productProvider.productDetailsModel!.id)
+                        ? wishList.removeFromWishList(
+                            productProvider.productDetailsModel!, (message) {
+                            wishList.initWishList(context);
+                            wishList.initWishListProductIds(context);
+                          })
+                        : wishList.addToWishList(
+                            productProvider.productDetailsModel!, (message) {
+                            wishList.initWishList(context);
+                            wishList.initWishListProductIds(context);
+                          }),
+                    child: Container(
+                      width: 40,
+                      height: 40,
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color:
+                            ColorResources.getScaffoldBackgroundColor(context),
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: ColorResources.getBoxShadow(context),
+                            offset: const Offset(0, 2),
+                            blurRadius: 5,
+                          ),
+                        ],
+                      ),
+                      child: Icon(
+                        size: 25,
+                        wishList.wishIdList.contains(
+                                productProvider.productDetailsModel!.id)
+                            ? Icons.favorite
+                            : Icons.favorite_border,
+                        color: wishList.wishIdList.contains(
+                                productProvider.productDetailsModel!.id)
+                            ? ColorResources.getPrimaryColor(context)
+                            : ColorResources.getTextColor(context)
+                                .withOpacity(0.4),
+                      ),
                     ),
                   ),
-                ),
-              ))
+                ))
         ],
       ));
     });

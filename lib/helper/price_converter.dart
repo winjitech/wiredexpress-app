@@ -143,8 +143,8 @@ class PriceConverter {
 
     UserInfoModel? userInfo = profileProvider.userInfoModel;
 
-    int? userPlanId = userInfo!.userSubscription != null
-        ? userInfo.userSubscription!.planId!
+    int? userPlanId = userInfo?.userSubscription != null
+        ? userInfo?.userSubscription?.planId!
         : 0;
 
     if (authProvider.isLoggedIn()! &&

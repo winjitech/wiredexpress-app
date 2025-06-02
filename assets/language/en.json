@@ -456,5 +456,10 @@
   "payment_succeed": "Payment succeed!",
   "off_per_item": "Off per item",
   "exclusive_discount": "Exclusive Discount",
-  "per_item": "Per item"
+  "per_item": "Per item",
+  "add_card_info": "Add card info",
+  "please_add_your_card_details": "Please add your card details!",
+  "choose_payment_method": "Choose payment method",
+  "pay_with_paypal": "Pay with paypal",
+  "pay_with_stripe": "Pay with stripe"
 }

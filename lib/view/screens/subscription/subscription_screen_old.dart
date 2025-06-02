@@ -12,7 +12,7 @@ import 'package:provider/provider.dart';
 import 'package:wired_express/utill/color_resources.dart';
 import 'package:wired_express/view/base/custom_app_bar.dart';
 import 'package:wired_express/view/base/circular_indicator_widget.dart';
-import 'package:wired_express/view/screens/subscription/widget/subscription_bottom_sheet.dart';
+import 'package:wired_express/view/screens/subscription/subscription_details_screen.dart';
 
 class SubscriptionScreen extends StatefulWidget {
   @override
@@ -53,10 +53,12 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                   }
                   if (subscriptionProvider.subscriptionPlanList!.isEmpty) {
                     return Center(
-                        child: Text(
-                            getTranslated('no_any_plan_available', context),
-                            style: TextStyle(
-                                color: ColorResources.getTextColor(context))));
+                      child: Text(
+                        getTranslated('no_any_plan_available', context),
+                        style: TextStyle(
+                            color: ColorResources.getTextColor(context)),
+                      ),
+                    );
                   }
                   String currency =
                       splashProvider.configModel!.currencySymbol ?? '\$';
@@ -82,23 +84,23 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                                 children: [
                                   GestureDetector(
                                     onTap: () {
-                                      // Navigator.push(
-                                      //     context,
-                                      //     MaterialPageRoute(
-                                      //         builder: (BuildContext context) =>
-                                      //             SubscriptionDetailsScreen(
-                                      //                 plan: plan)));
-                                      showModalBottomSheet(
-                                          context: context,
-                                          builder: (context) =>
-                                              SubscriptionBottomSheet(
-                                                  plan: plan),
-                                          backgroundColor: Colors.transparent,
-                                          isScrollControlled: true,
-                                          barrierColor: Colors.black54,
-                                          isDismissible: true,
-                                          useSafeArea: true,
-                                          enableDrag: false);
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (BuildContext context) =>
+                                                  SubscriptionDetailsScreen(
+                                                      plan: plan)));
+                                      //   showModalBottomSheet(
+                                      //   context: context,
+                                      //   builder: (BuildContext context) =>
+                                      //       SubscriptionBottomSheet(plan: plan),
+                                      //   backgroundColor: Colors.transparent,
+                                      //   isScrollControlled: true,
+                                      //   barrierColor: Colors.black54,
+                                      //   isDismissible: true,
+                                      //   useSafeArea: true,
+                                      //   enableDrag: false,
+                                      // );
                                     },
                                     child: Container(
                                       padding: const EdgeInsets.all(15),
@@ -122,11 +124,25 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                                               crossAxisAlignment:
                                                   CrossAxisAlignment.start,
                                               children: [
-                                                // Text(plan.stripePlanId ?? "",
-                                                //     style: TextStyle(
-                                                //         color: Colors.red)),
                                                 Text(
                                                   plan.name ?? "",
+                                                  maxLines: 1,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  style: TextStyle(
+                                                    color: userUseThisPlan
+                                                        ? ColorResources
+                                                            .getPrimaryColor(
+                                                                context)
+                                                        : ColorResources
+                                                            .getTextColor(
+                                                                context),
+                                                    fontWeight: FontWeight.w600,
+                                                    fontSize: 16,
+                                                  ),
+                                                ),
+                                                Text(
+                                                  plan.stripePlanId ?? "",
                                                   maxLines: 1,
                                                   overflow:
                                                       TextOverflow.ellipsis,

@@ -148,4 +148,92 @@ class SubscriptionProvider extends ChangeNotifier {
     notifyListeners();
     return _responseModel;
   }
+
+  Future<ResponseModel> stripeSubscriptionUser(
+      BuildContext? context, int planId, String paymentMethodId) async {
+    _subscribeUserLoading = true;
+    notifyListeners();
+    ResponseModel _responseModel;
+    ApiResponse apiResponse =
+        await subscriptionRepo!.stripeSubscriptionUser(planId, paymentMethodId);
+    if (apiResponse.response != null &&
+        apiResponse.response!.statusCode == 200) {
+      print("_approveUrl == $_approveUrl");
+      _responseModel = ResponseModel(true, 'successful');
+      _subscribeUserLoading = false;
+      notifyListeners();
+    } else {
+      String _errorMessage;
+      if (apiResponse.error is String) {
+        _errorMessage = apiResponse.error.toString();
+      } else {
+        _errorMessage = apiResponse.error.errors[0].message;
+      }
+      print(_errorMessage);
+
+      _responseModel = ResponseModel(false, _errorMessage);
+      _subscribeUserLoading = false;
+      notifyListeners();
+    }
+    notifyListeners();
+    return _responseModel;
+  }
+
+  Future<ResponseModel> stripeSubscriptionDetails(BuildContext? context) async {
+    _subscriptionDetailsLoading = true;
+    notifyListeners();
+    ResponseModel _responseModel;
+    ApiResponse apiResponse =
+        await subscriptionRepo!.stripeSubscriptionDetails();
+    if (apiResponse.response != null &&
+        apiResponse.response!.statusCode == 200) {
+      _subscriptionStatus = apiResponse.response!.data!['status'];
+      print("status == $_subscriptionStatus");
+      _responseModel = ResponseModel(true, 'successful');
+      _subscriptionDetailsLoading = false;
+      notifyListeners();
+    } else {
+      String _errorMessage;
+      if (apiResponse.error is String) {
+        _errorMessage = apiResponse.error.toString();
+      } else {
+        _errorMessage = apiResponse.error.errors[0].message;
+      }
+      print(_errorMessage);
+
+      _responseModel = ResponseModel(false, _errorMessage);
+      _subscriptionDetailsLoading = false;
+      notifyListeners();
+    }
+    notifyListeners();
+    return _responseModel;
+  }
+
+  Future<ResponseModel> stripeCancelSubscription(BuildContext? context) async {
+    _cancelSubscriptionLoading = true;
+    notifyListeners();
+    ResponseModel _responseModel;
+    ApiResponse apiResponse =
+        await subscriptionRepo!.stripeCancelSubscription();
+    if (apiResponse.response != null &&
+        apiResponse.response!.statusCode == 200) {
+      _responseModel = ResponseModel(true, 'successful');
+      _cancelSubscriptionLoading = false;
+      notifyListeners();
+    } else {
+      String _errorMessage;
+      if (apiResponse.error is String) {
+        _errorMessage = apiResponse.error.toString();
+      } else {
+        _errorMessage = apiResponse.error.errors[0].message;
+      }
+      print(_errorMessage);
+
+      _responseModel = ResponseModel(false, _errorMessage);
+      _cancelSubscriptionLoading = false;
+      notifyListeners();
+    }
+    notifyListeners();
+    return _responseModel;
+  }
 }

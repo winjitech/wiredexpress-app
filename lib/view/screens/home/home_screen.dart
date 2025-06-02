@@ -65,17 +65,26 @@ class _HomeScreenState extends State<HomeScreen> {
           bool isExpiredYesterday = expireDate.year == yesterday.year &&
               expireDate.month == yesterday.month &&
               expireDate.day == yesterday.day;
-
           if (isExpiredYesterday) {
             String? subscriptionId =
-                userInfo.userSubscription?.paypalSubscriptionId;
-            if (subscriptionId != null) {
+                userInfo.userSubscription?.paypalSubscriptionId ??
+                    userInfo.userSubscription?.stripeSubscriptionId;
+            if (subscriptionId != null &&
+                userInfo.subscriptionWayType != 'stripe') {
               subscriptionProvider
                   .subscriptionDetails(context, subscriptionId)
                   .then((_) {
                 if (subscriptionProvider.subscriptionStatus == "CANCELLED") {
                   subscriptionProvider
                       .cancelSubscription(context, subscriptionId)
+                      .then((_) => profileProvider.getUserInfo(context));
+                }
+              });
+            } else if (userInfo.subscriptionWayType == 'stripe') {
+              subscriptionProvider.stripeSubscriptionDetails(context).then((_) {
+                if (subscriptionProvider.subscriptionStatus == "canceled") {
+                  subscriptionProvider
+                      .stripeCancelSubscription(context)
                       .then((_) => profileProvider.getUserInfo(context));
                 }
               });

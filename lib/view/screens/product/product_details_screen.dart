@@ -15,6 +15,7 @@ import 'package:wired_express/utill/color_resources.dart';
 import 'package:wired_express/view/base/circular_indicator_widget.dart';
 import 'package:wired_express/view/base/custom_button.dart';
 import 'package:wired_express/view/base/custom_snackbar.dart';
+import 'package:wired_express/view/base/not_logged_in_screen.dart';
 import 'package:wired_express/view/screens/product/widget/product_details_body_view.dart';
 
 class ProductDetailsScreen extends StatefulWidget {
@@ -39,9 +40,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
       await productProvider
           .getProductDetails(context, widget.productId!)
           .then((onValue) {
-        int minOrderQuantity = productProvider
-                .productDetailsModel?.minimumOrderQuantity ??
-            1;
+        int minOrderQuantity =
+            productProvider.productDetailsModel?.minimumOrderQuantity ?? 1;
 
         productProvider.setQuantity(minOrderQuantity);
       });
@@ -71,36 +71,43 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
               return Column(
                 children: [
                   Expanded(child: ProductDetailsBodyView(product: product)),
-                  if (isLoggedIn)
-                    Container(
-                      padding: EdgeInsets.all(15),
-                      color: ColorResources.getScaffoldBackgroundColor(context),
-                      child: cartProvider.cartLoading == true
-                          ? CustomCircularIndicator()
-                          : CustomButton(
-                              text: getTranslated('add_to_cart', context),
-                              onTap: () {
-                                CartModel cartModel = CartModel(
-                                    id: 0,
-                                    productId: product.id,
-                                    product: product,
-                                    quantity: productProvider.quantity);
+                  Container(
+                    padding: EdgeInsets.all(15),
+                    color: ColorResources.getScaffoldBackgroundColor(context),
+                    child: cartProvider.cartLoading == true
+                        ? CustomCircularIndicator()
+                        : CustomButton(
+                            text: getTranslated('add_to_cart', context),
+                            onTap: isLoggedIn
+                                ? () => Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (BuildContext context) =>
+                                            NotLoggedInScreen()))
+                                : () {
+                                    CartModel cartModel = CartModel(
+                                        id: 0,
+                                        productId: product.id,
+                                        product: product,
+                                        quantity: productProvider.quantity);
 
-                                cartProvider
-                                    .addToCartList(cartModel)
-                                    .then((value) {
-                                  cartProvider.initCartList(context);
-                                  cartProvider.initCartListProductIds(context);
-                                  showCustomSnackBar(
-                                      getTranslated(
-                                          'added_cart_successfully', context),
-                                      context,
-                                      isError: false);
-                                  Navigator.pop(context);
-                                });
-                              },
-                            ),
-                    )
+                                    cartProvider
+                                        .addToCartList(cartModel)
+                                        .then((value) {
+                                      cartProvider.initCartList(context);
+                                      cartProvider
+                                          .initCartListProductIds(context);
+                                      showCustomSnackBar(
+                                          getTranslated(
+                                              'added_cart_successfully',
+                                              context),
+                                          context,
+                                          isError: false);
+                                      Navigator.pop(context);
+                                    });
+                                  },
+                          ),
+                  )
                 ],
               );
             },

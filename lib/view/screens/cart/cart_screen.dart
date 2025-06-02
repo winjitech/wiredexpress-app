@@ -626,7 +626,7 @@ class _CartScreenState extends State<CartScreen> {
                                         priorityDelivery: profileProvider
                                                 .userInfoModel!
                                                 .priorityBulkOrderFulfillment ??
-                                            0);
+                                            0, cardId: '');
 
                                     print(
                                         "placeOrder == ${placeOrder.toJson()}");
