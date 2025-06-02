@@ -146,7 +146,7 @@ class _NearbyElectriciansScreenState extends State<NearbyElectriciansScreen> {
                                                       Expanded(child: ElevatedButton.icon(
                                                         icon: Icon(
                                                           Icons.phone,
-                                                          color: ColorResources.getScaffoldBackgroundColor(context),
+                                                          color: ColorResources.getScaffoldBackgroundColor(context), size: 18,
                                                         ),
                                                         label: Text(
                                                           getTranslated('call_now', context),maxLines: 1,overflow: TextOverflow.ellipsis,
@@ -168,7 +168,7 @@ class _NearbyElectriciansScreenState extends State<NearbyElectriciansScreen> {
 
                                                       SizedBox(width: 5),
                                                       Expanded(child:   ElevatedButton.icon(
-                                                        icon: Icon(Icons.navigation, color: ColorResources.getScaffoldBackgroundColor(context)),
+                                                        icon: Icon(Icons.navigation, color: ColorResources.getScaffoldBackgroundColor(context), size: 18,),
                                                         label: Text(getTranslated('navigate', context) ,maxLines: 1,overflow: TextOverflow.ellipsis,
                                                           style: TextStyle(
                                                               color: ColorResources.getScaffoldBackgroundColor(context),
