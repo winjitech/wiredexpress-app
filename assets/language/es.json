@@ -454,6 +454,11 @@
   "off_per_item": "Descuento por artículo",
   "exclusive_discount": "Descuento exclusivo",
   "per_item": "Por artículo",
+  "add_card_info": "Agregar información de la tarjeta",
+  "please_add_your_card_details": "¡Por favor, agrega los detalles de tu tarjeta!",
+  "choose_payment_method": "Elige un método de pago",
+  "pay_with_paypal": "Pagar con PayPal",
+  "pay_with_stripe": "Pagar con Stripe",
   "payment_details": "Detalles de pago"
 
 }
