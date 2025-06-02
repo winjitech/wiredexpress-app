@@ -15,12 +15,13 @@ class SignOutConfirmationDialog extends StatelessWidget {
   @override
   Widget build(BuildContext? context) {
     return Dialog(
+      backgroundColor: ColorResources.getScaffoldBackgroundColor(context!),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       child: Container(
-        width: 300,
         decoration: BoxDecoration(
-            color: ColorResources.getScaffoldColor(context!),
-            borderRadius: BorderRadius.circular(10)),
+            color: ColorResources.getScaffoldBackgroundColor(context),
+            borderRadius: BorderRadius.circular(15)),
+        width: 300,
         child: Consumer<CustomAuthProvider>(builder: (context, auth, child) {
           return Column(mainAxisSize: MainAxisSize.min, children: [
             SizedBox(height: 20),
@@ -39,7 +40,6 @@ class SignOutConfirmationDialog extends StatelessWidget {
                       color: ColorResources.getTextColor(context)),
                   textAlign: TextAlign.center),
             ),
-            Divider(height: 0, color: ColorResources.getHintColor(context)),
             !auth.isLogoutLoading!
                 ? Row(children: [
                     Expanded(
@@ -64,7 +64,9 @@ class SignOutConfirmationDialog extends StatelessWidget {
                             borderRadius: BorderRadius.only(
                                 bottomLeft: Radius.circular(10))),
                         child: Text(getTranslated('yes', context),
-                            style: rubikBold.copyWith(color: Colors.white)),
+                            style: rubikBold.copyWith(
+                              color: ColorResources.getTextColor(context),
+                            )),
                       ),
                     )),
                     Expanded(
@@ -74,7 +76,7 @@ class SignOutConfirmationDialog extends StatelessWidget {
                         padding: EdgeInsets.all(Dimensions.PADDING_SIZE_SMALL),
                         alignment: Alignment.center,
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: ColorResources.getTextColor(context),
                           borderRadius: BorderRadius.only(
                               bottomRight: Radius.circular(10)),
                         ),
@@ -86,8 +88,8 @@ class SignOutConfirmationDialog extends StatelessWidget {
                     )),
                   ])
                 : Padding(
-                    padding: EdgeInsets.all(Dimensions.PADDING_SIZE_SMALL),
-                    child: CustomCircularIndicator(color: Colors.white),
+                    padding: EdgeInsets.all(15),
+                    child: CustomCircularIndicator(),
                   ),
           ]);
         }),

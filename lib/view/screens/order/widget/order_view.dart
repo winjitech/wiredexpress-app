@@ -57,8 +57,8 @@ class _OrderViewState extends State<OrderView> {
                         Provider.of<PlaceOrderProvider>(context, listen: false)
                             .getRunningOrderList(context);
                       },
-                      backgroundColor: ColorResources.getPrimaryColor(context),
-                      child: Scrollbar(
+              color: ColorResources.getCardColor(context),
+              backgroundColor: ColorResources.getPrimaryColor(context),                      child: Scrollbar(
                           child: SingleChildScrollView(
                               physics: AlwaysScrollableScrollPhysics(),
                               child: Padding(

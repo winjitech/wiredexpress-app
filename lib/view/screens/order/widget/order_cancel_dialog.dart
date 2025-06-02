@@ -18,9 +18,12 @@ class OrderCancelDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      backgroundColor: ColorResources.getScaffoldColor(context),
+      backgroundColor: ColorResources.getScaffoldBackgroundColor(context!),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       child: Container(
+        decoration: BoxDecoration(
+            color: ColorResources.getScaffoldBackgroundColor(context),
+            borderRadius: BorderRadius.circular(15)),
         width: 300,
         child: Consumer2<OrderProvider, PlaceOrderProvider>(
           builder: (context, order, placeOrderProvider, child) {
@@ -31,7 +34,7 @@ class OrderCancelDialog extends StatelessWidget {
                 child: Text(getTranslated('are_you_sure_to_cancel', context),
                     style: rubikBold.copyWith(
                         color:
-                            ColorResources.getScaffoldBackgroundColor(context)),
+                            ColorResources.getTextColor(context)),
                     textAlign: TextAlign.center),
               ),
               Divider(height: 0, color: ColorResources.getHintColor(context)),
@@ -70,7 +73,7 @@ class OrderCancelDialog extends StatelessWidget {
                           child: Text(getTranslated('yes', context),
                               style: rubikBold.copyWith(
                                   color:
-                                      ColorResources.getScaffoldBackgroundColor(
+                                      ColorResources.getTextColor(
                                           context))),
                         ),
                       )),
@@ -82,7 +85,7 @@ class OrderCancelDialog extends StatelessWidget {
                               EdgeInsets.all(Dimensions.PADDING_SIZE_SMALL),
                           alignment: Alignment.center,
                           decoration: BoxDecoration(
-                              color: ColorResources.getScaffoldBackgroundColor(
+                              color: ColorResources.getTextColor(
                                   context),
                               borderRadius: BorderRadius.only(
                                   bottomRight: Radius.circular(10))),
@@ -92,11 +95,10 @@ class OrderCancelDialog extends StatelessWidget {
                         ),
                       )),
                     ])
-                  : Center(
-                      child: Padding(
-                      padding: EdgeInsets.all(Dimensions.PADDING_SIZE_SMALL),
-                      child: CustomCircularIndicator(color:Colors.white),
-                    )),
+                  :  Padding(
+                padding: EdgeInsets.all(15),
+                child: CustomCircularIndicator(),
+              ),
             ]);
           },
         ),

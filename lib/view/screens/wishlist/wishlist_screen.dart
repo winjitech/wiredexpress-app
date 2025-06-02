@@ -108,8 +108,8 @@ class _WishListScreenState extends State<WishListScreen> {
                                           listen: false)
                                       .initWishListProductIds(context);
                                 },
-                                backgroundColor:
-                                    ColorResources.getPrimaryColor(context),
+                      color: ColorResources.getCardColor(context),
+                      backgroundColor: ColorResources.getPrimaryColor(context),
                                 child: Scrollbar(
                                   child: SingleChildScrollView(
                                     child: Center(

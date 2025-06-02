@@ -88,7 +88,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     child: RefreshIndicator(
                       key: _refreshIndicatorKey,
                       displacement: 0,
-                      color: ColorResources.COLOR_WHITE,
+                      color: ColorResources.getCardColor(context),
                       backgroundColor: ColorResources.getPrimaryColor(context),
                       onRefresh: () {
                         return chat.refresh(context, true);

@@ -71,8 +71,8 @@ class _AddressScreenState extends State<AddressScreen> {
                                       listen: false)
                                   .initAddressList(context);
                             },
-                            backgroundColor:
-                                ColorResources.getPrimaryColor(context),
+                  color: ColorResources.getCardColor(context),
+                  backgroundColor: ColorResources.getPrimaryColor(context),
                             child: Scrollbar(
                               child: SingleChildScrollView(
                                 child: Center(

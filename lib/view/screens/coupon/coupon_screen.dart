@@ -43,8 +43,8 @@ class CouponScreen extends StatelessWidget {
                                           listen: false)
                                       .getCouponList(context);
                                 },
-                                backgroundColor:
-                                    ColorResources.getScaffoldColor(context),
+                  color: ColorResources.getCardColor(context),
+                  backgroundColor: ColorResources.getPrimaryColor(context),
                                 child: Scrollbar(
                                   child: SingleChildScrollView(
                                     child: Center(
