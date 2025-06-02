@@ -461,5 +461,6 @@
   "please_add_your_card_details": "Please add your card details!",
   "choose_payment_method": "Choose payment method",
   "pay_with_paypal": "Pay with paypal",
-  "pay_with_stripe": "Pay with stripe"
+  "pay_with_stripe": "Pay with stripe",
+  "payment_details": "Payment details"
 }

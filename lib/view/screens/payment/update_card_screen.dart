@@ -9,8 +9,12 @@ import 'package:wired_express/utill/color_resources.dart';
 import 'package:wired_express/utill/dimensions.dart';
 import 'package:wired_express/utill/styles.dart';
 import 'package:wired_express/view/base/custom_app_bar.dart';
+import 'package:wired_express/view/screens/payment/widget/remove_card_bottom_sheet.dart';
 
 class UpdateCardSreen extends StatelessWidget {
+  final bool? fromUpdate;
+
+  const UpdateCardSreen({super.key, this.fromUpdate = false});
   @override
   Widget build(BuildContext context) {
     // Fetch the token from the provider
@@ -33,11 +37,45 @@ class UpdateCardSreen extends StatelessWidget {
       onWillPop: _onWillPop,
       child: Scaffold(
         backgroundColor: Colors.white,
+        appBar: AppBar(
+          title: Text(getTranslated('payment_info', context),
+              style: rubikMedium.copyWith(
+                  fontSize: 18,
+                  color: ColorResources.getTextColor(context),
+                  fontWeight: FontWeight.w600)),
+          centerTitle: true,
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back_ios, size: 18),
+            color: ColorResources.getTextColor(context),
+            onPressed: () => Navigator.pop(context),
+          ),
+          actions: [
+            if (fromUpdate!)
+              GestureDetector(
+                onTap: () => showModalBottomSheet(
+                  context: context,
+                  builder: (BuildContext context) => RemoveCardBottomSheet(
+                      cardId:
+                          Provider.of<PaymentProvider>(context, listen: false)
+                              .paymentCardList![0]
+                              .id!),
+                  backgroundColor: Colors.transparent,
+                  isScrollControlled: true,
+                  barrierColor: Colors.black54,
+                  isDismissible: true,
+                  useSafeArea: true,
+                ),
+                child: const Padding(
+                  padding: EdgeInsets.all(5),
+                  child: Icon(Icons.delete, color: Colors.red),
+                ),
+              ),
+          ],
+          backgroundColor: ColorResources.getScaffoldBackgroundColor(context),
+          elevation: 0,
+        ),
         body: Column(
           children: [
-            CustomAppBar(
-                title: getTranslated('payment_info', context),
-                isBackButtonExist: true),
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.all(40.0),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:wired_express/helper/responsive_helper.dart';
 import 'package:wired_express/localization/language_constrants.dart';
 import 'package:wired_express/provider/auth_provider.dart';
+import 'package:wired_express/provider/payment_provider.dart';
 import 'package:wired_express/provider/profile_provider.dart';
 import 'package:wired_express/utill/color_resources.dart';
 import 'package:wired_express/provider/theme_provider.dart';
@@ -20,6 +21,7 @@ import 'package:wired_express/view/screens/coupon/coupon_screen.dart';
 import 'package:wired_express/view/screens/language/choose_language_screen.dart';
 import 'package:wired_express/view/screens/menu/widget/confirm_delete_account_bottom_sheet.dart';
 import 'package:wired_express/view/screens/notification/notification_screen.dart';
+import 'package:wired_express/view/screens/payment/update_card_screen.dart';
 import 'package:wired_express/view/screens/profile/change_pass_screen.dart';
 import 'package:wired_express/view/screens/profile/profile_screen.dart';
 import 'package:wired_express/view/screens/subscription/subscription_screen.dart';
@@ -47,11 +49,21 @@ class _MenuScreenState extends State<MenuScreen> {
     final bool _isLoggedIn =
         Provider.of<CustomAuthProvider>(context, listen: false).isLoggedIn()!;
     if (_isLoggedIn) {
-      Provider.of<ProfileProvider>(context, listen: false).getUserInfo(context);
+      Provider.of<ProfileProvider>(context, listen: false)
+          .getUserInfo(context)
+          .then((onValue) {
+        Provider.of<PaymentProvider>(context, listen: false).getPaymentCardList(
+            context,
+            Provider.of<ProfileProvider>(context, listen: false)
+                .userInfoModel!
+                .id!);
+      });
     }
 
-    return Consumer3<MainProvider, ProfileProvider, ThemeProvider>(
-      builder: (context, mainProvider, profileProvider, themeProvider, child) =>
+    return Consumer4<MainProvider, ProfileProvider, ThemeProvider,
+        PaymentProvider>(
+      builder: (context, mainProvider, profileProvider, themeProvider,
+              paymentProvider, child) =>
           Scaffold(
         appBar: CustomAppBar(
             title: getTranslated('profile', context), isBackButtonExist: false),
@@ -63,7 +75,7 @@ class _MenuScreenState extends State<MenuScreen> {
                 child: SingleChildScrollView(
                     padding: EdgeInsets.zero,
                     physics: const BouncingScrollPhysics(),
-                    child: mainProvider.loading
+                    child: mainProvider.loading || paymentProvider.getCardsLoading!
                         ? const CustomCircularIndicator()
                         : Center(
                             child: SizedBox(
@@ -210,6 +222,51 @@ class _MenuScreenState extends State<MenuScreen> {
                                         title: Text(
                                             getTranslated(
                                                 'subscription', context),
+                                            style: rubikMedium.copyWith(
+                                                fontSize:
+                                                    Dimensions.FONT_SIZE_LARGE,
+                                                color:
+                                                    ColorResources.getTextColor(
+                                                        context))),
+                                      ),
+                                    if (_isLoggedIn)
+                                      ListTile(
+                                        onTap: () {
+                                          if (paymentProvider
+                                              .paymentCardList!.isEmpty) {
+                                            paymentProvider
+                                                .cardUpdateLink(context)
+                                                .then((value) {
+                                              Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder: (_) =>
+                                                          UpdateCardSreen()));
+                                            });
+                                          } else {
+                                            paymentProvider
+                                                .cardUpdateLink(context)
+                                                .then((value) {
+                                              Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder: (_) =>
+                                                          UpdateCardSreen(fromUpdate:true)));
+                                            });
+                                          }
+                                        },
+                                        leading: Icon(Icons.payment,
+                                            color: ColorResources.getTextColor(
+                                                context)),
+                                        trailing: Icon(
+                                          Icons.arrow_forward_ios_rounded,
+                                          size: 17,
+                                          color: ColorResources.getTextColor(
+                                              context),
+                                        ),
+                                        title: Text(
+                                            getTranslated(
+                                                'payment_details', context),
                                             style: rubikMedium.copyWith(
                                                 fontSize:
                                                     Dimensions.FONT_SIZE_LARGE,

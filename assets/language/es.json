@@ -453,5 +453,7 @@
   "payment_succeed": "¡Pago realizado con éxito!",
   "off_per_item": "Descuento por artículo",
   "exclusive_discount": "Descuento exclusivo",
-  "per_item": "Por artículo"
+  "per_item": "Por artículo",
+  "payment_details": "Detalles de pago"
+
 }

@@ -284,127 +284,151 @@ class _SubscriptionBottomSheetState extends State<SubscriptionBottomSheet> {
                                                                             (onValue) {
                                                                       if (onValue
                                                                           .isSuccess) {
-                                                                        showDialog(
-                                                                          context:
-                                                                              context,
-                                                                          barrierDismissible:
-                                                                              true,
-                                                                          builder: (context) =>
-                                                                              Dialog(
-                                                                            backgroundColor:
-                                                                                ColorResources.getCardColor(context),
-                                                                            shape:
-                                                                                RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                                                                            child:
-                                                                                Container(
-                                                                              padding: const EdgeInsets.all(20),
-                                                                              decoration: BoxDecoration(
-                                                                                color: ColorResources.getCardColor(context),
-                                                                                borderRadius: BorderRadius.circular(12),
-                                                                              ),
-                                                                              child: Column(
-                                                                                mainAxisSize: MainAxisSize.min,
-                                                                                children: [
-                                                                                  Text(
-                                                                                    getTranslated('choose_payment_method', context),
-                                                                                    style: rubikBold.copyWith(fontSize: 18, color: ColorResources.getTextColor(context)),
-                                                                                  ),
-                                                                                  const SizedBox(height: 20),
-                                                                                  GestureDetector(
-                                                                                    onTap: () {
-                                                                                      Navigator.pop(context);
-                                                                                      UserSubscriptionPlanModel userSub = UserSubscriptionPlanModel(planId: plan.id, paypalPlanId: plan.paypalPlanId, givenName: "${user.fName ?? ''}${user.lName ?? ''}", lastName: user.lName ?? '', email: user.email ?? '', paypalSubscriptionId: '', stripeSubscriptionId: '');
-                                                                                      subscriptionProvider.subscribeUser(context, userSub).then((onValue) {
-                                                                                        if (onValue.isSuccess) {
-                                                                                          if (context.mounted) {
-                                                                                            Navigator.pop(context);
-                                                                                            Navigator.pop(context);
-                                                                                          }
+                                                                        if (paymentProvider
+                                                                            .paymentCardList!
+                                                                            .isEmpty) {
+                                                                          paymentProvider
+                                                                              .cardUpdateLink(context)
+                                                                              .then((value) {
+                                                                            Navigator.push(context,
+                                                                                MaterialPageRoute(builder: (_) => UpdateCardSreen()));
+                                                                          });
+                                                                        } else {
+                                                                          Navigator.pop(
+                                                                              context);
 
-                                                                                          subscriptionProvider.getSubscriptionPlans(context);
-                                                                                          profileProvider.getUserInfo(context);
-                                                                                          Navigator.push(
-                                                                                              context,
-                                                                                              MaterialPageRoute(
-                                                                                                  builder: (BuildContext context) => PaymentWebView(
-                                                                                                        url: subscriptionProvider.approveUrl!,
-                                                                                                        fromCheckoutScreen: false,
-                                                                                                      )));
-                                                                                        } else {
-                                                                                          if (context.mounted) {
-                                                                                            Navigator.pop(context);
-                                                                                          }
-
-                                                                                          showCustomSnackBar(getTranslated('something_went_wrong', context), context);
-                                                                                        }
-                                                                                      });
-                                                                                    },
-                                                                                    child: Container(
-                                                                                      padding: EdgeInsets.all(10),
-                                                                                      decoration: BoxDecoration(color: ColorResources.getPrimaryColor(context), borderRadius: BorderRadius.circular(14)),
-                                                                                      child: Row(
-                                                                                        crossAxisAlignment: CrossAxisAlignment.center,
-                                                                                        mainAxisAlignment: MainAxisAlignment.center,
-                                                                                        children: [
-                                                                                          Icon(
-                                                                                            Icons.account_balance_wallet,
-                                                                                            color: ColorResources.getTextColor(context),
-                                                                                          ),
-                                                                                          SizedBox(width: 15),
-                                                                                          Text(
-                                                                                            getTranslated('pay_with_paypal', context),
-                                                                                            textAlign: TextAlign.center,
-                                                                                            style: TextStyle(color: ColorResources.getTextColor(context), fontSize: 15, fontWeight: FontWeight.w500),
-                                                                                          ),
-                                                                                        ],
-                                                                                      ),
-                                                                                    ),
-                                                                                  ),
-                                                                                  const SizedBox(height: 15),
-                                                                                  GestureDetector(
-                                                                                    onTap: () {
-                                                                                      Navigator.pop(context);
-                                                                                      if (paymentProvider.paymentCardList!.isEmpty) {
-                                                                                        paymentProvider.cardUpdateLink(context).then((value) {
-                                                                                          Navigator.push(context, MaterialPageRoute(builder: (_) => UpdateCardSreen()));
-                                                                                        });
-                                                                                      } else {
-                                                                                        Navigator.pop(context);
-                                                                                        Navigator.pop(context);
-
-                                                                                        subscriptionProvider.stripeSubscriptionUser(context, plan.id!, paymentProvider.paymentCardList![0].id!).then((onValue) {
-                                                                                          if (onValue.isSuccess) {
-                                                                                            subscriptionProvider.getSubscriptionPlans(context);
-                                                                                            profileProvider.getUserInfo(context);
-                                                                                          } else {
-                                                                                            showCustomSnackBar(getTranslated('something_went_wrong', context), context);
-                                                                                          }
-                                                                                        });
-                                                                                      }
-                                                                                    },
-                                                                                    child: Container(
-                                                                                      padding: EdgeInsets.all(10),
-                                                                                      decoration: BoxDecoration(
-                                                                                          border: Border.all(
-                                                                                            color: ColorResources.getPrimaryColor(context),
-                                                                                          ),
-                                                                                          borderRadius: BorderRadius.circular(14)),
-                                                                                      child: Row(
-                                                                                        crossAxisAlignment: CrossAxisAlignment.center,
-                                                                                        mainAxisAlignment: MainAxisAlignment.center,
-                                                                                        children: [
-                                                                                          Icon(Icons.credit_card, color: ColorResources.getPrimaryColor(context)),
-                                                                                          SizedBox(width: 15),
-                                                                                          Text(getTranslated('pay_with_stripe', context), textAlign: TextAlign.center, style: TextStyle(color: ColorResources.getPrimaryColor(context), fontSize: 15, fontWeight: FontWeight.w500)),
-                                                                                        ],
-                                                                                      ),
-                                                                                    ),
-                                                                                  ),
-                                                                                ],
-                                                                              ),
-                                                                            ),
-                                                                          ),
-                                                                        );
+                                                                          subscriptionProvider
+                                                                              .stripeSubscriptionUser(context, plan.id!, paymentProvider.paymentCardList![0].id!)
+                                                                              .then((onValue) {
+                                                                            if (onValue.isSuccess) {
+                                                                              subscriptionProvider.getSubscriptionPlans(context);
+                                                                              profileProvider.getUserInfo(context);
+                                                                            } else {
+                                                                              showCustomSnackBar(getTranslated('something_went_wrong', context), context);
+                                                                            }
+                                                                          });
+                                                                        }
+                                                                        // showDialog(
+                                                                        //   context:
+                                                                        //       context,
+                                                                        //   barrierDismissible:
+                                                                        //       true,
+                                                                        //   builder: (context) =>
+                                                                        //       Dialog(
+                                                                        //     backgroundColor:
+                                                                        //         ColorResources.getCardColor(context),
+                                                                        //     shape:
+                                                                        //         RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                                                        //     child:
+                                                                        //         Container(
+                                                                        //       padding: const EdgeInsets.all(20),
+                                                                        //       decoration: BoxDecoration(
+                                                                        //         color: ColorResources.getCardColor(context),
+                                                                        //         borderRadius: BorderRadius.circular(12),
+                                                                        //       ),
+                                                                        //       child: Column(
+                                                                        //         mainAxisSize: MainAxisSize.min,
+                                                                        //         children: [
+                                                                        //           Text(
+                                                                        //             getTranslated('choose_payment_method', context),
+                                                                        //             style: rubikBold.copyWith(fontSize: 18, color: ColorResources.getTextColor(context)),
+                                                                        //           ),
+                                                                        //           const SizedBox(height: 20),
+                                                                        //           GestureDetector(
+                                                                        //             onTap: () {
+                                                                        //               Navigator.pop(context);
+                                                                        //               UserSubscriptionPlanModel userSub = UserSubscriptionPlanModel(planId: plan.id, paypalPlanId: plan.paypalPlanId, givenName: "${user.fName ?? ''}${user.lName ?? ''}", lastName: user.lName ?? '', email: user.email ?? '', paypalSubscriptionId: '', stripeSubscriptionId: '');
+                                                                        //               subscriptionProvider.subscribeUser(context, userSub).then((onValue) {
+                                                                        //                 if (onValue.isSuccess) {
+                                                                        //                   if (context.mounted) {
+                                                                        //                     Navigator.pop(context);
+                                                                        //                     Navigator.pop(context);
+                                                                        //                   }
+                                                                        //
+                                                                        //                   subscriptionProvider.getSubscriptionPlans(context);
+                                                                        //                   profileProvider.getUserInfo(context);
+                                                                        //                   Navigator.push(
+                                                                        //                       context,
+                                                                        //                       MaterialPageRoute(
+                                                                        //                           builder: (BuildContext context) => PaymentWebView(
+                                                                        //                                 url: subscriptionProvider.approveUrl!,
+                                                                        //                                 fromCheckoutScreen: false,
+                                                                        //                               )));
+                                                                        //                 } else {
+                                                                        //                   if (context.mounted) {
+                                                                        //                     Navigator.pop(context);
+                                                                        //                   }
+                                                                        //
+                                                                        //                   showCustomSnackBar(getTranslated('something_went_wrong', context), context);
+                                                                        //                 }
+                                                                        //               });
+                                                                        //             },
+                                                                        //             child: Container(
+                                                                        //               padding: EdgeInsets.all(10),
+                                                                        //               decoration: BoxDecoration(color: ColorResources.getPrimaryColor(context), borderRadius: BorderRadius.circular(14)),
+                                                                        //               child: Row(
+                                                                        //                 crossAxisAlignment: CrossAxisAlignment.center,
+                                                                        //                 mainAxisAlignment: MainAxisAlignment.center,
+                                                                        //                 children: [
+                                                                        //                   Icon(
+                                                                        //                     Icons.account_balance_wallet,
+                                                                        //                     color: ColorResources.getTextColor(context),
+                                                                        //                   ),
+                                                                        //                   SizedBox(width: 15),
+                                                                        //                   Text(
+                                                                        //                     getTranslated('pay_with_paypal', context),
+                                                                        //                     textAlign: TextAlign.center,
+                                                                        //                     style: TextStyle(color: ColorResources.getTextColor(context), fontSize: 15, fontWeight: FontWeight.w500),
+                                                                        //                   ),
+                                                                        //                 ],
+                                                                        //               ),
+                                                                        //             ),
+                                                                        //           ),
+                                                                        //           const SizedBox(height: 15),
+                                                                        //           GestureDetector(
+                                                                        //             onTap: () {
+                                                                        //               Navigator.pop(context);
+                                                                        //               if (paymentProvider.paymentCardList!.isEmpty) {
+                                                                        //                 paymentProvider.cardUpdateLink(context).then((value) {
+                                                                        //                   Navigator.push(context, MaterialPageRoute(builder: (_) => UpdateCardSreen()));
+                                                                        //                 });
+                                                                        //               } else {
+                                                                        //                 Navigator.pop(context);
+                                                                        //                 Navigator.pop(context);
+                                                                        //
+                                                                        //                 subscriptionProvider.stripeSubscriptionUser(context, plan.id!, paymentProvider.paymentCardList![0].id!).then((onValue) {
+                                                                        //                   if (onValue.isSuccess) {
+                                                                        //                     subscriptionProvider.getSubscriptionPlans(context);
+                                                                        //                     profileProvider.getUserInfo(context);
+                                                                        //                   } else {
+                                                                        //                     showCustomSnackBar(getTranslated('something_went_wrong', context), context);
+                                                                        //                   }
+                                                                        //                 });
+                                                                        //               }
+                                                                        //             },
+                                                                        //             child: Container(
+                                                                        //               padding: EdgeInsets.all(10),
+                                                                        //               decoration: BoxDecoration(
+                                                                        //                   border: Border.all(
+                                                                        //                     color: ColorResources.getPrimaryColor(context),
+                                                                        //                   ),
+                                                                        //                   borderRadius: BorderRadius.circular(14)),
+                                                                        //               child: Row(
+                                                                        //                 crossAxisAlignment: CrossAxisAlignment.center,
+                                                                        //                 mainAxisAlignment: MainAxisAlignment.center,
+                                                                        //                 children: [
+                                                                        //                   Icon(Icons.credit_card, color: ColorResources.getPrimaryColor(context)),
+                                                                        //                   SizedBox(width: 15),
+                                                                        //                   Text(getTranslated('pay_with_stripe', context), textAlign: TextAlign.center, style: TextStyle(color: ColorResources.getPrimaryColor(context), fontSize: 15, fontWeight: FontWeight.w500)),
+                                                                        //                 ],
+                                                                        //               ),
+                                                                        //             ),
+                                                                        //           ),
+                                                                        //         ],
+                                                                        //       ),
+                                                                        //     ),
+                                                                        //   ),
+                                                                        // );
                                                                       } else {
                                                                         Navigator.pop(
                                                                             context);
@@ -432,121 +456,142 @@ class _SubscriptionBottomSheetState extends State<SubscriptionBottomSheet> {
                                                                         Navigator.pop(
                                                                             context);
 
-                                                                        showDialog(
-                                                                          context:
-                                                                              context,
-                                                                          barrierDismissible:
-                                                                              true,
-                                                                          builder: (context) =>
-                                                                              Dialog(
-                                                                            backgroundColor:
-                                                                                ColorResources.getCardColor(context),
-                                                                            shape:
-                                                                                RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                                                                            child:
-                                                                                Container(
-                                                                              padding: const EdgeInsets.all(20),
-                                                                              decoration: BoxDecoration(
-                                                                                color: ColorResources.getCardColor(context),
-                                                                                borderRadius: BorderRadius.circular(12),
-                                                                              ),
-                                                                              child: Column(
-                                                                                mainAxisSize: MainAxisSize.min,
-                                                                                children: [
-                                                                                  Text(
-                                                                                    getTranslated('choose_payment_method', context),
-                                                                                    style: rubikBold.copyWith(fontSize: 18, color: ColorResources.getTextColor(context)),
-                                                                                  ),
-                                                                                  const SizedBox(height: 20),
-                                                                                  GestureDetector(
-                                                                                    onTap: () {
-                                                                                      Navigator.pop(context);
-                                                                                      UserSubscriptionPlanModel userSub = UserSubscriptionPlanModel(planId: plan.id, paypalPlanId: plan.paypalPlanId, givenName: "${user.fName ?? ''}${user.lName ?? ''}", lastName: user.lName ?? '', email: user.email ?? '', paypalSubscriptionId: '', stripeSubscriptionId: '');
-                                                                                      subscriptionProvider.subscribeUser(context, userSub).then((onValue) {
-                                                                                        if (onValue.isSuccess) {
-                                                                                          Navigator.pop(context);
-
-                                                                                          subscriptionProvider.getSubscriptionPlans(context);
-                                                                                          profileProvider.getUserInfo(context);
-                                                                                          Navigator.push(
-                                                                                              context,
-                                                                                              MaterialPageRoute(
-                                                                                                  builder: (BuildContext context) => PaymentWebView(
-                                                                                                        url: subscriptionProvider.approveUrl!,
-                                                                                                        fromCheckoutScreen: false,
-                                                                                                      )));
-                                                                                        } else {
-                                                                                          Navigator.pop(context);
-
-                                                                                          showCustomSnackBar(getTranslated('something_went_wrong', context), context);
-                                                                                        }
-                                                                                      });
-                                                                                    },
-                                                                                    child: Container(
-                                                                                      padding: EdgeInsets.all(10),
-                                                                                      decoration: BoxDecoration(color: ColorResources.getPrimaryColor(context), borderRadius: BorderRadius.circular(14)),
-                                                                                      child: Row(
-                                                                                        crossAxisAlignment: CrossAxisAlignment.center,
-                                                                                        mainAxisAlignment: MainAxisAlignment.center,
-                                                                                        children: [
-                                                                                          Icon(
-                                                                                            Icons.account_balance_wallet,
-                                                                                            color: ColorResources.getTextColor(context),
-                                                                                          ),
-                                                                                          SizedBox(width: 15),
-                                                                                          Text(
-                                                                                            getTranslated('pay_with_paypal', context),
-                                                                                            textAlign: TextAlign.center,
-                                                                                            style: TextStyle(color: ColorResources.getTextColor(context), fontSize: 15, fontWeight: FontWeight.w500),
-                                                                                          ),
-                                                                                        ],
-                                                                                      ),
-                                                                                    ),
-                                                                                  ),
-                                                                                  const SizedBox(height: 15),
-                                                                                  GestureDetector(
-                                                                                    onTap: () {
-                                                                                      Navigator.pop(context);
-                                                                                      Navigator.pop(context);
-
-                                                                                      if (paymentProvider.paymentCardList!.isEmpty) {
-                                                                                        paymentProvider.cardUpdateLink(context).then((value) {
-                                                                                          Navigator.push(context, MaterialPageRoute(builder: (_) => UpdateCardSreen()));
-                                                                                        });
-                                                                                      } else {
-                                                                                        subscriptionProvider.stripeSubscriptionUser(context, plan.id!, paymentProvider.paymentCardList![0].id!).then((onValue) {
-                                                                                          if (onValue.isSuccess) {
-                                                                                            subscriptionProvider.getSubscriptionPlans(context);
-                                                                                            profileProvider.getUserInfo(context);
-                                                                                          } else {
-                                                                                            showCustomSnackBar(getTranslated('something_went_wrong', context), context);
-                                                                                          }
-                                                                                        });
-                                                                                      }
-                                                                                    },
-                                                                                    child: Container(
-                                                                                      padding: EdgeInsets.all(10),
-                                                                                      decoration: BoxDecoration(
-                                                                                          border: Border.all(
-                                                                                            color: ColorResources.getPrimaryColor(context),
-                                                                                          ),
-                                                                                          borderRadius: BorderRadius.circular(14)),
-                                                                                      child: Row(
-                                                                                        crossAxisAlignment: CrossAxisAlignment.center,
-                                                                                        mainAxisAlignment: MainAxisAlignment.center,
-                                                                                        children: [
-                                                                                          Icon(Icons.credit_card, color: ColorResources.getPrimaryColor(context)),
-                                                                                          SizedBox(width: 15),
-                                                                                          Text(getTranslated('pay_with_stripe', context), textAlign: TextAlign.center, style: TextStyle(color: ColorResources.getPrimaryColor(context), fontSize: 15, fontWeight: FontWeight.w500)),
-                                                                                        ],
-                                                                                      ),
-                                                                                    ),
-                                                                                  ),
-                                                                                ],
-                                                                              ),
-                                                                            ),
-                                                                          ),
-                                                                        );
+                                                                        if (paymentProvider
+                                                                            .paymentCardList!
+                                                                            .isEmpty) {
+                                                                          paymentProvider
+                                                                              .cardUpdateLink(context)
+                                                                              .then((value) {
+                                                                            Navigator.push(context,
+                                                                                MaterialPageRoute(builder: (_) => UpdateCardSreen()));
+                                                                          });
+                                                                        } else {
+                                                                          subscriptionProvider
+                                                                              .stripeSubscriptionUser(context, plan.id!, paymentProvider.paymentCardList![0].id!)
+                                                                              .then((onValue) {
+                                                                            if (onValue.isSuccess) {
+                                                                              subscriptionProvider.getSubscriptionPlans(context);
+                                                                              profileProvider.getUserInfo(context);
+                                                                            } else {
+                                                                              showCustomSnackBar(getTranslated('something_went_wrong', context), context);
+                                                                            }
+                                                                          });
+                                                                        }
+                                                                        // showDialog(
+                                                                        //   context:
+                                                                        //       context,
+                                                                        //   barrierDismissible:
+                                                                        //       true,
+                                                                        //   builder: (context) =>
+                                                                        //       Dialog(
+                                                                        //     backgroundColor:
+                                                                        //         ColorResources.getCardColor(context),
+                                                                        //     shape:
+                                                                        //         RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                                                        //     child:
+                                                                        //         Container(
+                                                                        //       padding: const EdgeInsets.all(20),
+                                                                        //       decoration: BoxDecoration(
+                                                                        //         color: ColorResources.getCardColor(context),
+                                                                        //         borderRadius: BorderRadius.circular(12),
+                                                                        //       ),
+                                                                        //       child: Column(
+                                                                        //         mainAxisSize: MainAxisSize.min,
+                                                                        //         children: [
+                                                                        //           Text(
+                                                                        //             getTranslated('choose_payment_method', context),
+                                                                        //             style: rubikBold.copyWith(fontSize: 18, color: ColorResources.getTextColor(context)),
+                                                                        //           ),
+                                                                        //           const SizedBox(height: 20),
+                                                                        //           GestureDetector(
+                                                                        //             onTap: () {
+                                                                        //               Navigator.pop(context);
+                                                                        //               UserSubscriptionPlanModel userSub = UserSubscriptionPlanModel(planId: plan.id, paypalPlanId: plan.paypalPlanId, givenName: "${user.fName ?? ''}${user.lName ?? ''}", lastName: user.lName ?? '', email: user.email ?? '', paypalSubscriptionId: '', stripeSubscriptionId: '');
+                                                                        //               subscriptionProvider.subscribeUser(context, userSub).then((onValue) {
+                                                                        //                 if (onValue.isSuccess) {
+                                                                        //                   Navigator.pop(context);
+                                                                        //
+                                                                        //                   subscriptionProvider.getSubscriptionPlans(context);
+                                                                        //                   profileProvider.getUserInfo(context);
+                                                                        //                   Navigator.push(
+                                                                        //                       context,
+                                                                        //                       MaterialPageRoute(
+                                                                        //                           builder: (BuildContext context) => PaymentWebView(
+                                                                        //                                 url: subscriptionProvider.approveUrl!,
+                                                                        //                                 fromCheckoutScreen: false,
+                                                                        //                               )));
+                                                                        //                 } else {
+                                                                        //                   Navigator.pop(context);
+                                                                        //
+                                                                        //                   showCustomSnackBar(getTranslated('something_went_wrong', context), context);
+                                                                        //                 }
+                                                                        //               });
+                                                                        //             },
+                                                                        //             child: Container(
+                                                                        //               padding: EdgeInsets.all(10),
+                                                                        //               decoration: BoxDecoration(color: ColorResources.getPrimaryColor(context), borderRadius: BorderRadius.circular(14)),
+                                                                        //               child: Row(
+                                                                        //                 crossAxisAlignment: CrossAxisAlignment.center,
+                                                                        //                 mainAxisAlignment: MainAxisAlignment.center,
+                                                                        //                 children: [
+                                                                        //                   Icon(
+                                                                        //                     Icons.account_balance_wallet,
+                                                                        //                     color: ColorResources.getTextColor(context),
+                                                                        //                   ),
+                                                                        //                   SizedBox(width: 15),
+                                                                        //                   Text(
+                                                                        //                     getTranslated('pay_with_paypal', context),
+                                                                        //                     textAlign: TextAlign.center,
+                                                                        //                     style: TextStyle(color: ColorResources.getTextColor(context), fontSize: 15, fontWeight: FontWeight.w500),
+                                                                        //                   ),
+                                                                        //                 ],
+                                                                        //               ),
+                                                                        //             ),
+                                                                        //           ),
+                                                                        //           const SizedBox(height: 15),
+                                                                        //           GestureDetector(
+                                                                        //             onTap: () {
+                                                                        //               Navigator.pop(context);
+                                                                        //               Navigator.pop(context);
+                                                                        //
+                                                                        //               if (paymentProvider.paymentCardList!.isEmpty) {
+                                                                        //                 paymentProvider.cardUpdateLink(context).then((value) {
+                                                                        //                   Navigator.push(context, MaterialPageRoute(builder: (_) => UpdateCardSreen()));
+                                                                        //                 });
+                                                                        //               } else {
+                                                                        //                 subscriptionProvider.stripeSubscriptionUser(context, plan.id!, paymentProvider.paymentCardList![0].id!).then((onValue) {
+                                                                        //                   if (onValue.isSuccess) {
+                                                                        //                     subscriptionProvider.getSubscriptionPlans(context);
+                                                                        //                     profileProvider.getUserInfo(context);
+                                                                        //                   } else {
+                                                                        //                     showCustomSnackBar(getTranslated('something_went_wrong', context), context);
+                                                                        //                   }
+                                                                        //                 });
+                                                                        //               }
+                                                                        //             },
+                                                                        //             child: Container(
+                                                                        //               padding: EdgeInsets.all(10),
+                                                                        //               decoration: BoxDecoration(
+                                                                        //                   border: Border.all(
+                                                                        //                     color: ColorResources.getPrimaryColor(context),
+                                                                        //                   ),
+                                                                        //                   borderRadius: BorderRadius.circular(14)),
+                                                                        //               child: Row(
+                                                                        //                 crossAxisAlignment: CrossAxisAlignment.center,
+                                                                        //                 mainAxisAlignment: MainAxisAlignment.center,
+                                                                        //                 children: [
+                                                                        //                   Icon(Icons.credit_card, color: ColorResources.getPrimaryColor(context)),
+                                                                        //                   SizedBox(width: 15),
+                                                                        //                   Text(getTranslated('pay_with_stripe', context), textAlign: TextAlign.center, style: TextStyle(color: ColorResources.getPrimaryColor(context), fontSize: 15, fontWeight: FontWeight.w500)),
+                                                                        //                 ],
+                                                                        //               ),
+                                                                        //             ),
+                                                                        //           ),
+                                                                        //         ],
+                                                                        //       ),
+                                                                        //     ),
+                                                                        //   ),
+                                                                        // );
                                                                       } else {
                                                                         Navigator.pop(
                                                                             context);
@@ -618,218 +663,252 @@ class _SubscriptionBottomSheetState extends State<SubscriptionBottomSheet> {
                                                     ]));
                                           })));
                                 } else {
-                                  showDialog(
-                                    context: context,
-                                    barrierDismissible: true,
-                                    builder: (context) => Dialog(
-                                      backgroundColor:
-                                          ColorResources.getCardColor(context),
-                                      shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(12)),
-                                      child: Container(
-                                        padding: const EdgeInsets.all(20),
-                                        decoration: BoxDecoration(
-                                          color: ColorResources.getCardColor(
-                                              context),
-                                          borderRadius:
-                                              BorderRadius.circular(12),
-                                        ),
-                                        child: Column(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            Text(
-                                              getTranslated(
-                                                  'choose_payment_method',
-                                                  context),
-                                              style: rubikBold.copyWith(
-                                                  fontSize: 18,
-                                                  color: ColorResources
-                                                      .getTextColor(context)),
-                                            ),
-                                            const SizedBox(height: 20),
-                                            GestureDetector(
-                                              onTap: () {
-                                                Navigator.pop(context);
+                                  if (paymentProvider
+                                      .paymentCardList!.isEmpty) {
+                                    paymentProvider
+                                        .cardUpdateLink(context)
+                                        .then((value) {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (_) =>
+                                                  UpdateCardSreen()));
+                                    });
+                                  } else {
+                                    Navigator.pop(context);
 
-                                                UserSubscriptionPlanModel
-                                                    userSub =
-                                                    UserSubscriptionPlanModel(
-                                                        planId: plan.id,
-                                                        paypalPlanId:
-                                                            plan.paypalPlanId,
-                                                        givenName:
-                                                            "${user.fName ?? ''}${user.lName ?? ''}",
-                                                        lastName:
-                                                            user.lName ?? '',
-                                                        email: user.email ?? '',
-                                                        paypalSubscriptionId:
-                                                            '',
-                                                        stripeSubscriptionId:
-                                                            '');
-
-                                                subscriptionProvider
-                                                    .subscribeUser(
-                                                        context, userSub)
-                                                    .then((onValue) {
-                                                  if (onValue.isSuccess) {
-                                                    subscriptionProvider
-                                                        .getSubscriptionPlans(
-                                                            context);
-                                                    profileProvider
-                                                        .getUserInfo(context);
-                                                    Navigator.push(
-                                                        context,
-                                                        MaterialPageRoute(
-                                                            builder: (BuildContext
-                                                                    context) =>
-                                                                PaymentWebView(
-                                                                  url: subscriptionProvider
-                                                                      .approveUrl!,
-                                                                  fromCheckoutScreen:
-                                                                      false,
-                                                                )));
-                                                  } else {
-                                                    Navigator.pop(context);
-
-                                                    showCustomSnackBar(
-                                                        getTranslated(
-                                                            'something_went_wrong',
-                                                            context),
-                                                        context);
-                                                  }
-                                                });
-                                              },
-                                              child: Container(
-                                                padding: EdgeInsets.all(10),
-                                                decoration: BoxDecoration(
-                                                    color: ColorResources
-                                                        .getPrimaryColor(
-                                                            context),
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            14)),
-                                                child: Row(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.center,
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
-                                                  children: [
-                                                    Icon(
-                                                      Icons
-                                                          .account_balance_wallet,
-                                                      color: ColorResources
-                                                          .getTextColor(
-                                                              context),
-                                                    ),
-                                                    SizedBox(width: 15),
-                                                    Text(
-                                                      getTranslated(
-                                                          'pay_with_paypal',
-                                                          context),
-                                                      textAlign:
-                                                          TextAlign.center,
-                                                      style: TextStyle(
-                                                          color: ColorResources
-                                                              .getTextColor(
-                                                                  context),
-                                                          fontSize: 15,
-                                                          fontWeight:
-                                                              FontWeight.w500),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                            ),
-                                            const SizedBox(height: 15),
-                                            GestureDetector(
-                                              onTap: () {
-                                                Navigator.pop(context);
-
-                                                if (paymentProvider
-                                                    .paymentCardList!.isEmpty) {
-                                                  paymentProvider
-                                                      .cardUpdateLink(context)
-                                                      .then((value) {
-                                                    Navigator.push(
-                                                        context,
-                                                        MaterialPageRoute(
-                                                            builder: (_) =>
-                                                                UpdateCardSreen()));
-                                                  });
-                                                } else {
-                                                  Navigator.pop(context);
-
-                                                  subscriptionProvider
-                                                      .stripeSubscriptionUser(
-                                                          context,
-                                                          plan.id!,
-                                                          paymentProvider
-                                                              .paymentCardList![
-                                                                  0]
-                                                              .id!)
-                                                      .then((onValue) {
-                                                    if (onValue.isSuccess) {
-                                                      subscriptionProvider
-                                                          .getSubscriptionPlans(
-                                                              context);
-                                                      profileProvider
-                                                          .getUserInfo(context);
-                                                    } else {
-                                                      showCustomSnackBar(
-                                                          getTranslated(
-                                                              'something_went_wrong',
-                                                              context),
-                                                          context);
-                                                    }
-                                                  });
-                                                }
-                                              },
-                                              child: Container(
-                                                padding: EdgeInsets.all(10),
-                                                decoration: BoxDecoration(
-                                                    border: Border.all(
-                                                      color: ColorResources
-                                                          .getPrimaryColor(
-                                                              context),
-                                                    ),
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            14)),
-                                                child: Row(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.center,
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
-                                                  children: [
-                                                    Icon(Icons.credit_card,
-                                                        color: ColorResources
-                                                            .getPrimaryColor(
-                                                                context)),
-                                                    SizedBox(width: 15),
-                                                    Text(
-                                                        getTranslated(
-                                                            'pay_with_stripe',
-                                                            context),
-                                                        textAlign:
-                                                            TextAlign.center,
-                                                        style: TextStyle(
-                                                            color: ColorResources
-                                                                .getPrimaryColor(
-                                                                    context),
-                                                            fontSize: 15,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .w500)),
-                                                  ],
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  );
+                                    subscriptionProvider
+                                        .stripeSubscriptionUser(
+                                            context,
+                                            plan.id!,
+                                            paymentProvider
+                                                .paymentCardList![0].id!)
+                                        .then((onValue) {
+                                      if (onValue.isSuccess) {
+                                        subscriptionProvider
+                                            .getSubscriptionPlans(context);
+                                        profileProvider.getUserInfo(context);
+                                      } else {
+                                        showCustomSnackBar(
+                                            getTranslated(
+                                                'something_went_wrong',
+                                                context),
+                                            context);
+                                      }
+                                    });
+                                  }
+                                  // showDialog(
+                                  //   context: context,
+                                  //   barrierDismissible: true,
+                                  //   builder: (context) => Dialog(
+                                  //     backgroundColor:
+                                  //         ColorResources.getCardColor(context),
+                                  //     shape: RoundedRectangleBorder(
+                                  //         borderRadius:
+                                  //             BorderRadius.circular(12)),
+                                  //     child: Container(
+                                  //       padding: const EdgeInsets.all(20),
+                                  //       decoration: BoxDecoration(
+                                  //         color: ColorResources.getCardColor(
+                                  //             context),
+                                  //         borderRadius:
+                                  //             BorderRadius.circular(12),
+                                  //       ),
+                                  //       child: Column(
+                                  //         mainAxisSize: MainAxisSize.min,
+                                  //         children: [
+                                  //           Text(
+                                  //             getTranslated(
+                                  //                 'choose_payment_method',
+                                  //                 context),
+                                  //             style: rubikBold.copyWith(
+                                  //                 fontSize: 18,
+                                  //                 color: ColorResources
+                                  //                     .getTextColor(context)),
+                                  //           ),
+                                  //           const SizedBox(height: 20),
+                                  //           GestureDetector(
+                                  //             onTap: () {
+                                  //               Navigator.pop(context);
+                                  //
+                                  //               UserSubscriptionPlanModel
+                                  //                   userSub =
+                                  //                   UserSubscriptionPlanModel(
+                                  //                       planId: plan.id,
+                                  //                       paypalPlanId:
+                                  //                           plan.paypalPlanId,
+                                  //                       givenName:
+                                  //                           "${user.fName ?? ''}${user.lName ?? ''}",
+                                  //                       lastName:
+                                  //                           user.lName ?? '',
+                                  //                       email: user.email ?? '',
+                                  //                       paypalSubscriptionId:
+                                  //                           '',
+                                  //                       stripeSubscriptionId:
+                                  //                           '');
+                                  //
+                                  //               subscriptionProvider
+                                  //                   .subscribeUser(
+                                  //                       context, userSub)
+                                  //                   .then((onValue) {
+                                  //                 if (onValue.isSuccess) {
+                                  //                   subscriptionProvider
+                                  //                       .getSubscriptionPlans(
+                                  //                           context);
+                                  //                   profileProvider
+                                  //                       .getUserInfo(context);
+                                  //                   Navigator.push(
+                                  //                       context,
+                                  //                       MaterialPageRoute(
+                                  //                           builder: (BuildContext
+                                  //                                   context) =>
+                                  //                               PaymentWebView(
+                                  //                                 url: subscriptionProvider
+                                  //                                     .approveUrl!,
+                                  //                                 fromCheckoutScreen:
+                                  //                                     false,
+                                  //                               )));
+                                  //                 } else {
+                                  //                   Navigator.pop(context);
+                                  //
+                                  //                   showCustomSnackBar(
+                                  //                       getTranslated(
+                                  //                           'something_went_wrong',
+                                  //                           context),
+                                  //                       context);
+                                  //                 }
+                                  //               });
+                                  //             },
+                                  //             child: Container(
+                                  //               padding: EdgeInsets.all(10),
+                                  //               decoration: BoxDecoration(
+                                  //                   color: ColorResources
+                                  //                       .getPrimaryColor(
+                                  //                           context),
+                                  //                   borderRadius:
+                                  //                       BorderRadius.circular(
+                                  //                           14)),
+                                  //               child: Row(
+                                  //                 crossAxisAlignment:
+                                  //                     CrossAxisAlignment.center,
+                                  //                 mainAxisAlignment:
+                                  //                     MainAxisAlignment.center,
+                                  //                 children: [
+                                  //                   Icon(
+                                  //                     Icons
+                                  //                         .account_balance_wallet,
+                                  //                     color: ColorResources
+                                  //                         .getTextColor(
+                                  //                             context),
+                                  //                   ),
+                                  //                   SizedBox(width: 15),
+                                  //                   Text(
+                                  //                     getTranslated(
+                                  //                         'pay_with_paypal',
+                                  //                         context),
+                                  //                     textAlign:
+                                  //                         TextAlign.center,
+                                  //                     style: TextStyle(
+                                  //                         color: ColorResources
+                                  //                             .getTextColor(
+                                  //                                 context),
+                                  //                         fontSize: 15,
+                                  //                         fontWeight:
+                                  //                             FontWeight.w500),
+                                  //                   ),
+                                  //                 ],
+                                  //               ),
+                                  //             ),
+                                  //           ),
+                                  //           const SizedBox(height: 15),
+                                  //           GestureDetector(
+                                  //             onTap: () {
+                                  //               Navigator.pop(context);
+                                  //
+                                  //               if (paymentProvider
+                                  //                   .paymentCardList!.isEmpty) {
+                                  //                 paymentProvider
+                                  //                     .cardUpdateLink(context)
+                                  //                     .then((value) {
+                                  //                   Navigator.push(
+                                  //                       context,
+                                  //                       MaterialPageRoute(
+                                  //                           builder: (_) =>
+                                  //                               UpdateCardSreen()));
+                                  //                 });
+                                  //               } else {
+                                  //                 Navigator.pop(context);
+                                  //
+                                  //                 subscriptionProvider
+                                  //                     .stripeSubscriptionUser(
+                                  //                         context,
+                                  //                         plan.id!,
+                                  //                         paymentProvider
+                                  //                             .paymentCardList![
+                                  //                                 0]
+                                  //                             .id!)
+                                  //                     .then((onValue) {
+                                  //                   if (onValue.isSuccess) {
+                                  //                     subscriptionProvider
+                                  //                         .getSubscriptionPlans(
+                                  //                             context);
+                                  //                     profileProvider
+                                  //                         .getUserInfo(context);
+                                  //                   } else {
+                                  //                     showCustomSnackBar(
+                                  //                         getTranslated(
+                                  //                             'something_went_wrong',
+                                  //                             context),
+                                  //                         context);
+                                  //                   }
+                                  //                 });
+                                  //               }
+                                  //             },
+                                  //             child: Container(
+                                  //               padding: EdgeInsets.all(10),
+                                  //               decoration: BoxDecoration(
+                                  //                   border: Border.all(
+                                  //                     color: ColorResources
+                                  //                         .getPrimaryColor(
+                                  //                             context),
+                                  //                   ),
+                                  //                   borderRadius:
+                                  //                       BorderRadius.circular(
+                                  //                           14)),
+                                  //               child: Row(
+                                  //                 crossAxisAlignment:
+                                  //                     CrossAxisAlignment.center,
+                                  //                 mainAxisAlignment:
+                                  //                     MainAxisAlignment.center,
+                                  //                 children: [
+                                  //                   Icon(Icons.credit_card,
+                                  //                       color: ColorResources
+                                  //                           .getPrimaryColor(
+                                  //                               context)),
+                                  //                   SizedBox(width: 15),
+                                  //                   Text(
+                                  //                       getTranslated(
+                                  //                           'pay_with_stripe',
+                                  //                           context),
+                                  //                       textAlign:
+                                  //                           TextAlign.center,
+                                  //                       style: TextStyle(
+                                  //                           color: ColorResources
+                                  //                               .getPrimaryColor(
+                                  //                                   context),
+                                  //                           fontSize: 15,
+                                  //                           fontWeight:
+                                  //                               FontWeight
+                                  //                                   .w500)),
+                                  //                 ],
+                                  //               ),
+                                  //             ),
+                                  //           ),
+                                  //         ],
+                                  //       ),
+                                  //     ),
+                                  //   ),
+                                  // );
                                 }
                               },
                               backgroundColor:
