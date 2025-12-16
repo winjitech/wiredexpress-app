@@ -57,7 +57,7 @@ class _SplashScreenState extends State<SplashScreen> {
             backgroundColor: isNotConnected ? Colors.red : Colors.green,
             duration: Duration(seconds: isNotConnected ? 6000 : 3),
             content: Text(
-              isNotConnected ? 'No connection' : 'Connected',
+              isNotConnected ? 'No conneddction' : 'Connected',
               textAlign: TextAlign.center,
             ),
           ));
