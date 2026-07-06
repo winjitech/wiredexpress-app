@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wired_express/data/model/response/wishlist_model.dart';
 import 'package:wired_express/helper/responsive_helper.dart';
 import 'package:wired_express/provider/profile_provider.dart';
@@ -10,14 +11,17 @@ import 'package:flutter/material.dart';
 import 'package:wired_express/localization/language_constrants.dart';
 import 'package:wired_express/provider/auth_provider.dart';
 import 'package:wired_express/provider/wishlist_provider.dart';
+import 'package:wired_express/utill/styles.dart';
 import 'package:wired_express/view/base/circular_indicator_widget.dart';
 import 'package:wired_express/view/base/custom_app_bar.dart';
 import 'package:wired_express/view/base/custom_main_appbar.dart';
+import 'package:wired_express/view/base/no_data_found_view.dart';
 import 'package:wired_express/view/base/no_data_screen.dart';
 import 'package:wired_express/view/base/not_logged_in_screen.dart';
-import 'package:wired_express/view/base/product_widget.dart';
+import 'package:wired_express/view/screens/product/widget/product_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:wired_express/view/screens/drawer/drawer_screen.dart';
+import 'package:wired_express/view/screens/home/widget/home_header_widget.dart';
 
 class WishListScreen extends StatefulWidget {
   @override
@@ -72,7 +76,7 @@ class _WishListScreenState extends State<WishListScreen> {
         openScale: 0.80,
         backdrop: SafeArea(
             child: Padding(
-          padding: const EdgeInsets.all(15),
+          padding: EdgeInsets.all(15.r),
           child: IconButton(
               onPressed: () {
                 closeDrawer();
@@ -80,59 +84,59 @@ class _WishListScreenState extends State<WishListScreen> {
               icon: Icon(
                 Icons.close,
                 color: ColorResources.getTextColor(context),
-                size: 36,
+                size: 36.sp,
               )),
         )),
-        childDecoration: BoxDecoration(borderRadius: BorderRadius.circular(40)),
+        childDecoration:
+            BoxDecoration(borderRadius: BorderRadius.circular(40.r)),
         controller: advancedDrawerController,
         animationCurve: Curves.easeInOutExpo,
         animationDuration: const Duration(milliseconds: 400),
         backdropColor: ColorResources.getTextFieldFillColor(context),
         drawer: DrawerScreen(),
         child: Scaffold(
-          backgroundColor: ColorResources.getScaffoldBackgroundColor(context!),
-          appBar: CustomMainAppBar(
-            onMenuPressed: () => showDrawer(),
-            title: getTranslated('my_favourite', context),
-          ),
-          body: _isLoggedIn
-              ? Consumer<WishListProvider>(
-                  builder: (context, wishlistProvider, child) {
-                    return wishlistProvider.loading
-                        ? CustomCircularIndicator()
-                        : wishlistProvider.wishList != null &&
-                                wishlistProvider.wishList!.isNotEmpty
-                            ? RefreshIndicator(
-                                onRefresh: () async {
-                                  await Provider.of<WishListProvider>(context,
-                                          listen: false)
-                                      .initWishListProductIds(context);
-                                },
-                      color: ColorResources.getCardColor(context),
-                      backgroundColor: ColorResources.getPrimaryColor(context),
-                                child: Scrollbar(
-                                  child: SingleChildScrollView(
-                                    child: Center(
-                                      child: SizedBox(
-                                          width:
-                                              MediaQuery.of(context).size.width,
+          backgroundColor: ColorResources.getScaffoldBackgroundColor(context),
+          body: Column(
+            children: [
+              HomeHeaderWidget(
+                  onMenuPressed: () => showDrawer(), title: 'wishlist'),
+              Expanded(
+                child: _isLoggedIn
+                    ? Consumer<WishListProvider>(
+                        builder: (context, wishlistProvider, child) {
+                          return wishlistProvider.loading
+                              ? CustomCircularIndicator()
+                              : wishlistProvider.wishList != null &&
+                                      wishlistProvider.wishList.isNotEmpty
+                                  ? RefreshIndicator(
+                                      onRefresh: () async {
+                                        await Provider.of<WishListProvider>(
+                                                context,
+                                                listen: false)
+                                            .initWishListProductIds(context);
+                                      },
+                                      color:
+                                          ColorResources.getCardColor(context),
+                                      backgroundColor:
+                                          ColorResources.getPrimaryColor(
+                                              context),
+                                      child: Scrollbar(
+                                        child: SingleChildScrollView(
                                           child: Column(
                                             children: [
                                               Padding(
-                                                padding:
-                                                    const EdgeInsets.all(15),
+                                                padding: EdgeInsets.all(15.r),
                                                 child: TextField(
                                                   controller: _searchController,
                                                   decoration: InputDecoration(
                                                     contentPadding:
-                                                        const EdgeInsets
-                                                            .symmetric(
+                                                        EdgeInsets.symmetric(
                                                             vertical: 16,
-                                                            horizontal: 22),
+                                                            horizontal: 22.w),
                                                     border: OutlineInputBorder(
                                                         borderRadius:
                                                             BorderRadius
-                                                                .circular(10.0),
+                                                                .circular(10.r),
                                                         borderSide:
                                                             const BorderSide(
                                                                 width: 0,
@@ -141,7 +145,7 @@ class _WishListScreenState extends State<WishListScreen> {
                                                     focusedBorder: OutlineInputBorder(
                                                         borderRadius:
                                                             BorderRadius
-                                                                .circular(10.0),
+                                                                .circular(10.r),
                                                         borderSide:
                                                             const BorderSide(
                                                                 width: 0,
@@ -150,7 +154,7 @@ class _WishListScreenState extends State<WishListScreen> {
                                                     enabledBorder: OutlineInputBorder(
                                                         borderRadius:
                                                             BorderRadius
-                                                                .circular(10.0),
+                                                                .circular(10.r),
                                                         borderSide:
                                                             const BorderSide(
                                                                 width: 0,
@@ -163,48 +167,27 @@ class _WishListScreenState extends State<WishListScreen> {
                                                                     context)
                                                             .withOpacity(0.4),
                                                         Icons.search_sharp,
-                                                        size: 25),
+                                                        size: 25.sp),
                                                     hintText: getTranslated(
                                                         'search', context),
                                                     fillColor: ColorResources
                                                         .getTextFieldFillColor(
                                                             context),
-                                                    hintStyle: TextStyle(
-                                                        fontSize: 14,
-                                                        color: ColorResources
-                                                                .getTextColor(
-                                                                    context)
-                                                            .withOpacity(0.4),
-                                                        fontWeight:
-                                                            FontWeight.w400),
+                                                    hintStyle: AppTextStyles.h7(context).copyWith(
+                                                      color: ColorResources.getTextColor(context).withOpacity(0.4),
+                                                    ),
                                                     filled: true,
                                                   ),
                                                   onChanged: (value) {
                                                     filterWishList(value);
                                                   },
-                                                  style: TextStyle(
-                                                      color: ColorResources
-                                                          .getTextColor(
-                                                              context),
-                                                      fontSize: 12),
+                                                  style: AppTextStyles.h8(context),
                                                 ),
                                               ),
                                               Padding(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                        horizontal: 20),
-                                                child: GridView.builder(
-                                                  gridDelegate:
-                                                      SliverGridDelegateWithFixedCrossAxisCount(
-                                                    crossAxisSpacing: 10,
-                                                    mainAxisSpacing: 10,
-                                                    mainAxisExtent: 240,
-                                                    crossAxisCount:
-                                                        ResponsiveHelper.isTab(
-                                                                context)
-                                                            ? 3
-                                                            : 2,
-                                                  ),
+                                                padding: EdgeInsets.symmetric(
+                                                    horizontal: 20.w),
+                                                child: ListView.builder(
                                                   physics:
                                                       const NeverScrollableScrollPhysics(),
                                                   shrinkWrap: true,
@@ -213,36 +196,47 @@ class _WishListScreenState extends State<WishListScreen> {
                                                           .toString()
                                                           .isEmpty
                                                       ? wishlistProvider
-                                                          .wishList!.length
+                                                          .wishList.length
                                                       : filteredWishList.length,
                                                   padding: EdgeInsets.zero,
                                                   itemBuilder:
                                                       (context, index) {
-                                                    return ProductWidget(
-                                                        product: _searchController
-                                                                .text
-                                                                .toString()
-                                                                .isEmpty
-                                                            ? wishlistProvider
-                                                                .wishList![
-                                                                    index]
-                                                                .product
-                                                            : filteredWishList[
-                                                                    index]
-                                                                .product);
+                                                    return Column(
+                                                      children: [
+                                                        ProductWidget(
+                                                            product: _searchController
+                                                                    .text
+                                                                    .toString()
+                                                                    .isEmpty
+                                                                ? wishlistProvider
+                                                                    .wishList[
+                                                                        index]
+                                                                    .product
+                                                                : filteredWishList[
+                                                                        index]
+                                                                    .product),
+                                                        SizedBox(
+                                                          height: 10.h,
+                                                        ),
+                                                      ],
+                                                    );
                                                   },
                                                 ),
                                               ),
                                             ],
-                                          )),
-                                    ),
-                                  ),
-                                ),
-                              )
-                            : NoDataScreen();
-                  },
-                )
-              : NotLoggedInScreen(),
+                                          ),
+                                        ),
+                                      ),
+                                    )
+                                  : NoDataFoundView(
+                                      text: 'wishlist_is_empty',
+                                      showIcon: false);
+                        },
+                      )
+                    : NotLoggedInScreen(),
+              ),
+            ],
+          ),
         ));
   }
 

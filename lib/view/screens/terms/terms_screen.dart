@@ -15,21 +15,27 @@ class TermsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: ColorResources.getScaffoldBackgroundColor(context!),
-      appBar:
-          CustomAppBar(title: getTranslated('terms_and_condition', context)),
-      body: Html(
-        data: Provider.of<SplashProvider>(context, listen: false)
-                .configModel!
-                .termsAndConditions ??
-            getTranslated('no_terms_and_condition', context),
-        style: {
-          "html": Style(
-            backgroundColor: ColorResources.getScaffoldBackgroundColor(context),
-            color: ColorResources.getTextColor(context), // Text color
-            fontSize: FontSize(16.0), // Font size
-            // Add other text style properties here as needed
+
+      body: Column(
+        children: [
+          CustomAppBar(title: 'terms_and_condition', showBackButton: true),
+          Expanded(
+            child: Html(
+              data: Provider.of<SplashProvider>(context, listen: false)
+                      .configModel!
+                      .termsAndConditions ??
+                  getTranslated('no_terms_and_condition', context),
+              style: {
+                "html": Style(
+                  backgroundColor: ColorResources.getScaffoldBackgroundColor(context),
+                  color: ColorResources.getTextColor(context), // Text color
+                  fontSize: FontSize(16.0), // Font size
+                  // Add other text style properties here as needed
+                ),
+              },
+            ),
           ),
-        },
+        ],
       ),
     );
   }

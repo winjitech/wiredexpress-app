@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wired_express/utill/color_resources.dart';
 
 class ImagePreview extends StatelessWidget {
@@ -16,7 +17,7 @@ class ImagePreview extends StatelessWidget {
               children: [
                 Container(
                   alignment: Alignment.centerRight,
-                  padding: EdgeInsets.only(top: 50, right: 25),
+                  padding: EdgeInsets.only(top: 50.h, right: 25),
                   child: GestureDetector(
                       onTap: () => Navigator.pop(context),
                       child: Icon(Icons.close, color: Colors.black)),
@@ -24,12 +25,12 @@ class ImagePreview extends StatelessWidget {
                 Image.network(imageURL!),
                 Container(
                     margin: EdgeInsets.symmetric(horizontal: 80, vertical: 50),
-                    height: 80,
-                    width: 80,
+                    height: 80.h,
+                    width: 80.w,
                     decoration: BoxDecoration(
                         image: DecorationImage(
                             fit: BoxFit.cover, image: NetworkImage(imageURL!)),
-                        borderRadius: BorderRadius.circular(15),
+                        borderRadius: BorderRadius.circular(15.r),
                         border: Border.all(color: Colors.orange, width: 2)))
               ],
             )));

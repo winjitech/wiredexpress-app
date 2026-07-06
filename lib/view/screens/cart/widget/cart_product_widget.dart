@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:math';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wired_express/data/helper/helpers.dart';
 import 'package:wired_express/data/model/response/cart_model.dart';
 import 'package:wired_express/data/model/response/product_model.dart';
@@ -133,9 +134,9 @@ class CartProductWidget extends StatelessWidget {
           ),
           child: Container(
             margin:
-                const EdgeInsets.only(bottom: Dimensions.PADDING_SIZE_DEFAULT),
+                EdgeInsets.only(bottom: Dimensions.PADDING_SIZE_DEFAULT),
             child: Container(
-              padding: const EdgeInsets.symmetric(
+              padding: EdgeInsets.symmetric(
                 vertical: Dimensions.PADDING_SIZE_EXTRA_SMALL,
                 horizontal: Dimensions.PADDING_SIZE_SMALL,
               ),
@@ -143,10 +144,10 @@ class CartProductWidget extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(10.r),
                     child: CachedNetworkImage(
-                      height: 100,
-                      width: 100,
+                      height: 100.h,
+                      width: 100.w,
                       fit: BoxFit.cover,
                       imageUrl:
                           '${splashProvider.baseUrls!.productImageUrl}/${product.image}',
@@ -154,7 +155,7 @@ class CartProductWidget extends StatelessWidget {
                           '${splashProvider.baseUrls!.productImageUrl}/${product.image}',
                     ),
                   ),
-                  const SizedBox(width: 20),
+                   SizedBox(width: 20.w),
                   // Product Details
                   Expanded(
                     child: Column(
@@ -165,13 +166,11 @@ class CartProductWidget extends StatelessWidget {
                           product.name!,
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            color: ColorResources.getTextColor(context),
+                          style: AppTextStyles.h2(context).copyWith(
                             fontWeight: FontWeight.w600,
-                            fontSize: 18,
                           ),
                         ),
-                        const SizedBox(height: 30),
+                        SizedBox(height: 30.h),
                         Align(
                           alignment: Alignment.bottomLeft,
                           child: Row(
@@ -182,35 +181,26 @@ class CartProductWidget extends StatelessWidget {
                                   if (haveDiscount)
                                     Text(
                                       '$currency${Helpers.formatTextWithNum(originalPriceWithQuantity.toString())}',
-                                      style: TextStyle(
-                                        color:
-                                            ColorResources.getTextColor(context)
-                                                .withOpacity(0.4),
-                                        fontSize: 16,
+                                      style: AppTextStyles.h5(context).copyWith(
+                                        color: ColorResources.getTextColor(context).withOpacity(0.4),
                                         decoration: TextDecoration.lineThrough,
                                         decorationColor:
-                                            ColorResources.getTextColor(context)
-                                                .withOpacity(0.4),
+                                        ColorResources.getTextColor(context).withOpacity(0.4),
                                       ),
                                     ),
                                   SizedBox(
-                                    width: 5,
+                                    width: 5.w,
                                   ),
                                   Text(
                                     '$currency${Helpers.formatTextWithNum(finalPriceWithQuantity.toString())}',
-                                    style: TextStyle(
-                                      color:
-                                          ColorResources.getTextColor(context),
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: 18,
-                                    ),
+                                    style: AppTextStyles.h3(context),
                                   ),
                                 ],
                               )),
                               // Quantity Controls
                               Container(
                                 decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(5),
+                                  borderRadius: BorderRadius.circular(5.r),
                                 ),
                                 child: Row(
                                   children: [
@@ -230,8 +220,8 @@ class CartProductWidget extends StatelessWidget {
                                                   isError: false);
                                             },
                                             child: Container(
-                                              width: 25,
-                                              height: 25,
+                                              width: 25.w,
+                                              height: 25.h,
                                               decoration: BoxDecoration(
                                                   color: ColorResources
                                                           .getTextColor(context)
@@ -241,7 +231,7 @@ class CartProductWidget extends StatelessWidget {
                                                           50)),
                                               child: Icon(
                                                 Icons.delete,
-                                                size: 20,
+                                                size: 20.sp,
                                                 color:
                                                     ColorResources.getTextColor(
                                                         context),
@@ -281,8 +271,8 @@ class CartProductWidget extends StatelessWidget {
                                               }
                                             },
                                             child: Container(
-                                              width: 25,
-                                              height: 25,
+                                              width: 25.w,
+                                              height: 25.h,
                                               decoration: BoxDecoration(
                                                   color: ColorResources
                                                           .getTextColor(context)
@@ -292,7 +282,7 @@ class CartProductWidget extends StatelessWidget {
                                                           50)),
                                               child: Icon(
                                                 Icons.remove,
-                                                size: 20,
+                                                size: 20.sp,
                                                 color:
                                                     ColorResources.getTextColor(
                                                         context),
@@ -300,15 +290,12 @@ class CartProductWidget extends StatelessWidget {
                                             ),
                                           ),
                                     Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 10),
+                                      padding: EdgeInsets.symmetric(horizontal: 10.w,),
                                       child: Text(
                                         quantity.toString(),
-                                        style: rubikMedium.copyWith(
-                                          fontSize: 25,
-                                          fontWeight: FontWeight.w500,
-                                          color: ColorResources.getTextColor(
-                                              context),
+                                        style: AppTextStyles.h6(
+                                          context,
+                                          fontSize: 25.sp,
                                         ),
                                       ),
                                     ),
@@ -324,29 +311,20 @@ class CartProductWidget extends StatelessWidget {
                                             quantity: quantity + 1,
                                             product: product);
 
-                                        cartProvider
-                                            .addToCartList(cartModel)
-                                            .then((value) {
-                                          cartProvider.initCartList(context,
-                                              showLoading: false);
-                                          cartProvider.initCartListProductIds(
-                                              context,
-                                              showLoading: false);
+                                        cartProvider.addToCartList(cartModel).then((value) {
+                                          cartProvider.initCartList(context, showLoading: false);
+                                          cartProvider.initCartListProductIds(context, showLoading: false);
                                         });
                                       },
                                       child: Container(
-                                        width: 25,
-                                        height: 25,
+                                        width: 25.w,
+                                        height: 25.h,
                                         decoration: BoxDecoration(
-                                          color: ColorResources.getTextColor(
-                                                  context)
-                                              .withOpacity(0.2),
-                                          borderRadius:
-                                              BorderRadius.circular(50),
-                                        ),
+                                          color: ColorResources.getTextColor(context).withOpacity(0.2),
+                                          borderRadius: BorderRadius.circular(50.r)),
                                         child: Icon(
                                           Icons.add,
-                                          size: 20,
+                                          size: 20.sp,
                                           color: ColorResources.getTextColor(
                                               context),
                                         ),

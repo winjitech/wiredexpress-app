@@ -10,6 +10,7 @@ import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
 import 'package:wired_express/localization/language_constrants.dart';
 import 'package:wired_express/utill/app_constants.dart';
 import 'package:wired_express/utill/color_resources.dart';
+import 'package:wired_express/utill/styles.dart';
 import 'package:wired_express/view/screens/dashboard/dashboard_screen.dart';
 import 'package:wired_express/view/screens/payment/payment_success_screen.dart';
 
@@ -198,8 +199,12 @@ Page resource error:
 
         appBar: AppBar(
           elevation: 0.3,
-          title: Text(getTranslated('PAYMENT', context!),
-              style: TextStyle(color: Colors.black87)),
+          title: Text(
+            getTranslated('PAYMENT', context!),
+            style: AppTextStyles.h7(context).copyWith(
+              color: Colors.black87,
+            ),
+          ),
           backgroundColor: Colors.white,
           automaticallyImplyLeading: false,
           leading: IconButton(
@@ -226,7 +231,7 @@ class NavigationControls extends StatelessWidget {
     return Row(
       children: <Widget>[
         IconButton(
-          icon: const Icon(Icons.arrow_back_ios),
+          icon: Icon(Icons.arrow_back_ios),
           onPressed: () async {
             if (await webViewController!.canGoBack()) {
               await webViewController!.goBack();
@@ -240,7 +245,7 @@ class NavigationControls extends StatelessWidget {
           },
         ),
         IconButton(
-          icon: const Icon(Icons.arrow_forward_ios),
+          icon: Icon(Icons.arrow_forward_ios),
           onPressed: () async {
             if (await webViewController!.canGoForward()) {
               await webViewController!.goForward();
@@ -254,7 +259,7 @@ class NavigationControls extends StatelessWidget {
           },
         ),
         IconButton(
-          icon: const Icon(Icons.replay),
+          icon: Icon(Icons.replay),
           onPressed: () => webViewController!.reload(),
         ),
       ],

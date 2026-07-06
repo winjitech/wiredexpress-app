@@ -2,7 +2,6 @@ class Images {
   static const String home = 'assets/image/home_icon.png';
   static const String more = 'assets/image/more_icon.png';
   static const String fav = 'assets/image/fav_icon.png';
-  static const String cart = 'assets/image/cart_icon.png';
   static const String filter = 'assets/image/filter_icon.png';
   static const String coupon = 'assets/image/coupon.png';
   static const String language = 'assets/image/language.png';
@@ -45,9 +44,7 @@ class Images {
   static const String logo_2 = 'assets/image/logo.png';
 
   // for Icon
-  static const String logo= 'assets/image/home_logo.png';
-  static const String welcome_logo = 'assets/image/home_logo_b.png';
-  static const String storelogo = 'assets/icon/store_home_logo.png';
+  static const String mainLogo = 'assets/image/main_logo.png';
 
   static const String marker = 'assets/icon/marker.png';
   static const String my_location = 'assets/icon/my_location.png';
@@ -59,7 +56,7 @@ class Images {
   static const String menu = 'assets/icon/menu.png';
   static const String workplace = 'assets/icon/workplace.png';
   static const String map = 'assets/icon/map.png';
-  static const String notification = 'assets/icon/notification.png';
+  static const String notificationIcon = 'assets/icon/notification_icon.png';
   static const String close_lock = 'assets/icon/close_lock.png';
   static const String email_with_background =
       'assets/icon/email_with_background.png';
@@ -95,7 +92,6 @@ class Images {
 //start here
   static const String loginBackground = 'assets/image/login_background.png';
   static const String filterIcon = 'assets/icon/filter_icon.png';
-  static const String cartIcon = 'assets/icon/cart_icon.png';
   static const String airpods = 'assets/image/airpods.png';
   static const String airpods2 = 'assets/image/airpods2.png';
   static const String smartWatch = 'assets/image/smart_watch.png';
@@ -107,5 +103,9 @@ class Images {
   static const String spain = 'assets/image/spain.png';
   static const String person = 'assets/icon/person.png';
   static const String loading = 'assets/icon/loading.png';
-
+  static const String visibilityIcon = 'assets/icon/visibility_icon.png';
+  static const String visibilityOffIcon = 'assets/icon/visibility_off_icon.png';
+  static const String logoTextLight = 'assets/image/logo_text_light.png';
+  static const String logoTextNight = 'assets/image/logo_text_night.png';
+  static const String noDataFoundIcon = 'assets/icon/no_data_found_icon.png';
 }

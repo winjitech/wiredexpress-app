@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wired_express/data/helper/helpers.dart';
 import 'package:wired_express/data/model/response/order_model.dart';
 import 'package:wired_express/localization/language_constrants.dart';
@@ -12,6 +13,8 @@ import 'package:wired_express/utill/Images.dart';
 import 'package:wired_express/utill/color_resources.dart';
 import 'package:wired_express/utill/dimensions.dart';
 import 'package:wired_express/view/base/circular_indicator_widget.dart';
+import 'package:wired_express/view/base/custom_snackbar.dart';
+import 'package:wired_express/view/base/no_data_found_view.dart';
 import 'package:wired_express/view/screens/order/widget/order_cancel_dialog.dart';
 import 'package:wired_express/view/screens/order/widget/order_shimmer.dart';
 import 'package:provider/provider.dart';
@@ -50,15 +53,14 @@ class _HistoryViewState extends State<HistoryView> {
           return orderProvider.historyOrderIsLoading
               ? OrderShimmer()
               : ordersLength == 0
-                  ? Center(child: NoDataScreen(isOrder: true))
+                  ? NoDataFoundView(text: 'no_any_orders_yet', showIcon: false)
                   : Column(children: [
                       Expanded(
                           child: Scrollbar(
                               child: SingleChildScrollView(
                                   controller: scrollController,
                                   physics: BouncingScrollPhysics(),
-                                  padding: EdgeInsets.all(
-                                      Dimensions.PADDING_SIZE_SMALL),
+                                  padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
                                   child: Row(children: [
                                     Expanded(
                                         child: Column(
@@ -66,8 +68,7 @@ class _HistoryViewState extends State<HistoryView> {
                                                 CrossAxisAlignment.start,
                                             children: [
                                           ListView.builder(
-                                              padding: EdgeInsets.all(Dimensions
-                                                  .PADDING_SIZE_SMALL),
+                                              padding: EdgeInsets.zero,
                                               itemCount: orderProvider
                                                   .historyOrderList!.length,
                                               physics:
@@ -116,40 +117,31 @@ class _HistoryViewState extends State<HistoryView> {
                                                                   context)
                                                               .size
                                                               .width,
-                                                          decoration:
-                                                              BoxDecoration(
-                                                                  borderRadius:
-                                                                      BorderRadius
-                                                                          .circular(
-                                                                              10),
-                                                                  boxShadow: [
-                                                                    BoxShadow(
-                                                                        color: ColorResources.getBoxShadow(context),
-
-                                                                        blurRadius:
-                                                                            5,
-                                                                        spreadRadius:
-                                                                            1)
-                                                                  ],
-                                                                  color: ColorResources
-                                                                      .getScaffoldBackgroundColor(
-                                                                          context)),
+                                                          decoration: BoxDecoration(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          15.r),
+                                                              color: ColorResources
+                                                                  .getCardColor(
+                                                                      context)),
                                                           child: Padding(
                                                               padding:
-                                                                  const EdgeInsets
-                                                                      .all(10),
+                                                                  EdgeInsets
+                                                                      .all(
+                                                                          10.r),
                                                               child: Row(
                                                                   children: [
                                                                     ClipRRect(
                                                                       borderRadius:
                                                                           BorderRadius.circular(
-                                                                              10),
+                                                                              10.r),
                                                                       child:
                                                                           CachedNetworkImage(
                                                                         height:
-                                                                            100,
+                                                                            100.h,
                                                                         width:
-                                                                            100,
+                                                                            100.h,
                                                                         fit: BoxFit
                                                                             .cover,
                                                                         imageUrl:
@@ -159,8 +151,8 @@ class _HistoryViewState extends State<HistoryView> {
                                                                       ),
                                                                     ),
                                                                     SizedBox(
-                                                                        width:
-                                                                            15),
+                                                                        width: 15
+                                                                            .w),
                                                                     Expanded(
                                                                         child: Column(
                                                                             mainAxisAlignment:
@@ -168,16 +160,18 @@ class _HistoryViewState extends State<HistoryView> {
                                                                             crossAxisAlignment: CrossAxisAlignment.start,
                                                                             children: [
                                                                           Text(
-                                                                              '${getTranslated('order_id', context)}:${order.id}',
-                                                                              style: TextStyle(color:ColorResources.getTextColor(context), fontWeight: FontWeight.w500, fontSize: 16)),
+                                                                            '${getTranslated('order_id', context)}:${order.id}',
+                                                                            style:
+                                                                                AppTextStyles.h4(context),
+                                                                          ),
                                                                           Row(
                                                                             children: [
                                                                               Icon(
                                                                                 order.deliveryType == "scheduled" ? Icons.schedule : Icons.local_shipping,
                                                                                 color: scheduledColor,
-                                                                                size: 20,
+                                                                                size: 20.sp,
                                                                               ),
-                                                                              const SizedBox(width: 5),
+                                                                              SizedBox(width: 5.w),
                                                                               Expanded(
                                                                                 child: Row(
                                                                                   children: [
@@ -185,10 +179,8 @@ class _HistoryViewState extends State<HistoryView> {
                                                                                       getTranslated(order.deliveryType == "scheduled" ? 'scheduled' : 'immediate', context),
                                                                                       maxLines: 1,
                                                                                       overflow: TextOverflow.ellipsis,
-                                                                                      style: TextStyle(
+                                                                                      style: AppTextStyles.h4(context, fontSize: 15.sp).copyWith(
                                                                                         color: scheduledColor,
-                                                                                        fontWeight: FontWeight.w500,
-                                                                                        fontSize: 15,
                                                                                       ),
                                                                                     ),
                                                                                   ],
@@ -196,7 +188,7 @@ class _HistoryViewState extends State<HistoryView> {
                                                                               ),
                                                                             ],
                                                                           ),
-                                                                          const SizedBox(
+                                                                          SizedBox(
                                                                               height: 2),
                                                                           SizedBox(
                                                                               height: 1),
@@ -205,11 +197,15 @@ class _HistoryViewState extends State<HistoryView> {
                                                                                   '${order.details![0].productDetails!.name}',
                                                                                   maxLines: 1,
                                                                                   overflow: TextOverflow.ellipsis,
-                                                                                  style: TextStyle(color: ColorResources.getTextColor(context).withOpacity(0.5), fontWeight: FontWeight.w500, fontSize: 15),
+                                                                                  style: AppTextStyles.h4(context, fontSize: 15.sp).copyWith(
+                                                                                    color: ColorResources.getTextColor(context).withOpacity(0.5),
+                                                                                  ),
                                                                                 )
                                                                               : Text(
                                                                                   '${order.detailsCount} ${getTranslated('items', context)}',
-                                                                                  style: TextStyle(color: ColorResources.getTextColor(context).withOpacity(0.5), fontWeight: FontWeight.w500, fontSize: 15),
+                                                                                  style: AppTextStyles.h4(context, fontSize: 15.sp).copyWith(
+                                                                                    color: ColorResources.getTextColor(context).withOpacity(0.5),
+                                                                                  ),
                                                                                 ),
                                                                           SizedBox(
                                                                             height:
@@ -221,10 +217,10 @@ class _HistoryViewState extends State<HistoryView> {
                                                                                 1,
                                                                             overflow:
                                                                                 TextOverflow.ellipsis,
-                                                                            style: TextStyle(
-                                                                                color: Helpers.statusColor(context, order.orderStatus!),
-                                                                                fontWeight: FontWeight.w500,
-                                                                                fontSize: 15),
+                                                                            style:
+                                                                                AppTextStyles.h4(context, fontSize: 15.sp).copyWith(
+                                                                              color: Helpers.statusColor(context, order.orderStatus!),
+                                                                            ),
                                                                           ),
                                                                           !orderProvider.showCancelled
                                                                               ? order.orderStatus == 'pending'
@@ -232,7 +228,7 @@ class _HistoryViewState extends State<HistoryView> {
                                                                                       elevation: 0,
                                                                                       minWidth: MediaQuery.of(context).size.width,
                                                                                       color: Colors.black12,
-                                                                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40)),
+                                                                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40.r)),
                                                                                       onPressed: () {
                                                                                         showDialog(
                                                                                             context: context,
@@ -241,42 +237,49 @@ class _HistoryViewState extends State<HistoryView> {
                                                                                                 orderID: order.id.toString(),
                                                                                                 callback: (String message, bool isSuccess, String orderID) {
                                                                                                   if (isSuccess) {
-                                                                                                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$message. Order ID: $orderID'), backgroundColor: Colors.green));
+                                                                                                    showCustomSnackBar('$message. Order ID: $orderID', context, isError: false);
                                                                                                   } else {
-                                                                                                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message), backgroundColor: Colors.green));
+                                                                                                    showCustomSnackBar(message, context);
                                                                                                   }
                                                                                                 }));
                                                                                       },
                                                                                       child: Text(
                                                                                         getTranslated('cancel_order', context),
-                                                                                        style: TextStyle(color: Colors.black),
+                                                                                        style: AppTextStyles.h7(context).copyWith(
+                                                                                          color: Colors.black,
+                                                                                        ),
                                                                                       ))
                                                                                   : SizedBox()
                                                                               : Center(
                                                                                   child: Container(
                                                                                   width: MediaQuery.of(context).size.width,
                                                                                   height: 50,
-                                                                                  margin: EdgeInsets.all(Dimensions.PADDING_SIZE_SMALL),
+                                                                                  margin: EdgeInsets.all(10.r),
                                                                                   alignment: Alignment.center,
                                                                                   decoration: BoxDecoration(
-                                                                                    border: Border.all(width: 2, color: ColorResources.getScaffoldColor(context)),
-                                                                                    borderRadius: BorderRadius.circular(10),
+                                                                                    border: Border.all(width: 2, color: ColorResources.getScaffoldBackgroundColor(context)),
+                                                                                    borderRadius: BorderRadius.circular(10.r),
                                                                                   ),
-                                                                                  child: Text(getTranslated('order_cancelled', context), style: rubikBold.copyWith(color: ColorResources.getScaffoldColor(context))),
+                                                                                  child: Text(
+                                                                                    getTranslated('order_cancelled', context),
+                                                                                    style: AppTextStyles.h2(context).copyWith(
+                                                                                      color: ColorResources.getScaffoldBackgroundColor(context),
+                                                                                    ),
+                                                                                  ),
                                                                                 ))
                                                                         ]))
                                                                   ])))),
-                                                  SizedBox(height: 15)
+                                                  SizedBox(height: 10.h)
                                                 ]);
                                               }),
                                           orderProvider
                                                   .bottomHistoryOrderLoading
                                               ? Column(
                                                   children: [
-                                                    SizedBox(height: 10),
+                                                    SizedBox(height: 10.h),
                                                     CustomCircularIndicator(
                                                         color: ColorResources
-                                                            .getScaffoldColor(
+                                                            .getScaffoldBackgroundColor(
                                                                 context))
                                                   ],
                                                 )
@@ -304,11 +307,15 @@ class _HistoryViewState extends State<HistoryView> {
                                                             );
                                                           },
                                                           child: Text(
-                                                              '${getTranslated('load_more', context)}...',
-                                                              style: TextStyle(
-                                                                  color: ColorResources
-                                                                      .getScaffoldColor(
-                                                                          context)))))
+                                                            '${getTranslated('load_more', context)}...',
+                                                            style: AppTextStyles
+                                                                    .h7(context)
+                                                                .copyWith(
+                                                              color: ColorResources
+                                                                  .getScaffoldBackgroundColor(
+                                                                      context),
+                                                            ),
+                                                          )))
                                                   : SizedBox()
                                         ]))
                                   ])))),
@@ -316,27 +323,4 @@ class _HistoryViewState extends State<HistoryView> {
                     ]);
         }));
   }
-
-  // void _callback(bool isSuccess, String status) async {
-  //   if (isSuccess) {
-  //     Provider.of<OrderProvider>(context, listen: false).clearHistoryOffset();
-  //     Provider.of<OrderProvider>(context, listen: false)
-  //         .getHistoryOrdersList(context, '1')
-  //         .then((value) {
-  //       showDialog(
-  //           context: context,
-  //           builder: (_) => AlertDialog(
-  //               title: Text('Status Updated!',
-  //                   style: TextStyle(
-  //                       fontSize: 13, fontWeight: FontWeight.normal))));
-  //     });
-  //   } else {
-  //     showDialog(
-  //         context: context,
-  //         builder: (_) => AlertDialog(
-  //             title: Text('Error occurred, try again later..',
-  //                 style:
-  //                     TextStyle(fontSize: 13, fontWeight: FontWeight.normal))));
-  //   }
-  // }
 }

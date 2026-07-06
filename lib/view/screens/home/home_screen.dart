@@ -2,28 +2,32 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
-import 'package:shimmer_animation/shimmer_animation.dart';
+import 'package:wired_express/data/model/response/product_model.dart';
+import 'package:wired_express/data/model/response/subscription_model.dart';
+import 'package:wired_express/data/model/response/user_subscription_model.dart';
 import 'package:wired_express/data/model/response/userinfo_model.dart';
 import 'package:wired_express/localization/language_constrants.dart';
 import 'package:wired_express/provider/auth_provider.dart';
-import 'package:wired_express/provider/banner_provider.dart';
-import 'package:wired_express/provider/cart_provider.dart';
-import 'package:wired_express/provider/category_provider.dart';
-import 'package:wired_express/provider/location_provider.dart';
+import 'package:wired_express/provider/home_provider.dart';
 import 'package:wired_express/provider/place_order_provider.dart';
+import 'package:wired_express/provider/product_provider.dart';
 import 'package:wired_express/provider/profile_provider.dart';
 import 'package:wired_express/provider/splash_provider.dart';
-import 'package:wired_express/provider/subscription_provider.dart';
-import 'package:wired_express/provider/theme_provider.dart';
-import 'package:wired_express/provider/wishlist_provider.dart';
 import 'package:wired_express/utill/color_resources.dart';
-import 'package:wired_express/view/base/custom_main_appbar.dart';
+import 'package:wired_express/utill/styles.dart';
+import 'package:wired_express/view/base/circular_indicator_widget.dart';
+import 'package:wired_express/view/base/no_data_found_view.dart';
+import 'package:wired_express/view/screens/product/widget/product_widget.dart';
+import 'package:wired_express/view/base/shimmer/product_shimmer.dart';
+import 'package:wired_express/view/screens/categories/widget/categories_view.dart';
 import 'package:wired_express/view/screens/drawer/drawer_screen.dart';
 import 'package:wired_express/view/screens/home/widget/banner_view.dart';
-import 'package:wired_express/view/screens/home/widget/category_product_view.dart';
+import 'package:wired_express/view/screens/home/widget/home_header_widget.dart';
 import 'package:wired_express/view/screens/nearby_electricians/nearby_electricians_screen.dart';
-import 'package:wired_express/view/screens/search/widget/filter_widget.dart';
+import 'package:wired_express/view/screens/product/widget/featured_products_view.dart';
+import 'package:wired_express/view/screens/search/search_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -32,143 +36,73 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final GlobalKey<ScaffoldMessengerState> _scaffoldKey =
-      GlobalKey<ScaffoldMessengerState>();
-
-  Future<void> _loadData(BuildContext context, bool reload) async {
-    final authProvider =
-        Provider.of<CustomAuthProvider>(context, listen: false);
-    final splashProvider = Provider.of<SplashProvider>(context, listen: false);
-    final subscriptionProvider =
-        Provider.of<SubscriptionProvider>(context, listen: false);
-    final profileProvider =
-        Provider.of<ProfileProvider>(context, listen: false);
-    final wishListProvider =
-        Provider.of<WishListProvider>(context, listen: false);
-    final cartProvider = Provider.of<CartProvider>(context, listen: false);
-    final categoryProvider =
-        Provider.of<CategoryProvider>(context, listen: false);
-    final bannerProvider = Provider.of<BannerProvider>(context, listen: false);
-    final placeOrder = Provider.of<PlaceOrderProvider>(context, listen: false);
-    final location = Provider.of<LocationProvider>(context, listen: false);
-
-    if (authProvider.isLoggedIn()!) {
-      UserInfoModel? userInfo = profileProvider.userInfoModel;
-
-      if (userInfo != null) {
-        String? subscriptionExpireDate = userInfo.subscriptionExpireDate;
-        if (subscriptionExpireDate != null) {
-          DateTime expireDate = DateTime.parse(subscriptionExpireDate);
-          DateTime now = DateTime.now();
-          DateTime yesterday = DateTime(now.year, now.month, now.day)
-              .subtract(const Duration(days: 1));
-
-          bool isExpiredYesterday = expireDate.year == yesterday.year &&
-              expireDate.month == yesterday.month &&
-              expireDate.day == yesterday.day;
-          if (isExpiredYesterday) {
-            String? subscriptionId =
-                userInfo.userSubscription?.paypalSubscriptionId ??
-                    userInfo.userSubscription?.stripeSubscriptionId;
-            if (subscriptionId != null &&
-                userInfo.subscriptionWayType != 'stripe') {
-              subscriptionProvider
-                  .subscriptionDetails(context, subscriptionId)
-                  .then((_) {
-                if (subscriptionProvider.subscriptionStatus == "CANCELLED") {
-                  subscriptionProvider
-                      .cancelSubscription(context, subscriptionId)
-                      .then((_) => profileProvider.getUserInfo(context));
-                }
-              });
-            } else if (userInfo.subscriptionWayType == 'stripe') {
-              subscriptionProvider.stripeSubscriptionDetails(context).then((_) {
-                if (subscriptionProvider.subscriptionStatus == "canceled") {
-                  subscriptionProvider
-                      .stripeCancelSubscription(context)
-                      .then((_) => profileProvider.getUserInfo(context));
-                }
-              });
-            }
-          }
-        }
-
-        // if (userInfo.freeDelivery == 1) {
-        //   _showFreeDeliverySnackBar();
-        // }
-
-        if (userInfo.nearbyElectricians == 1 &&
-            location.addressList?.isNotEmpty == true) {
-          final userAddressId = authProvider.getUserAddressId();
-          final matchedAddress = location.addressList!.firstWhere(
-            (element) =>
-                element.id ==
-                (userAddressId == 0
-                    ? location.addressList![0].id
-                    : userAddressId),
-            orElse: () => location.addressList![0],
-          );
-
-          splashProvider.getNearbyElectricians(
-            context,
-            matchedAddress.latitude!,
-            matchedAddress.longitude!,
-          );
-        }
-      }
-
-      subscriptionProvider.getSubscriptionPlans(context);
-      profileProvider.getUserInfo(context);
-
-      location.initAddressList(context);
-      wishListProvider.initWishListProductIds(context);
-      cartProvider.initCartList(context);
-      cartProvider.initCartListProductIds(context);
-    }
-
-    categoryProvider.getCategoryList(context, reload);
-    bannerProvider.getBannerList(context, reload);
-    placeOrder.getRunningOrderList(context);
-
-    if (placeOrder.runningOrderList?.isNotEmpty ?? false) {
-      await placeOrder.runningOrderList!.first;
-    }
-
-    await categoryProvider.getCategoryFeaturedList(context, reload).then((_) {
-      final featuredList = categoryProvider.categoryFeaturedList;
-      if (featuredList?.isNotEmpty ?? false) {
-        final firstCategory = featuredList!.first;
-        categoryProvider.setCategory(firstCategory);
-        categoryProvider.clearCategoryProductListOffset();
-        categoryProvider.getCategoryProductList(
-            context, "1", firstCategory.id.toString());
-      }
-    });
-  }
+  GlobalKey<ScaffoldMessengerState>();
+  late ScrollController _scrollController;
+  bool _isLoadingMore = false;
 
   @override
   void initState() {
     super.initState();
-    Timer(const Duration(seconds: 0), () async => _loadData(context, false));
-  }
+    _scrollController = ScrollController()..addListener(_onScroll);
 
+    Timer(const Duration(seconds: 0), () async {
+      final homeProv = Provider.of<HomeProvider>(context, listen: false);
+      homeProv.loadData(context);
+    });
+  }
+  @override
+  void dispose() {
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
+    super.dispose();
+  }
+  void _onScroll() async {
+    if (!_scrollController.hasClients || _isLoadingMore) return;
+
+    final prov = context.read<ProductProvider>();
+
+    const threshold = 200.0;
+
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - threshold) {
+
+      if (!prov.bottomFeaturedProductsLoading &&
+          (prov.featuredProductsList?.length ?? 0) <
+              (prov.totalFeaturedProductsSize ?? 0)) {
+
+        _isLoadingMore = true;
+
+        final nextOffset =
+            (int.tryParse(prov.featuredProductsOffset ?? "1") ?? 1) + 1;
+
+        prov.showBottomFeaturedProductsLoader();
+
+        await prov.getFeaturedProducts(
+          context,
+          nextOffset.toString(),
+        );
+
+        _isLoadingMore = false;
+      }
+    }
+  }
   final advancedDrawerController = AdvancedDrawerController();
   @override
   Widget build(BuildContext context) {
-    final ScrollController scrollController = ScrollController();
-
     return AdvancedDrawer(
         rtlOpening: false,
         openRatio: 0.55,
         openScale: 0.80,
         backdrop: SafeArea(
             child: Padding(
-                padding: const EdgeInsets.all(15),
+                padding: EdgeInsets.all(15.r),
                 child: IconButton(
                     onPressed: () => closeDrawer(),
                     icon: Icon(Icons.close,
                         color: ColorResources.getTextColor(context),
-                        size: 36)))),
-        childDecoration: BoxDecoration(borderRadius: BorderRadius.circular(40)),
+                        size: 36.sp)))),
+        childDecoration:
+        BoxDecoration(borderRadius: BorderRadius.circular(40.r)),
         controller: advancedDrawerController,
         animationCurve: Curves.easeInOutExpo,
         animationDuration: const Duration(milliseconds: 400),
@@ -177,130 +111,165 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Scaffold(
             backgroundColor: ColorResources.getScaffoldBackgroundColor(context),
             key: _scaffoldKey,
-            appBar: CustomMainAppBar(
-                onMenuPressed: () => showDrawer(),
-                title: getTranslated('shopping', context)),
-            body: Consumer4<CategoryProvider, ProfileProvider, SplashProvider,
-                    CustomAuthProvider>(
-                builder: (context, categoryProvider, profileProvider,
-                    splashProvider, authProvider, child) {
-              return Padding(
-                padding: const EdgeInsets.all(15),
-                child: CustomScrollView(
-                    physics: const BouncingScrollPhysics(),
-                    controller: scrollController,
-                    slivers: [
-                      SliverToBoxAdapter(
-                        child: Consumer<BannerProvider>(
-                          builder: (context, banner, child) {
-                            return BannerView();
-                          },
-                        ),
-                      ),
-                      SliverToBoxAdapter(child: Consumer4<
-                              CategoryProvider,
-                              ProfileProvider,
-                              SplashProvider,
-                              CustomAuthProvider>(
-                          builder: (context, categoryProvider, profileProvider,
-                              splashProvider, authProvider, child) {
-                        return Column(children: [
-                          const SizedBox(height: 20),
-                          if (authProvider.isLoggedIn()! &&
-                              profileProvider
-                                      .userInfoModel?.hasActiveSubscription ==
-                                  true)
-                            Padding(
-                              padding: const EdgeInsets.only(bottom: 20),
-                              child: Container(
-                                padding: const EdgeInsets.all(15),
-                                decoration: BoxDecoration(
-                                    color: Colors.amber[700],
-                                    borderRadius: BorderRadius.circular(10),
-                                    boxShadow: [
-                                      BoxShadow(
-                                          color: ColorResources.getBoxShadow(
-                                              context),
-                                          blurRadius: 5,
-                                          offset: const Offset(0, 2))
-                                    ]),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    const Icon(Icons.star,
-                                        color: Colors.white, size: 24),
-                                    const SizedBox(width: 10),
-                                    Text(
-                                        getTranslated(
-                                            'your_active_subscription_plan_place',
-                                            context),
-                                        style: const TextStyle(
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.w600,
-                                            fontSize: 16))
-                                  ],
-                                ),
+            body: Consumer4<ProfileProvider, CustomAuthProvider, SplashProvider, ProductProvider>(
+                builder: (context, profileProv, auth,splashProv,productProv, child) {
+                  UserInfoModel? userInfo = profileProv.userInfoModel;
+                  UserSubscriptionPlanModel? subscription = userInfo?.userSubscription;
+                  SubscriptionPlanModel? subscriptionPlan = subscription?.plan;
+                  List<ProductModel>? featuredProducts = productProv.featuredProductsList??[];
+                  return Column(
+                    children: [
+                      HomeHeaderWidget(onMenuPressed: () => showDrawer(),),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 20.w),
+                        child: GestureDetector(
+                          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => SearchScreen())),
+                          child: Container(
+                            padding: EdgeInsets.all(15.r),
+                            decoration: BoxDecoration(
+                              color: ColorResources.getCardColor(context),
+                              borderRadius: BorderRadius.circular(15.r),
+                              border: Border.all(
+                                color: ColorResources.getHintColor(context).withOpacity(.2),
                               ),
                             ),
-                          if (authProvider.isLoggedIn()! &&
-                              profileProvider
-                                      .userInfoModel?.nearbyElectricians ==
-                                  1 &&
-                              splashProvider.nearbyElectriciansList != null &&
-                              splashProvider.nearbyElectriciansList!.isNotEmpty)
-                            Padding(
-                              padding: const EdgeInsets.only(bottom: 20),
-                              child: GestureDetector(
-                                onTap: () => Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (BuildContext context) =>
-                                            NearbyElectriciansScreen(
-                                                electricians: splashProvider
-                                                    .nearbyElectriciansList!))),
-                                child: Container(
-                                  padding: const EdgeInsets.all(15),
-                                  decoration: BoxDecoration(
-                                      color:
-                                          ColorResources.getCardColor(context),
-                                      borderRadius: BorderRadius.circular(10),
-                                      boxShadow: [
-                                        BoxShadow(
-                                            color: ColorResources.getBoxShadow(
-                                                context),
-                                            blurRadius: 5,
-                                            spreadRadius: 1,
-                                            offset: const Offset(0, 2))
-                                      ]),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Text(
-                                          getTranslated(
-                                              'nearby_electricians', context),
-                                          style: TextStyle(
-                                              color:
-                                                  ColorResources.getTextColor(
-                                                      context),
-                                              fontWeight: FontWeight.w600,
-                                              fontSize: 16))
-                                    ],
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.search,
+                                  color: ColorResources.getHintColor(context),
+                                ),
+                                SizedBox(width: 10.w),
+                                Flexible(
+                                  child: Text(
+                                    getTranslated("search_products_and_services", context),
+                                    style: AppTextStyles.h6(context).copyWith(
+                                      color: ColorResources.getHintColor(context),
+                                    ),
                                   ),
                                 ),
-                              ),
+                              ],
                             ),
-                          categoryProvider.categoryFeaturedList == null
-                              ? const SizedBox()
-                              : FilterWidget(categoryProvider),
-                          const SizedBox(height: 20),
-                          CategoryProductView(
-                            scrollController: scrollController,
                           ),
-                        ]);
-                      })),
-                    ]),
-              );
-            })));
+                        ),
+                      ),
+                      Expanded(
+                        child: Scrollbar(
+                          child: SingleChildScrollView(
+                            padding: EdgeInsets.all( 20.r),
+                            controller: _scrollController,
+                            child: Column(
+                              children: [
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: RichText(
+                                        overflow: TextOverflow.ellipsis,
+                                        maxLines: 1,
+                                        text: TextSpan(
+                                          style: AppTextStyles.h2(context),
+                                          children: [
+                                            TextSpan(
+                                              text: "${getTranslated('hi', context)}, ",
+                                              style: AppTextStyles.h2(context).copyWith(
+                                                color: ColorResources.getTextColor(context),
+                                              ),
+                                            ),
+                                            TextSpan(
+                                              text:
+                                              "${userInfo?.fName ?? getTranslated('guest', context)}!",
+                                              style: AppTextStyles.h2(context).copyWith(
+                                                color: ColorResources.getPrimaryColor(context),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+
+                                    if (userInfo?.hasActiveSubscription ?? false) ...[
+                                      SizedBox(width: 8.w),
+                                      ConstrainedBox(
+                                        constraints: BoxConstraints(
+                                          maxWidth: 180.w,
+                                        ),
+                                        child: Container(
+                                          padding: EdgeInsets.symmetric(
+                                            horizontal: 12.w,
+                                            vertical: 5.h,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            border: Border.all(
+                                              color: ColorResources.getRatingColor(context),
+                                            ),
+                                            color: ColorResources.getRatingColor(context).withOpacity(0.04),
+                                            borderRadius: BorderRadius.circular(10.r),
+                                          ),
+                                          child: Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            crossAxisAlignment: CrossAxisAlignment.center,
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            children: [
+                                              Icon(
+                                                Icons.workspace_premium,
+                                                color: ColorResources.getRatingColor(context),
+                                                size: 16.sp,
+                                              ),
+                                              SizedBox(width: 4.w),
+
+                                              Flexible(
+                                                child: Text(subscriptionPlan?.name ?? "",
+                                                  maxLines: 1,
+                                                  overflow: TextOverflow.ellipsis,
+                                                  style: AppTextStyles.h6(context),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ],
+                                ),
+                                SizedBox(height: 20.h,),
+                                BannerView(),
+                                if (auth.isLoggedIn()! && userInfo?.nearbyElectricians == 1 &&
+                                    splashProv.nearbyElectriciansList != null && splashProv.nearbyElectriciansList!.isNotEmpty)...[
+                                  SizedBox(height: 20.h,),
+                                  GestureDetector(
+                                    onTap: () => Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => NearbyElectriciansScreen(electricians: splashProv.nearbyElectriciansList!))),
+                                    child: Container(
+                                      padding: EdgeInsets.all(15.r),
+                                      decoration: BoxDecoration(
+                                          color: ColorResources.getCardColor(context),
+                                          borderRadius: BorderRadius.circular(10.r),
+                                          boxShadow: [BoxShadow(color: ColorResources.getBoxShadow(context), blurRadius: 5, spreadRadius: 1, offset: const Offset(0, 2))]),
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            getTranslated('nearby_electricians', context),
+                                            style: AppTextStyles.h4(context).copyWith(
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ), ],
+
+                                SizedBox(height: 20.h,),
+                                CategoriesView(),
+                                SizedBox(height: 20.h,),
+                                FeaturedProductsView(),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  );
+                })));
   }
 
   void showDrawer() {
@@ -308,13 +277,13 @@ class _HomeScreenState extends State<HomeScreen> {
       Provider.of<PlaceOrderProvider>(context, listen: false)
           .getRunningOrderList(context)
           .then((value) =>
-              Provider.of<PlaceOrderProvider>(context, listen: false)
-                          .runningOrderList ==
-                      null
-                  ? Provider.of<ProfileProvider>(context, listen: false)
-                      .getUserInfo(context)
-                  : Provider.of<PlaceOrderProvider>(context, listen: false)
-                      .runningOrderList![0]);
+      Provider.of<PlaceOrderProvider>(context, listen: false)
+          .runningOrderList ==
+          null
+          ? Provider.of<ProfileProvider>(context, listen: false)
+          .getUserInfo(context)
+          : Provider.of<PlaceOrderProvider>(context, listen: false)
+          .runningOrderList![0]);
       advancedDrawerController.showDrawer();
       Provider.of<ProfileProvider>(context, listen: false).getUserInfo(context);
     }
@@ -325,53 +294,5 @@ class _HomeScreenState extends State<HomeScreen> {
       advancedDrawerController.hideDrawer();
       Provider.of<ProfileProvider>(context, listen: false).getUserInfo(context);
     }
-  }
-
-  void _showFreeDeliverySnackBar() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        padding: EdgeInsets.zero,
-        content: Shimmer(
-          duration: const Duration(seconds: 2),
-          enabled: true,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-            child: Center(
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Center(
-                    child: const Icon(
-                      Icons.local_shipping,
-                      color: Colors.white,
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Text(
-                    getTranslated('you_have_free_delivery', context),
-                    textAlign: TextAlign.center,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 15),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-        backgroundColor: Colors.green,
-        duration: const Duration(seconds: 20),
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(14),
-        ),
-        margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-      ),
-    );
   }
 }

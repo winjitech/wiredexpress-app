@@ -14,13 +14,14 @@ class PlaceOrderBody {
   String? _paymentMethod;
   String? _orderNote;
   String? _couponCode;
-  String? _deliveryDateTime;
+  // String? _deliveryDateTime;
   int? _usePoints;
   double? _remainingUserPoints;
   double? _deliveryCharge;
   int? _priorityDelivery;
   String? _cardId;
-
+  String? _deliveryDate;
+  String? _deliveryTime;
   PlaceOrderBody({
     required List<ProductCart> cart,
     required double couponDiscountAmount,
@@ -33,7 +34,9 @@ class PlaceOrderBody {
     required String orderType,
     required String paymentMethod,
     required String orderNote,
-    required String deliveryDateTime,
+    // required String deliveryDateTime,
+    required String deliveryDate,
+    required String deliveryTime,
     required int usePoints,
     required double remainingUserPoints,
     required double deliveryCharge,
@@ -50,7 +53,10 @@ class PlaceOrderBody {
     this._paymentMethod = paymentMethod;
     this._orderNote = orderNote;
     this._couponCode = couponCode;
-    this._deliveryDateTime = deliveryDateTime;
+    // this._deliveryDateTime = deliveryDateTime;
+    this._deliveryDate = deliveryDate;
+    this._deliveryTime = deliveryTime;
+
     this._usePoints = usePoints;
     this._usePointsDiscountAmount = usePointsDiscountAmount;
     this._remainingUserPoints = remainingUserPoints;
@@ -69,7 +75,9 @@ class PlaceOrderBody {
   String? get paymentMethod => _paymentMethod;
   String? get orderNote => _orderNote;
   String? get couponCode => _couponCode;
-  String? get deliveryDateTime => _deliveryDateTime;
+  // String? get deliveryDateTime => _deliveryDateTime;
+  String? get deliveryDate => _deliveryDate;
+  String? get deliveryTime => _deliveryTime;
   int? get usePoints => _usePoints;
   double? get usePointsDiscountAmount => _usePointsDiscountAmount;
   double? get remainingUserPoints => _remainingUserPoints;
@@ -94,12 +102,14 @@ class PlaceOrderBody {
     _paymentMethod = json['payment_method'];
     _orderNote = json['order_note'];
     _couponCode = json['coupon_code'];
-    _deliveryDateTime = json['delivery_date_time'];
+    // _deliveryDateTime = json['delivery_date_time'];
     _usePoints = json['use_points'];
     _remainingUserPoints = json['remaining_user_points'];
     _deliveryCharge = json['delivery_charge'];
     _priorityDelivery = json['priority_delivery'];
     _cardId = json['card_id'];
+    _deliveryDate = json['delivery_date'];
+    _deliveryTime = json['delivery_time'];
   }
 
   Map<String?, dynamic> toJson() {
@@ -117,12 +127,14 @@ class PlaceOrderBody {
     data['payment_method'] = _paymentMethod;
     data['order_note'] = _orderNote;
     data['coupon_code'] = _couponCode;
-    data['delivery_date_time'] = _deliveryDateTime;
+    // data['delivery_date_time'] = _deliveryDateTime;
     data['use_points'] = _usePoints;
     data['remaining_user_points'] = _remainingUserPoints;
     data['delivery_charge'] = _deliveryCharge;
     data['priority_delivery'] = _priorityDelivery;
     data['card_id'] = _cardId;
+    data['delivery_date'] = _deliveryDate;
+    data['delivery_time'] = _deliveryTime;
     return data;
   }
 }

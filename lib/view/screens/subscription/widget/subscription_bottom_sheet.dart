@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wired_express/data/model/response/subscription_feature_model.dart';
 import 'package:wired_express/data/model/response/subscription_model.dart';
 import 'package:wired_express/data/model/response/user_subscription_model.dart';
@@ -43,25 +44,25 @@ class _SubscriptionBottomSheetState extends State<SubscriptionBottomSheet> {
 
         return Container(
           decoration: BoxDecoration(
-            borderRadius: const BorderRadius.only(
+            borderRadius: BorderRadius.only(
               topRight: Radius.circular(35),
               topLeft: Radius.circular(35),
             ),
             color: ColorResources.getScaffoldBackgroundColor(context),
           ),
-          padding: const EdgeInsets.all(25),
+          padding: EdgeInsets.all(25.r),
           child: SingleChildScrollView(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                  padding: EdgeInsets.symmetric(horizontal: 15.w),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      const SizedBox(
+                      SizedBox(
                         height: 20,
                       ),
                       Center(
@@ -75,10 +76,10 @@ class _SubscriptionBottomSheetState extends State<SubscriptionBottomSheet> {
                                   : Icons.subscriptions,
                               color: ColorResources.getScaffoldBackgroundColor(
                                   context),
-                              size: 40),
+                              size: 40.sp),
                         ),
                       ),
-                      const SizedBox(
+                      SizedBox(
                         height: 20,
                       ),
                       ListView.builder(
@@ -90,7 +91,7 @@ class _SubscriptionBottomSheetState extends State<SubscriptionBottomSheet> {
                           return Column(
                             children: [
                               Container(
-                                padding: const EdgeInsets.all(15),
+                                padding: EdgeInsets.all(15.r),
                                 child: Row(
                                   children: [
                                     Expanded(
@@ -102,25 +103,26 @@ class _SubscriptionBottomSheetState extends State<SubscriptionBottomSheet> {
                                             feature.name ?? "",
                                             maxLines: 1,
                                             overflow: TextOverflow.ellipsis,
-                                            style: TextStyle(
-                                              color:
-                                                  ColorResources.getTextColor(
-                                                      context),
+                                            style: AppTextStyles.h7(
+                                              context,
+                                              fontSize: 15.sp,
+                                            ).copyWith(
                                               fontWeight: FontWeight.w600,
-                                              fontSize: 15,
                                             ),
                                           ),
-                                          const SizedBox(height: 2),
+                                          SizedBox(height: 2.h),
                                           Text(
                                             feature.description ?? '',
                                             textAlign: TextAlign.justify,
-                                            style: TextStyle(
+                                            style: AppTextStyles.h7(
+                                              context,
+                                              fontSize: 15.sp,
+                                            ).copyWith(
+                                              fontWeight: FontWeight.w500,
                                               color:
                                                   ColorResources.getTextColor(
                                                           context)
                                                       .withOpacity(0.6),
-                                              fontWeight: FontWeight.w500,
-                                              fontSize: 15,
                                             ),
                                           ),
                                         ],
@@ -129,7 +131,7 @@ class _SubscriptionBottomSheetState extends State<SubscriptionBottomSheet> {
                                   ],
                                 ),
                               ),
-                              const SizedBox(height: 15),
+                              SizedBox(height: 15.h),
                             ],
                           );
                         },
@@ -200,7 +202,7 @@ class _SubscriptionBottomSheetState extends State<SubscriptionBottomSheet> {
                                                   context),
                                           shape: RoundedRectangleBorder(
                                               borderRadius:
-                                                  BorderRadius.circular(10)),
+                                                  BorderRadius.circular(10.r)),
                                           child: Consumer2<SubscriptionProvider,
                                                   ProfileProvider>(
                                               builder: (context,
@@ -219,8 +221,8 @@ class _SubscriptionBottomSheetState extends State<SubscriptionBottomSheet> {
                                                     mainAxisSize:
                                                         MainAxisSize.min,
                                                     children: [
-                                                      const SizedBox(
-                                                          height: 20),
+                                                      SizedBox(
+                                                          height: 20.h),
                                                       CircleAvatar(
                                                         radius: 30,
                                                         backgroundColor:
@@ -231,27 +233,28 @@ class _SubscriptionBottomSheetState extends State<SubscriptionBottomSheet> {
                                                             color: ColorResources
                                                                 .getPrimaryColor(
                                                                     context),
-                                                            size: 50),
+                                                            size: 50.sp),
                                                       ),
                                                       Padding(
-                                                        padding: const EdgeInsets
-                                                            .all(Dimensions
-                                                                .PADDING_SIZE_LARGE),
-                                                        child: Text(
+                                                          padding: EdgeInsets
+                                                              .all(Dimensions
+                                                                  .PADDING_SIZE_LARGE),
+                                                          child: Text(
                                                             getTranslated(
                                                                 'you_have_active_subscription',
                                                                 context),
-                                                            style: TextStyle(
-                                                                color: ColorResources
-                                                                    .getTextColor(
-                                                                        context),
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w500,
-                                                                fontSize: 15),
                                                             textAlign: TextAlign
-                                                                .center),
-                                                      ),
+                                                                .center,
+                                                            style: AppTextStyles
+                                                                .h7(
+                                                              context,
+                                                              fontSize: 15.sp,
+                                                            ).copyWith(
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w500,
+                                                            ),
+                                                          )),
                                                       Divider(
                                                           height: 0,
                                                           color: ColorResources
@@ -318,13 +321,13 @@ class _SubscriptionBottomSheetState extends State<SubscriptionBottomSheet> {
                                                                         //     backgroundColor:
                                                                         //         ColorResources.getCardColor(context),
                                                                         //     shape:
-                                                                        //         RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                                                        //         RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
                                                                         //     child:
                                                                         //         Container(
-                                                                        //       padding: const EdgeInsets.all(20),
+                                                                        //       padding:  EdgeInsets.all(20.r),
                                                                         //       decoration: BoxDecoration(
                                                                         //         color: ColorResources.getCardColor(context),
-                                                                        //         borderRadius: BorderRadius.circular(12),
+                                                                        //         borderRadius: BorderRadius.circular(12.r),
                                                                         //       ),
                                                                         //       child: Column(
                                                                         //         mainAxisSize: MainAxisSize.min,
@@ -333,7 +336,7 @@ class _SubscriptionBottomSheetState extends State<SubscriptionBottomSheet> {
                                                                         //             getTranslated('choose_payment_method', context),
                                                                         //             style: rubikBold.copyWith(fontSize: 18, color: ColorResources.getTextColor(context)),
                                                                         //           ),
-                                                                        //           const SizedBox(height: 20),
+                                                                        //           SizedBox(height: 20.h),
                                                                         //           GestureDetector(
                                                                         //             onTap: () {
                                                                         //               Navigator.pop(context);
@@ -364,7 +367,7 @@ class _SubscriptionBottomSheetState extends State<SubscriptionBottomSheet> {
                                                                         //               });
                                                                         //             },
                                                                         //             child: Container(
-                                                                        //               padding: EdgeInsets.all(10),
+                                                                        //               padding: EdgeInsets.all(10.r),
                                                                         //               decoration: BoxDecoration(color: ColorResources.getPrimaryColor(context), borderRadius: BorderRadius.circular(14)),
                                                                         //               child: Row(
                                                                         //                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -374,7 +377,7 @@ class _SubscriptionBottomSheetState extends State<SubscriptionBottomSheet> {
                                                                         //                     Icons.account_balance_wallet,
                                                                         //                     color: ColorResources.getTextColor(context),
                                                                         //                   ),
-                                                                        //                   SizedBox(width: 15),
+                                                                        //                   SizedBox(width: 15.w),
                                                                         //                   Text(
                                                                         //                     getTranslated('pay_with_paypal', context),
                                                                         //                     textAlign: TextAlign.center,
@@ -384,7 +387,7 @@ class _SubscriptionBottomSheetState extends State<SubscriptionBottomSheet> {
                                                                         //               ),
                                                                         //             ),
                                                                         //           ),
-                                                                        //           const SizedBox(height: 15),
+                                                                        //           SizedBox(height: 15.h),
                                                                         //           GestureDetector(
                                                                         //             onTap: () {
                                                                         //               Navigator.pop(context);
@@ -407,7 +410,7 @@ class _SubscriptionBottomSheetState extends State<SubscriptionBottomSheet> {
                                                                         //               }
                                                                         //             },
                                                                         //             child: Container(
-                                                                        //               padding: EdgeInsets.all(10),
+                                                                        //               padding: EdgeInsets.all(10.r),
                                                                         //               decoration: BoxDecoration(
                                                                         //                   border: Border.all(
                                                                         //                     color: ColorResources.getPrimaryColor(context),
@@ -418,7 +421,7 @@ class _SubscriptionBottomSheetState extends State<SubscriptionBottomSheet> {
                                                                         //                 mainAxisAlignment: MainAxisAlignment.center,
                                                                         //                 children: [
                                                                         //                   Icon(Icons.credit_card, color: ColorResources.getPrimaryColor(context)),
-                                                                        //                   SizedBox(width: 15),
+                                                                        //                   SizedBox(width: 15.w),
                                                                         //                   Text(getTranslated('pay_with_stripe', context), textAlign: TextAlign.center, style: TextStyle(color: ColorResources.getPrimaryColor(context), fontSize: 15, fontWeight: FontWeight.w500)),
                                                                         //                 ],
                                                                         //               ),
@@ -487,13 +490,13 @@ class _SubscriptionBottomSheetState extends State<SubscriptionBottomSheet> {
                                                                         //     backgroundColor:
                                                                         //         ColorResources.getCardColor(context),
                                                                         //     shape:
-                                                                        //         RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                                                        //         RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
                                                                         //     child:
                                                                         //         Container(
-                                                                        //       padding: const EdgeInsets.all(20),
+                                                                        //       padding:  EdgeInsets.all(20.r),
                                                                         //       decoration: BoxDecoration(
                                                                         //         color: ColorResources.getCardColor(context),
-                                                                        //         borderRadius: BorderRadius.circular(12),
+                                                                        //         borderRadius: BorderRadius.circular(12.r),
                                                                         //       ),
                                                                         //       child: Column(
                                                                         //         mainAxisSize: MainAxisSize.min,
@@ -502,7 +505,7 @@ class _SubscriptionBottomSheetState extends State<SubscriptionBottomSheet> {
                                                                         //             getTranslated('choose_payment_method', context),
                                                                         //             style: rubikBold.copyWith(fontSize: 18, color: ColorResources.getTextColor(context)),
                                                                         //           ),
-                                                                        //           const SizedBox(height: 20),
+                                                                        //           SizedBox(height: 20.h),
                                                                         //           GestureDetector(
                                                                         //             onTap: () {
                                                                         //               Navigator.pop(context);
@@ -528,7 +531,7 @@ class _SubscriptionBottomSheetState extends State<SubscriptionBottomSheet> {
                                                                         //               });
                                                                         //             },
                                                                         //             child: Container(
-                                                                        //               padding: EdgeInsets.all(10),
+                                                                        //               padding: EdgeInsets.all(10.r),
                                                                         //               decoration: BoxDecoration(color: ColorResources.getPrimaryColor(context), borderRadius: BorderRadius.circular(14)),
                                                                         //               child: Row(
                                                                         //                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -538,7 +541,7 @@ class _SubscriptionBottomSheetState extends State<SubscriptionBottomSheet> {
                                                                         //                     Icons.account_balance_wallet,
                                                                         //                     color: ColorResources.getTextColor(context),
                                                                         //                   ),
-                                                                        //                   SizedBox(width: 15),
+                                                                        //                   SizedBox(width: 15.w),
                                                                         //                   Text(
                                                                         //                     getTranslated('pay_with_paypal', context),
                                                                         //                     textAlign: TextAlign.center,
@@ -548,7 +551,7 @@ class _SubscriptionBottomSheetState extends State<SubscriptionBottomSheet> {
                                                                         //               ),
                                                                         //             ),
                                                                         //           ),
-                                                                        //           const SizedBox(height: 15),
+                                                                        //           SizedBox(height: 15.h),
                                                                         //           GestureDetector(
                                                                         //             onTap: () {
                                                                         //               Navigator.pop(context);
@@ -570,7 +573,7 @@ class _SubscriptionBottomSheetState extends State<SubscriptionBottomSheet> {
                                                                         //               }
                                                                         //             },
                                                                         //             child: Container(
-                                                                        //               padding: EdgeInsets.all(10),
+                                                                        //               padding: EdgeInsets.all(10.r),
                                                                         //               decoration: BoxDecoration(
                                                                         //                   border: Border.all(
                                                                         //                     color: ColorResources.getPrimaryColor(context),
@@ -581,7 +584,7 @@ class _SubscriptionBottomSheetState extends State<SubscriptionBottomSheet> {
                                                                         //                 mainAxisAlignment: MainAxisAlignment.center,
                                                                         //                 children: [
                                                                         //                   Icon(Icons.credit_card, color: ColorResources.getPrimaryColor(context)),
-                                                                        //                   SizedBox(width: 15),
+                                                                        //                   SizedBox(width: 15.w),
                                                                         //                   Text(getTranslated('pay_with_stripe', context), textAlign: TextAlign.center, style: TextStyle(color: ColorResources.getPrimaryColor(context), fontSize: 15, fontWeight: FontWeight.w500)),
                                                                         //                 ],
                                                                         //               ),
@@ -603,27 +606,21 @@ class _SubscriptionBottomSheetState extends State<SubscriptionBottomSheet> {
                                                                     });
                                                                   }
                                                                 },
-                                                                child:
-                                                                    Container(
-                                                                  padding: const EdgeInsets
-                                                                      .all(
-                                                                      Dimensions
-                                                                          .PADDING_SIZE_SMALL),
-                                                                  alignment:
-                                                                      Alignment
-                                                                          .center,
-                                                                  decoration: BoxDecoration(
-                                                                      borderRadius:
-                                                                          BorderRadius.only(
-                                                                              bottomLeft: Radius.circular(10))),
-                                                                  child: Text(
+                                                                child: Container(
+                                                                    padding: EdgeInsets.all(Dimensions.PADDING_SIZE_SMALL),
+                                                                    alignment: Alignment.center,
+                                                                    decoration: BoxDecoration(borderRadius: BorderRadius.only(bottomLeft: Radius.circular(10))),
+                                                                    child: Text(
                                                                       getTranslated(
                                                                           'yes',
                                                                           context),
-                                                                      style: rubikBold.copyWith(
-                                                                          color:
-                                                                              ColorResources.getTextColor(context))),
-                                                                ),
+                                                                      style: AppTextStyles.h7(
+                                                                              context)
+                                                                          .copyWith(
+                                                                        fontWeight:
+                                                                            FontWeight.bold,
+                                                                      ),
+                                                                    )),
                                                               )),
                                                               Expanded(
                                                                   child:
@@ -633,31 +630,32 @@ class _SubscriptionBottomSheetState extends State<SubscriptionBottomSheet> {
                                                                         context),
                                                                 child:
                                                                     Container(
-                                                                  padding: const EdgeInsets
-                                                                      .all(
-                                                                      Dimensions
-                                                                          .PADDING_SIZE_SMALL),
-                                                                  alignment:
-                                                                      Alignment
-                                                                          .center,
-                                                                  decoration:
-                                                                      BoxDecoration(
-                                                                    color: ColorResources
-                                                                        .getPrimaryColor(
-                                                                            context),
-                                                                    borderRadius:
-                                                                        BorderRadius.only(
-                                                                            bottomRight:
-                                                                                Radius.circular(10)),
-                                                                  ),
-                                                                  child: Text(
-                                                                      getTranslated(
-                                                                          'no',
-                                                                          context),
-                                                                      style: rubikBold.copyWith(
+                                                                        padding:
+                                                                            EdgeInsets.all(Dimensions
+                                                                                .PADDING_SIZE_SMALL),
+                                                                        alignment:
+                                                                            Alignment
+                                                                                .center,
+                                                                        decoration:
+                                                                            BoxDecoration(
                                                                           color:
-                                                                              ColorResources.getCardColor(context))),
-                                                                ),
+                                                                              ColorResources.getPrimaryColor(context),
+                                                                          borderRadius:
+                                                                              BorderRadius.only(bottomRight: Radius.circular(10)),
+                                                                        ),
+                                                                        child:
+                                                                            Text(
+                                                                          getTranslated(
+                                                                              'no',
+                                                                              context),
+                                                                          style:
+                                                                              AppTextStyles.h7(context).copyWith(
+                                                                            fontWeight:
+                                                                                FontWeight.bold,
+                                                                            color:
+                                                                                ColorResources.getCardColor(context),
+                                                                          ),
+                                                                        )),
                                                               )),
                                                             ])
                                                     ]));
@@ -705,14 +703,14 @@ class _SubscriptionBottomSheetState extends State<SubscriptionBottomSheet> {
                                   //         ColorResources.getCardColor(context),
                                   //     shape: RoundedRectangleBorder(
                                   //         borderRadius:
-                                  //             BorderRadius.circular(12)),
+                                  //             BorderRadius.circular(12.r)),
                                   //     child: Container(
-                                  //       padding: const EdgeInsets.all(20),
+                                  //       padding:  EdgeInsets.all(20.r),
                                   //       decoration: BoxDecoration(
                                   //         color: ColorResources.getCardColor(
                                   //             context),
                                   //         borderRadius:
-                                  //             BorderRadius.circular(12),
+                                  //             BorderRadius.circular(12.r),
                                   //       ),
                                   //       child: Column(
                                   //         mainAxisSize: MainAxisSize.min,
@@ -726,7 +724,7 @@ class _SubscriptionBottomSheetState extends State<SubscriptionBottomSheet> {
                                   //                 color: ColorResources
                                   //                     .getTextColor(context)),
                                   //           ),
-                                  //           const SizedBox(height: 20),
+                                  //           SizedBox(height: 20.h),
                                   //           GestureDetector(
                                   //             onTap: () {
                                   //               Navigator.pop(context);
@@ -780,7 +778,7 @@ class _SubscriptionBottomSheetState extends State<SubscriptionBottomSheet> {
                                   //               });
                                   //             },
                                   //             child: Container(
-                                  //               padding: EdgeInsets.all(10),
+                                  //               padding: EdgeInsets.all(10.r),
                                   //               decoration: BoxDecoration(
                                   //                   color: ColorResources
                                   //                       .getPrimaryColor(
@@ -801,7 +799,7 @@ class _SubscriptionBottomSheetState extends State<SubscriptionBottomSheet> {
                                   //                         .getTextColor(
                                   //                             context),
                                   //                   ),
-                                  //                   SizedBox(width: 15),
+                                  //                   SizedBox(width: 15.w),
                                   //                   Text(
                                   //                     getTranslated(
                                   //                         'pay_with_paypal',
@@ -820,7 +818,7 @@ class _SubscriptionBottomSheetState extends State<SubscriptionBottomSheet> {
                                   //               ),
                                   //             ),
                                   //           ),
-                                  //           const SizedBox(height: 15),
+                                  //           SizedBox(height: 15.h),
                                   //           GestureDetector(
                                   //             onTap: () {
                                   //               Navigator.pop(context);
@@ -865,7 +863,7 @@ class _SubscriptionBottomSheetState extends State<SubscriptionBottomSheet> {
                                   //               }
                                   //             },
                                   //             child: Container(
-                                  //               padding: EdgeInsets.all(10),
+                                  //               padding: EdgeInsets.all(10.r),
                                   //               decoration: BoxDecoration(
                                   //                   border: Border.all(
                                   //                     color: ColorResources
@@ -885,7 +883,7 @@ class _SubscriptionBottomSheetState extends State<SubscriptionBottomSheet> {
                                   //                       color: ColorResources
                                   //                           .getPrimaryColor(
                                   //                               context)),
-                                  //                   SizedBox(width: 15),
+                                  //                   SizedBox(width: 15.w),
                                   //                   Text(
                                   //                       getTranslated(
                                   //                           'pay_with_stripe',

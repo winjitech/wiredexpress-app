@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:wired_express/localization/language_constrants.dart';
 import 'package:wired_express/provider/auth_provider.dart';
@@ -38,14 +39,15 @@ class UpdateCardSreen extends StatelessWidget {
       child: Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
-          title: Text(getTranslated('payment_info', context),
-              style: rubikMedium.copyWith(
-                  fontSize: 18,
-                  color: ColorResources.getTextColor(context),
-                  fontWeight: FontWeight.w600)),
+          title: Text(
+            getTranslated('payment_info', context),
+            style: AppTextStyles.h2(context).copyWith(
+              fontWeight: FontWeight.w600,
+            ),
+          ),
           centerTitle: true,
           leading: IconButton(
-            icon: Icon(Icons.arrow_back_ios, size: 18),
+            icon: Icon(Icons.arrow_back_ios, size: 18.sp),
             color: ColorResources.getTextColor(context),
             onPressed: () => Navigator.pop(context),
           ),
@@ -65,8 +67,8 @@ class UpdateCardSreen extends StatelessWidget {
                   isDismissible: true,
                   useSafeArea: true,
                 ),
-                child: const Padding(
-                  padding: EdgeInsets.all(5),
+                child: Padding(
+                  padding: EdgeInsets.all(5.r),
                   child: Icon(Icons.delete, color: Colors.red),
                 ),
               ),
@@ -78,7 +80,7 @@ class UpdateCardSreen extends StatelessWidget {
           children: [
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.all(40.0),
+                padding: EdgeInsets.all(40.r),
                 child: InAppWebView(
                   initialUrlRequest: URLRequest(
                     url: WebUri(url),

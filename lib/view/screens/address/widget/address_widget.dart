@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:wired_express/data/model/response/address_model.dart';
 import 'package:wired_express/localization/language_constrants.dart';
@@ -7,6 +8,7 @@ import 'package:wired_express/provider/location_provider.dart';
 import 'package:wired_express/provider/theme_provider.dart';
 import 'package:wired_express/utill/color_resources.dart';
 import 'package:wired_express/utill/dimensions.dart';
+import 'package:wired_express/utill/styles.dart';
 import 'package:wired_express/view/base/circular_indicator_widget.dart';
 import 'package:wired_express/view/base/custom_snackbar.dart';
 import 'package:wired_express/view/base/map_widget.dart';
@@ -32,8 +34,8 @@ class AddressWidget extends StatelessWidget {
           }
         },
         child: Container(
-          padding: EdgeInsets.all(Dimensions.PADDING_SIZE_SMALL),
-          height: 80,
+          padding: EdgeInsets.all(10.r),
+          height: 80.h,
           decoration: BoxDecoration(
             boxShadow: [
               BoxShadow(
@@ -65,7 +67,7 @@ class AddressWidget extends StatelessWidget {
                           ? Colors.white54
                           : ColorResources.getTextColor(context)
                               .withOpacity(.45),
-                      size: 25,
+                      size: 25.sp,
                     ),
                     SizedBox(width: Dimensions.PADDING_SIZE_DEFAULT),
                     Expanded(
@@ -73,35 +75,29 @@ class AddressWidget extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text(addressModel!.addressType!,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyMedium!
-                                    .copyWith(
-                                      color: Provider.of<ThemeProvider>(context)
-                                              .darkTheme
-                                          ? Colors.white54
-                                          : ColorResources.getTextColor(context)
-                                              .withOpacity(.45),
-                                    )),
+                            Text(
+                              addressModel!.addressType!,
+                              style: AppTextStyles.h7(context).copyWith(
+                                color: Provider.of<ThemeProvider>(context).darkTheme
+                                    ? Colors.white54
+                                    : ColorResources.getTextColor(context).withOpacity(.45),
+                              ),
+                            ),
+
                             Text(
                               addressModel!.address!,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyLarge!
-                                  .copyWith(
-                                      fontSize: 15,
-                                      color: Provider.of<ThemeProvider>(context)
-                                              .darkTheme
-                                          ? Colors.white
-                                          : ColorResources.getTextColor(
-                                              context)),
+                              style: AppTextStyles.h4(context).copyWith(
+                                fontSize: 15.sp,
+                                color: Provider.of<ThemeProvider>(context).darkTheme
+                                    ? Colors.white
+                                    : ColorResources.getTextColor(context),
+                              ),
                             ),
                           ]),
                     ),
-                    SizedBox(width: 5),
+                    SizedBox(width: 5.w),
                   ],
                 ),
               ),
@@ -135,9 +131,9 @@ class AddressWidget extends StatelessWidget {
                         child: Container(
                           width: 40,
                           height: 40,
-                          margin: EdgeInsets.only(right: 20),
+                          margin: EdgeInsets.only(right: 20.w),
                           decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(5),
+                            borderRadius: BorderRadius.circular(5.r),
                             color: ColorResources.getScaffoldBackgroundColor(
                                 context),
                             border: Border.all(
@@ -176,7 +172,7 @@ class AddressWidget extends StatelessWidget {
                               context: context,
                               barrierDismissible: false,
                               builder: (context) => CustomCircularIndicator(
-                                  color: ColorResources.getScaffoldColor(
+                                  color: ColorResources.getScaffoldBackgroundColor(
                                       context)));
                           Provider.of<LocationProvider>(context, listen: false)
                               .deleteUserAddressByID(addressModel!.id!, index!,
@@ -202,13 +198,18 @@ class AddressWidget extends StatelessWidget {
                       itemBuilder: (BuildContext c) => <PopupMenuEntry<String>>[
                         PopupMenuItem<String>(
                           value: 'edit',
-                          child: Text(getTranslated('edit', context),
-                              style: Theme.of(context).textTheme.bodyMedium),
+                          child: Text(
+                            getTranslated('edit', context),
+                            style: AppTextStyles.h7(context),
+                          ),
                         ),
+
                         PopupMenuItem<String>(
                           value: 'delete',
-                          child: Text(getTranslated('delete', context),
-                              style: Theme.of(context).textTheme.bodyMedium),
+                          child: Text(
+                            getTranslated('delete', context),
+                            style: AppTextStyles.h7(context),
+                          ),
                         ),
                       ],
                     ),

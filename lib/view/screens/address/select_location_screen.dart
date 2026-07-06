@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:google_places_flutter/google_places_flutter.dart';
 import 'package:google_places_flutter/model/prediction.dart';
@@ -11,6 +12,7 @@ import 'package:wired_express/utill/Images.dart';
 import 'package:wired_express/utill/app_constants.dart';
 import 'package:wired_express/utill/color_resources.dart';
 import 'package:wired_express/utill/dimensions.dart';
+import 'package:wired_express/utill/styles.dart';
 import 'package:wired_express/view/base/circular_indicator_widget.dart';
 import 'package:wired_express/view/base/custom_button.dart';
 import 'package:wired_express/view/base/main_app_bar.dart';
@@ -39,7 +41,7 @@ class _SelectLocationScreenState extends State<SelectLocationScreen> {
   @override
   void initState() {
     super.initState();
-  //  _loadMapStyles();
+    //  _loadMapStyles();
   }
 
   @override
@@ -61,11 +63,9 @@ class _SelectLocationScreenState extends State<SelectLocationScreen> {
 
     return Scaffold(
       backgroundColor: ColorResources.getScaffoldBackgroundColor(context!),
-      appBar: ResponsiveHelper.isDesktop(context)
-          ? PreferredSize(
-              child: MainAppBar(), preferredSize: Size.fromHeight(80))
-          : AppBar(
-              backgroundColor: ColorResources.getScaffoldColor(context),
+      appBar:AppBar(
+              backgroundColor:
+                  ColorResources.getScaffoldBackgroundColor(context),
               elevation: 0,
               leading: IconButton(
                   onPressed: () => Navigator.pop(context),
@@ -76,8 +76,9 @@ class _SelectLocationScreenState extends State<SelectLocationScreen> {
               centerTitle: true,
               title: Text(
                 getTranslated('select_delivery_address', context),
-                style: TextStyle(
-                    color: ColorResources.getScaffoldBackgroundColor(context)),
+                style: AppTextStyles.h4(context).copyWith(
+                  color: ColorResources.getScaffoldBackgroundColor(context),
+                ),
               ),
             ),
       body: Center(
@@ -139,20 +140,20 @@ class _SelectLocationScreenState extends State<SelectLocationScreen> {
                           margin: EdgeInsets.only(
                               right: Dimensions.PADDING_SIZE_LARGE),
                           decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(
-                                Dimensions.PADDING_SIZE_SMALL),
+                            borderRadius: BorderRadius.circular(10.r),
                             color: ColorResources.getScaffoldBackgroundColor(
                                 context),
                           ),
                           child: Icon(
                             Icons.my_location,
-                            color: ColorResources.getScaffoldColor(context),
-                            size: 35,
+                            color: ColorResources.getScaffoldBackgroundColor(
+                                context),
+                            size: 35.sp,
                           ),
                         ),
                       ),
                       Padding(
-                        padding: EdgeInsets.all(Dimensions.PADDING_SIZE_LARGE),
+                        padding: EdgeInsets.all(20.r),
                         child: CustomButton(
                           text: getTranslated('select_location', context),
                           onTap: locationProvider.loading
@@ -174,7 +175,7 @@ class _SelectLocationScreenState extends State<SelectLocationScreen> {
                     height: MediaQuery.of(context).size.height,
                     child: Image.asset(
                       Images.marker,
-                      width: 25,
+                      width: 25.w,
                       height: 35,
                     )),
                 locationProvider.loading
@@ -211,9 +212,9 @@ class _SelectLocationScreenState extends State<SelectLocationScreen> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    "Location not found ,try again or use your current location ",
+                    "Location not found, try again or use your current location.",
                     textAlign: TextAlign.justify,
-                    style: TextStyle(fontSize: 15),
+                    style: AppTextStyles.h4(context),
                   ),
                 ],
               ),
@@ -227,7 +228,8 @@ class _SelectLocationScreenState extends State<SelectLocationScreen> {
                         },
                         child: Icon(
                           Icons.close,
-                          color: ColorResources.getScaffoldColor(context),
+                          color: ColorResources.getScaffoldBackgroundColor(
+                              context),
                         ),
                       ),
                     ),
@@ -243,7 +245,8 @@ class _SelectLocationScreenState extends State<SelectLocationScreen> {
                         },
                         child: Icon(
                           Icons.my_location,
-                          color:ColorResources.getScaffoldColor(context),
+                          color: ColorResources.getScaffoldBackgroundColor(
+                              context),
                         ),
                       ),
                     ),
@@ -259,23 +262,26 @@ class _SelectLocationScreenState extends State<SelectLocationScreen> {
     return Consumer<LocationProvider>(
         builder: (context, locationProvider, child) {
       return Container(
-        height: 80,
-        padding: const EdgeInsets.only(left: 20, right: 20, top: 30),
+        height: 80.h,
+        padding: EdgeInsets.only(left: 20.w, right: 20.w, top: 30),
         child: GooglePlaceAutoCompleteTextField(
-          textStyle: TextStyle(color: ColorResources.getScaffoldColor(context)),
+          textStyle: AppTextStyles.h6(context).copyWith(
+              color: ColorResources.getScaffoldBackgroundColor(context)),
           boxDecoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(10.r),
             color: ColorResources.getScaffoldBackgroundColor(context),
             border: Border.all(
-                width: 1,
-                color:ColorResources.getScaffoldColor(context),),
+              width: 1,
+              color: ColorResources.getScaffoldBackgroundColor(context),
+            ),
           ),
           textEditingController: _addressController,
           googleAPIKey: AppConstants.apiKey,
           inputDecoration: InputDecoration(
               hintText: 'Search your location',
-              hintStyle:
-                  TextStyle(color: ColorResources.getScaffoldColor(context),),
+              hintStyle:  AppTextStyles.h6(context).copyWith(
+                color: ColorResources.getScaffoldBackgroundColor(context),
+              ),
               border: InputBorder.none,
               enabledBorder: InputBorder.none),
           debounceTime: 400,
@@ -301,14 +307,19 @@ class _SelectLocationScreenState extends State<SelectLocationScreen> {
           seperatedBuilder: Divider(),
           itemBuilder: (context, index, Prediction prediction) {
             return Container(
-              padding: EdgeInsets.all(10),
+              padding: EdgeInsets.all(10.r),
               child: Row(
                 children: [
                   Icon(Icons.location_on),
                   SizedBox(
                     width: 7,
                   ),
-                  Expanded(child: Text("${prediction.description ?? ""}"))
+                  Expanded(
+                    child: Text(
+                      prediction.description ?? "",
+                      style: AppTextStyles.h7(context),
+                    ),
+                  ),
                 ],
               ),
             );

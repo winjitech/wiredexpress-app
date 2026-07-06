@@ -24,7 +24,7 @@ class AppLocalization {
   }
 
   String translate(String key) {
-    return _localizedValues![key]!;
+    return _localizedValues?[key]??"";
   }
 
   static const LocalizationsDelegate<AppLocalization> delegate =

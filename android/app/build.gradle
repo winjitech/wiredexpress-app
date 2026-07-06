@@ -102,3 +102,13 @@ dependencies {
 
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.1.4'
 }
+
+subprojects {
+    project.afterEvaluate {
+        if (project.hasProperty("android")) {
+            android {
+                compileSdkVersion 36
+            }
+        }
+    }
+}

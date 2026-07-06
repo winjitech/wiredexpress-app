@@ -1,4 +1,3 @@
-
 import 'dart:async';
 import 'dart:developer';
 import 'package:wired_express/provider/auth_provider.dart';
@@ -15,7 +14,7 @@ import 'package:wired_express/view/screens/language/choose_language_screen.dart'
 import 'package:provider/provider.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:wired_express/provider/wishlist_provider.dart';
-import 'package:wired_express/utill/Images.dart';
+import 'package:wired_express/utill/images.dart';
 import 'package:wired_express/view/screens/dashboard/dashboard_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
@@ -51,7 +50,7 @@ class _SplashScreenState extends State<SplashScreen> {
           bool isNotConnected = result != ConnectivityResult.wifi &&
               result != ConnectivityResult.mobile;
           isNotConnected
-              ? const SizedBox()
+              ? SizedBox()
               : _globalKey.currentState!.hideCurrentSnackBar();
           _globalKey.currentState!.showSnackBar(SnackBar(
             backgroundColor: isNotConnected ? Colors.red : Colors.green,
@@ -130,12 +129,12 @@ class _SplashScreenState extends State<SplashScreen> {
               .initCartListProductIds(context);
 
           await Provider.of<CategoryProvider>(context, listen: false)
-              .getCategoryList(context, false);
+              .getAllCategories(context);
 
           await Provider.of<BannerProvider>(context, listen: false)
               .getBannerList(context, false);
-          await Provider.of<CategoryProvider>(context, listen: false)
-              .getCategoryFeaturedList(context, false);
+          // await Provider.of<CategoryProvider>(context, listen: false)
+          //     .getCategoryFeaturedList(context, false);
 
           final location =
               await Provider.of<LocationProvider>(context, listen: false);
@@ -148,8 +147,6 @@ class _SplashScreenState extends State<SplashScreen> {
                             fromSplash: true,
                           ))));
             } else {
-
-
               Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -164,8 +161,6 @@ class _SplashScreenState extends State<SplashScreen> {
               MaterialPageRoute(
                   builder: (BuildContext context) => ChooseLanguageScreen()));
         }
-
-
       }
     });
   }
@@ -181,10 +176,9 @@ class _SplashScreenState extends State<SplashScreen> {
               child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-               Image.asset(Images.logo, height: 175),
+              Image.asset(Images.mainLogo, height: 175),
             ],
           ));
         }));
-
   }
 }

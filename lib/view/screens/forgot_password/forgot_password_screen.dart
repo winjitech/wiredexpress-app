@@ -1,12 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wired_express/localization/language_constrants.dart';
 import 'package:wired_express/provider/auth_provider.dart';
 import 'package:wired_express/utill/color_resources.dart';
 import 'package:wired_express/utill/dimensions.dart';
 import 'package:wired_express/utill/images.dart';
 import 'package:wired_express/utill/routes.dart';
+import 'package:wired_express/utill/styles.dart';
 import 'package:wired_express/view/base/circular_indicator_widget.dart';
 import 'package:wired_express/view/base/custom_app_bar.dart';
 import 'package:wired_express/view/base/custom_button.dart';
@@ -36,48 +38,47 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SizedBox(height: 40),
+                    SizedBox(height: 40),
                     Padding(
-                      padding: const EdgeInsets.only(left: 50),
+                      padding: EdgeInsets.only(left: 50),
                       child: Text(
                         getTranslated('forget_pass', context),
-                        style: TextStyle(
-                            color: ColorResources.getTextColor(context),
-                            fontWeight: FontWeight.w500,
-                            fontSize: 20),
+                        style: AppTextStyles.h3(
+                          context,
+                          fontSize: 20.sp,
+                        ),
                       ),
                     ),
-                    const SizedBox(height: 30),
+                    SizedBox(height: 30.h),
                     Padding(
-                      padding: const EdgeInsets.only(left: 20, right: 20),
+                      padding: EdgeInsets.only(left: 20.w, right: 20.w),
                       child: Center(
                           child: Text(
-                        getTranslated('please_enter_your_number_to', context),
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                            color: ColorResources.getTextColor(context)
-                                .withOpacity(0.5),
-                            fontSize: 18),
-                      )),
+                            getTranslated('please_enter_your_number_to', context),
+                            textAlign: TextAlign.center,
+                            style: AppTextStyles.h5(context).copyWith(
+                              color: ColorResources.getTextColor(context).withOpacity(0.5),
+                            ),
+                          ),),
                     ),
                     Padding(
                       padding:
-                          const EdgeInsets.all(Dimensions.PADDING_SIZE_LARGE),
+                          EdgeInsets.all(20.r),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const SizedBox(height: 80),
+                          SizedBox(height: 80),
                           Text(
                             getTranslated('email', context),
-                            style: TextStyle(
-                                color: ColorResources.getTextColor(context),
-                                fontWeight: FontWeight.w500,
-                                fontSize: 19),
+                            style: AppTextStyles.h3(
+                              context,
+                              fontSize: 19.sp,
+                            ),
                           ),
-                          const SizedBox(
+                          SizedBox(
                               height: Dimensions.PADDING_SIZE_SMALL),
                           CustomTextField(
-                            hintText: 'your Email',
+                            hintText: 'your Email',fill: true,
                             fillColor:
                                 ColorResources.getTextFieldFillColor(context),
                             isShowBorder: false,
@@ -85,7 +86,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                             inputType: TextInputType.emailAddress,
                             inputAction: TextInputAction.done,
                           ),
-                          const SizedBox(height: 50),
+                          SizedBox(height: 50),
                           !auth.isForgotPasswordLoading!
                               ? CustomButton(
                                   text: getTranslated('send', context),
@@ -141,28 +142,31 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         children: [
                           Text(
                             getTranslated('remember_pass', context),
-                            style: TextStyle(
-                                color: ColorResources.getTextColor(context),
-                                fontWeight: FontWeight.w400,
-                                fontSize: 15),
+                            style: AppTextStyles.h7(
+                              context,
+                              fontSize: 15.sp,
+                            ),
                           ),
                           TextButton(
-                              onPressed: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (BuildContext context) =>
-                                            LoginScreen()));
-                              },
-                              child: Text(
-                                getTranslated('login', context),
-                                style: TextStyle(
-                                    color: ColorResources.getPrimaryColor(
-                                        context),
-                                    fontWeight: FontWeight.w700,
-                                    decoration: TextDecoration.underline,
-                                    fontSize: 17),
-                              ))
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (BuildContext context) => LoginScreen(),
+                                ),
+                              );
+                            },
+                            child: Text(
+                              getTranslated('login', context),
+                              style: AppTextStyles.h2(
+                                context,
+                                fontSize: 17.sp,
+                              ).copyWith(
+                                color: ColorResources.getPrimaryColor(context),
+                                decoration: TextDecoration.underline,
+                              ),
+                            ),
+                          ),
                         ],
                       ),
                     ),

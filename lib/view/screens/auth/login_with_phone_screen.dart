@@ -1,7 +1,9 @@
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wired_express/utill/images.dart';
+import 'package:wired_express/utill/styles.dart';
 import 'package:wired_express/view/base/circular_indicator_widget.dart';
 import 'package:wired_express/view/screens/auth/login_screen.dart';
 import 'package:wired_express/helper/responsive_helper.dart';
@@ -46,10 +48,7 @@ class _LoginWithPhoneScreenState extends State<LoginWithPhoneScreen> {
 
     return Scaffold(
       backgroundColor: ColorResources.getScaffoldBackgroundColor(context!),
-      appBar: ResponsiveHelper.isDesktop(context)
-          ? PreferredSize(
-              child: MainAppBar(), preferredSize: Size.fromHeight(80))
-          : null,
+
       body: Column(
         children: [
           SafeArea(
@@ -58,17 +57,17 @@ class _LoginWithPhoneScreenState extends State<LoginWithPhoneScreen> {
               child: GestureDetector(
                 onTap: () => Navigator.pop(context),
                 child: Container(
-                    margin: const EdgeInsets.only(top: 20, left: 20),
+                    margin: EdgeInsets.only(top: 20, left: 20.w),
                     decoration: BoxDecoration(
                         color: ColorResources.getTextColor(context)
                             .withOpacity(0.2),
-                        borderRadius: BorderRadius.circular(50)),
+                        borderRadius: BorderRadius.circular(50.r)),
                     child: Padding(
-                      padding: const EdgeInsets.all(14),
+                      padding: EdgeInsets.all(14.r),
                       child: Icon(
                         Icons.arrow_back_ios_new_outlined,
                         color: ColorResources.getTextColor(context),
-                        size: 19,
+                        size: 19.sp,
                       ),
                     )),
               ),
@@ -80,7 +79,7 @@ class _LoginWithPhoneScreenState extends State<LoginWithPhoneScreen> {
                 child: SizedBox(
                   width: MediaQuery.of(context).size.width,
                   child: Padding(
-                    padding: const EdgeInsets.all(20),
+                    padding:  EdgeInsets.all(20.r),
                     child: Consumer<CustomAuthProvider>(
                       builder: (context, authProvider, child) => Form(
                         key: _formKeyLogin,
@@ -94,112 +93,91 @@ class _LoginWithPhoneScreenState extends State<LoginWithPhoneScreen> {
                               ),
                             ),
                             Center(
-                                child: Text(
-                              getTranslated('login', context),
-                              style: TextStyle(
-                                  fontSize: 24,
-                                  color: ColorResources.getTextColor(context)),
-                            )),
-                            SizedBox(height: 35),
+                              child: Text(
+                                getTranslated('login', context),
+                                style: AppTextStyles.h1(context),
+                              ),
+                            ),
+                            SizedBox(height: 35.h),
                             Text(
                               getTranslated('phone', context),
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyMedium!
-                                  .copyWith(
-                                      fontSize: 16,
-                                      color:
-                                          ColorResources.getTextColor(context)),
+                              style: AppTextStyles.h4(context),
                             ),
-                            SizedBox(height: 10),
+                            SizedBox(height: 10.h),
                             Container(
                               // decoration: BoxDecoration(
-                              //     borderRadius: BorderRadius.circular(10),
+                              //     borderRadius: BorderRadius.circular(10.r),
                               //     border: Border.all(
                               //         color: ColorResources.getTextColor(context),
                               //         width: 0.1)),
                               child: Row(
                                 children: [
                                   CountryCodePicker(
-                                    backgroundColor: Provider.of<ThemeProvider>(
-                                                context,
-                                                listen: false)
-                                            .darkTheme
+                                    backgroundColor:
+                                    Provider.of<ThemeProvider>(context, listen: false).darkTheme
                                         ? Colors.black26
                                         : Colors.grey[100],
-                                    barrierColor: Provider.of<ThemeProvider>(
-                                                context,
-                                                listen: false)
-                                            .darkTheme
+                                    barrierColor:
+                                    Provider.of<ThemeProvider>(context, listen: false).darkTheme
                                         ? Colors.black26
                                         : Colors.grey[100],
-                                    dialogBackgroundColor: ColorResources
-                                        .getScaffoldBackgroundColor(context),
-                                    dialogSize: Size(350, 500),
-                                    dialogTextStyle: TextStyle(
-                                      color:
-                                          ColorResources.getTextColor(context),
-                                    ),
-                                    searchStyle: TextStyle(
-                                      color:
-                                          ColorResources.getTextColor(context),
-                                    ),
+                                    dialogBackgroundColor:
+                                    ColorResources.getScaffoldBackgroundColor(context),
+                                    dialogSize: const Size(350, 500),
+                                    dialogTextStyle: AppTextStyles.h7(context),
+                                    searchStyle: AppTextStyles.h7(context),
                                     searchDecoration: InputDecoration(
-                                      contentPadding:
-                                          EdgeInsets.symmetric(vertical: 10),
-                                      prefixIcon: Icon(Icons.search,
-                                          color: ColorResources.getHintColor(
-                                              context)),
-                                      hintText: 'write country',
-                                      hintStyle: TextStyle(
-                                          color: ColorResources.getHintColor(
-                                              context)),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderSide: BorderSide(
-                                            color: ColorResources.getTextColor(
-                                                context)),
-                                        borderRadius: BorderRadius.circular(15),
+                                      contentPadding: EdgeInsets.symmetric(vertical: 10.h),
+                                      prefixIcon: Icon(
+                                        Icons.search,
+                                        color: ColorResources.getHintColor(context),
                                       ),
-                                      border: OutlineInputBorder(
+                                      hintText: getTranslated('write_country', context),
+                                      hintStyle: AppTextStyles.h7(context).copyWith(
+                                        color: ColorResources.getHintColor(context),
+                                      ),
+                                      focusedBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(15.r),
                                         borderSide: BorderSide(
-                                            color: ColorResources.getTextColor(
-                                                context)),
-                                        borderRadius: BorderRadius.circular(15),
+                                          color: ColorResources.getTextColor(context),
+                                        ),
                                       ),
                                       enabledBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(15.r),
                                         borderSide: BorderSide(
-                                            color: ColorResources.getTextColor(
-                                                context)),
-                                        borderRadius: BorderRadius.circular(15),
+                                          color: ColorResources.getTextColor(context),
+                                        ),
+                                      ),
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(15.r),
+                                        borderSide: BorderSide(
+                                          color: ColorResources.getTextColor(context),
+                                        ),
                                       ),
                                     ),
+
                                     closeIcon: Icon(
                                       Icons.close,
-                                      color:
-                                          ColorResources.getTextColor(context),
+                                      color: ColorResources.getTextColor(context),
                                     ),
-                                    onChanged: (val) =>
-                                        countryCode = val.toString(),
-                                    onInit: (val) =>
-                                        countryCode = val.toString(),
+
+                                    onChanged: (val) => countryCode = val.toString(),
+                                    onInit: (val) => countryCode = val.toString(),
                                     initialSelection: countryCode,
-                                    textStyle: TextStyle(
-                                      color:
-                                          ColorResources.getTextColor(context),
-                                    ),
+
+                                    textStyle: AppTextStyles.h7(context),
+
                                     flagDecoration: BoxDecoration(
-                                      color: Provider.of<ThemeProvider>(context,
-                                                  listen: false)
-                                              .darkTheme
+                                      color: Provider.of<ThemeProvider>(context, listen: false).darkTheme
                                           ? Colors.black26
                                           : Colors.grey[100],
-                                      borderRadius: BorderRadius.circular(5),
+                                      borderRadius: BorderRadius.circular(5.r),
                                     ),
                                   ),
                                   Expanded(
                                     child: CustomTextField(
                                       hintText: getTranslated(
-                                          'enter_phone_number', context),
+                                          'enter_phone_number', context),fill: true,
                                       fillColor:
                                           ColorResources.getTextFieldFillColor(
                                               context),
@@ -213,14 +191,13 @@ class _LoginWithPhoneScreenState extends State<LoginWithPhoneScreen> {
                                 ],
                               ),
                             ),
-                            SizedBox(height: Dimensions.PADDING_SIZE_LARGE),
+                            SizedBox(height: 20.h),
                             authProvider.isLoading == true
                                 ? CustomCircularIndicator()
                                 : CustomButton(
                                     text: getTranslated('next', context),
                                     onTap: () async {
                                       FocusScope.of(context).unfocus();
-                                      // 10 m3da4 .........11 3da ..... 15 m3da4
                                       String phone =
                                           countryCode + _phoneController!.text;
                                       await authProvider.verifyPhoneNumber(
@@ -248,7 +225,7 @@ class _LoginWithPhoneScreenState extends State<LoginWithPhoneScreen> {
                                       //                         phone: phone))));
                                     },
                                   ),
-                            SizedBox(height: 15),
+                            SizedBox(height: 15.h),
                             Center(
                               child: GestureDetector(
                                 onTap: () async {
@@ -262,21 +239,21 @@ class _LoginWithPhoneScreenState extends State<LoginWithPhoneScreen> {
                                               DashboardScreen(pageIndex: 0)));
                                 },
                                 child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Text(
+                                  padding: EdgeInsets.all(8.r),
+                                  child:Text(
                                     getTranslated('login_as_guest', context),
-                                    style: TextStyle(
-                                        color:
-                                            ColorResources.getTextColor(context)
-                                                .withOpacity(0.6),
-                                        fontWeight: FontWeight.w500,
-                                        fontSize: 15,
-                                        decoration: TextDecoration.underline),
+                                    style: AppTextStyles.h6(
+                                      context,
+                                      fontSize: 15.sp,
+                                    ).copyWith(
+                                      color: ColorResources.getTextColor(context).withOpacity(0.6),
+                                      decoration: TextDecoration.underline,
+                                    ),
                                   ),
                                 ),
                               ),
                             ),
-                            SizedBox(height: 15),
+                            SizedBox(height: 15.h),
                             Row(children: [
                               Expanded(
                                   child: Divider(
@@ -284,15 +261,14 @@ class _LoginWithPhoneScreenState extends State<LoginWithPhoneScreen> {
                                       color: ColorResources.getTextColor(
                                           context)
                                           .withOpacity(0.4))),
-                              const SizedBox(width: 15),
+                              SizedBox(width: 15.w),
                               Text(
                                 getTranslated('or', context),
-                                style: TextStyle(
-                                    color: ColorResources.getTextColor(
-                                        context)
-                                        .withOpacity(0.7)),
+                                style: AppTextStyles.h7(context).copyWith(
+                                  color: ColorResources.getTextColor(context).withOpacity(0.7),
+                                ),
                               ),
-                              const SizedBox(width: 15),
+                              SizedBox(width: 15.w),
                               Expanded(
                                   child: Divider(
                                       thickness: 1,
@@ -300,7 +276,7 @@ class _LoginWithPhoneScreenState extends State<LoginWithPhoneScreen> {
                                           context)
                                           .withOpacity(0.4))),
                             ]),
-                            SizedBox(height: 5),
+                            SizedBox(height: 5.h),
                             TextButton(
                                 onPressed: () {
                                   FocusScope.of(context).unfocus();
@@ -316,9 +292,7 @@ class _LoginWithPhoneScreenState extends State<LoginWithPhoneScreen> {
                                   children: [
                                     Text(
                                       getTranslated('login_by_email', context),
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.w500,
-                                          fontSize: 16),
+                                      style: AppTextStyles.h4(context),
                                     ),
                                   ],
                                 )),

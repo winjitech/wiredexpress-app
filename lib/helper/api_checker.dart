@@ -3,6 +3,7 @@ import 'package:wired_express/data/model/response/base/api_response.dart';
 import 'package:wired_express/provider/splash_provider.dart';
 import 'package:wired_express/utill/routes.dart';
 import 'package:provider/provider.dart';
+import 'package:wired_express/utill/styles.dart';
 
 class ApiChecker {
   static void checkApi(BuildContext? context, ApiResponse apiResponse) {
@@ -20,7 +21,7 @@ class ApiChecker {
       }
       print(_errorMessage);
       ScaffoldMessenger.of(context!).showSnackBar(SnackBar(
-          content: Text(_errorMessage, style: TextStyle(color: Colors.white)),
+          content: Text(_errorMessage, style: AppTextStyles.h6(context).copyWith(color: Colors.white)),
           backgroundColor: Colors.red));
     }
   }

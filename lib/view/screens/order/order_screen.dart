@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wired_express/provider/place_order_provider.dart';
 import 'package:wired_express/provider/profile_provider.dart';
 import 'package:wired_express/provider/theme_provider.dart';
@@ -18,6 +19,7 @@ import 'package:wired_express/view/base/custom_app_bar.dart';
 import 'package:wired_express/view/base/custom_main_appbar.dart';
 import 'package:wired_express/view/base/not_logged_in_screen.dart';
 import 'package:wired_express/view/screens/drawer/drawer_screen.dart';
+import 'package:wired_express/view/screens/home/widget/home_header_widget.dart';
 import 'package:wired_express/view/screens/order/widget/history_view.dart';
 import 'package:wired_express/view/screens/order/widget/order_view.dart';
 import 'package:provider/provider.dart';
@@ -57,7 +59,7 @@ class _OrderScreenState extends State<OrderScreen>
         openScale: 0.80,
         backdrop: SafeArea(
             child: Padding(
-          padding: const EdgeInsets.all(15),
+          padding: EdgeInsets.all(15.r),
           child: IconButton(
               onPressed: () {
                 closeDrawer();
@@ -65,10 +67,10 @@ class _OrderScreenState extends State<OrderScreen>
               icon: Icon(
                 Icons.close,
                 color: ColorResources.getTextColor(context),
-                size: 36,
+                size: 36.sp,
               )),
         )),
-        childDecoration: BoxDecoration(borderRadius: BorderRadius.circular(40)),
+        childDecoration: BoxDecoration(borderRadius: BorderRadius.circular(40.r)),
         controller: advancedDrawerController,
         animationCurve: Curves.easeInOutExpo,
         animationDuration: Duration(milliseconds: 400),
@@ -77,85 +79,72 @@ class _OrderScreenState extends State<OrderScreen>
         child: Scaffold(
           backgroundColor: ColorResources.getScaffoldBackgroundColor(context),
 
-          // backgroundColor: Colors.white,
-          appBar: CustomMainAppBar(
-            onMenuPressed: () => showDrawer(),
-            title: getTranslated('my_order', context),
-          ),
-          body: _isLoggedIn!
-              ? Consumer<OrderProvider>(
-                  builder: (context, order, child) {
-                    return Column(children: [
-                      Center(
-                        child: SizedBox(
-                            width: MediaQuery.of(context).size.width,
-                            child: Align(
-                                alignment: ResponsiveHelper.isDesktop(context)
-                                    ? Alignment.centerLeft
-                                    : Alignment.center,
-                                child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 10, vertical: 5),
-                                    child: Container(
-                                      height: 50,
-                                      decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(20)),
-                                      width: ResponsiveHelper.isDesktop(context)
-                                          ? 350
-                                          : MediaQuery.of(context).size.width,
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(3),
-                                        child: TabBar(
-                                          controller: _tabController,
-                                          indicatorColor: Colors.transparent,
-                                          indicatorWeight: 3,
-                                          labelColor: ColorResources.getTextColor(context),
-                                          unselectedLabelColor: Colors.grey,
-                                          unselectedLabelStyle:
-                                              rubikMedium.copyWith(
-                                                  color: Theme.of(context)
-                                                      .disabledColor,
-                                                  fontSize: 15),
-                                          labelStyle: rubikMedium.copyWith(
-                                              fontSize: 15,
-                                              color: ColorResources
-                                                  .getScaffoldColor(context)),
-                                          indicator: BoxDecoration(
-                                            color: ColorResources.getPrimaryColor(context),
-                                            borderRadius:
-                                                BorderRadius.circular(40),
-                                            boxShadow: [
-                                              BoxShadow(
-                                                  color: ColorResources.getBoxShadow(context),
+          body: Column(
+            children: [
+              HomeHeaderWidget(onMenuPressed: () => showDrawer(), title: 'orders'),
 
-                                                  blurRadius: 10)
-                                            ],
-                                          ),
-                                          tabs: [
-                                            Tab(
-                                                text: getTranslated(
-                                                    'running', context)),
-                                            Tab(
-                                                text: getTranslated(
-                                                    'history', context)),
-                                          ],
-                                        ),
+              Expanded(
+                child: _isLoggedIn!
+                    ? Consumer<OrderProvider>(
+                        builder: (context, order, child) {
+                          return Column(children: [
+                            Padding(
+                                padding:  EdgeInsets.symmetric(
+                                    horizontal: 10.w),
+                                child: Container(
+                                  height: 45.h,
+                                  decoration: BoxDecoration(
+                                      color: Colors.transparent,
+                                      borderRadius: BorderRadius.circular(20.r)),
+                                  width: MediaQuery.of(context).size.width,
+                                  child: Padding(
+                                    padding:  EdgeInsets.symmetric(
+                                        horizontal: 15.w, vertical: 3.h),
+                                    child: TabBar(
+                                      dividerColor: Colors.transparent,
+                                      indicatorSize: TabBarIndicatorSize.tab,
+                                      controller: _tabController,
+                                      indicatorColor: Colors.transparent,
+                                      labelColor: Colors.white,
+                                      unselectedLabelColor:
+                                      ColorResources.getTextColor(context).withOpacity(0.6),
+                                      labelStyle: AppTextStyles.h6(
+                                        context,
+                                        fontSize: 15.sp,
+                                      ).copyWith(fontWeight: FontWeight.w600,),
+
+                                      unselectedLabelStyle: AppTextStyles.h6(
+                                        context,
+                                        fontSize: 15.sp,
+
+                                      ).copyWith( color: ColorResources.getTextColor(context).withOpacity(0.6),),
+                                      indicator: BoxDecoration(
+                                        color: ColorResources.getPrimaryColor(context),
+                                        borderRadius: BorderRadius.circular(40.r),
+
                                       ),
-                                    )))),
-                      ),
-                      Expanded(
-                          child: TabBarView(
-                        controller: _tabController,
-                        children: [
-                          OrderView(isRunning: true),
-                          HistoryView(),
-                        ],
-                      )),
-                    ]);
-                  },
-                )
-              : NotLoggedInScreen(),
+                                      tabs: [
+                                        Tab(text: getTranslated('running', context)),
+                                        Tab(text: getTranslated('history', context)),
+                                      ],
+                                    ),
+                                  ),
+                                )),
+                            Expanded(
+                                child: TabBarView(
+                              controller: _tabController,
+                              children: [
+                                OrderView(isRunning: true),
+                                HistoryView(),
+                              ],
+                            )),
+                          ]);
+                        },
+                      )
+                    : NotLoggedInScreen(),
+              ),
+            ],
+          ),
         ));
   }
 

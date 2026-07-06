@@ -1,3 +1,4 @@
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -11,6 +12,7 @@ import 'package:wired_express/utill/routes.dart';
 import 'package:wired_express/view/base/circular_indicator_widget.dart';
 import 'package:wired_express/view/base/custom_app_bar.dart';
 import 'package:wired_express/view/base/custom_snackbar.dart';
+import 'package:wired_express/view/base/no_data_found_view.dart';
 import 'package:wired_express/view/base/no_data_screen.dart';
 import 'package:wired_express/view/base/not_logged_in_screen.dart';
 import 'package:wired_express/view/screens/address/add_new_address_screen.dart';
@@ -48,66 +50,72 @@ class _AddressScreenState extends State<AddressScreen> {
 
     return Scaffold(
       backgroundColor: ColorResources.getScaffoldBackgroundColor(context!),
-      appBar: CustomAppBar(title: getTranslated('address', context)),
       floatingActionButton: _isLoggedIn
           ? FloatingActionButton(
-              child: Icon(Icons.add,
-                  color: ColorResources.getScaffoldBackgroundColor(context)),
-              backgroundColor: ColorResources.getScaffoldColor(context),
+              backgroundColor: ColorResources.getScaffoldBackgroundColor(context),
               onPressed: () => _checkPermission(
                   context,
                   Routes.getAddAddressRoute(
                       'address', 'add', '', '', '', '', '', '', 0, 0)),
+              child: Icon(Icons.add,
+                  color: ColorResources.getScaffoldBackgroundColor(context)),
             )
           : null,
-      body: _isLoggedIn
-          ? Consumer<LocationProvider>(
-              builder: (context, locationProvider, child) {
-                return locationProvider.addressList != null
-                    ? locationProvider.addressList!.length > 0
-                        ? RefreshIndicator(
-                            onRefresh: () async {
-                              await Provider.of<LocationProvider>(context,
-                                      listen: false)
-                                  .initAddressList(context);
-                            },
-                  color: ColorResources.getCardColor(context),
-                  backgroundColor: ColorResources.getPrimaryColor(context),
-                            child: Scrollbar(
-                              child: SingleChildScrollView(
-                                child: Center(
-                                  child: SizedBox(
-                                    width: MediaQuery.of(context).size.width,
-                                    child: ListView.builder(
-                                        physics: NeverScrollableScrollPhysics(),
-                                        shrinkWrap: true,
-                                        padding: EdgeInsets.all(10),
-                                        itemCount: locationProvider
-                                            .addressList!.length,
-                                        itemBuilder: (context, index) {
-                                          return Column(
-                                            children: [
-                                              AddressWidget(
-                                                addressModel: locationProvider
-                                                    .addressList![index],
-                                                index: index,
-                                              ),
-                                              SizedBox(
-                                                height: 5,
-                                              )
-                                            ],
-                                          );
-                                        }),
+      body: Column(
+        children: [
+          CustomAppBar(title:  'address', showBackButton: true),
+          Expanded(
+            child: _isLoggedIn
+                ? Consumer<LocationProvider>(
+                    builder: (context, locationProvider, child) {
+                      return locationProvider.addressList != null
+                          ? locationProvider.addressList!.length > 0
+                              ? RefreshIndicator(
+                                  onRefresh: () async {
+                                    await Provider.of<LocationProvider>(context,
+                                            listen: false)
+                                        .initAddressList(context);
+                                  },
+                        color: ColorResources.getCardColor(context),
+                        backgroundColor: ColorResources.getPrimaryColor(context),
+                                  child: Scrollbar(
+                                    child: SingleChildScrollView(
+                                      child: Center(
+                                        child: SizedBox(
+                                          width: MediaQuery.of(context).size.width,
+                                          child: ListView.builder(
+                                              physics: NeverScrollableScrollPhysics(),
+                                              shrinkWrap: true,
+                                              padding: EdgeInsets.all(10.r),
+                                              itemCount: locationProvider
+                                                  .addressList!.length,
+                                              itemBuilder: (context, index) {
+                                                return Column(
+                                                  children: [
+                                                    AddressWidget(
+                                                      addressModel: locationProvider
+                                                          .addressList![index],
+                                                      index: index,
+                                                    ),
+                                                    SizedBox(
+                                                      height: 5,
+                                                    )
+                                                  ],
+                                                );
+                                              }),
+                                        ),
+                                      ),
+                                    ),
                                   ),
-                                ),
-                              ),
-                            ),
-                          )
-                        : NoDataScreen()
-                    : CustomCircularIndicator();
-              },
-            )
-          : NotLoggedInScreen(),
+                                )
+                              : NoDataFoundView(text: 'no_any_address_yet', showIcon: false)
+                          : CustomCircularIndicator();
+                    },
+                  )
+                : NotLoggedInScreen(),
+          ),
+        ],
+      ),
     );
   }
 

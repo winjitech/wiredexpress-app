@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wired_express/provider/chat_provider.dart';
 import 'package:wired_express/utill/color_resources.dart';
 import 'package:provider/provider.dart';
@@ -24,7 +25,7 @@ class MessageBubbleShimmer extends StatelessWidget {
               duration: const Duration(seconds: 2),
               enabled: true,
               child: Container(
-                height: 30,
+                height: 30.h,
                 width: MediaQuery.of(context).size.width,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.only(

@@ -1,3 +1,4 @@
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:wired_express/data/model/response/address_model.dart';
@@ -46,89 +47,100 @@ class _MapWidgetState extends State<MapWidget> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: ColorResources.getScaffoldBackgroundColor(context!),
-      appBar: CustomAppBar(title: getTranslated('delivery_address', context)),
-      body: Center(
-        child: Container(
-          width: MediaQuery.of(context).size.width,
-          child: Stack(children: [
-            GoogleMap(
-              initialCameraPosition: CameraPosition(target: _latLng!, zoom: 8),
-              zoomGesturesEnabled: true,
-              myLocationButtonEnabled: false,
-              zoomControlsEnabled: false,
-              indoorViewEnabled: true,
-              markers: _markers,
-              onMapCreated: (GoogleMapController controller) {
-                controller.setMapStyle(
-                    Provider.of<ThemeProvider>(context, listen: false).darkTheme
-                        ? _darkMapStyle
-                        : _lightMapStyle);
-              },
-            ),
-            Positioned(
-              left: Dimensions.PADDING_SIZE_LARGE,
-              right: Dimensions.PADDING_SIZE_LARGE,
-              bottom: Dimensions.PADDING_SIZE_LARGE,
+      body: Column(
+        children: [
+          CustomAppBar(title: 'delivery_address', showBackButton: true),
+          Expanded(
+            child: Center(
               child: Container(
-                padding: EdgeInsets.all(Dimensions.PADDING_SIZE_SMALL),
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(5),
-                    color: ColorResources.getScaffoldBackgroundColor(context),
-                    boxShadow: [
-                      BoxShadow(
-                        color: ColorResources.getBoxShadow(context),
+                width: MediaQuery.of(context).size.width,
+                child: Stack(children: [
+                  GoogleMap(
+                    initialCameraPosition: CameraPosition(target: _latLng!, zoom: 8),
+                    zoomGesturesEnabled: true,
+                    myLocationButtonEnabled: false,
+                    zoomControlsEnabled: false,
+                    indoorViewEnabled: true,
+                    markers: _markers,
+                    onMapCreated: (GoogleMapController controller) {
+                      controller.setMapStyle(
+                          Provider.of<ThemeProvider>(context, listen: false).darkTheme
+                              ? _darkMapStyle
+                              : _lightMapStyle);
+                    },
+                  ),
+                  Positioned(
+                    left: Dimensions.PADDING_SIZE_LARGE,
+                    right: Dimensions.PADDING_SIZE_LARGE,
+                    bottom: Dimensions.PADDING_SIZE_LARGE,
+                    child: Container(
+                      padding: EdgeInsets.all(10.r),
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(5.r),
+                          color: ColorResources.getScaffoldBackgroundColor(context),
+                          boxShadow: [
+                            BoxShadow(
+                              color: ColorResources.getBoxShadow(context),
 
-                        blurRadius: 5,
-                        spreadRadius: 1,
-                      )
-                    ]),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(children: [
-                      Icon(
-                        widget.address!.addressType == 'Home'
-                            ? Icons.home_outlined
-                            : widget.address!.addressType == 'Workplace'
-                                ? Icons.work_outline
-                                : Icons.list_alt_outlined,
-                        size: 30,
-                        color: Colors.grey,
+                              blurRadius: 5,
+                              spreadRadius: 1,
+                            )
+                          ]),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(children: [
+                            Icon(
+                              widget.address!.addressType == 'Home'
+                                  ? Icons.home_outlined
+                                  : widget.address!.addressType == 'Workplace'
+                                      ? Icons.work_outline
+                                      : Icons.list_alt_outlined,
+                              size: 30.sp,
+                              color: Colors.grey,
+                            ),
+                            SizedBox(width: 10.w),
+                            Expanded(
+                              child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      widget.address!.addressType!,
+                                      style: AppTextStyles.h7(context).copyWith(
+                                        color: Colors.grey,
+                                      ),
+                                    ),
+
+                                    Text(
+                                      widget.address!.address!,
+                                      style: AppTextStyles.h6(context),
+                                    ),
+                                  ]),
+                            ),
+                          ]),
+                          Text(
+                            '- ${widget.address!.contactPersonName}',
+                            style: AppTextStyles.h4(context).copyWith(
+                              color: ColorResources.getScaffoldBackgroundColor(context),
+                            ),
+                          ),
+
+                          Text(
+                            '- ${widget.address!.contactPersonNumber}',
+                            style: AppTextStyles.h5(context).copyWith(
+                              color: ColorResources.getScaffoldBackgroundColor(context),
+                            ),
+                          ),
+                        ],
                       ),
-                      SizedBox(width: 10),
-                      Expanded(
-                        child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(widget.address!.addressType!,
-                                  style: rubikRegular.copyWith(
-                                    fontSize: Dimensions.FONT_SIZE_DEFAULT,
-                                    color: Colors.grey,
-                                  )),
-                              Text(widget.address!.address!,
-                                  style: rubikMedium.copyWith(
-                                      color: ColorResources.getTextColor(
-                                          context))),
-                            ]),
-                      ),
-                    ]),
-                    Text('- ${widget.address!.contactPersonName}',
-                        style: rubikMedium.copyWith(
-                          color: ColorResources.getScaffoldColor(context),
-                          fontSize: Dimensions.FONT_SIZE_LARGE,
-                        )),
-                    Text('- ${widget.address!.contactPersonNumber}',
-                        style: rubikRegular.copyWith(
-                          color: ColorResources.getScaffoldColor(context),
-                          fontSize: Dimensions.FONT_SIZE_LARGE,
-                        )),
-                  ],
-                ),
+                    ),
+                  ),
+                ]),
               ),
             ),
-          ]),
-        ),
+          ),
+        ],
       ),
     );
   }

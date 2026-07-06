@@ -1,9 +1,11 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wired_express/provider/auth_provider.dart';
 import 'package:wired_express/provider/location_provider.dart';
 import 'package:wired_express/provider/order_provider.dart';
+import 'package:wired_express/utill/styles.dart';
 import 'package:wired_express/view/base/circular_indicator_widget.dart';
 import 'package:wired_express/view/base/custom_button.dart';
 import 'package:wired_express/view/screens/address/address_screen.dart';
@@ -35,23 +37,20 @@ class _AddressBottomSheetState extends State<AddressBottomSheet> {
       builder: (context, locationProvider, authProvider, child) {
         return Container(
           decoration: BoxDecoration(
-            borderRadius: const BorderRadius.only(
-                topRight: Radius.circular(20), topLeft: Radius.circular(20)),
+            borderRadius: BorderRadius.only(
+                topRight: Radius.circular(20.r),
+                topLeft: Radius.circular(20.r)),
             color: ColorResources.getScaffoldBackgroundColor(context),
           ),
-          padding: const EdgeInsets.all(35),
+          padding: EdgeInsets.all(35.r),
           child: SingleChildScrollView(
             child: Column(
               children: [
                 Text(
                   getTranslated('select_delivery_location', context),
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18,
-                    color: ColorResources.getTextColor(context),
-                  ),
+                  style: AppTextStyles.h2(context),
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 15.h),
                 Consumer2<OrderProvider, LocationProvider>(
                   builder: (context, orderProvider, locationProvider, _) {
                     return locationProvider.addressList != null
@@ -79,13 +78,13 @@ class _AddressBottomSheetState extends State<AddressBottomSheet> {
                                                         .getBackgroundColor(
                                                             context),
                                                 borderRadius:
-                                                    BorderRadius.circular(10),
+                                                    BorderRadius.circular(10.r),
                                                 border: addressModel.id ==
                                                         authProvider
                                                             .getUserAddressId()
                                                     ? Border.all(
                                                         color: ColorResources
-                                                            .getScaffoldColor(
+                                                            .getPrimaryColor(
                                                                 context),
                                                         width: 2)
                                                     : null),
@@ -98,8 +97,7 @@ class _AddressBottomSheetState extends State<AddressBottomSheet> {
                                                     addressModel.id!);
                                               },
                                               child: Padding(
-                                                padding:
-                                                    const EdgeInsets.all(0),
+                                                padding: EdgeInsets.all(0),
                                                 child: Row(
                                                   children: [
                                                     Icon(
@@ -110,54 +108,47 @@ class _AddressBottomSheetState extends State<AddressBottomSheet> {
                                                               authProvider
                                                                   .getUserAddressId()
                                                           ? ColorResources
-                                                              .getScaffoldColor(
+                                                              .getPrimaryColor(
                                                                   context)
                                                           : ColorResources
                                                               .getHintColor(
                                                                   context),
-                                                      size: 30,
+                                                      size: 30.sp,
                                                     ),
-                                                    const SizedBox(width: 5),
-                                                    Container(
-                                                      width: 220,
-                                                      child: Column(
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .start,
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .center,
-                                                        children: [
-                                                          Text(
-                                                            addressModel
-                                                                .addressType!,
-                                                            maxLines: 1,
-                                                            overflow:
-                                                                TextOverflow
-                                                                    .ellipsis,
-                                                            style: TextStyle(
-                                                              fontSize: 14,
-                                                              color: ColorResources
-                                                                  .getHintColor(
-                                                                      context),
-                                                            ),
+                                                    SizedBox(width: 5.w),
+                                                    Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .center,
+                                                      children: [
+                                                        Text(
+                                                          addressModel
+                                                              .addressType!,
+                                                          maxLines: 1,
+                                                          overflow: TextOverflow
+                                                              .ellipsis,
+                                                          style:
+                                                              AppTextStyles.h7(
+                                                                      context)
+                                                                  .copyWith(
+                                                            color: ColorResources
+                                                                .getHintColor(
+                                                                    context),
                                                           ),
-                                                          Text(
-                                                            addressModel
-                                                                .address!,
-                                                            style: TextStyle(
-                                                              color: ColorResources
-                                                                  .getTextColor(
-                                                                      context),
-                                                              fontSize: 14,
-                                                            ),
-                                                            maxLines: 1,
-                                                            overflow:
-                                                                TextOverflow
-                                                                    .ellipsis,
-                                                          ),
-                                                        ],
-                                                      ),
+                                                        ),
+                                                        Text(
+                                                          addressModel.address!,
+                                                          maxLines: 1,
+                                                          overflow: TextOverflow
+                                                              .ellipsis,
+                                                          style:
+                                                              AppTextStyles.h7(
+                                                                  context),
+                                                        ),
+                                                      ],
                                                     ),
                                                     const Spacer(),
                                                     addressModel.id ==
@@ -170,22 +161,22 @@ class _AddressBottomSheetState extends State<AddressBottomSheet> {
                                                               Icons
                                                                   .check_circle,
                                                               color: ColorResources
-                                                                  .getScaffoldColor(
+                                                                  .getPrimaryColor(
                                                                       context),
                                                             ),
                                                           )
-                                                        : const SizedBox(),
+                                                        : SizedBox(),
                                                   ],
                                                 ),
                                               ),
                                             ),
                                           ),
-                                          const SizedBox(height: 15),
+                                          SizedBox(height: 15.h),
                                         ],
                                       );
                                     },
                                   ),
-                                  const SizedBox(height: 20),
+                                  SizedBox(height: 20.h),
                                   if (authProvider.getUserAddressId() != 0)
                                     CustomButton(
                                       text: getTranslated('confirm', context),
@@ -193,7 +184,7 @@ class _AddressBottomSheetState extends State<AddressBottomSheet> {
                                         Navigator.pop(context);
                                       },
                                     ),
-                                  const SizedBox(height: 15),
+                                  SizedBox(height: 15.h),
                                   GestureDetector(
                                     onTap: () {
                                       Navigator.push(
@@ -209,12 +200,13 @@ class _AddressBottomSheetState extends State<AddressBottomSheet> {
                                       children: [
                                         Text(
                                           getTranslated('add', context),
-                                          style: TextStyle(
+                                          style: AppTextStyles.h7(context)
+                                              .copyWith(
                                             color: ColorResources
                                                 .getGreyBunkerColor(context),
                                           ),
                                         ),
-                                        const SizedBox(width: 10),
+                                        SizedBox(width: 10.w),
                                         Icon(
                                           Icons.add,
                                           color:
@@ -230,19 +222,20 @@ class _AddressBottomSheetState extends State<AddressBottomSheet> {
                                 child: Column(
                                   children: [
                                     Padding(
-                                      padding: const EdgeInsets.all(25),
+                                      padding: EdgeInsets.all(25.r),
                                       child: Text(
                                         getTranslated(
                                             'no_address_available', context),
-                                        style: TextStyle(
-                                            color: ColorResources.getTextColor(
-                                                    context)
-                                                .withOpacity(0.8),
-                                            fontWeight: FontWeight.w500,
-                                            fontSize: 15),
+                                        style:
+                                            AppTextStyles.h6(context).copyWith(
+                                          fontSize: 15.sp,
+                                          color: ColorResources.getTextColor(
+                                                  context)
+                                              .withOpacity(0.8),
+                                        ),
                                       ),
                                     ),
-                                    const SizedBox(height: 15),
+                                    SizedBox(height: 15.h),
                                     GestureDetector(
                                       onTap: () {
                                         Navigator.push(
@@ -259,14 +252,14 @@ class _AddressBottomSheetState extends State<AddressBottomSheet> {
                                         children: [
                                           Text(
                                             getTranslated('add', context),
-                                            style: TextStyle(
-                                                color: ColorResources
-                                                    .getGreyBunkerColor(
-                                                        context),
-                                                fontWeight: FontWeight.w600,
-                                                fontSize: 16),
+                                            style: AppTextStyles.h4(context)
+                                                .copyWith(
+                                              fontWeight: FontWeight.w600,
+                                              color: ColorResources
+                                                  .getGreyBunkerColor(context),
+                                            ),
                                           ),
-                                          const SizedBox(width: 10),
+                                          SizedBox(width: 10.w),
                                           Icon(
                                             Icons.add,
                                             color: ColorResources
@@ -281,7 +274,7 @@ class _AddressBottomSheetState extends State<AddressBottomSheet> {
                         : CustomCircularIndicator();
                   },
                 ),
-                const SizedBox(height: 20),
+                SizedBox(height: 20.h),
               ],
             ),
           ),

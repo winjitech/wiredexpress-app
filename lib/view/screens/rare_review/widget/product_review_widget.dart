@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wired_express/data/model/body/review_body_model.dart';
 import 'package:wired_express/data/model/response/order_details_model.dart';
 import 'package:wired_express/helper/price_converter.dart';
@@ -34,10 +35,10 @@ class ProductReviewWidget extends StatelessWidget {
                   itemCount: orderDetailsList!.length,
                   physics: NeverScrollableScrollPhysics(),
                   shrinkWrap: true,
-                  padding: EdgeInsets.all(Dimensions.PADDING_SIZE_SMALL),
+                  padding: EdgeInsets.all(10.r),
                   itemBuilder: (context, index) {
                     return Container(
-                      padding: EdgeInsets.all(Dimensions.PADDING_SIZE_SMALL),
+                      padding: EdgeInsets.all(10.r),
                       margin: EdgeInsets.only(
                           bottom: Dimensions.PADDING_SIZE_SMALL),
                       decoration: BoxDecoration(
@@ -50,8 +51,7 @@ class ProductReviewWidget extends StatelessWidget {
                         ],
                         color:
                             ColorResources.getScaffoldBackgroundColor(context),
-                        borderRadius: BorderRadius.circular(
-                            Dimensions.PADDING_SIZE_SMALL),
+                        borderRadius: BorderRadius.circular(10.r),
                       ),
                       child: Column(
                         children: [
@@ -59,7 +59,7 @@ class ProductReviewWidget extends StatelessWidget {
                           Row(
                             children: [
                               ClipRRect(
-                                borderRadius: BorderRadius.circular(10),
+                                borderRadius: BorderRadius.circular(10.r),
                                 child: FadeInImage.assetNetwork(
                                   placeholder: Images.loading,
                                   image:
@@ -79,56 +79,57 @@ class ProductReviewWidget extends StatelessWidget {
                                     orderDetailsList![index]
                                         .productDetails!
                                         .name!,
-                                    style: TextStyle(
-                                        color: ColorResources.getTextColor(
-                                            context)),
+                                    style: AppTextStyles.h7(context),
                                     maxLines: 2,
                                     overflow: TextOverflow.ellipsis,
                                   ),
-                                  SizedBox(height: 10),
+                                  SizedBox(height: 10.h),
                                   Text(
                                     PriceConverter.convertPrice(
                                         context,
                                         orderDetailsList![index]
                                             .productDetails!
                                             .price),
-                                    style: TextStyle(
-                                        color: ColorResources.getTextColor(
-                                            context)),
-                                  ),
+                                    style: AppTextStyles.h7(context),
+                                  )
                                 ],
                               )),
                               Row(children: [
                                 Text(
                                   '${getTranslated('quantity', context)}: ',
-                                  style: rubikMedium.copyWith(
+                                  style: AppTextStyles.h7(context).copyWith(
+                                      fontWeight: FontWeight.w500,
                                       color: ColorResources.getGreyBunkerColor(
                                           context)),
                                   overflow: TextOverflow.ellipsis,
                                 ),
                                 Text(
                                   orderDetailsList![index].quantity.toString(),
-                                  style: rubikMedium.copyWith(
-                                      color: Theme.of(context).primaryColor,
-                                      fontSize: Dimensions.FONT_SIZE_SMALL),
+                                  style: AppTextStyles.h4(
+                                    context,
+                                    fontSize: Dimensions.FONT_SIZE_SMALL,
+                                  ).copyWith(
+                                    color: ColorResources.getTextColor(context),
+                                  ),
                                   overflow: TextOverflow.ellipsis,
                                 ),
                               ]),
                             ],
                           ),
-                          Divider(height: 20),
+                          Divider(height: 20.h),
 
                           // Rate
                           Text(
                             getTranslated('rate_the_food', context),
-                            style: rubikMedium.copyWith(
-                                color:
-                                    ColorResources.getGreyBunkerColor(context)),
+                            style: AppTextStyles.h7(context).copyWith(
+                              fontWeight: FontWeight.w500,
+                              color: ColorResources.getGreyBunkerColor(context),
+                            ),
                             overflow: TextOverflow.ellipsis,
                           ),
-                          SizedBox(height: Dimensions.PADDING_SIZE_SMALL),
+                          SizedBox(height: 10.h),
                           SizedBox(
-                            height: 30,
+                            height: 30.h,
                             child: ListView.builder(
                               itemCount: 5,
                               shrinkWrap: true,
@@ -139,11 +140,11 @@ class ProductReviewWidget extends StatelessWidget {
                                     productProvider.ratingList[index] < (i + 1)
                                         ? Icons.star_border
                                         : Icons.star,
-                                    size: 25,
+                                    size: 25.sp,
                                     color: productProvider.ratingList[index] <
                                             (i + 1)
                                         ? ColorResources.getGreyColor(context)
-                                        : Theme.of(context).primaryColor,
+                                        : ColorResources.getPrimaryColor(context),
                                   ),
                                   onTap: () {
                                     if (!productProvider.submitList[index]) {
@@ -156,16 +157,17 @@ class ProductReviewWidget extends StatelessWidget {
                               },
                             ),
                           ),
-                          SizedBox(height: Dimensions.PADDING_SIZE_LARGE),
+                          SizedBox(height: 20.h),
                           Text(
                             getTranslated('share_your_opinion', context),
-                            style: rubikMedium.copyWith(
-                                color:
-                                    ColorResources.getGreyBunkerColor(context)),
+                            style: AppTextStyles.h7(context).copyWith(
+                              fontWeight: FontWeight.w500,
+                              color: ColorResources.getGreyBunkerColor(context),
+                            ),
                             overflow: TextOverflow.ellipsis,
                           ),
-                          SizedBox(height: Dimensions.PADDING_SIZE_LARGE),
-                          CustomTextField(
+                          SizedBox(height: 20.h),
+                          CustomTextField(fill: true,
                             fillColor:
                                 ColorResources.getTextFieldFillColor(context),
                             maxLines: 3,
@@ -177,7 +179,7 @@ class ProductReviewWidget extends StatelessWidget {
                               productProvider.setReview(index, text);
                             },
                           ),
-                          SizedBox(height: 20),
+                          SizedBox(height: 20.h),
 
                           // Submit button
                           Padding(
@@ -196,7 +198,7 @@ class ProductReviewWidget extends StatelessWidget {
                                                 .submitList[index]
                                             ? ColorResources.getGreyColor(
                                                 context)
-                                            : Theme.of(context).primaryColor,
+                                            : ColorResources.getPrimaryColor(context),
                                         onTap: () {
                                           if (!productProvider
                                               .submitList[index]) {

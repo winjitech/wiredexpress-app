@@ -1,11 +1,13 @@
 import 'dart:async';
 
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wired_express/data/model/response/userinfo_model.dart';
 import 'package:wired_express/localization/language_constrants.dart';
 import 'package:wired_express/provider/auth_provider.dart';
 import 'package:wired_express/provider/profile_provider.dart';
 import 'package:wired_express/utill/color_resources.dart';
 import 'package:wired_express/utill/dimensions.dart';
+import 'package:wired_express/utill/styles.dart';
 import 'package:wired_express/view/base/Custom_button.dart';
 import 'package:wired_express/view/base/circular_indicator_widget.dart';
 import 'package:wired_express/view/base/custom_snackbar.dart';
@@ -25,15 +27,18 @@ class ConfirmDeleteAccountBottomSheet extends StatefulWidget {
       _ConfirmDeleteAccountBottomSheetState();
 }
 
-class _ConfirmDeleteAccountBottomSheetState extends State<ConfirmDeleteAccountBottomSheet> {
+class _ConfirmDeleteAccountBottomSheetState
+    extends State<ConfirmDeleteAccountBottomSheet> {
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
   @override
   void initState() {
     super.initState();
 
     Timer(const Duration(seconds: 0), () {
-      final customAuthProvider = Provider.of<CustomAuthProvider>(context, listen: false);
+      final customAuthProvider =
+          Provider.of<CustomAuthProvider>(context, listen: false);
       customAuthProvider.hideConfirmPasswordSection();
       customAuthProvider.hideConfirmPasswordErrorText();
     });
@@ -45,13 +50,13 @@ class _ConfirmDeleteAccountBottomSheetState extends State<ConfirmDeleteAccountBo
       builder: (context, customAuthProvider, profileProvider, child) {
         return Container(
           decoration: BoxDecoration(
-            borderRadius: const BorderRadius.only(
+            borderRadius: BorderRadius.only(
               topRight: Radius.circular(35),
               topLeft: Radius.circular(35),
             ),
             color: ColorResources.getCardColor(context),
           ),
-          padding: const EdgeInsets.all(25),
+          padding: EdgeInsets.all(25.r),
           child: SingleChildScrollView(
             child: customAuthProvider.confirmPasswordSection == true
                 ? Column(
@@ -66,15 +71,14 @@ class _ConfirmDeleteAccountBottomSheetState extends State<ConfirmDeleteAccountBo
                               },
                               icon: Icon(
                                 Icons.arrow_back_ios_new_outlined,
-                                size: 18,
+                                size: 18.sp,
                                 color: ColorResources.getTextColor(context),
                               )),
                           Text(
                             getTranslated('confirm_password', context),
-                            style: TextStyle(
-                                color: ColorResources.getTextColor(context),
-                                fontWeight: FontWeight.w600,
-                                fontSize: 18),
+                            style: AppTextStyles.h3(context).copyWith(
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                           const Spacer(),
                           IconButton(
@@ -86,12 +90,12 @@ class _ConfirmDeleteAccountBottomSheetState extends State<ConfirmDeleteAccountBo
                         ],
                       ),
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                        padding: EdgeInsets.symmetric(horizontal: 15.w),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
-                            const SizedBox(
+                            SizedBox(
                               height: 20,
                             ),
                             CustomTextField(
@@ -100,88 +104,160 @@ class _ConfirmDeleteAccountBottomSheetState extends State<ConfirmDeleteAccountBo
                               isPassword: true, isShowSuffixIcon: true,
                               labelText: getTranslated('password', context),
                               // isEnabled: false,
-                              hintText:getTranslated('enter_password', context),
+                              hintText:
+                                  getTranslated('enter_password', context),
                             ),
-                            const SizedBox(
+                            SizedBox(
                                 height: Dimensions.PADDING_SIZE_SMALL),
                             CustomTextField(
                               isShowBorder: true,
                               controller: _confirmPasswordController,
                               isPassword: true, isShowSuffixIcon: true,
-                              labelText: getTranslated('confirm_password', context),
+                              labelText:
+                                  getTranslated('confirm_password', context),
                               // isEnabled: false,
-                              hintText: getTranslated('enter_confirm_password', context),
+                              hintText: getTranslated(
+                                  'enter_confirm_password', context),
                             ),
-                            const SizedBox(
+                            SizedBox(
                               height: 15,
                             ),
-                            if (customAuthProvider.confirmPasswordErrorTextShow == true)
+                            if (customAuthProvider
+                                    .confirmPasswordErrorTextShow ==
+                                true)
                               Row(
                                 children: [
-                                  const Icon(Icons.circle, size: 14, color: Colors.red,),
-                                  const SizedBox(width: 15,),
-                                  Text(customAuthProvider.confirmPasswordErrorText!,
-                                    style: const TextStyle(color: Colors.red, fontWeight: FontWeight.w600, fontSize: 14,),
-                                  )
+                                  Icon(
+                                    Icons.circle,
+                                    size: 14.sp,
+                                    color: Colors.red,
+                                  ),
+                                  SizedBox(
+                                    width: 15,
+                                  ),
+                                  Text(
+                                    customAuthProvider
+                                        .confirmPasswordErrorText!,
+                                    style: AppTextStyles.h6(context).copyWith(
+                                      color: Colors.red,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
                                 ],
                               ),
-                            const SizedBox(height: 35,),
+                            SizedBox(
+                              height: 35,
+                            ),
                             Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 25),
-                              child: customAuthProvider.deleteAccountLoading == true
+                              padding:
+                                  EdgeInsets.symmetric(horizontal: 25),
+                              child: customAuthProvider.deleteAccountLoading ==
+                                      true
                                   ? CustomCircularIndicator()
                                   : Row(
                                       children: [
                                         Expanded(
                                           child: CustomButton(
-                                            text: getTranslated('confirm', context),
+                                            text: getTranslated(
+                                                'confirm', context),
                                             onTap: () {
-                                              customAuthProvider.hideConfirmPasswordErrorText();
-                                              String _password = _passwordController.text.trim();
-                                              String _confirmPassword = _confirmPasswordController.text.trim();
-                                              print(customAuthProvider.getUserPassword());
+                                              customAuthProvider
+                                                  .hideConfirmPasswordErrorText();
+                                              String _password =
+                                                  _passwordController.text
+                                                      .trim();
+                                              String _confirmPassword =
+                                                  _confirmPasswordController
+                                                      .text
+                                                      .trim();
+                                              print(customAuthProvider
+                                                  .getUserPassword());
 
                                               if (_password.isEmpty) {
-                                                customAuthProvider.showConfirmPasswordErrorText(getTranslated("password_empty", context));
-                                              } else if ((_password.isNotEmpty && _password.length < 6)
-                                                  || (_confirmPassword.isNotEmpty && _confirmPassword.length < 6)) {
-                                                showCustomSnackBar(getTranslated("password_length", context), context);
-                                                customAuthProvider.showConfirmPasswordErrorText(getTranslated("password_length", context));
-                                              } else if (_password != _confirmPassword) {
-                                                customAuthProvider.showConfirmPasswordErrorText(
-                                                        getTranslated("password_match", context));
+                                                customAuthProvider
+                                                    .showConfirmPasswordErrorText(
+                                                        getTranslated(
+                                                            "password_empty",
+                                                            context));
+                                              } else if ((_password
+                                                          .isNotEmpty &&
+                                                      _password.length < 6) ||
+                                                  (_confirmPassword
+                                                          .isNotEmpty &&
+                                                      _confirmPassword.length <
+                                                          6)) {
+                                                showCustomSnackBar(
+                                                    getTranslated(
+                                                        "password_length",
+                                                        context),
+                                                    context);
+                                                customAuthProvider
+                                                    .showConfirmPasswordErrorText(
+                                                        getTranslated(
+                                                            "password_length",
+                                                            context));
+                                              } else if (_password !=
+                                                  _confirmPassword) {
+                                                customAuthProvider
+                                                    .showConfirmPasswordErrorText(
+                                                        getTranslated(
+                                                            "password_match",
+                                                            context));
                                               } else {
-                                                if (customAuthProvider.getUserPassword() == _password &&
-                                                    _password == _confirmPassword) {
-                                                  customAuthProvider.deleteAccount(context, customAuthProvider.getUserToken()!)
+                                                if (customAuthProvider
+                                                            .getUserPassword() ==
+                                                        _password &&
+                                                    _password ==
+                                                        _confirmPassword) {
+                                                  customAuthProvider
+                                                      .deleteAccount(
+                                                          context,
+                                                          customAuthProvider
+                                                              .getUserToken()!)
                                                       .then((value) {
                                                     if (value.isSuccess) {
                                                       showDialog(
-                                                          context:context,
+                                                          context: context,
                                                           builder:
                                                               (_) =>
                                                                   AlertDialog(
                                                                     title: Text(
-                                                                      getTranslated('account_deleted', context),
-                                                                      style: TextStyle(
-                                                                          color: ColorResources.getTextColor(context),
-                                                                          fontWeight: FontWeight.w600,
-                                                                          fontSize: 15),
+                                                                      getTranslated(
+                                                                          'account_deleted',
+                                                                          context),
+                                                                      style: AppTextStyles.h4(
+                                                                              context,
+                                                                              fontSize: 15.sp)
+                                                                          .copyWith(
+                                                                        fontWeight:
+                                                                            FontWeight.w600,
+                                                                      ),
                                                                     ),
                                                                   ));
-                                                      customAuthProvider.clearSharedData();
-                                                      customAuthProvider.clearUserEmailAndPassword();
-                                                      Navigator.push(context,
-                                                          MaterialPageRoute(builder: (BuildContextcontext) =>
-                                                              SplashScreen()));
+                                                      customAuthProvider
+                                                          .clearSharedData();
+                                                      customAuthProvider
+                                                          .clearUserEmailAndPassword();
+                                                      Navigator.push(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                              builder:
+                                                                  (BuildContextcontext) =>
+                                                                      SplashScreen()));
                                                     } else {
-                                                      customAuthProvider.showConfirmPasswordErrorText(
-                                                          getTranslated("something_went_wrong", context));
+                                                      customAuthProvider
+                                                          .showConfirmPasswordErrorText(
+                                                              getTranslated(
+                                                                  "something_went_wrong",
+                                                                  context));
                                                     }
                                                   });
                                                 } else {
-                                                  customAuthProvider.showConfirmPasswordErrorText(
-                                                          getTranslated("password_not_correct", context));
+                                                  customAuthProvider
+                                                      .showConfirmPasswordErrorText(
+                                                          getTranslated(
+                                                              "password_not_correct",
+                                                              context));
                                                 }
                                               }
                                             },
@@ -193,7 +269,7 @@ class _ConfirmDeleteAccountBottomSheetState extends State<ConfirmDeleteAccountBo
                                       ],
                                     ),
                             ),
-                            const SizedBox(
+                            SizedBox(
                               height: 15,
                             ),
                           ],
@@ -210,10 +286,9 @@ class _ConfirmDeleteAccountBottomSheetState extends State<ConfirmDeleteAccountBo
                         children: [
                           Text(
                             getTranslated('confirm_delete_account', context),
-                            style: TextStyle(
-                                color: ColorResources.getTextColor(context),
-                                fontWeight: FontWeight.w600,
-                                fontSize: 18),
+                            style: AppTextStyles.h3(context).copyWith(
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                           IconButton(
                               onPressed: () => Navigator.pop(context),
@@ -224,62 +299,78 @@ class _ConfirmDeleteAccountBottomSheetState extends State<ConfirmDeleteAccountBo
                         ],
                       ),
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                        padding: EdgeInsets.symmetric(horizontal: 15.w),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
-                            const SizedBox(
+                            SizedBox(
                               height: 20,
                             ),
                             Center(
                               child: CircleAvatar(
                                 radius: 30,
-                                backgroundColor: ColorResources.getPrimaryColor(context),
+                                backgroundColor:
+                                    ColorResources.getPrimaryColor(context),
                                 child: Icon(Icons.delete,
-                                    color: ColorResources.getScaffoldBackgroundColor(context),
-                                    size: 40),
+                                    color: ColorResources
+                                        .getScaffoldBackgroundColor(context),
+                                    size: 40.sp),
                               ),
                             ),
                             Padding(
-                              padding: const EdgeInsets.all(Dimensions.PADDING_SIZE_LARGE),
+                              padding: EdgeInsets.all(20.r),
                               child: Text(
-                                  getTranslated('are_you_sure_you_need_delete_your_account', context),
-                                  style: TextStyle(
-                                      color: ColorResources.getTextColor(context),
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600),
-                                  textAlign: TextAlign.center),
+                                getTranslated(
+                                    'are_you_sure_you_need_delete_your_account',
+                                    context),
+                                style: AppTextStyles.h4(context).copyWith(
+                                  fontWeight: FontWeight.w600,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
                             ),
                             Text(
-                              getTranslated('delete_user_account_text', context),
-                              style: TextStyle(
-                                  color: ColorResources.getTextColor(context).withOpacity(0.6),
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w600),
+                              getTranslated(
+                                  'delete_user_account_text', context),
+                              style: AppTextStyles.h4(context, fontSize: 15.sp)
+                                  .copyWith(
+                                color: ColorResources.getTextColor(context)
+                                    .withOpacity(0.6),
+                                fontWeight: FontWeight.w600,
+                              ),
                               textAlign: TextAlign.justify,
                             ),
-                            const SizedBox(height: 35,),
+                            SizedBox(
+                              height: 35,
+                            ),
                             Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 15),
+                              padding:
+                                  EdgeInsets.symmetric(horizontal: 15.w),
                               child: Row(
                                 children: [
                                   Expanded(
                                     child: CustomButton(
                                       text: getTranslated('yes', context),
                                       onTap: () {
-                                        customAuthProvider.hideConfirmPasswordErrorText();
-                                        customAuthProvider.showConfirmPasswordSection();
+                                        customAuthProvider
+                                            .hideConfirmPasswordErrorText();
+                                        customAuthProvider
+                                            .showConfirmPasswordSection();
                                       },
                                       radius: 15,
                                       height: 36,
                                       textSize: 16,
-                                      backgroundColor: ColorResources.getCardColor(context),
-                                      textColor: ColorResources.getPrimaryColor(context),
-                                      borderColor: ColorResources.getPrimaryColor(context),
+                                      backgroundColor:
+                                          ColorResources.getCardColor(context),
+                                      textColor: ColorResources.getPrimaryColor(
+                                          context),
+                                      borderColor:
+                                          ColorResources.getPrimaryColor(
+                                              context),
                                     ),
                                   ),
-                                  const SizedBox(
+                                  SizedBox(
                                     width: 15,
                                   ),
                                   Expanded(
@@ -296,7 +387,7 @@ class _ConfirmDeleteAccountBottomSheetState extends State<ConfirmDeleteAccountBo
                                 ],
                               ),
                             ),
-                            const SizedBox(
+                            SizedBox(
                               height: 15,
                             ),
                           ],

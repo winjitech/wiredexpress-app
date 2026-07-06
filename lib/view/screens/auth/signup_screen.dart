@@ -1,11 +1,13 @@
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wired_express/data/model/response/signup_model.dart';
 import 'package:wired_express/localization/language_constrants.dart';
 import 'package:wired_express/provider/auth_provider.dart';
 import 'package:wired_express/utill/color_resources.dart';
+import 'package:wired_express/utill/styles.dart';
 import 'package:wired_express/view/base/circular_indicator_widget.dart';
 import 'package:wired_express/view/base/custom_button.dart';
 import 'package:wired_express/view/base/custom_snackbar.dart';
@@ -64,9 +66,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
             //   SingleChildScrollView(
             //     controller: scrollController,
             //     physics: const BouncingScrollPhysics(),
-            //     //  padding: const EdgeInsets.all(Dimensions.PADDING_SIZE_SMALL),
+            //     //  padding: EdgeInsets.all(10.r),
             child: Padding(
-              padding: const EdgeInsets.all(30),
+              padding:  EdgeInsets.all(30.r),
               child: SafeArea(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -80,20 +82,20 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               decoration: BoxDecoration(
                                   color: ColorResources.getTextColor(context)
                                       .withOpacity(0.2),
-                                  borderRadius: BorderRadius.circular(50)),
+                                  borderRadius: BorderRadius.circular(50.r)),
                               child: Padding(
-                                padding: const EdgeInsets.all(14),
+                                padding: EdgeInsets.all(14.r),
                                 child: Icon(
                                   Icons.arrow_back_ios_new_outlined,
                                   color: ColorResources.getTextColor(context),
-                                  size: 19,
+                                  size: 19.sp,
                                 ),
                               )),
                         ),
                       ),
                     ),
                     SizedBox(
-                      height: 25,
+                      height: 25.h,
                     ),
                     Expanded(
                       child: Center(
@@ -106,14 +108,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               children: [
                                 Text(
                                   getTranslated('signup', context),
-                                  style: TextStyle(
-                                      color:
-                                          ColorResources.getTextColor(context),
-                                      fontSize: 22,
-                                      fontWeight: FontWeight.w700),
+                                  style: AppTextStyles.h2(
+                                    context,
+                                    fontSize: 22.sp,
+                                  ),
                                 ),
-                                SizedBox(height: 25),
+                                SizedBox(height: 25.h),
                                 CustomTextField(
+                                  fill: true,
                                   fillColor:
                                       ColorResources.getTextFieldFillColor(
                                           context),
@@ -128,7 +130,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 SizedBox(
                                   height: 20,
                                 ),
-                                CustomTextField(
+                                CustomTextField(fill: true,
                                   fillColor:
                                       ColorResources.getTextFieldFillColor(
                                           context),
@@ -142,7 +144,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 SizedBox(
                                   height: 20,
                                 ),
-                                CustomTextField(
+                                CustomTextField(fill: true,
                                   fillColor:
                                       ColorResources.getTextFieldFillColor(
                                           context),
@@ -156,7 +158,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 SizedBox(
                                   height: 20,
                                 ),
-                                CustomTextField(
+                                CustomTextField(fill: true,
                                   fillColor:
                                       ColorResources.getTextFieldFillColor(
                                           context),
@@ -170,7 +172,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 SizedBox(
                                   height: 20,
                                 ),
-                                CustomTextField(
+                                CustomTextField(fill: true,
                                   fillColor:
                                       ColorResources.getTextFieldFillColor(
                                           context),
@@ -281,7 +283,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                             });
                                           }
                                         }),
-                                const SizedBox(height: 35),
+                                SizedBox(height: 35.h),
                                 Row(children: [
                                   Expanded(
                                       child: Divider(
@@ -289,15 +291,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                           color: ColorResources.getTextColor(
                                                   context)
                                               .withOpacity(0.4))),
-                                  const SizedBox(width: 15),
+                                  SizedBox(width: 15.w),
                                   Text(
                                     getTranslated('or', context),
-                                    style: TextStyle(
-                                        color:
-                                            ColorResources.getTextColor(context)
-                                                .withOpacity(0.7)),
+                                    style: AppTextStyles.h7(context).copyWith(
+                                      color: ColorResources.getTextColor(context).withOpacity(0.7),
+                                    ),
                                   ),
-                                  const SizedBox(width: 15),
+                                  SizedBox(width: 15.w),
                                   Expanded(
                                       child: Divider(
                                           thickness: 1,
@@ -321,11 +322,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                           MainAxisAlignment.center,
                                       children: [
                                         Text(
-                                          getTranslated(
-                                              'login_with_phone', context),
-                                          style: const TextStyle(
-                                              fontWeight: FontWeight.w500,
-                                              fontSize: 16),
+                                          getTranslated('login_with_phone', context),
+                                          style: AppTextStyles.h4(context),
                                         ),
                                       ],
                                     )),
@@ -337,18 +335,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                       Navigator.push(context, MaterialPageRoute(builder: (_) => DashboardScreen(pageIndex: 0)));
                                     },
                                     child: Padding(
-                                      padding: const EdgeInsets.all(8.0),
+                                      padding: EdgeInsets.all(8.r),
                                       child: Text(
-                                        getTranslated(
-                                            'login_as_guest', context),
-                                        style: TextStyle(
-                                            color: ColorResources.getTextColor(
-                                                    context)
-                                                .withOpacity(0.6),
-                                            fontWeight: FontWeight.w500,
-                                            fontSize: 15,
-                                            decoration:
-                                                TextDecoration.underline),
+                                        getTranslated('login_as_guest', context),
+                                        style: AppTextStyles.h6(
+                                          context,
+                                          fontSize: 15.sp,
+                                        ).copyWith(
+                                          color: ColorResources.getTextColor(context).withOpacity(0.6),
+                                          decoration: TextDecoration.underline,
+                                        ),
                                       ),
                                     ),
                                   ),
@@ -361,33 +357,32 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       Text(
-                                        getTranslated(
-                                            'aleady_have_acc', context),
-                                        style: TextStyle(
-                                            color: ColorResources.getTextColor(
-                                                context),
-                                            fontWeight: FontWeight.w400,
-                                            fontSize: 15),
+                                        getTranslated('aleady_have_acc', context),
+                                        style: AppTextStyles.h7(
+                                          context,
+                                          fontSize: 15.sp,
+                                        ),
                                       ),
                                       TextButton(
-                                          onPressed: () {
-                                            Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                    builder: (BuildContext
-                                                            context) =>
-                                                        LoginScreen()));
-                                          },
-                                          child: Text(
-                                            getTranslated('login', context),
-                                            style: TextStyle(
-                                                color: ColorResources
-                                                    .getPrimaryColor(context),
-                                                fontWeight: FontWeight.w700,
-                                                decoration:
-                                                    TextDecoration.underline,
-                                                fontSize: 17),
-                                          ))
+                                        onPressed: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (BuildContext context) => LoginScreen(),
+                                            ),
+                                          );
+                                        },
+                                        child: Text(
+                                          getTranslated('login', context),
+                                          style: AppTextStyles.h2(
+                                            context,
+                                            fontSize: 17.sp,
+                                          ).copyWith(
+                                            color: ColorResources.getPrimaryColor(context),
+                                            decoration: TextDecoration.underline,
+                                          ),
+                                        ),
+                                      ),
                                     ],
                                   ),
                                 ),

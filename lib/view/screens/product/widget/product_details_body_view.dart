@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:wired_express/data/helper/helpers.dart';
@@ -186,7 +187,7 @@ class ProductDetailsBodyView extends StatelessWidget {
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.all(25),
+                    padding: EdgeInsets.all(25.r),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -198,44 +199,40 @@ class ProductDetailsBodyView extends StatelessWidget {
                               child: Text(
                                 product.name!,
                                 textAlign: TextAlign.justify,
-                                style: TextStyle(
-                                    color: ColorResources.getTextColor(context),
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w600),
+                                style: AppTextStyles.h2(context).copyWith(
+                                  fontWeight: FontWeight.w600,
+                                ),
                               ),
                             ),
                           ],
                         ),
-                        const SizedBox(height: 15),
+                        SizedBox(height: 15.h),
                         Row(
                           children: [
                             if (originalPrice != finalPriceWithoutQuantity)
                               Text(
                                 "$currency${Helpers.formatTextWithNum(originalPrice.toString())}",
-                                style: TextStyle(
+                                style: AppTextStyles.h4(context).copyWith(
+                                  fontWeight: FontWeight.w600,
                                   color: ColorResources.getTextColor(context)
                                       .withOpacity(0.4),
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
                                   decoration: TextDecoration.lineThrough,
                                   decorationColor:
                                       ColorResources.getTextColor(context)
                                           .withOpacity(0.4),
                                 ),
                               ),
-                            SizedBox(width: 5),
+                            SizedBox(width: 5.w),
                             Text(
                               "$currency${Helpers.formatTextWithNum(finalPriceWithoutQuantity.toString())}",
-                              style: TextStyle(
-                                color: ColorResources.getTextColor(context),
-                                fontSize: 16,
+                              style: AppTextStyles.h4(context).copyWith(
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
                             const Spacer(),
                             Container(
                               decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(5)),
+                                  borderRadius: BorderRadius.circular(5.r)),
                               child: Row(children: [
                                 GestureDetector(
                                   onTap: () {
@@ -246,45 +243,44 @@ class ProductDetailsBodyView extends StatelessWidget {
                                     }
                                   },
                                   child: Container(
-                                      width: 25,
-                                      height: 25,
+                                      width: 25.w,
+                                      height: 25.h,
                                       decoration: BoxDecoration(
                                           color: ColorResources.getTextColor(
                                                   context)
                                               .withOpacity(0.2),
                                           borderRadius:
-                                              BorderRadius.circular(50)),
+                                              BorderRadius.circular(50.r)),
                                       child: Icon(Icons.remove,
-                                          size: 20,
+                                          size: 20.sp,
                                           color: ColorResources.getTextColor(
                                               context))),
                                 ),
                                 Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 10),
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 10.w,
+                                  ),
                                   child:
                                       Text(productProvider.quantity.toString(),
-                                          style: rubikMedium.copyWith(
-                                            fontSize: 25,
-                                            fontWeight: FontWeight.w500,
-                                            color: ColorResources.getTextColor(
-                                                context),
+                                          style: AppTextStyles.h4(
+                                            context,
+                                            fontSize: 25.sp,
                                           )),
                                 ),
                                 GestureDetector(
                                   onTap: () => productProvider.setQuantity(
                                       productProvider.quantity! + 1),
                                   child: Container(
-                                    width: 25,
-                                    height: 25,
+                                    width: 25.w,
+                                    height: 25.h,
                                     decoration: BoxDecoration(
                                         color:
                                             ColorResources.getTextColor(context)
                                                 .withOpacity(0.2),
                                         borderRadius:
-                                            BorderRadius.circular(50)),
+                                            BorderRadius.circular(50.r)),
                                     child: Icon(Icons.add,
-                                        size: 20,
+                                        size: 20.sp,
                                         color: ColorResources.getTextColor(
                                             context)),
                                   ),
@@ -300,7 +296,7 @@ class ProductDetailsBodyView extends StatelessWidget {
                             SizedBox(),
                             Column(
                               children: [
-                                const SizedBox(
+                                SizedBox(
                                   height: 5,
                                 ),
                                 RatingBar(
@@ -308,7 +304,7 @@ class ProductDetailsBodyView extends StatelessWidget {
                                         ? double.parse(
                                             product.rating![0].average!)
                                         : 0.0,
-                                    size: 18),
+                                    size: 18.sp),
                               ],
                             ),
                           ],
@@ -318,19 +314,17 @@ class ProductDetailsBodyView extends StatelessWidget {
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  const SizedBox(height: 20),
+                                  SizedBox(height: 20.h),
                                   Text(
                                     getTranslated('description', context),
-                                    style: TextStyle(
-                                        color: ColorResources.getTextColor(
-                                            context),
-                                        fontWeight: FontWeight.w600,
-                                        fontSize: 16),
-                                  ),
+                                    style: AppTextStyles.h4(context).copyWith(
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  )
                                 ],
                               )
-                            : const SizedBox(),
-                        const SizedBox(
+                            : SizedBox(),
+                        SizedBox(
                           height: 10,
                         ),
                         Column(
@@ -340,29 +334,28 @@ class ProductDetailsBodyView extends StatelessWidget {
                             Text(
                               description,
                               textAlign: TextAlign.justify,
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                  color: ColorResources.getTextColor(context)
-                                      .withOpacity(0.6),
-                                  fontSize: 15),
-                            ),
+                              style: AppTextStyles.h4(
+                                context,
+                                fontSize: 15.sp,
+                              ).copyWith(
+                                color: ColorResources.getTextColor(context).withOpacity(0.6),
+                              ),
+                            )
                           ],
                         ),
-                        const SizedBox(height: 20),
+                        SizedBox(height: 20.h),
                         if (discountMessage != "none")
                           Column(
                             children: [
                               Text(
                                 discountMessage,
                                 textAlign: TextAlign.justify,
-                                style: TextStyle(
+                                style: AppTextStyles.h7(context).copyWith(
                                   fontWeight: FontWeight.w600,
-                                  color:
-                                      ColorResources.getPrimaryColor(context),
-                                  fontSize: 14,
+                                  color: ColorResources.getPrimaryColor(context),
                                 ),
                               ),
-                              const SizedBox(height: 5),
+                              SizedBox(height: 5.h),
                             ],
                           ),
                         if (minOrderQuantity != 1)
@@ -371,45 +364,39 @@ class ProductDetailsBodyView extends StatelessWidget {
                               Text(
                                   "${getTranslated('min_order_quantity_is', context)} $minOrderQuantity",
                                   textAlign: TextAlign.justify,
-                                  style: const TextStyle(
-                                      fontWeight: FontWeight.w600,
-                                      color: Colors.orange,
-                                      fontSize: 14)),
-                              const SizedBox(height: 5),
+                                  style: AppTextStyles.h7(context).copyWith(
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.orange,
+                                  )),
+                              SizedBox(height: 5.h),
                             ],
                           ),
                         Row(children: [
                           Text('${getTranslated('total_amount', context)}:',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 16,
-                                  color: ColorResources.getTextColor(context))),
-                          const SizedBox(
+                              style: AppTextStyles.h4(context).copyWith(
+                                fontWeight: FontWeight.w600,
+                              )),
+                          SizedBox(
                               width: Dimensions.PADDING_SIZE_EXTRA_SMALL),
                           if (originalPriceWithQuantity !=
                               finalPriceWithQuantity)
                             Text(
                               "$currency${Helpers.formatTextWithNum(originalPriceWithQuantity.toString())}",
-                              style: TextStyle(
-                                color: ColorResources.getTextColor(context)
-                                    .withOpacity(0.4),
-                                fontSize: 16,
+                              style: AppTextStyles.h4(context).copyWith(
                                 fontWeight: FontWeight.w600,
+                                color: ColorResources.getTextColor(context).withOpacity(0.4),
                                 decoration: TextDecoration.lineThrough,
-                                decorationColor:
-                                    ColorResources.getTextColor(context)
-                                        .withOpacity(0.4),
+                                decorationColor: ColorResources.getTextColor(context).withOpacity(0.4),
                               ),
                             ),
                           SizedBox(
-                            width: 5,
+                            width: 5.w,
                           ),
                           Text(
                             "$currency${Helpers.formatTextWithNum(finalPriceWithQuantity.toString())}",
-                            style: TextStyle(
-                              color: ColorResources.getPrimaryColor(context),
-                              fontSize: 16,
+                            style: AppTextStyles.h4(context).copyWith(
                               fontWeight: FontWeight.w600,
+                              color: ColorResources.getPrimaryColor(context),
                             ),
                           ),
                         ]),
@@ -419,15 +406,15 @@ class ProductDetailsBodyView extends StatelessWidget {
                 ],
               )),
           Positioned(
-              top: 15,
-              left: 15,
+              top: 15.h,
+              left: 15.w,
               child: SafeArea(
                 child: GestureDetector(
                   onTap: () => Navigator.pop(context),
                   child: Container(
                     width: 40,
                     height: 40,
-                    padding: const EdgeInsets.all(8),
+                    padding: EdgeInsets.all(8.r),
                     decoration: BoxDecoration(
                       color: ColorResources.getScaffoldBackgroundColor(context),
                       shape: BoxShape.circle,
@@ -441,7 +428,7 @@ class ProductDetailsBodyView extends StatelessWidget {
                     ),
                     child: Center(
                       child: Icon(
-                        size: 20,
+                        size: 20.sp,
                         Icons.arrow_back_ios_sharp,
                         color: ColorResources.getTextColor(context)
                             .withOpacity(0.6),
@@ -452,8 +439,8 @@ class ProductDetailsBodyView extends StatelessWidget {
               )),
           if (isLoggedIn)
             Positioned(
-                top: 15,
-                right: 15,
+                top: 15.h,
+                right: 15.w,
                 child: SafeArea(
                   child: GestureDetector(
                     onTap: () => wishList.wishIdList
@@ -471,7 +458,7 @@ class ProductDetailsBodyView extends StatelessWidget {
                     child: Container(
                       width: 40,
                       height: 40,
-                      padding: const EdgeInsets.all(8),
+                      padding: EdgeInsets.all(8.r),
                       decoration: BoxDecoration(
                         color:
                             ColorResources.getScaffoldBackgroundColor(context),
@@ -485,7 +472,7 @@ class ProductDetailsBodyView extends StatelessWidget {
                         ],
                       ),
                       child: Icon(
-                        size: 25,
+                        size: 25.sp,
                         wishList.wishIdList.contains(
                                 productProvider.productDetailsModel!.id)
                             ? Icons.favorite

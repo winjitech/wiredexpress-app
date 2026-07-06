@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:wired_express/helper/network_info.dart';
 import 'package:wired_express/helper/responsive_helper.dart';
@@ -51,9 +52,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       }),
     ];
 
-    if (ResponsiveHelper.isMobilePhone()) {
       NetworkInfo.checkConnectivity(_scaffoldKey);
-    }
   }
 
   @override
@@ -70,8 +69,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       child: Scaffold(
         backgroundColor: ColorResources.getScaffoldBackgroundColor(context!),
         key: _scaffoldKey,
-        bottomNavigationBar: ResponsiveHelper.isMobile(context)
-            ? Container(decoration: BoxDecoration(
+        bottomNavigationBar: Container(decoration: BoxDecoration(
             border: Border(
         top: BorderSide(width: 0.5, color: ColorResources.getBorderColor(context) ),
         ),
@@ -103,8 +101,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     _setPage(index);
                   },
                 ),
-            )
-            : SizedBox(),
+            ),
         body: PageView.builder(
           controller: _pageController,
           itemCount: _screens!.length,
@@ -128,23 +125,21 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   : Provider.of<ThemeProvider>(context).darkTheme
                       ? Colors.white
                       : Colors.grey[700],
-              size: 25),
+              size: 25.sp),
           index == 1
               ? Positioned(
                   top: -7,
                   right: -7,
                   child: Container(
-                    padding: EdgeInsets.all(4),
+                    padding: EdgeInsets.all(4.r),
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
                         shape: BoxShape.circle, color: Colors.red),
-                    child: Text(
-                      Provider.of<CartProvider>(context)
-                          .cartList
-                          .length
-                          .toString(),
-                      style: rubikMedium.copyWith(
-                          color: ColorResources.COLOR_WHITE, fontSize: 8),
+                    child:Text(
+                      Provider.of<CartProvider>(context).cartList.length.toString(),
+                      style: AppTextStyles.h9(context).copyWith(
+                        color: ColorResources.COLOR_WHITE,
+                      ),
                     ),
                   ),
                 )

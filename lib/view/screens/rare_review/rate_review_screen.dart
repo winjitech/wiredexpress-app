@@ -34,8 +34,8 @@ class _RateReviewScreenState extends State<RateReviewScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: ColorResources.getScaffoldBackgroundColor(context!),
-      appBar: CustomAppBar(title: getTranslated('rate_review', context)),
       body: Column(children: [
+        CustomAppBar(title: 'rate_review', showBackButton: true),
         Center(
           child: Container(
             width: MediaQuery.of(context).size.width,
@@ -43,13 +43,12 @@ class _RateReviewScreenState extends State<RateReviewScreen>
             child: TabBar(
               controller: _tabController,
               labelColor: ColorResources.getTextColor(context),
-              indicatorColor: Theme.of(context).primaryColor,
+              indicatorColor: ColorResources.getPrimaryColor(context),
               indicatorWeight: 3,
-              unselectedLabelStyle: rubikRegular.copyWith(
-                  color: ColorResources.COLOR_HINT,
-                  fontSize: Dimensions.FONT_SIZE_SMALL),
-              labelStyle:
-                  rubikMedium.copyWith(fontSize: Dimensions.FONT_SIZE_SMALL),
+              unselectedLabelStyle: AppTextStyles.h8(context).copyWith(
+                color: ColorResources.COLOR_HINT,
+              ),
+              labelStyle: AppTextStyles.h8(context),
               tabs: [
                 Tab(
                     text: getTranslated(

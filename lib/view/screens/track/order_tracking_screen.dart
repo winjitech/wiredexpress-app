@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:collection';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:wired_express/data/model/response/order_model.dart';
@@ -10,6 +11,7 @@ import 'package:wired_express/provider/order_provider.dart';
 import 'package:wired_express/provider/theme_provider.dart';
 import 'package:wired_express/utill/color_resources.dart';
 import 'package:wired_express/utill/images.dart';
+import 'package:wired_express/utill/styles.dart';
 import 'package:wired_express/view/base/circular_indicator_widget.dart';
 import 'package:widget_to_marker/widget_to_marker.dart';
 import 'package:flutter/services.dart';
@@ -70,7 +72,7 @@ class OrderTrackingScreenState extends State<OrderTrackingScreen> {
   //   _polylines.add(Polyline(
   //     polylineId: const PolylineId('route'),
   //     color: Colors.blue,
-  //     width: 5,
+  //     width: 5.w,
   //     points: points,
   //   ));
   //
@@ -133,9 +135,9 @@ class OrderTrackingScreenState extends State<OrderTrackingScreen> {
   }
 
   Future<void> _initializeMarker(LatLng position) async {
-    final dropOffLocationIcon = await const Image(
+    final dropOffLocationIcon = await  Image(
             image: AssetImage(Images.delivery_boy_marker),
-            height: 80,
+            height: 80.h,
             width: 80)
         .toBitmapDescriptor(
             logicalSize: const Size(350, 300), imageSize: const Size(500, 200));
@@ -148,9 +150,9 @@ class OrderTrackingScreenState extends State<OrderTrackingScreen> {
   }
 
   Future<void> _startMovingMarker() async {
-    BitmapDescriptor dropOffLocationIcon = await const Image(
+    BitmapDescriptor dropOffLocationIcon = await  Image(
             image: AssetImage(Images.delivery_boy_marker),
-            height: 80,
+            height: 80.h,
             width: 80)
         .toBitmapDescriptor(
             logicalSize: const Size(350, 300), imageSize: const Size(500, 200));
@@ -159,7 +161,7 @@ class OrderTrackingScreenState extends State<OrderTrackingScreen> {
         Timer.periodic(const Duration(seconds: 2), (timer) async {
       if (_currentCoordinateIndex >= _coordinatesList.length - 1) {
         timer.cancel();
-       // _startFetchingNewCoordinates();
+        // _startFetchingNewCoordinates();
         return;
       }
 
@@ -209,11 +211,11 @@ class OrderTrackingScreenState extends State<OrderTrackingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(        backgroundColor: ColorResources.getScaffoldBackgroundColor(context!),
-
-        appBar: CustomAppBar(title: getTranslated('track_order', context)),
+    return Scaffold(
+        backgroundColor: ColorResources.getScaffoldBackgroundColor(context!),
         body: Column(
           children: [
+            CustomAppBar(title: 'track_order', showBackButton: true),
             Expanded(
               child: _isLoading
                   ? const CustomCircularIndicator()
@@ -240,33 +242,35 @@ class OrderTrackingScreenState extends State<OrderTrackingScreen> {
                             _estimatedDuration != null)
                           Positioned(
                             top: 20,
-                            left: 20,
-                            right: 20,
+                            left: 20.w,
+                            right: 20.w,
                             child: Container(
-                              padding: const EdgeInsets.all(15),
+                              padding: EdgeInsets.all(15.r),
                               decoration: BoxDecoration(
                                   color: ColorResources.getCardColor(context)
                                       .withOpacity(0.4),
-                                  borderRadius: BorderRadius.circular(15)),
+                                  borderRadius: BorderRadius.circular(15.r)),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
                                   Text(
-                                      '${getTranslated('estimated_distance', context)} :  $_estimatedDistance',
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 16,
-                                          color: ColorResources.getTextColor(
-                                                  context)
-                                              .withOpacity(0.9))),
+                                    '${getTranslated('estimated_distance', context)} :  $_estimatedDistance',
+                                    style: AppTextStyles.h5(context).copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      color:
+                                          ColorResources.getTextColor(context)
+                                              .withOpacity(0.9),
+                                    ),
+                                  ),
                                   Text(
-                                      '${getTranslated('estimated_duration', context)} : $_estimatedDuration',
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 16,
-                                          color: ColorResources.getTextColor(
-                                                  context)
-                                              .withOpacity(0.9))),
+                                    '${getTranslated('estimated_duration', context)} : $_estimatedDuration',
+                                    style: AppTextStyles.h5(context).copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      color:
+                                          ColorResources.getTextColor(context)
+                                              .withOpacity(0.9),
+                                    ),
+                                  ),
                                 ],
                               ),
                             ),

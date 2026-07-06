@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:wired_express/localization/language_constrants.dart';
 import 'package:wired_express/provider/subscription_provider.dart';
@@ -18,15 +19,15 @@ class PaymentSuccessScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext? context) {
-    return Scaffold(        backgroundColor: ColorResources.getScaffoldBackgroundColor(context!),
-
+    return Scaffold(
+      backgroundColor: ColorResources.getScaffoldBackgroundColor(context!),
       body: Center(
         child: Container(
           width: 1170,
           child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
             Container(
-              height: 100,
-              width: 100,
+              height: 100.h,
+              width: 100.w,
               decoration: BoxDecoration(
                 color:
                     ColorResources.getPrimaryColor(context!).withOpacity(0.2),
@@ -38,17 +39,23 @@ class PaymentSuccessScreen extends StatelessWidget {
                 size: 80,
               ),
             ),
-            const SizedBox(height: Dimensions.PADDING_SIZE_LARGE),
+            SizedBox(height: 20.h),
             Text(
-              success ? getTranslated('payment_succeed', context) : getTranslated('payment_failed', context),
-              style: rubikMedium.copyWith(fontSize: Dimensions.FONT_SIZE_LARGE),
+              success
+                  ? getTranslated('payment_succeed', context)
+                  : getTranslated('payment_failed', context),
+              style: AppTextStyles.h4(
+                context,
+              ),
             ),
-            const SizedBox(height: 30),
+            SizedBox(height: 30.h),
             Padding(
-              padding: const EdgeInsets.all(Dimensions.PADDING_SIZE_LARGE),
+              padding: EdgeInsets.all(20.r),
               child: CustomButton(
                   backgroundColor: ColorResources.getPrimaryColor(context),
-                  text: success ? getTranslated('back', context) : getTranslated('home', context),
+                  text: success
+                      ? getTranslated('back', context)
+                      : getTranslated('home', context),
                   onTap: () {
                     if (success) {
                       if (fromCheckoutScreen) {

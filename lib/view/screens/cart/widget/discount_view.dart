@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:wired_express/localization/language_constrants.dart';
 import 'package:wired_express/provider/coupon_provider.dart';
@@ -28,7 +29,7 @@ class DiscountView extends StatelessWidget {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(height: 15),
+          SizedBox(height: 15.h),
           if (totalPointsDiscount > 0)
             SwitchListTile(
               contentPadding: EdgeInsets.zero,
@@ -44,41 +45,41 @@ class DiscountView extends StatelessWidget {
                 children: [
                   Text(
                     getTranslated('want_use_loyalty_points', context),
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.normal,
-                      color: ColorResources.getTextColor(context),
-                    ),
+                    style: AppTextStyles.h5(context),
                   ),
                 ],
               ),
               activeColor:
                   ColorResources.getPrimaryColor(context).withOpacity(1),
             ),
-          SizedBox(height: 15),
-          Text(getTranslated('promo_code', context),
-              style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 20,
-                  color: ColorResources.getTextColor(context))),
-          const SizedBox(height: 10),
+          SizedBox(height: 15.h),
+          Text(
+            getTranslated('promo_code', context),
+            style: AppTextStyles.h2(
+              context,
+              fontSize: 20.sp,
+            ).copyWith(
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          SizedBox(height: 10.h),
           Row(
             children: [
               Expanded(
                 child: CustomTextField(
                   hintText: getTranslated('enter_promo_code', context),
-                  controller: couponController,
+                  controller: couponController,fill: true,
                   fillColor: ColorResources.getTextFieldFillColor(context),
                   inputType: TextInputType.text,
                 ),
               ),
-              const SizedBox(
+              SizedBox(
                 width: 20,
               ),
               MaterialButton(
                 height: 50,
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(40)),
+                    borderRadius: BorderRadius.circular(40.r)),
                 onPressed: () {
                   FocusScope.of(context).unfocus();
                   if (couponController.text.isNotEmpty &&
@@ -114,17 +115,20 @@ class DiscountView extends StatelessWidget {
                 child: couponProvider.couponDiscountAmount! <= 0
                     ? !couponProvider.applyCouponLoading! ||
                             !couponProvider.removeCouponLoading!
-                        ? Text(getTranslated('apply', context),
-                            style: rubikMedium.copyWith(
-                                color: ColorResources.getCardColor(context)))
+                        ? Text(
+                            getTranslated('apply', context),
+                            style: AppTextStyles.h6(context).copyWith(
+                              color: Colors.white,
+                            ),
+                          )
                         : CustomCircularIndicator(
-                            color: ColorResources.getCardColor(context))
+                           color: Colors.white,)
                     : Icon(Icons.clear,
-                        color: ColorResources.getCardColor(context)),
+                      color: Colors.white,),
               ),
             ],
           ),
-          SizedBox(height: 15),
+          SizedBox(height: 15.h),
         ],
       );
     });

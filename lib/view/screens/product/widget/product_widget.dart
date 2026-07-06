@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wired_express/data/helper/helpers.dart';
 import 'package:wired_express/data/model/response/product_model.dart';
 import 'package:wired_express/data/model/response/product_plan_discount_model.dart';
@@ -16,6 +17,8 @@ import 'package:wired_express/provider/wishlist_provider.dart';
 import 'package:wired_express/utill/color_resources.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
+import 'package:wired_express/utill/styles.dart';
+import 'package:wired_express/view/base/rating_bar.dart';
 import 'package:wired_express/view/screens/product/product_details_screen.dart';
 
 class ProductWidget extends StatelessWidget {
@@ -91,140 +94,129 @@ class ProductWidget extends StatelessWidget {
                 builder: (BuildContext context) =>
                     ProductDetailsScreen(productId: product!.id))),
         child: Container(
+          padding: EdgeInsets.all(15.r),
           decoration: BoxDecoration(
-            border: Border.all(
-                color: ColorResources.getBorderColor(context), width: 0.4),
-            color: ColorResources.getScaffoldBackgroundColor(context),
-            borderRadius: BorderRadius.circular(20),
+            color: ColorResources.getCardColor(context),
+            borderRadius: BorderRadius.circular(15.r),
           ),
-          child: Column(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+
+              /// Image
               Stack(
                 children: [
                   ClipRRect(
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(20),
-                      topRight: Radius.circular(20),
-                    ),
+                    borderRadius: BorderRadius.circular(15.r),
                     child: CachedNetworkImage(
-                      height: 150,
+                      height: 90.h,
+                      width: 90.w,
                       fit: BoxFit.cover,
-                      width: double.infinity,
                       imageUrl:
-                          '${Provider.of<SplashProvider>(context, listen: false).baseUrls!.productImageUrl}/${product!.image}',
+                      '${Provider.of<SplashProvider>(context, listen: false).baseUrls!.productImageUrl}/${product!.image}',
                       cacheKey:
-                          '${Provider.of<SplashProvider>(context, listen: false).baseUrls!.productImageUrl}/${product!.image}',
+                      '${Provider.of<SplashProvider>(context, listen: false).baseUrls!.productImageUrl}/${product!.image}',
                     ),
                   ),
-                  if (isLoggedIn)
-                    Positioned(
-                      top: 0,
-                      right: 0,
-                      child: GestureDetector(
-                          onTap: () {
-                            if (wishListProvider.wishIdList
-                                .contains(product!.id)) {
-                              wishListProvider.removeFromWishList(
-                                  product!, (message) {});
-                            } else {
-                              wishListProvider.addToWishList(
-                                  product!, (message) {});
-                            }
-                          },
-                          child: Container(
-                            padding: EdgeInsets.all(6),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.only(
-                                  topRight: Radius.circular(20),
-                                  bottomLeft: Radius.circular(20)),
-                              color: ColorResources.getScaffoldBackgroundColor(
-                                  context),
-                            ),
-                            child: Icon(
-                              wishListProvider.wishIdList.contains(product!.id)
-                                  ? Icons.favorite
-                                  : Icons.favorite_border,
-                              color: wishListProvider.wishIdList
-                                      .contains(product!.id)
-                                  ? ColorResources.getPrimaryColor(context)
-                                  : ColorResources.COLOR_GREY,
-                            ),
-                          )),
-                    ),
+
                   if (isEarlyProduct)
                     Positioned(
-                      top: 8,
-                      left: 8,
+                      top: 5,
+                      left: 5,
                       child: Container(
-                          padding:
-                              EdgeInsets.symmetric(horizontal: 14, vertical: 2),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20),
-                            color: Colors.green,
-                          ),
-                          child: Text(
-                            getTranslated('new', context),
-                            style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
-                                color: ColorResources.getCardColor(context)),
-                          )),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 10.w,
+                          vertical: 2.h,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.green,
+                          borderRadius: BorderRadius.circular(20.r),
+                        ),
+                        child: Text(
+                          getTranslated('new', context),
+                          style: AppTextStyles.h8(context).copyWith(
+                            color: Colors.white,fontWeight: FontWeight.bold),
+                        ),
+                      ),
                     ),
                 ],
               ),
-              const SizedBox(height: 10),
-              Padding(
-                padding:  EdgeInsets.symmetric(horizontal: 12),
+
+              SizedBox(width: 10.w),
+
+              /// Details
+              Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Text(
-                    //   product!.id!.toString(),
-                    //   maxLines: 2,
-                    //   overflow: TextOverflow.ellipsis,
-                    //   style:TextStyle(color: ColorResources.getTextColor(context),
-                    //       fontWeight: FontWeight.bold, fontSize: 15),
-                    // ),
+
                     Text(
                       product!.name!,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                          color: ColorResources.getTextColor(context),
-                          fontWeight: FontWeight.bold,
-                          fontSize: 15),
+                      style: AppTextStyles.h2(
+                        context,
+                        fontSize: 15.sp,
+                      ),
                     ),
-                    const SizedBox(height: 5),
+
+                    SizedBox(height: 4.h),
+                    RatingBar(
+                        rating: product!.rating!.length > 0
+                            ? double.parse(product!.rating![0].average!)
+                            : 0.0),
+                    SizedBox(height: 4.h),
                     Row(
                       children: [
-                        if (discountedOnProductPrice != originalPrice)
-                          Row(
-                            children: [
-                              Text(
-                                  "${splashProvider.configModel!.currencySymbol ?? '\$'}${Helpers.formatTextWithNum(originalPrice.toString())}",
-                                  style: TextStyle(
-                                      color:
-                                          ColorResources.getTextColor(context)
-                                              .withOpacity(0.4),
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: 15,
-                                      decoration: TextDecoration.lineThrough,
-                                      decorationColor:
-                                          ColorResources.getTextColor(context)
-                                              .withOpacity(0.4))),
-                              SizedBox(width: 5),
-                            ],
+                        if (discountedOnProductPrice != originalPrice) ...[
+                          Text(
+                            "${splashProvider.configModel!.currencySymbol ?? '\$'}${Helpers.formatTextWithNum(originalPrice.toString())}",
+                            style: AppTextStyles.h4(context).copyWith(
+                              fontWeight: FontWeight.w500,
+                              color: ColorResources.getTextColor(context)
+                                  .withOpacity(.4),
+                              decoration: TextDecoration.lineThrough,
+                            ),
                           ),
+                          SizedBox(width: 6.w),
+                        ],
+
                         Text(
                           "${splashProvider.configModel!.currencySymbol ?? '\$'}${Helpers.formatTextWithNum(discountedOnProductPrice.toString())}",
-                          style: TextStyle(
-                              fontSize: 16,
-                              color: ColorResources.getPrimaryColor(context),
-                              fontWeight: FontWeight.w600),
+                          style: AppTextStyles.h4(context).copyWith(
+                            color: ColorResources.getPrimaryColor(context),
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ],
                     ),
                   ],
+                ),
+              ),
+              SizedBox(width: 10.w),
+            if(isLoggedIn)  GestureDetector(
+                onTap: () {
+                  if (wishListProvider.wishIdList.contains(product!.id)) {
+                    wishListProvider.removeFromWishList(product!, (message) {});
+                  } else {
+                    wishListProvider.addToWishList(product!, (message) {});
+                  }
+                },
+                child: Container(
+                  padding: EdgeInsets.all(5.r),
+                  decoration: BoxDecoration(
+                    color: ColorResources.getScaffoldBackgroundColor(context),
+                   shape: BoxShape.circle
+                  ),
+                  child: Icon(
+                    wishListProvider.wishIdList.contains(product!.id)
+                        ? Icons.favorite
+                        : Icons.favorite_border,
+                    size: 18.sp,
+                    color: wishListProvider.wishIdList.contains(product!.id)
+                        ? ColorResources.getPrimaryColor(context)
+                        : ColorResources.COLOR_GREY,
+                  ),
                 ),
               ),
             ],

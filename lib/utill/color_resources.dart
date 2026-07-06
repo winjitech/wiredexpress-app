@@ -3,119 +3,116 @@ import 'package:provider/provider.dart';
 import 'package:wired_express/provider/theme_provider.dart';
 
 class ColorResources {
+  static bool isDark(BuildContext context) =>
+      Provider.of<ThemeProvider>(context, listen: false).darkTheme;
+
+  // Primary Color
   static Color getPrimaryColor(BuildContext context) {
-    return Provider.of<ThemeProvider>(context, listen: false).darkTheme
-        ? Color(0xFF009401)
-        : Color(0xff04B200);
+    return isDark(context) ? const Color(0xFF009401) : const Color(0xff04B200);
   }
 
+  static Color getSecondaryColor(BuildContext context) {
+    return isDark(context) ? const Color(0xFFA6D94E) : const Color(0xFF5E8F16);
+  }
+
+  // Grey Colors
   static Color getGreyColor(BuildContext context) {
-    return Provider.of<ThemeProvider>(context, listen: false).darkTheme
-        ? Color(0xFF6f7275)
-        : Color(0xFFA0A4A8);
+    return isDark(context) ? const Color(0xFF6F7275) : const Color(0xFFA0A4A8);
   }
-  static Color getBoxShadow(BuildContext context) {
-    return Provider.of<ThemeProvider>(context, listen: false).darkTheme
-        ? Colors.black.withOpacity(0.4)
-        : Colors.grey[300]!;
-  }
+
   static Color getGrayColor(BuildContext context) {
-    return Provider.of<ThemeProvider>(context, listen: false).darkTheme
-        ? Color(0xFF919191)
-        : Color(0xFF6E6E6E);
+    return isDark(context) ? const Color(0xFF919191) : const Color(0xFF6E6E6E);
   }
-
-  static Color? getSearchBg(BuildContext context) {
-    return Provider.of<ThemeProvider>(context, listen: false).darkTheme
-        ? Colors.grey[600]
-        : Color(0xFFF4F7FC);
-  }
-
-  static Color getBackgroundColor(BuildContext context) {
-    return Provider.of<ThemeProvider>(context, listen: false).darkTheme
-        ? Color(0xFF343636)
-        : Color(0xFFF4F7FC);
-  }
-
-  static Color getHintColor(BuildContext context) {
-    return Provider.of<ThemeProvider>(context, listen: false).darkTheme
-        ? Color(0xFF98a1ab)
-        : Color(0xFF52575C);
-  }
-
   static Color getGreyBunkerColor(BuildContext context) {
     return Provider.of<ThemeProvider>(context, listen: false).darkTheme
         ? Color(0xFFE4E8EC)
         : Color(0xFF25282B);
   }
-
-
-  static Color getTextColor(BuildContext context) {
-    return Provider.of<ThemeProvider>(context, listen: false).darkTheme
-        ? Colors.white
-        : Colors.black;
+  // Search Background
+  static Color getSearchBg(BuildContext context) {
+    return isDark(context) ? Colors.grey[600]! : const Color(0xFFF4F7FC);
   }
 
-  static Color getCardColor(BuildContext context) {
-    return Provider.of<ThemeProvider>(context, listen: false).darkTheme
-        ? Color(0xFF191919)
-        : Colors.white;
+  // Background
+  static Color getBackgroundColor(BuildContext context) {
+    return isDark(context) ? const Color(0xFF343636) : const Color(0xFFF4F7FC);
   }
 
-  static Color getScaffoldColor(BuildContext context) {
-    return Provider.of<ThemeProvider>(context, listen: false).darkTheme
-        ? Color(0xFFAAA8A8)
-        : Color(0xFF252525);
+  static Color getSe(BuildContext context) {
+    return isDark(context) ? const Color(0xFF3C3C3C) : const Color(0xFFFAFAFA);
   }
-  static Color getSecondaryColor(BuildContext context) {
-    return Provider.of<ThemeProvider>(context, listen: false).darkTheme
-        ? Color(0xFF0055A4)
-        : Color(0xFF007BFF);
-  }
-  static Color? getTextFieldFillColor(BuildContext context) {
-    return Provider.of<ThemeProvider>(context, listen: false).darkTheme
-        ? Color(0xFF1A1A1A)
-        : Colors.grey[200];
-  }
+
   static Color getScaffoldBackgroundColor(BuildContext context) {
-    return Provider.of<ThemeProvider>(context, listen: false).darkTheme
-        ? Color(0xFF252525)
-        : Colors.white;
+    return isDark(context) ? const Color(0xFF3C3C3C) : const Color(0xFFF9FAFB);
   }
+
+  // Text Colors
+  static Color getTextColor(BuildContext context) {
+    return isDark(context) ? Colors.white : const Color(0xFF333333);
+  }
+
+  static Color getChatTextColor(BuildContext context) {
+    return isDark(context) ? Colors.white : Colors.black87;
+  }
+
+  static Color getHintColor(BuildContext context) {
+    return isDark(context) ? const Color(0xFF98A1AB) : const Color(0xFF52575C);
+  }
+
+  // Cards, Borders, Shadows
+  static Color getCardColor(BuildContext context) {
+    return isDark(context) ? const Color(0xFF222222) : const Color(0xFFFFFFFF);
+  }
+
+  static Color getBoxShadow(BuildContext context) {
+    return isDark(context) ? Colors.black.withOpacity(0.4) : Colors.grey[300]!;
+  }
+
+  static Color getTextFieldFillColor(BuildContext context) {
+    return isDark(context) ? const Color(0xFF222222) : const Color(0xFFFFFFFF);
+  }
+
 
   static Color getBorderColor(BuildContext context) {
-    return getTextColor(context).withOpacity(0.2);
+    return isDark(context)
+        ? getTextColor(context).withOpacity(0.8)
+        : const Color(0xFFE8ECF4);
   }
 
-  static const Color COLOR_PRIMARY = Color(0xFF39aeb5);
-  static const Color COLOR_PRIMARY_DARK = Color(0xFF288b91);
-  static const Color COLOR_LIGHT_PRIMARY = Color(0xFFddf3f4);
+  // Ratings
+  static Color getRatingColor(BuildContext context) {
+    return isDark(context) ? const Color(0xFFFFC721) : const Color(0xFFFFC107);
+  }
+
+// Shimmer Base Color
+  static Color getShimmerColor(BuildContext context) {
+    return isDark(context)
+        ? const Color(0xFF2E2E2E)
+        : const Color(0xFFE9EDF3);
+  }
+
+// Shimmer Highlight
+  static Color getShimmerHighlightColor(BuildContext context) {
+    return isDark(context)
+        ? const Color(0xFF454545)
+        : const Color(0xFFF8FAFC);
+  }
+  static const Color COLOR_PRIMARY = Color(0xFF535AA9);
+  static const Color COLOR_PRIMARY_DARK = Color(0xFF276573);
+  static const Color COLOR_LIGHT_PRIMARY = Color(0xFF4397AF);
   static const Color COLOR_GREY = Color(0xFFA0A4A8);
   static const Color COLOR_BLACK = Color(0xFF000000);
   static const Color COLOR_NERO = Color(0xFF1F1F1F);
   static const Color COLOR_WHITE = Color(0xFFFFFFFF);
   static const Color COLOR_HINT = Color(0xFF52575C);
   static const Color SEARCH_BG = Color(0xFFF4F7FC);
-  static const Color COLOR_GRAY = Color(0xff6E6E6E);
-  static const Color COLOR_OXFORD_BLUE = Color(0xff282F39);
-  static const Color COLOR_GAINSBORO = Color(0xffE8E8E8);
-  static const Color COLOR_NIGHER_RIDER = Color(0xff303030);
-  static const Color BACKGROUND_COLOR = Color(0xfffffafb);
-  static const Color COLOR_GREY_BUNKER = Color(0xff25282B);
-  static const Color COLOR_GREY_CHATEAU = Color(0xffA0A4A8);
+  static const Color COLOR_GRAY = Color(0xFF6E6E6E);
+  static const Color COLOR_OXFORD_BLUE = Color(0xFF282F39);
+  static const Color COLOR_GAINSBORO = Color(0xFFE8E8E8);
+  static const Color COLOR_NIGHER_RIDER = Color(0xFF303030);
+  static const Color BACKGROUND_COLOR = Color(0xFFFFFAFB);
+  static const Color COLOR_GREY_BUNKER = Color(0xFF25282B);
+  static const Color COLOR_GREY_CHATEAU = Color(0xFFA0A4A8);
   static const Color BORDER_COLOR = Color(0xFFDCDCDC);
   static const Color DISABLE_COLOR = Color(0xFF979797);
-
-  static const Map<int, Color> colorMap = {
-    50: Color(0x10192D6B),
-    100: Color(0x20192D6B),
-    200: Color(0x30192D6B),
-    300: Color(0x40192D6B),
-    400: Color(0x50192D6B),
-    500: Color(0x60192D6B),
-    600: Color(0x70192D6B),
-    700: Color(0x80192D6B),
-    800: Color(0x90192D6B),
-    900: Color(0xff192D6B),
-  };
 }

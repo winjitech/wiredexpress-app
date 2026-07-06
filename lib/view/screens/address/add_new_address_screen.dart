@@ -1,5 +1,7 @@
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wired_express/data/model/response/address_model.dart';
 import 'package:wired_express/helper/responsive_helper.dart';
 import 'package:wired_express/localization/language_constrants.dart';
@@ -7,9 +9,11 @@ import 'package:wired_express/provider/location_provider.dart';
 import 'package:wired_express/utill/color_resources.dart';
 import 'package:wired_express/utill/dimensions.dart';
 import 'package:wired_express/utill/images.dart';
+import 'package:wired_express/utill/styles.dart';
 import 'package:wired_express/view/base/circular_indicator_widget.dart';
 import 'package:wired_express/view/base/custom_app_bar.dart';
 import 'package:wired_express/view/base/custom_button.dart';
+import 'package:wired_express/view/base/custom_snackbar.dart';
 import 'package:wired_express/view/base/custom_text_field.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:wired_express/view/screens/address/select_location_screen.dart';
@@ -96,235 +100,220 @@ class _AddNewAddressScreenState extends State<AddNewAddressScreen> {
 
     return Scaffold(
       backgroundColor: ColorResources.getScaffoldBackgroundColor(context!),
-      appBar: CustomAppBar(
-          title: widget.isEnableUpdate!
-              ? getTranslated('update_address', context)
-              : getTranslated('add_new_address', context)),
-      body: Padding(
-        padding: EdgeInsets.all(Dimensions.PADDING_SIZE_LARGE),
-        child: Consumer<LocationProvider>(
-          builder: (context, locationProvider, child) {
-            if (locationProvider.address != null &&
-                ResponsiveHelper.isMobilePhone()) {
-              _locationController.text =
-                  '${locationProvider.address.name ?? ''}'
-                  ', ${locationProvider.address.subAdministrativeArea ?? ''}'
-                  ', ${locationProvider.address.isoCountryCode ?? ''}';
-            }
 
-            return Column(
-              children: [
-                Expanded(
-                  child: Scrollbar(
-                    child: SingleChildScrollView(
-                      padding: EdgeInsets.all(12.0),
-                      child: Center(
-                        child: SizedBox(
-                          width: MediaQuery.of(context).size.width,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            //   physics: BouncingScrollPhysics(),
-                            children: [
-                              Container(
-                                height: 126,
+      body: Column(
+        children: [
+          CustomAppBar(title:  widget.isEnableUpdate!
+              ?'update_address':'add_new_address', showBackButton: true),
+          Expanded(
+            child: Padding(
+              padding: EdgeInsets.all(20.r),
+              child: Consumer<LocationProvider>(
+                builder: (context, locationProvider, child) {
+                  if (locationProvider.address != null ) {
+                    _locationController.text =
+                        '${locationProvider.address.name ?? ''}'
+                        ', ${locationProvider.address.subAdministrativeArea ?? ''}'
+                        ', ${locationProvider.address.isoCountryCode ?? ''}';
+                  }
+
+                  return Column(
+                    children: [
+                      Expanded(
+                        child: Scrollbar(
+                          child: SingleChildScrollView(
+                            padding: EdgeInsets.all(12.r),
+                            child: Center(
+                              child: SizedBox(
                                 width: MediaQuery.of(context).size.width,
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(
-                                      Dimensions.PADDING_SIZE_SMALL),
-                                  child: Stack(
-                                    clipBehavior: Clip.none,
-                                    children: [
-                                      GoogleMap(
-                                        mapType: MapType.normal,
-                                        initialCameraPosition: CameraPosition(
-                                          target: widget.isEnableUpdate!
-                                              ? LatLng(
-                                                  double.parse(widget.address!
-                                                          .latitude!) ??
-                                                      0.0,
-                                                  double.parse(widget.address!
-                                                          .longitude!) ??
-                                                      0.0)
-                                              : LatLng(
-                                                  locationProvider
-                                                          .position.latitude ??
-                                                      0.0,
-                                                  locationProvider
-                                                          .position.longitude ??
-                                                      0.0),
-                                          zoom: 12,
-                                        ),
-                                        onTap: (latLng) {
-                                          if (ResponsiveHelper
-                                              .isMobilePhone()) {
-                                            Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                    builder: (BuildContext
-                                                            context) =>
-                                                        SelectLocationScreen()));
-                                            // Navigator.pushNamed(
-                                            //     context,
-                                            //     Routes
-                                            //         .getSelectLocationRoute());
-                                          }
-                                        },
-                                        zoomControlsEnabled: false,
-                                        compassEnabled: false,
-                                        indoorViewEnabled: true,
-                                        mapToolbarEnabled: false,
-                                        myLocationButtonEnabled: false,
-                                        onCameraIdle: () {
-                                          locationProvider.dragableAddress();
-                                        },
-                                        onCameraMove: ((_position) =>
-                                            locationProvider
-                                                .updatePosition(_position)),
-                                        onMapCreated:
-                                            (GoogleMapController controller) {
-                                          locationProvider
-                                              .updateMapController(controller);
-                                          if (!widget.isEnableUpdate! &&
-                                              _controller != null) {
-                                            Provider.of<LocationProvider>(
-                                                    context,
-                                                    listen: false)
-                                                .getCurrentLocation(
-                                                    mapController:
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  //   physics: BouncingScrollPhysics(),
+                                  children: [
+                                    Container(
+                                      height: 126,
+                                      width: MediaQuery.of(context).size.width,
+                                      child: ClipRRect(
+                                        borderRadius: BorderRadius.circular(
+                                            Dimensions.PADDING_SIZE_SMALL),
+                                        child: Stack(
+                                          clipBehavior: Clip.none,
+                                          children: [
+                                            GoogleMap(
+                                              mapType: MapType.normal,
+                                              initialCameraPosition: CameraPosition(
+                                                target: widget.isEnableUpdate!
+                                                    ? LatLng(
+                                                        double.parse(widget.address!
+                                                                .latitude!) ??
+                                                            0.0,
+                                                        double.parse(widget.address!
+                                                                .longitude!) ??
+                                                            0.0)
+                                                    : LatLng(
                                                         locationProvider
-                                                            .mapController);
-                                          }
-                                          // controller.setMapStyle(
-                                          //     Provider.of<ThemeProvider>(
-                                          //                 context,
-                                          //                 listen: false)
-                                          //             .darkTheme
-                                          //         ? _darkMapStyle
-                                          //         : _lightMapStyle);
-                                        },
+                                                                .position.latitude ??
+                                                            0.0,
+                                                        locationProvider
+                                                                .position.longitude ??
+                                                            0.0),
+                                                zoom: 12,
+                                              ),
+                                              onTap: (latLng) {
+
+                                                  Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                          builder: (BuildContext
+                                                                  context) =>
+                                                              SelectLocationScreen()));
+                                                  // Navigator.pushNamed(
+                                                  //     context,
+                                                  //     Routes
+                                                  //         .getSelectLocationRoute());
+
+                                              },
+                                              zoomControlsEnabled: false,
+                                              compassEnabled: false,
+                                              indoorViewEnabled: true,
+                                              mapToolbarEnabled: false,
+                                              myLocationButtonEnabled: false,
+                                              onCameraIdle: () {
+                                                locationProvider.dragableAddress();
+                                              },
+                                              onCameraMove: ((_position) =>
+                                                  locationProvider
+                                                      .updatePosition(_position)),
+                                              onMapCreated:
+                                                  (GoogleMapController controller) {
+                                                locationProvider
+                                                    .updateMapController(controller);
+                                                if (!widget.isEnableUpdate! &&
+                                                    _controller != null) {
+                                                  Provider.of<LocationProvider>(
+                                                          context,
+                                                          listen: false)
+                                                      .getCurrentLocation(
+                                                          mapController:
+                                                              locationProvider
+                                                                  .mapController);
+                                                }
+                                                // controller.setMapStyle(
+                                                //     Provider.of<ThemeProvider>(
+                                                //                 context,
+                                                //                 listen: false)
+                                                //             .darkTheme
+                                                //         ? _darkMapStyle
+                                                //         : _lightMapStyle);
+                                              },
+                                            ),
+                                            locationProvider.loading
+                                                ? CustomCircularIndicator()
+                                                : SizedBox(),
+                                            Container(
+                                                width:
+                                                    MediaQuery.of(context).size.width,
+                                                alignment: Alignment.center,
+                                                height: MediaQuery.of(context)
+                                                    .size
+                                                    .height,
+                                                child: Image.asset(
+                                                  Images.marker,
+                                                  width: 25.w,
+                                                  height: 35,
+                                                )),
+                                            Positioned(
+                                              bottom: 10.h,
+                                              right: 0,
+                                              child: GestureDetector(
+                                                onTap: () => locationProvider
+                                                    .getCurrentLocation(
+                                                        mapController:
+                                                            locationProvider
+                                                                .mapController),
+                                                child: Container(
+                                                  width: 30,
+                                                  height: 30.h,
+                                                  margin: EdgeInsets.only(
+                                                      right: Dimensions
+                                                          .PADDING_SIZE_LARGE),
+                                                  decoration: BoxDecoration(
+                                                    borderRadius:
+                                                        BorderRadius.circular(10.r),
+                                                    color: ColorResources
+                                                        .getScaffoldBackgroundColor(
+                                                            context),
+                                                  ),
+                                                  child: Icon(
+                                                    Icons.my_location,
+                                                    color: ColorResources
+                                                        .getScaffoldBackgroundColor(
+                                                            context),
+                                                    size: 20.sp,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
                                       ),
-                                      locationProvider.loading
-                                          ? CustomCircularIndicator()
-                                          : SizedBox(),
-                                      Container(
-                                          width:
-                                              MediaQuery.of(context).size.width,
-                                          alignment: Alignment.center,
-                                          height: MediaQuery.of(context)
-                                              .size
-                                              .height,
-                                          child: Image.asset(
-                                            Images.marker,
-                                            width: 25,
-                                            height: 35,
-                                          )),
-                                      Positioned(
-                                        bottom: 10,
-                                        right: 0,
-                                        child: GestureDetector(
-                                          onTap: () => locationProvider.getCurrentLocation(
-                                                mapController: locationProvider
-                                                    .mapController),
-                                          child: Container(
-                                            width: 30,
-                                            height: 30,
-                                            margin: EdgeInsets.only(
-                                                right: Dimensions
-                                                    .PADDING_SIZE_LARGE),
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(
-                                                      Dimensions
-                                                          .PADDING_SIZE_SMALL),
-                                              color: ColorResources
-                                                  .getScaffoldBackgroundColor(
-                                                      context),
-                                            ),
-                                            child: Icon(
-                                              Icons.my_location,
-                                              color: ColorResources
-                                                  .getScaffoldColor(context),
-                                              size: 20,
-                                            ),
+                                    ),
+                                    Padding(
+                                      padding: EdgeInsets.only(top: 10.h),
+                                      child: Center(
+                                        child: Text(
+                                          getTranslated(
+                                              'add_the_location_correctly', context),
+                                          style: AppTextStyles.h8(context).copyWith(
+                                            color: ColorResources.getGreyBunkerColor(
+                                                context),
                                           ),
                                         ),
                                       ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(top: 10),
-                                child: Center(
-                                    child: Text(
-                                  getTranslated(
-                                      'add_the_location_correctly', context),
-                                  style: TextStyle(
-                                      color: ColorResources.getGreyBunkerColor(
-                                          context),
-                                      fontSize: Dimensions.FONT_SIZE_SMALL),
-                                )),
-                              ),
+                                    ),
 
-                              // for label us
-                              Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 24.0),
-                                child: Text(
-                                  getTranslated('label_us', context),
-                                  style: TextStyle(
-                                      color: ColorResources.getGreyBunkerColor(
-                                          context),
-                                      fontSize: Dimensions.FONT_SIZE_LARGE),
-                                ),
-                              ),
-
-                              Container(
-                                height: 50,
-                                child: ListView.builder(
-                                  shrinkWrap: true,
-                                  scrollDirection: Axis.horizontal,
-                                  // physics: BouncingScrollPhysics(),
-                                  itemCount:
-                                      locationProvider.getAllAddressType.length,
-                                  itemBuilder: (context, index) =>
-                                      GestureDetector(
-                                    onTap: () => locationProvider
-                                          .updateAddressIndex(index),
-                                    child: Container(
-                                      padding: EdgeInsets.symmetric(
-                                          vertical:
-                                              Dimensions.PADDING_SIZE_DEFAULT,
-                                          horizontal:
-                                              Dimensions.PADDING_SIZE_LARGE),
-                                      margin: EdgeInsets.only(right: 17),
-                                      decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(
-                                            Dimensions.PADDING_SIZE_SMALL,
-                                          ),
-                                          border: Border.all(
-                                              color: locationProvider
-                                                          .selectAddressIndex ==
-                                                      index
-                                                  ? ColorResources
-                                                      .getScaffoldColor(context)
-                                                  : ColorResources
-                                                      .BORDER_COLOR),
-                                          color: locationProvider
-                                                      .selectAddressIndex ==
-                                                  index
-                                              ? ColorResources.getScaffoldColor(
-                                                  context)
-                                              : ColorResources
-                                                  .getScaffoldBackgroundColor(
-                                                      context)),
+                                    // for label us
+                                    Padding(
+                                      padding: EdgeInsets.symmetric(vertical: 24.h),
                                       child: Text(
-                                        locationProvider
-                                            .getAllAddressType[index],
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodyMedium!
-                                            .copyWith(
+                                        getTranslated('label_us', context),
+                                        style: AppTextStyles.h8(context).copyWith(
+                                          color: ColorResources.getGreyBunkerColor(
+                                              context),
+                                        ),
+                                      ),
+                                    ),
+
+                                    Container(
+                                      height: 50,
+                                      child: ListView.builder(
+                                        shrinkWrap: true,
+                                        scrollDirection: Axis.horizontal,
+                                        // physics: BouncingScrollPhysics(),
+                                        itemCount:
+                                            locationProvider.getAllAddressType.length,
+                                        itemBuilder: (context, index) =>
+                                            GestureDetector(
+                                          onTap: () => locationProvider
+                                              .updateAddressIndex(index),
+                                          child: Container(
+                                            padding: EdgeInsets.symmetric(
+                                                vertical:
+                                                    Dimensions.PADDING_SIZE_DEFAULT,
+                                                horizontal:
+                                                    Dimensions.PADDING_SIZE_LARGE),
+                                            margin: EdgeInsets.only(right: 17),
+                                            decoration: BoxDecoration(
+                                                borderRadius: BorderRadius.circular(10.r),
+                                                border: Border.all(
+                                                    color: locationProvider
+                                                                .selectAddressIndex ==
+                                                            index
+                                                        ? ColorResources
+                                                            .getScaffoldBackgroundColor(
+                                                                context)
+                                                        : ColorResources
+                                                            .BORDER_COLOR),
                                                 color: locationProvider
                                                             .selectAddressIndex ==
                                                         index
@@ -332,234 +321,245 @@ class _AddNewAddressScreenState extends State<AddNewAddressScreen> {
                                                         .getScaffoldBackgroundColor(
                                                             context)
                                                     : ColorResources
-                                                        .getTextColor(context)),
+                                                        .getScaffoldBackgroundColor(
+                                                            context)),
+                                            child: Text(
+                                              locationProvider
+                                                  .getAllAddressType[index],
+                                              style:
+                                                  AppTextStyles.h7(context).copyWith(
+                                                color: locationProvider
+                                                            .selectAddressIndex ==
+                                                        index
+                                                    ? ColorResources
+                                                        .getScaffoldBackgroundColor(
+                                                            context)
+                                                    : ColorResources.getTextColor(
+                                                        context),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                ),
-                              ),
 
-                              Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 24.0),
-                                child: Text(
-                                  getTranslated('delivery_address', context),
-                                  style: TextStyle(
-                                      color: ColorResources.getGreyBunkerColor(
+                                    Padding(
+                                      padding:
+                                          EdgeInsets.symmetric(vertical: 24.h),
+                                      child: Text(
+                                        getTranslated('delivery_address', context),
+                                        style: AppTextStyles.h4(context).copyWith(
+                                          color: ColorResources.getGreyBunkerColor(
+                                              context),
+                                        ),
+                                      ),
+                                    ),
+
+            // For Address Field
+                                    Text(
+                                      getTranslated('address_line_01', context),
+                                      style: AppTextStyles.h7(context).copyWith(
+                                        color: ColorResources.getHintColor(context),
+                                      ),
+                                    ),
+                                    SizedBox(height: 8.h),
+                                    CustomTextField(fill: true,
+                                      fillColor: ColorResources.getTextFieldFillColor(
                                           context),
-                                      fontSize: Dimensions.FONT_SIZE_LARGE),
+                                      hintText:
+                                          getTranslated('address_line_02', context),
+                                      isShowBorder: false,
+                                      inputType: TextInputType.streetAddress,
+                                      inputAction: TextInputAction.next,
+                                      focusNode: _addressNode,
+                                      nextFocus: _nameNode,
+                                      controller: _locationController,
+                                    ),
+                                    SizedBox(height: 20.h),
+
+                                    // for Contact Person Name
+                                    Text(
+                                      getTranslated('contact_person_name', context),
+                                      style: AppTextStyles.h7(context).copyWith(
+                                        color: ColorResources.getHintColor(context),
+                                      ),
+                                    ),
+                                    SizedBox(height: 8.h),
+                                    CustomTextField(fill: true,
+                                      fillColor: ColorResources.getTextFieldFillColor(
+                                          context),
+                                      hintText: getTranslated(
+                                          'enter_contact_person_name', context),
+                                      isShowBorder: false,
+                                      inputType: TextInputType.name,
+                                      controller: _contactPersonNameController,
+                                      focusNode: _nameNode,
+                                      nextFocus: _numberNode,
+                                      inputAction: TextInputAction.next,
+                                      capitalization: TextCapitalization.words,
+                                    ),
+                                    SizedBox(height: 20.h),
+
+                                    // for Contact Person Number
+                                    Text(
+                                      getTranslated('contact_person_number', context),
+                                      style: AppTextStyles.h7(context).copyWith(
+                                        color: ColorResources.getHintColor(context),
+                                      ),
+                                    ),
+                                    SizedBox(height: 8.h),
+                                    CustomTextField(fill: true,
+                                      fillColor: ColorResources.getTextFieldFillColor(
+                                          context),
+                                      hintText: getTranslated(
+                                          'enter_contact_person_number', context),
+                                      isShowBorder: false,
+                                      inputType: TextInputType.phone,
+                                      inputAction: TextInputAction.done,
+                                      focusNode: _numberNode,
+                                      controller: _contactPersonNumberController,
+                                    ),
+                                    SizedBox(height: 20.h),
+
+                                    SizedBox(
+                                      height: Dimensions.PADDING_SIZE_DEFAULT,
+                                    )
+                                  ],
                                 ),
                               ),
-
-                              // for Address Field
-                              Text(
-                                getTranslated('address_line_01', context),
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyMedium!
-                                    .copyWith(
-                                        color: ColorResources.getHintColor(
-                                            context)),
-                              ),
-                              SizedBox(height: 8),
-                              CustomTextField(fillColor: ColorResources.getTextFieldFillColor(context),
-                                hintText:
-                                    getTranslated('address_line_02', context),
-                                isShowBorder: false,
-                                inputType: TextInputType.streetAddress,
-                                inputAction: TextInputAction.next,
-                                focusNode: _addressNode,
-                                nextFocus: _nameNode,
-                                controller: _locationController,
-                              ),
-                              SizedBox(height: Dimensions.PADDING_SIZE_LARGE),
-
-                              // for Contact Person Name
-                              Text(
-                                getTranslated('contact_person_name', context),
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyMedium!
-                                    .copyWith(
-                                        color: ColorResources.getHintColor(
-                                            context)),
-                              ),
-                              SizedBox(height: 8),
-                              CustomTextField(fillColor: ColorResources.getTextFieldFillColor(context),
-                                hintText: getTranslated(
-                                    'enter_contact_person_name', context),
-                                isShowBorder: false,
-                                inputType: TextInputType.name,
-                                controller: _contactPersonNameController,
-                                focusNode: _nameNode,
-                                nextFocus: _numberNode,
-                                inputAction: TextInputAction.next,
-                                capitalization: TextCapitalization.words,
-                              ),
-                              SizedBox(height: Dimensions.PADDING_SIZE_LARGE),
-
-                              // for Contact Person Number
-                              Text(
-                                getTranslated('contact_person_number', context),
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyMedium!
-                                    .copyWith(
-                                        color: ColorResources.getHintColor(
-                                            context)),
-                              ),
-                              SizedBox(height: 8),
-                              CustomTextField(fillColor: ColorResources.getTextFieldFillColor(context),
-                                hintText: getTranslated(
-                                    'enter_contact_person_number', context),
-                                isShowBorder: false,
-                                inputType: TextInputType.phone,
-                                inputAction: TextInputAction.done,
-                                focusNode: _numberNode,
-                                controller: _contactPersonNumberController,
-                              ),
-                              SizedBox(height: Dimensions.PADDING_SIZE_LARGE),
-
-                              SizedBox(
-                                height: Dimensions.PADDING_SIZE_DEFAULT,
-                              )
-                            ],
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ),
-                ),
-                locationProvider.addressStatusMessage != null
-                    ? Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          locationProvider.addressStatusMessage.length > 0
-                              ? CircleAvatar(
-                                  backgroundColor: Colors.green, radius: 5)
-                              : SizedBox.shrink(),
-                          SizedBox(width: 8),
-                          Expanded(
-                            child: Text(
-                              locationProvider.addressStatusMessage ?? "",
-                              style: TextStyle(
-                                  fontSize: Dimensions.FONT_SIZE_SMALL,
-                                  color: Colors.green,
-                                  height: 1),
+                      locationProvider.addressStatusMessage != null
+                          ? Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                locationProvider.addressStatusMessage.length > 0
+                                    ? CircleAvatar(
+                                        backgroundColor: Colors.green, radius: 5)
+                                    : SizedBox.shrink(),
+                                SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    locationProvider.addressStatusMessage ?? "",
+                                    style: AppTextStyles.h8(context).copyWith(
+                                      color: Colors.green,
+                                      height: 1,
+                                    ),
+                                  ),
+                                )
+                              ],
+                            )
+                          : Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                locationProvider.errorMessage.length > 0
+                                    ? CircleAvatar(
+                                        backgroundColor:
+                                            ColorResources.getPrimaryColor(context),
+                                        radius: 5)
+                                    : SizedBox.shrink(),
+                                SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    locationProvider.errorMessage ?? "",
+                                    style: AppTextStyles.h8(context).copyWith(
+                                      color: Colors.green,
+                                      height: 1,
+                                    ),
+                                  ),
+                                )
+                              ],
                             ),
-                          )
-                        ],
-                      )
-                    : Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          locationProvider.errorMessage.length > 0
-                              ? CircleAvatar(
-                                  backgroundColor:
-                                      ColorResources.getPrimaryColor(context),
-                                  radius: 5)
-                              : SizedBox.shrink(),
-                          SizedBox(width: 8),
-                          Expanded(
-                            child: Text(
-                              locationProvider.errorMessage ?? "",
-                              style: TextStyle(
-                                  fontSize: Dimensions.FONT_SIZE_SMALL,
-                                  color:
-                                      ColorResources.getPrimaryColor(context),
-                                  height: 1),
-                            ),
-                          )
-                        ],
-                      ),
-                SizedBox(height: Dimensions.PADDING_SIZE_DEFAULT),
-                Container(
-                  height: 50.0,
-                  width: MediaQuery.of(context).size.width,
-                  child: !locationProvider.isLoading
-                      ? CustomButton(
-                          text: widget.isEnableUpdate!
-                              ? getTranslated('update_address', context)
-                              : getTranslated('save_location', context),
-                          onTap: locationProvider.loading
-                              ? null
-                              : () {
-                                  FocusScope.of(context).unfocus();
-                                  AddressModel addressModel = AddressModel(
-                                    addressType: locationProvider
-                                            .getAllAddressType[
-                                        locationProvider.selectAddressIndex],
-                                    contactPersonName:
-                                        _contactPersonNameController.text ?? '',
-                                    contactPersonNumber:
-                                        _contactPersonNumberController.text ??
-                                            '',
-                                    address: _locationController.text ?? '',
-                                    latitude: widget.isEnableUpdate!
-                                        ? locationProvider.position.latitude
-                                                .toString() ??
-                                            widget.address!.latitude
-                                        : locationProvider.position.latitude
-                                                .toString() ??
-                                            '',
-                                    longitude: locationProvider
-                                            .position.longitude
-                                            .toString() ??
-                                        '',
-                                  );
-                                  if (widget.isEnableUpdate!) {
-                                    addressModel.id = widget.address!.id;
-                                    addressModel.userId =
-                                        widget.address!.userId;
-                                    addressModel.method = 'put';
-                                    locationProvider
-                                        .updateAddress(context,
-                                            addressModel: addressModel,
-                                            addressId: addressModel.id)
-                                        .then((value) {});
-                                  } else {
-                                    locationProvider
-                                        .addAddress(addressModel)
-                                        .then((value) {
-                                      if (value.isSuccess) {
-                                        if (widget.fromCheckout!) {
-                                          Provider.of<LocationProvider>(context,
-                                                  listen: false)
-                                              .initAddressList(context);
-
-                                          FocusScope.of(context).unfocus();
+                      SizedBox(height: Dimensions.PADDING_SIZE_DEFAULT),
+                      Container(
+                        height: 50.0,
+                        width: MediaQuery.of(context).size.width,
+                        child: !locationProvider.isLoading
+                            ? CustomButton(
+                                text: widget.isEnableUpdate!
+                                    ? getTranslated('update_address', context)
+                                    : getTranslated('save_location', context),
+                                onTap: locationProvider.loading
+                                    ? null
+                                    : () {
+                                        FocusScope.of(context).unfocus();
+                                        AddressModel addressModel = AddressModel(
+                                          addressType: locationProvider
+                                                  .getAllAddressType[
+                                              locationProvider.selectAddressIndex],
+                                          contactPersonName:
+                                              _contactPersonNameController.text ?? '',
+                                          contactPersonNumber:
+                                              _contactPersonNumberController.text ??
+                                                  '',
+                                          address: _locationController.text ?? '',
+                                          latitude: widget.isEnableUpdate!
+                                              ? locationProvider.position.latitude
+                                                      .toString() ??
+                                                  widget.address!.latitude
+                                              : locationProvider.position.latitude
+                                                      .toString() ??
+                                                  '',
+                                          longitude: locationProvider
+                                                  .position.longitude
+                                                  .toString() ??
+                                              '',
+                                        );
+                                        if (widget.isEnableUpdate!) {
+                                          addressModel.id = widget.address!.id;
+                                          addressModel.userId =
+                                              widget.address!.userId;
+                                          addressModel.method = 'put';
+                                          locationProvider
+                                              .updateAddress(context,
+                                                  addressModel: addressModel,
+                                                  addressId: addressModel.id)
+                                              .then((value) {});
                                         } else {
-                                          widget.fromSplash == true
-                                              ? Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                      builder: (BuildContext
-                                                              context) =>
-                                                          DashboardScreen(
-                                                              pageIndex: 0)))
-                                              : Navigator.pop(context);
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(SnackBar(
-                                                  content: Text(value.message),
-                                                  backgroundColor:
-                                                      Colors.green));
+                                          locationProvider
+                                              .addAddress(addressModel)
+                                              .then((value) {
+                                            if (value.isSuccess) {
+                                              if (widget.fromCheckout!) {
+                                                Provider.of<LocationProvider>(context,
+                                                        listen: false)
+                                                    .initAddressList(context);
+
+                                                FocusScope.of(context).unfocus();
+                                              } else {
+                                                widget.fromSplash == true
+                                                    ? Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(
+                                                            builder: (BuildContext
+                                                                    context) =>
+                                                                DashboardScreen(
+                                                                    pageIndex: 0)))
+                                                    : Navigator.pop(context);
+
+                                                showCustomSnackBar(
+                                                    value.message, context,
+                                                    isError: false);
+                                              }
+                                            } else {
+                                              showCustomSnackBar(
+                                                  value.message, context);
+                                            }
+                                          });
                                         }
-                                      } else {
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(SnackBar(
-                                                content: Text(value.message),
-                                                backgroundColor: Colors.red));
-                                      }
-                                    });
-                                  }
-                                },
-                        )
-                      : CustomCircularIndicator(),
-                )
-              ],
-            );
-          },
-        ),
+                                      },
+                              )
+                            : CustomCircularIndicator(),
+                      )
+                    ],
+                  );
+                },
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

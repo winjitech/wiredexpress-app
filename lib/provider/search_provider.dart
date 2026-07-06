@@ -23,13 +23,11 @@ class SearchProvider with ChangeNotifier {
   CategoryModel? get selectedCategory => _selectedCategory;
 
   List<ProductModel>? _searchProductList;
-  List<ProductModel>? _filterProductList;
   bool _isClear = true;
   String _searchText = '';
 
   List<ProductModel>? get searchProductList => _searchProductList;
 
-  List<ProductModel>? get filterProductList => _filterProductList;
 
   bool get isClear => _isClear;
 
@@ -63,7 +61,6 @@ class SearchProvider with ChangeNotifier {
     _searchText = query;
     _isClear = false;
     _searchProductList = null;
-    _filterProductList = null;
     _rating = -1;
     notifyListeners();
 
@@ -77,8 +74,6 @@ class SearchProvider with ChangeNotifier {
         _searchProductList = [];
         _searchProductList!
             .addAll(ProductBody.fromJson(apiResponse.response!.data).products!);
-        // _filterProductList = [];
-        // _filterProductList.addAll(ProductBody.fromJson(apiResponse.response!.data).products);
       }
       notifyListeners();
     } else {
@@ -91,19 +86,6 @@ class SearchProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void filteredProducts(String type, String problem, String serviceId,
-      BuildContext? context) async {
-    ApiResponse apiResponse =
-        await searchRepo!.filteredProducts(type, problem, serviceId);
-    if (apiResponse.response != null &&
-        apiResponse.response!.statusCode == 200) {
-      _filterProductList = [];
-      _filterProductList!
-          .addAll(ProductBody.fromJson(apiResponse.response!.data).products!);
-    } else {
-      //  ApiChecker.checkApi(context, apiResponse);
-    }
-  }
 
   Future<void> sendSearch(String search) async {
     ApiResponse apiResponse = await searchRepo!.sendSearch(search);

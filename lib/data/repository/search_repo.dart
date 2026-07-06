@@ -25,20 +25,6 @@ class SearchRepo {
     }
   }
 
-  Future<ApiResponse> filteredProducts(
-      String type, String problem, String serviceId) async {
-    try {
-      print('parameters----------- ${type + ' ' + problem + ' ' + serviceId}');
-      final response = await dioClient!.get(
-          '${AppConstants.filteredProductsUrl}?type=$type&problem=$problem');
-      //   final response = await dioClient!.post(AppConstants.filteredProductsUrl, data:{'type':type, 'problem': problem, 'service_id':serviceId});
-      print('heeeey----------- ${type + ' ' + problem + ' ' + serviceId}');
-      return ApiResponse.withSuccess(response);
-    } catch (e) {
-      print('error here ----------- ${(e)}');
-      return ApiResponse.withError(ApiErrorHandler.getMessage(e));
-    }
-  }
 
   Future<ApiResponse> sendSearch(String search) async {
     try {

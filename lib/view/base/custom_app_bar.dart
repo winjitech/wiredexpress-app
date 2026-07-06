@@ -1,62 +1,53 @@
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter/material.dart';
-import 'package:wired_express/utill/Images.dart';
+import 'package:wired_express/localization/language_constrants.dart';
 import 'package:wired_express/utill/color_resources.dart';
-import 'package:wired_express/utill/dimensions.dart';
 import 'package:wired_express/utill/styles.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
-import 'package:wired_express/view/screens/categories/categories_screen.dart';
 
-class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
+class CustomAppBar extends StatelessWidget {
   final String? title;
-  final bool? isBackButtonExist;
+  final bool showBackButton;
+  final Color? color;
   final VoidCallback? onBackPressed;
-  final bool? filterButton;
-  CustomAppBar(
-      {@required this.title,
-      this.isBackButtonExist = true,
-      this.onBackPressed,
-      this.filterButton = false});
+
+  CustomAppBar({
+    super.key,
+    required this.title,
+    required this.showBackButton,
+    this.color,
+    this.onBackPressed,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return AppBar(
-      title: Text(title!,
-          style: rubikMedium.copyWith(
-              fontSize: 18,
-              color: ColorResources.getTextColor(context),
-              fontWeight: FontWeight.w600)),
-      centerTitle: true,
-      leading: isBackButtonExist!
-          ? IconButton(
-              icon: Icon(Icons.arrow_back_ios, size: 18),
-              color: ColorResources.getTextColor(context),
-              onPressed: () => onBackPressed != null
-                  ? onBackPressed!()
-                  : Navigator.pop(context),
-            )
-          : SizedBox(),
-      actions: [
-        filterButton == true
-            ? IconButton(
-                onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (BuildContext context) =>
-                              CategoriesScreen()));
-                },
-                icon: Image.asset(
-                  Images.filterIcon,
-                  height: 80,
-                  width: 80,
-                ))
-            : SizedBox()
-      ],
-      backgroundColor: ColorResources.getScaffoldBackgroundColor(context),
-      elevation: 0,
+    return SafeArea(
+      bottom: false,
+      child: Container(
+        padding: EdgeInsets.symmetric(vertical: 10.h),
+        child: Row(
+          children: [
+            if (showBackButton == true)
+              IconButton(
+                onPressed:  onBackPressed ?? (){Navigator.pop(context);},
+                icon: Icon(
+                  Icons.arrow_back_ios_new_rounded,
+                  size: 18.sp,
+                  color: color ?? ColorResources.getTextColor(context),
+                ),
+              ),
+            SizedBox(width: (showBackButton == true ? 5 : 25).w),
+            Expanded(
+              child: Text(
+                getTranslated(title!, context),
+                style: AppTextStyles.h3(context).copyWith(
+                  color: color ?? ColorResources.getTextColor(context),
+                ),
+              ),
+            ),
+            SizedBox(width: 10.w),
+          ],
+        ),
+      ),
     );
   }
-
-  @override
-  Size get preferredSize => Size(double.maxFinite, kIsWeb ? 80 : 70);
 }

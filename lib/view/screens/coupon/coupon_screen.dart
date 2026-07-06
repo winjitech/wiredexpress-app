@@ -1,207 +1,240 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:provider/provider.dart';
 import 'package:wired_express/data/helper/helpers.dart';
+
+import 'package:wired_express/data/model/response/coupon_model.dart';
 import 'package:wired_express/helper/date_converter.dart';
-import 'package:wired_express/helper/responsive_helper.dart';
 import 'package:wired_express/localization/language_constrants.dart';
-import 'package:wired_express/provider/auth_provider.dart';
 import 'package:wired_express/provider/coupon_provider.dart';
+import 'package:wired_express/provider/splash_provider.dart';
+import 'package:wired_express/utill/app_constants.dart';
 import 'package:wired_express/utill/color_resources.dart';
-import 'package:wired_express/utill/dimensions.dart';
-import 'package:wired_express/utill/images.dart';
 import 'package:wired_express/utill/styles.dart';
 import 'package:wired_express/view/base/circular_indicator_widget.dart';
 import 'package:wired_express/view/base/custom_app_bar.dart';
-import 'package:wired_express/view/base/main_app_bar.dart';
-import 'package:wired_express/view/base/no_data_screen.dart';
-import 'package:wired_express/view/base/not_logged_in_screen.dart';
-import 'package:provider/provider.dart';
+import 'package:wired_express/view/base/custom_snackbar.dart';
+import 'package:wired_express/view/base/no_data_found_view.dart';
 
-class CouponScreen extends StatelessWidget {
+class CouponScreen extends StatefulWidget {
+  const CouponScreen({Key? key}) : super(key: key);
+
+  @override
+  State<CouponScreen> createState() => _CouponScreenState();
+}
+
+class _CouponScreenState extends State<CouponScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<CouponProvider>().getCouponList(context);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    final bool _isLoggedIn =
-        Provider.of<CustomAuthProvider>(context, listen: false).isLoggedIn()!;
-    if (_isLoggedIn) {
-      Provider.of<CouponProvider>(context, listen: false)
-          .getCouponList(context);
-    }
-
     return Scaffold(
-      backgroundColor: ColorResources.getScaffoldBackgroundColor(context!),
-      appBar: CustomAppBar(title: getTranslated('coupon', context)),
-      body: _isLoggedIn
-          ? Consumer<CouponProvider>(
-              builder: (context, coupon, child) {
-                return coupon.couponListLoading != true
-                    ? coupon.couponList != null
-                        ? coupon.couponList!.length > 0
-                            ? RefreshIndicator(
-                                onRefresh: () async {
-                                  await Provider.of<CouponProvider>(context,
-                                          listen: false)
-                                      .getCouponList(context);
-                                },
-                  color: ColorResources.getCardColor(context),
-                  backgroundColor: ColorResources.getPrimaryColor(context),
-                                child: Scrollbar(
-                                  child: SingleChildScrollView(
-                                    child: Center(
-                                      child: SizedBox(
-                                        width:
-                                            MediaQuery.of(context).size.width,
-                                        child: ListView.builder(
-                                          itemCount: coupon.couponList!.length,
-                                          shrinkWrap: true,
-                                          physics:
-                                              const NeverScrollableScrollPhysics(),
-                                          padding: const EdgeInsets.all(
-                                              Dimensions.PADDING_SIZE_LARGE),
-                                          itemBuilder: (context, index) {
-                                            print(
-                                                'visibility ----- ${coupon.couponList![index].visibility}');
-                                            int _visibleCount = 0;
-                                            if (coupon.couponList![index]
-                                                    .visibility ==
-                                                0) {
-                                              _visibleCount++;
-                                            }
-                                            print(
-                                                'count ----- ${_visibleCount}');
-                                            return coupon.couponList![index]
-                                                        .visibility ==
-                                                    1
-                                                ? Padding(
-                                                    padding: const EdgeInsets
-                                                        .only(
-                                                        bottom: Dimensions
-                                                            .PADDING_SIZE_LARGE),
-                                                    child: GestureDetector(
-                                                      onTap: () {
-                                                        Clipboard.setData(
-                                                            ClipboardData(
-                                                                text: coupon
-                                                                    .couponList![
-                                                                        index]
-                                                                    .code!));
-                                                        ScaffoldMessenger.of(
-                                                                context)
-                                                            .showSnackBar(SnackBar(
-                                                                content: Text(
-                                                                    getTranslated(
-                                                                        'coupon_code_copied',
-                                                                        context)),
-                                                                backgroundColor:
-                                                                    Colors
-                                                                        .green));
-                                                      },
-                                                      child: Stack(children: [
-                                                        Image.asset(
-                                                            Images.coupon_bg,
-                                                            height: 100,
-                                                            width:
-                                                                MediaQuery.of(
-                                                                        context)
-                                                                    .size
-                                                                    .width,
-                                                            fit: BoxFit.cover,
-                                                            color: ColorResources
-                                                                .getCardColor(
-                                                                    context)),
-                                                        Container(
-                                                          height: 100,
-                                                          alignment:
-                                                              Alignment.center,
-                                                          child: Row(children: [
-                                                            const SizedBox(
-                                                                width: 50),
-                                                            Image.asset(
-                                                                Images
-                                                                    .percentage,
-                                                                height: 50,
-                                                                color: ColorResources
-                                                                    .getTextColor(
-                                                                        context),
-                                                                width: 50),
-                                                            Padding(
-                                                              padding: const EdgeInsets
-                                                                  .symmetric(
-                                                                  horizontal:
-                                                                      Dimensions
-                                                                          .PADDING_SIZE_LARGE,
-                                                                  vertical:
-                                                                      Dimensions
-                                                                          .PADDING_SIZE_SMALL),
-                                                              child: Image.asset(
-                                                                  Images.line,
-                                                                  color: ColorResources
-                                                                      .getTextColor(
-                                                                          context),
-                                                                  height: 100,
-                                                                  width: 5),
-                                                            ),
-                                                            Expanded(
-                                                              child: Column(
-                                                                  crossAxisAlignment:
-                                                                      CrossAxisAlignment
-                                                                          .start,
-                                                                  mainAxisAlignment:
-                                                                      MainAxisAlignment
-                                                                          .center,
-                                                                  children: [
-                                                                    SelectableText(
-                                                                      coupon
-                                                                          .couponList![
-                                                                              index]
-                                                                          .code!,
-                                                                      style: rubikRegular.copyWith(
-                                                                          color:
-                                                                              ColorResources.getTextColor(context)),
-                                                                    ),
-                                                                    const SizedBox(
-                                                                        height:
-                                                                            Dimensions.PADDING_SIZE_EXTRA_SMALL),
-                                                                    Text(
-                                                                      '${Helpers.formatTextWithNum(coupon.couponList![index].discount.toString())}${coupon.couponList![index].discountType == 'percent' ? '%' : getTranslated('description', context) == "Description" ? 'LE' : 'ج.م'} off',
-                                                                      style: rubikMedium.copyWith(
-                                                                          color: ColorResources.getTextColor(
-                                                                              context),
-                                                                          fontSize:
-                                                                              Dimensions.FONT_SIZE_EXTRA_LARGE),
-                                                                    ),
-                                                                    const SizedBox(
-                                                                        height:
-                                                                            Dimensions.PADDING_SIZE_EXTRA_SMALL),
-                                                                    Text(
-                                                                      '${getTranslated('valid_until', context)} ${DateConverter.isoStringToLocalDateOnly(coupon.couponList![index].expireDate!)}',
-                                                                      style: rubikRegular.copyWith(
-                                                                          color: ColorResources.getTextColor(
-                                                                              context),
-                                                                          fontSize:
-                                                                              Dimensions.FONT_SIZE_SMALL),
-                                                                    ),
-                                                                  ]),
-                                                            ),
-                                                          ]),
-                                                        ),
-                                                      ]),
-                                                    ),
-                                                  )
-                                                : const SizedBox();
-                                          },
-                                        ),
+      backgroundColor: ColorResources.getScaffoldBackgroundColor(context),
+      body: Column(
+        children: [
+          CustomAppBar(title: 'coupons', showBackButton: true),
+          Expanded(
+            child: Consumer2<CouponProvider, SplashProvider>(
+              builder: (context, couponProvider, splashProvider, _) {
+                String currency =
+                    splashProvider.configModel!.currencySymbol ?? '\$';
+
+                List<CouponModel>? coupons = couponProvider.couponList;
+
+                if (coupons == null || couponProvider.couponListLoading!) {
+                  return CustomCircularIndicator();
+                }
+
+                if (coupons.isEmpty) {
+                  return const NoDataFoundView(
+                    text: 'no_any_coupons_yet',
+                    showIcon: false,
+                  );
+                }
+
+                return RefreshIndicator(
+                  onRefresh: () async {
+                    await context.read<CouponProvider>().getCouponList(context);
+                  },
+                  child: ListView.builder(
+                    padding: EdgeInsets.all(16.r),
+                    itemCount: coupons.length,
+                    itemBuilder: (context, index) {
+                      final coupon = coupons[index];
+
+                      if (coupon.visibility != 1) {
+                        return SizedBox.shrink();
+                      }
+
+                      return Padding(
+                        padding: EdgeInsets.only(bottom: 16.h),
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(18.r),
+                          onTap: () {
+                            Clipboard.setData(
+                                ClipboardData(text: coupon.code ?? ''));
+                            showCustomSnackBar(
+                                getTranslated('coupon_code_copied', context),
+                                context,
+                                isError: false);
+                          },
+                          child: Stack(
+                            children: [
+                              /// Main Ticket
+                              Container(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 25.w, vertical: 10.h),
+                                decoration: BoxDecoration(
+                                  color:
+                                      ColorResources.getPrimaryColor(context),
+                                  borderRadius: BorderRadius.circular(18.r),
+                                ),
+                                child: Row(
+                                  children: [
+                                    /// percent icon
+                                    Icon(
+                                      Icons.percent_rounded,
+                                      size: 34.sp,
+                                      color: Colors.white.withOpacity(.6),
+                                    ),
+
+                                    SizedBox(width: 18.w),
+
+                                    /// dashed line
+                                    const DashedLine(),
+
+                                    SizedBox(width: 18.w),
+
+                                    /// text section
+                                    Expanded(
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            coupon.code ?? '-',
+                                            style: AppTextStyles.h6(context)
+                                                .copyWith(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                          SizedBox(height: 4.h),
+                                          Text(
+                                            coupon.discountType == 'percent'
+                                                ? '${coupon.discount}% ${getTranslated('off', context)}'
+                                                : '${currency}${Helpers.formatTextWithNum(coupon.discount!.toString())} ${getTranslated('off', context)}',
+                                            style: AppTextStyles.h4(context)
+                                                .copyWith(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          SizedBox(height: 4.h),
+                                          Text(
+                                            DateConverter
+                                                .convertToDesiredFormat(
+                                              context,
+                                              coupon.expireDate!,
+                                            ),
+                                            style: AppTextStyles.h8(context)
+                                                .copyWith(
+                                              color:
+                                                  Colors.white.withOpacity(.6),
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ),
-                                  ),
+
+                                    /// copy icon
+                                    Icon(
+                                      Icons.copy_rounded,
+                                      size: 22.sp,
+                                      color: Colors.white.withOpacity(0.6),
+                                    ),
+                                  ],
                                 ),
-                              )
-                            : NoDataScreen()
-                        : CustomCircularIndicator()
-                    : CustomCircularIndicator();
+                              ),
+
+                              /// left cut
+                              Positioned(
+                                left: -12.w,
+                                top: 0,
+                                bottom: 0,
+                                child: const TicketCut(),
+                              ),
+
+                              /// right cut
+                              Positioned(
+                                right: -12.w,
+                                top: 0,
+                                bottom: 0,
+                                child: const TicketCut(),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                );
               },
-            )
-          : NotLoggedInScreen(),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class DashedLine extends StatelessWidget {
+  const DashedLine({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 70.h,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: List.generate(
+          9,
+          (index) => Container(
+            width: 2.w,
+            height: 6.h,
+            color: ColorResources.getBorderColor(context),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// TICKET CUT
+///////////////////////////////////////////////////////////////////////////////
+
+class TicketCut extends StatelessWidget {
+  const TicketCut({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 24.w,
+      height: 24.w,
+      decoration: BoxDecoration(
+        color: ColorResources.getScaffoldBackgroundColor(context),
+        shape: BoxShape.circle,
+      ),
     );
   }
 }

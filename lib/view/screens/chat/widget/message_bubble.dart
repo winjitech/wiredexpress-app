@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wired_express/data/model/response/chat_model.dart';
 import 'package:wired_express/helper/date_converter.dart';
 import 'package:wired_express/provider/splash_provider.dart';
@@ -18,15 +19,15 @@ class MessageBubble extends StatelessWidget {
   Widget build(BuildContext context) {
     bool isMe = chat!.reply == null;
 
-    String dateTime = DateConverter.isoStringToLocalTimeOnly(chat!.createdAt!);
-    String _date = DateConverter.isoStringToLocalDateOnly(chat!.createdAt!) ==
-            DateConverter.estimatedDate(DateTime.now())
+    String dateTime = DateConverter.isoStringToLocalTimeOnly(context , chat!.createdAt!);
+    String _date = DateConverter.isoStringToLocalDateOnly(context , chat!.createdAt!) ==
+            DateConverter.estimatedDate(context ,DateTime.now())
         ? 'Today'
-        : DateConverter.isoStringToLocalDateOnly(chat!.createdAt!) ==
-                DateConverter.estimatedDate(
+        : DateConverter.isoStringToLocalDateOnly(context , chat!.createdAt!) ==
+                DateConverter.estimatedDate(context ,
                     DateTime.now().subtract(Duration(days: 1)))
             ? 'Yesterday'
-            : DateConverter.isoStringToLocalDateOnly(chat!.createdAt!);
+            : DateConverter.isoStringToLocalDateOnly(context , chat!.createdAt!);
 
     return Column(
       crossAxisAlignment:
@@ -34,13 +35,16 @@ class MessageBubble extends StatelessWidget {
       children: [
         addDate!
             ? Padding(
-                padding: EdgeInsets.all(Dimensions.PADDING_SIZE_SMALL),
+                padding: EdgeInsets.all(10.r),
                 child: Align(
                     alignment: Alignment.center,
-                    child: Text(_date,
-                        style: rubikMedium.copyWith(
-                            color: ColorResources.getTextColor(context)),
-                        textAlign: TextAlign.center)),
+                    child: Text(
+                      _date,
+                      textAlign: TextAlign.center,
+                      style: AppTextStyles.h6(context).copyWith(
+                        color: ColorResources.getTextColor(context),
+                      ),
+                    ),),
               )
             : SizedBox(),
         Padding(
@@ -78,14 +82,17 @@ class MessageBubble extends StatelessWidget {
                         children: [
                           Padding(
                             padding: EdgeInsets.symmetric(
-                                horizontal: Dimensions.PADDING_SIZE_LARGE,
-                                vertical: Dimensions.PADDING_SIZE_SMALL),
-                            child: Text(isMe ? chat!.message! : chat!.reply!,
-                                style: rubikRegular.copyWith(
-                                    color: isMe
-                                        ? ColorResources
-                                            .getScaffoldBackgroundColor(context)
-                                        : ColorResources.getTextColor(context))),
+                              horizontal: Dimensions.PADDING_SIZE_LARGE,
+                              vertical: Dimensions.PADDING_SIZE_SMALL,
+                            ),
+                            child: Text(
+                              isMe ? chat!.message! : chat!.reply!,
+                              style: AppTextStyles.h7(context).copyWith(
+                                color: isMe
+                                    ? ColorResources.getScaffoldBackgroundColor(context)
+                                    : ColorResources.getTextColor(context),
+                              ),
+                            ),
                           ),
                           chat!.image != null
                               ? ClipRRect(
@@ -110,10 +117,12 @@ class MessageBubble extends StatelessWidget {
                 ],
               ),
               SizedBox(height: 1),
-              Text(dateTime,
-                  style: rubikRegular.copyWith(
-                      fontSize: 8,
-                      color: ColorResources.getTextColor(context))),
+              Text(
+                dateTime,
+                style: AppTextStyles.h9(context).copyWith(
+                  color: ColorResources.getTextColor(context),
+                ),
+              ),
             ],
           ),
         ),

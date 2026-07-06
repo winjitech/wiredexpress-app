@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:wired_express/data/model/response/cart_model.dart';
 import 'package:wired_express/data/model/response/product_model.dart';
@@ -10,6 +11,7 @@ import 'package:wired_express/localization/language_constrants.dart';
 import 'package:wired_express/provider/cart_provider.dart';
 import 'package:wired_express/provider/product_provider.dart';
 import 'package:wired_express/utill/color_resources.dart';
+import 'package:wired_express/utill/styles.dart';
 import 'package:wired_express/view/base/circular_indicator_widget.dart';
 import 'package:wired_express/view/base/custom_button.dart';
 import 'package:wired_express/view/base/custom_snackbar.dart';
@@ -64,7 +66,7 @@ class _CartProductDetailsScreenState extends State<CartProductDetailsScreen> {
                 children: [
                   Expanded(child: ProductDetailsBodyView(product: product)),
                   Container(
-                    padding: EdgeInsets.all(15),
+                    padding: EdgeInsets.all(15.r),
                     color: ColorResources.getScaffoldBackgroundColor(context),
                     child: Column(
                       children: [
@@ -97,7 +99,7 @@ class _CartProductDetailsScreenState extends State<CartProductDetailsScreen> {
                                     });
                                   },
                                 ),
-                                SizedBox(height: 15),
+                                SizedBox(height: 15.h),
                                 MaterialButton(
                                     onPressed: () {
                                       cartProvider
@@ -122,12 +124,15 @@ class _CartProductDetailsScreenState extends State<CartProductDetailsScreen> {
                                     minWidth: MediaQuery.of(context).size.width,
                                     height: 50,
                                     shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(40),
+                                        borderRadius: BorderRadius.circular(40.r),
                                         side: BorderSide(color: Colors.red)),
                                     child: Text(
-                                        getTranslated(
-                                            'delete_from_cart', context),
-                                        style: TextStyle(color: Colors.red))),
+                                      getTranslated(
+                                          'delete_from_cart', context),
+                                      style: AppTextStyles.h7(context).copyWith(
+                                        color: Colors.red,
+                                      ),
+                                    )),
                               ])
                             : CustomCircularIndicator(),
                       ],

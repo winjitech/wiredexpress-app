@@ -8,15 +8,17 @@ class AppConstants {
   // static const String baseUrl = 'https://staging.wiredexpress01.com';
 
   static const String baseUrl = 'https://wiredexpress01.com';
-  static const String categoryUrl = '/api/v1/categories';
-  static const String categoryFeaturedUrl = '/api/v1/categories/featured';
+
   static const String bannerUrl = '/api/v1/banners';
 
   static const String electriciansUrl = '/api/v1/nearby-electricians';
 
-  static const String popularProductUrl = '/api3/v1/products/latest';
-  static const String productsListUrl = '/api/v1/products/category';
-  static const String categoryProductUrl = '/api/v1/categories/products/';
+
+  static const String categoryUrl = '/api/v1/category/all';
+  static const String categoryProductUrl = '/api/v1/category/products-by-category';
+  static const String subCategoriesUrl = '/api/v1/category/sub';
+
+
   static const String configUrl = '/api/v1/config';
   static const String trackUrl = '/api/v1/customer/order/track';
   static const String messageUrl = '/api/v1/customer/message/get';
@@ -54,6 +56,7 @@ class AppConstants {
   static const String notificationUrl = '/api/v1/notifications';
   static const String updateProfileUrl = '/api/v1/customer/update-profile';
 
+  static const String featuredProductsUrl = '/api/v1/products/featured';
 
   static const String searchUrl = '/api/v1/products/search';
   static const String sendSearchUrl = '/api/v1/customer/search';
@@ -63,7 +66,6 @@ class AppConstants {
   static const String deliveryManReviewUrl = '/api/v1/delivery-man/reviews/submit';
   static const String updateVersionUrl = '/api/v1/customer/update-version';
   static const String sendImageUrl = '/api/v1/customer/message/send-image';
-  static const String filteredProductsUrl = '/api/v1/products/filtered-products';
   static const String checkPasswordUrl = '/api/v1/customer/check-password';
   static const String deleteAccountUrl = '/api/v1/customer/delete-account';
   static const String cartListIdsUrl = '/api/v1/customer/cart/product-ids';
@@ -72,6 +74,9 @@ class AppConstants {
   static const String removeFromCartUrl = '/api/v1/customer/cart/remove';
   static const String apiKey = 'AIzaSyDittP8hJ4T6bhdHQv601p0RVlYHN-D_hc';
 
+  static const String saveContractorRequestUrl = '/api/v1/customer/contractor-request/save';
+  static const String contractorRequestListUrl = '/api/v1/customer/contractor-request/list';
+  static const String cancelContractorRequestUrl = '/api/v1/customer/contractor-request/cancel';
 
   /// subscription
   static const String getSubscriptionPlansUrl = '/api/v1/customer/subscription/subscription-plans';

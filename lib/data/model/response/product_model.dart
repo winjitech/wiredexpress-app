@@ -77,30 +77,33 @@ class ProductModel {
   // MoqSettingModel? _moqSetting;
   List<ProductPlanDiscountModel>? _productPlanDiscount;
   int? _minimumOrderQuantity;
-  ProductModel(
-      {int? id,
-      String? name,
-      String? description,
-      String? image,
-      double? price,
-      List<TiredPricingModel>? tiredPricing,
-      double? tax,
-      String? availableTimeStarts,
-      String? availableTimeEnds,
-      int? status,
-      String? createdAt,
-      String? updatedAt,
-      double? discount,
-      String? discountType,
-      String? taxType,
-      int? setMenu,
-      List<Rating>? rating,
-      String? matchedTag,
-      String? availability,
-      // MoqSettingModel? moqSetting,
-      int? isEarlyProduct,
-      List<ProductPlanDiscountModel>? productPlanDiscount,
-      int? minimumOrderQuantity}) {
+  int? _isService;
+  ProductModel({
+    int? id,
+    String? name,
+    String? description,
+    String? image,
+    double? price,
+    List<TiredPricingModel>? tiredPricing,
+    double? tax,
+    String? availableTimeStarts,
+    String? availableTimeEnds,
+    int? status,
+    String? createdAt,
+    String? updatedAt,
+    double? discount,
+    String? discountType,
+    String? taxType,
+    int? setMenu,
+    List<Rating>? rating,
+    String? matchedTag,
+    String? availability,
+    // MoqSettingModel? moqSetting,
+    int? isEarlyProduct,
+    List<ProductPlanDiscountModel>? productPlanDiscount,
+    int? minimumOrderQuantity,
+    int? isService,
+  }) {
     this._id = id;
     this._name = name;
     this._description = description;
@@ -124,6 +127,7 @@ class ProductModel {
     this._productPlanDiscount = productPlanDiscount;
     this._isEarlyProduct = isEarlyProduct;
     this._minimumOrderQuantity = minimumOrderQuantity;
+    this._isService = isService;
   }
 
   int? get id => _id;
@@ -150,6 +154,7 @@ class ProductModel {
       _productPlanDiscount;
   int? get isEarlyProduct => _isEarlyProduct;
   int? get minimumOrderQuantity => _minimumOrderQuantity;
+  int? get isService => _isService;
   ProductModel.fromJson(Map<String?, dynamic> json) {
     _id = json['id'];
     _name = json['name'];
@@ -197,6 +202,7 @@ class ProductModel {
     //     ? MoqSettingModel.fromJson(json['moq_setting'])
     //     : null;
     _minimumOrderQuantity = json['minimum_order_quantity'];
+    _isService = json['is_service'];
   }
 
   Map<String?, dynamic> toJson() {
@@ -238,6 +244,7 @@ class ProductModel {
     //   data['moq_setting'] = this._moqSetting!.toJson();
     // }
     data['minimum_order_quantity'] = this._minimumOrderQuantity;
+    data['is_service'] = this._isService;
     return data;
   }
 }

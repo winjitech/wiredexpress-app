@@ -1,9 +1,11 @@
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wired_express/data/model/response/language_model.dart';
 import 'package:wired_express/localization/language_constrants.dart';
 import 'package:wired_express/provider/language_provider.dart';
 import 'package:wired_express/provider/localization_provider.dart';
 import 'package:wired_express/utill/app_constants.dart';
 import 'package:wired_express/utill/color_resources.dart';
+import 'package:wired_express/utill/styles.dart';
 
 import 'package:wired_express/view/base/custom_button.dart';
 import 'package:wired_express/view/base/custom_snackbar.dart';
@@ -30,18 +32,17 @@ class ChooseLanguageScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 30),
+            SizedBox(height: 30.h),
             Padding(
-              padding: const EdgeInsets.only(left: 5, top: 5),
+              padding: EdgeInsets.only(left: 5, top: 5),
               child: Text(
                 getTranslated('choose_the_language', context),
-                style: TextStyle(
-                    color: ColorResources.getTextColor(context),
-                    fontWeight: FontWeight.w600,
-                    fontSize: 18),
+                style: AppTextStyles.h3(context).copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: 20.h),
             Consumer<LanguageProvider>(
                 builder: (context, languageProvider, child) => Expanded(
                     child: ListView.builder(
@@ -54,8 +55,8 @@ class ChooseLanguageScreen extends StatelessWidget {
                             index: index)))),
             Consumer<LanguageProvider>(
                 builder: (context, languageProvider, child) => Padding(
-                      padding: const EdgeInsets.only(
-                          left: 15, right: 15, bottom: 15),
+                      padding: EdgeInsets.only(
+                          left: 15.w, right: 15.w, bottom: 15.h),
                       child: CustomButton(
                         text: getTranslated('save', context),
                         onTap: () {
@@ -102,7 +103,7 @@ class ChooseLanguageScreen extends StatelessWidget {
     return GestureDetector(
       onTap: () => languageProvider.changeSelectIndex(index),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
+        padding: EdgeInsets.symmetric(horizontal: 20.w),
         decoration: BoxDecoration(
           color: languageProvider.selectIndex == index
               ? ColorResources.getTextColor(context).withOpacity(0.1)
@@ -120,7 +121,7 @@ class ChooseLanguageScreen extends StatelessWidget {
                       : Colors.transparent)),
         ),
         child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 15),
+          padding: EdgeInsets.symmetric(vertical: 15.h),
           decoration: BoxDecoration(
             border: Border(
                 bottom: BorderSide(
@@ -138,13 +139,11 @@ class ChooseLanguageScreen extends StatelessWidget {
               Row(
                 children: [
                   Image.asset(languageModel.imageUrl!, width: 34, height: 34),
-                  const SizedBox(width: 30),
-                  Text(languageModel.languageName!,
-                      style:
-                          Theme.of(context).textTheme.displayMedium!.copyWith(
-                                fontSize: 17,
-                                color: ColorResources.getTextColor(context),
-                              )),
+                  SizedBox(width: 30.w),
+                  Text(
+                    languageModel.languageName!,
+                    style: AppTextStyles.h4(context, fontSize: 17.sp),
+                  ),
                 ],
               ),
               languageProvider.selectIndex == index
@@ -155,7 +154,7 @@ class ChooseLanguageScreen extends StatelessWidget {
                       color:
                           ColorResources.getTextColor(context).withOpacity(0.4),
                     )
-                  : const SizedBox.shrink()
+                  : SizedBox.shrink()
             ],
           ),
         ),

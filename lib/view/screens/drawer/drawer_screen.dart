@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:wired_express/data/model/response/address_model.dart';
@@ -12,9 +13,9 @@ import 'package:wired_express/provider/place_order_provider.dart';
 import 'package:wired_express/provider/profile_provider.dart';
 import 'package:wired_express/provider/splash_provider.dart';
 import 'package:wired_express/utill/color_resources.dart';
+import 'package:wired_express/utill/styles.dart';
 import 'package:wired_express/view/base/custom_snackbar.dart';
 import 'package:wired_express/view/screens/auth/login_screen.dart';
-import 'package:wired_express/view/screens/categories/categories_screen.dart';
 import 'package:wired_express/view/screens/dashboard/dashboard_screen.dart';
 import 'package:wired_express/view/screens/menu/widget/sign_out_confirmation_dialog.dart';
 import 'package:wired_express/view/screens/support/support_screen.dart';
@@ -54,12 +55,12 @@ class _DrawerScreenState extends State<DrawerScreen> {
       }
 
       return Padding(
-          padding: const EdgeInsets.all(30),
+          padding:  EdgeInsets.all(30.r),
           child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 45),
+                 SizedBox(height:10 .h),
                 if (_isLoggedIn)
                   Column(
                     mainAxisAlignment: MainAxisAlignment.start,
@@ -67,13 +68,13 @@ class _DrawerScreenState extends State<DrawerScreen> {
                     children: [
                       profileProvider.userInfoModel != null &&
                               profileProvider.userInfoModel!.image == null
-                          ? const SizedBox(
+                          ? SizedBox(
                               height: 70,
                               width: 70,
                             )
                           : Container(
                               decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(50),
+                                  borderRadius: BorderRadius.circular(50.r),
                                   image: DecorationImage(
                                       image: NetworkImage(
                                         '${Provider.of<SplashProvider>(context, listen: false).baseUrls!.customerImageUrl}/${profileProvider.userInfoModel!.image}',
@@ -82,41 +83,46 @@ class _DrawerScreenState extends State<DrawerScreen> {
                               height: 70,
                               width: 70,
                             ),
-                      const SizedBox(height: 20),
+                      SizedBox(height: 20.h),
                       profileProvider.userInfoModel!.fName != null &&
-                              profileProvider.userInfoModel!.lName != null
+                          profileProvider.userInfoModel!.lName != null
                           ? Text(
-                              '${profileProvider.userInfoModel!.fName!} ${profileProvider.userInfoModel!.lName!}' ??
-                                  '',
-                              style: TextStyle(
-                                  color: ColorResources.getTextColor(context),
-                                  fontSize: 22,
-                                  fontWeight: FontWeight.w500))
-                          : const SizedBox(),
-                      const SizedBox(height: 5),
+                        '${profileProvider.userInfoModel!.fName!} ${profileProvider.userInfoModel!.lName!}',
+                        style: AppTextStyles.h2(
+                          context,
+                          fontSize: 22.sp,
+                        ),
+                      )
+                          : SizedBox(),
+
+                      SizedBox(height: 5.h),
+
                       if (matchedAddress != null)
                         Text(
                           matchedAddress.address.toString(),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                              color: ColorResources.getTextColor(context),
-                              fontSize: 15)
-                        )
+                          style: AppTextStyles.h5(
+                            context,
+                            fontSize: 15.sp,
+                          ),
+                        ),
                     ],
                   ),
                 if (!_isLoggedIn)
-                  Text(getTranslated('guest', context),
-                      style: TextStyle(
-                          color: ColorResources.getTextColor(context),
-                          fontSize: 22,
-                          fontWeight: FontWeight.w500)),
-                const SizedBox(height: 10),
+                  Text(
+                    getTranslated('guest', context),
+                    style: AppTextStyles.h2(
+                      context,
+                      fontSize: 22.sp,
+                    ),
+                  ),
+                SizedBox(height: 10.h),
                 Divider(
                     color:
                         ColorResources.getTextColor(context).withOpacity(0.4),
                     thickness: 0.5),
-                const SizedBox(height: 10),
+                SizedBox(height: 10.h),
                 TextButton(
                     onPressed: () {
                       Navigator.push(
@@ -126,21 +132,11 @@ class _DrawerScreenState extends State<DrawerScreen> {
                                   DashboardScreen(pageIndex: 0)));
                     },
                     child: Text(getTranslated('shopping', context),
-                        style: TextStyle(
-                            color: ColorResources.getTextColor(context),
-                            fontSize: 20,
-                            fontWeight: FontWeight.w500))),
-                TextButton(
-                    onPressed: () => Navigator.push(
+                      style: AppTextStyles.h3(
                         context,
-                        MaterialPageRoute(
-                            builder: (BuildContext context) =>
-                                CategoriesScreen())),
-                    child: Text(getTranslated('categories', context),
-                        style: TextStyle(
-                            color: ColorResources.getTextColor(context),
-                            fontSize: 20,
-                            fontWeight: FontWeight.w500))),
+                        fontSize: 20.sp,
+                      ),)),
+
                 TextButton(
                     onPressed: () => Navigator.push(
                         context,
@@ -148,10 +144,10 @@ class _DrawerScreenState extends State<DrawerScreen> {
                             builder: (BuildContext context) =>
                                 DashboardScreen(pageIndex: 1))),
                     child: Text(getTranslated('my_cart', context),
-                        style: TextStyle(
-                            color: ColorResources.getTextColor(context),
-                            fontSize: 20,
-                            fontWeight: FontWeight.w500))),
+                        style: AppTextStyles.h3(
+                          context,
+                          fontSize: 20.sp,
+                        ),)),
                 TextButton(
                     onPressed: () {
                       Navigator.push(
@@ -161,10 +157,10 @@ class _DrawerScreenState extends State<DrawerScreen> {
                                   DashboardScreen(pageIndex: 3)));
                     },
                     child: Text(getTranslated('wishlist', context),
-                        style: TextStyle(
-                            color: ColorResources.getTextColor(context),
-                            fontSize: 20,
-                            fontWeight: FontWeight.w500))),
+                      style: AppTextStyles.h3(
+                        context,
+                        fontSize: 20.sp,
+                      ),)),
                 TextButton(
                     onPressed: () {
                       placeOrder.runningOrderList == null ||
@@ -195,10 +191,10 @@ class _DrawerScreenState extends State<DrawerScreen> {
                                   .then((value) => Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => OrderTrackingScreen(orderID: Provider.of<PlaceOrderProvider>(context, listen: false).runningOrderList![0].id!.toString(), track: Provider.of<PlaceOrderProvider>(context, listen: false).runningOrderList![0]))));
                     },
                     child: Text(getTranslated('track_order', context),
-                        style: TextStyle(
-                            color: ColorResources.getTextColor(context),
-                            fontSize: 20,
-                            fontWeight: FontWeight.w500))),
+                      style: AppTextStyles.h3(
+                        context,
+                        fontSize: 20.sp,
+                      ),)),
                 TextButton(
                     onPressed: () {
                       Navigator.push(
@@ -208,10 +204,10 @@ class _DrawerScreenState extends State<DrawerScreen> {
                                   SupportScreen()));
                     },
                     child: Text(getTranslated('help_and_support', context),
-                        style: TextStyle(
-                            color: ColorResources.getTextColor(context),
-                            fontSize: 20,
-                            fontWeight: FontWeight.w500))),
+                      style: AppTextStyles.h3(
+                        context,
+                        fontSize: 20.sp,
+                      ),)),
                 TextButton(
                     onPressed: () {
                       Navigator.push(
@@ -221,16 +217,16 @@ class _DrawerScreenState extends State<DrawerScreen> {
                                   TermsScreen()));
                     },
                     child: Text('FAQ',
-                        style: TextStyle(
-                            color: ColorResources.getTextColor(context),
-                            fontSize: 20,
-                            fontWeight: FontWeight.w500))),
-                const SizedBox(height: 10),
+                      style: AppTextStyles.h3(
+                        context,
+                        fontSize: 20.sp,
+                      ),)),
+                SizedBox(height: 10.h),
                 Divider(
                     color:
                         ColorResources.getTextColor(context).withOpacity(0.4),
                     thickness: 0.5),
-                const SizedBox(height: 10),
+                SizedBox(height: 10.h),
                 TextButton(
                     onPressed: () {
                       _isLoggedIn
@@ -247,12 +243,15 @@ class _DrawerScreenState extends State<DrawerScreen> {
                     child: Text(
                         getTranslated(
                             _isLoggedIn ? 'logout' : 'login', context),
-                        style: TextStyle(
-                            color: _isLoggedIn
-                                ? ColorResources.getTextColor(context)
-                                : ColorResources.getPrimaryColor(context),
-                            fontSize: 20,
-                            fontWeight: FontWeight.w500)))
+                        style: AppTextStyles.h3(
+                          context,
+                          fontSize: 20.sp,
+                        ).copyWith(
+                          color: _isLoggedIn
+                              ? ColorResources.getTextColor(context)
+                              : ColorResources.getPrimaryColor(context),
+                        ),
+                    ) )
               ]));
     }));
   }

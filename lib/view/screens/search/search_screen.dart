@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wired_express/helper/responsive_helper.dart';
 import 'package:wired_express/localization/language_constrants.dart';
 import 'package:wired_express/provider/search_provider.dart';
 import 'package:wired_express/utill/color_resources.dart';
 import 'package:wired_express/utill/dimensions.dart';
 import 'package:wired_express/utill/images.dart';
+import 'package:wired_express/utill/styles.dart';
 import 'package:wired_express/view/base/circular_indicator_widget.dart';
 import 'package:wired_express/view/base/custom_text_field.dart';
 import 'package:wired_express/view/base/main_app_bar.dart';
@@ -19,16 +21,13 @@ class SearchScreen extends StatelessWidget {
 
     return Scaffold(
         backgroundColor: ColorResources.getScaffoldBackgroundColor(context!),
-        appBar: ResponsiveHelper.isDesktop(context)
-            ? PreferredSize(
-                child: MainAppBar(), preferredSize: const Size.fromHeight(80))
-            : null,
+
         body: SafeArea(
             child: Center(
                 child: Container(
                     width: MediaQuery.of(context).size.width,
                     child: Padding(
-                        padding: const EdgeInsets.symmetric(
+                        padding: EdgeInsets.symmetric(
                             horizontal: Dimensions.PADDING_SIZE_LARGE),
                         child: Consumer<SearchProvider>(
                             builder:
@@ -36,11 +35,11 @@ class SearchScreen extends StatelessWidget {
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: [
-                                          const SizedBox(height: 15),
+                                          SizedBox(height: 15.h),
                                           Row(
                                             children: [
                                               Expanded(
-                                                child: CustomTextField(
+                                                child: CustomTextField(fill: true,
                                                   fillColor: ColorResources
                                                       .getTextFieldFillColor(
                                                           context),
@@ -72,9 +71,7 @@ class SearchScreen extends StatelessWidget {
                                                               builder: (_) => SearchResultScreen(
                                                                   searchString:
                                                                       _searchController
-                                                                          .text,
-                                                                  isServiceSearch:
-                                                                      0)));
+                                                                          .text,)));
                                                     }
                                                   },
                                                   controller: _searchController,
@@ -102,9 +99,7 @@ class SearchScreen extends StatelessWidget {
                                                               builder: (_) => SearchResultScreen(
                                                                   searchString:
                                                                       _searchController
-                                                                          .text,
-                                                                  isServiceSearch:
-                                                                      0)));
+                                                                          .text,)));
                                                     }
                                                   },
                                                 ),
@@ -114,23 +109,23 @@ class SearchScreen extends StatelessWidget {
                                                     Navigator.of(context).pop();
                                                   },
                                                   child: Text(
-                                                      getTranslated(
-                                                          'cancel', context),
-                                                      style: Theme.of(context)
-                                                          .textTheme
-                                                          .bodyMedium!
-                                                          .copyWith(
-                                                            fontWeight:
-                                                                FontWeight.w500,
-                                                            color: ColorResources
-                                                                .getScaffoldColor(
-                                                                    context),
-                                                          )))
+                                                    getTranslated(
+                                                        'cancel', context),
+                                                    style: AppTextStyles.h7(
+                                                            context)
+                                                        .copyWith(
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                      color: ColorResources
+                                                          .getTextColor(
+                                                              context),
+                                                    ),
+                                                  ))
                                             ],
                                           ),
 
                                           // for resent search section
-                                          const SizedBox(height: 10),
+                                          SizedBox(height: 10.h),
                                           Row(
                                             mainAxisAlignment:
                                                 MainAxisAlignment.spaceBetween,
@@ -138,14 +133,13 @@ class SearchScreen extends StatelessWidget {
                                               Text(
                                                 getTranslated(
                                                     'recent_search', context),
-                                                style: Theme.of(context)
-                                                    .textTheme
-                                                    .bodyLarge!
+                                                style: AppTextStyles.h4(context)
                                                     .copyWith(
-                                                        fontSize: 16,
-                                                        color: ColorResources
-                                                            .getGreyBunkerColor(
-                                                                context)),
+                                                  fontWeight: FontWeight.w400,
+                                                  color: ColorResources
+                                                      .getGreyBunkerColor(
+                                                          context),
+                                                ),
                                               ),
                                               searchProvider
                                                           .historyList.length >
@@ -157,15 +151,16 @@ class SearchScreen extends StatelessWidget {
                                                         getTranslated(
                                                             'remove_all',
                                                             context),
-                                                        style: Theme.of(context)
-                                                            .textTheme
-                                                            .bodyMedium!
+                                                        style: AppTextStyles.h7(
+                                                                context)
                                                             .copyWith(
-                                                                color: ColorResources
-                                                                    .getGreyBunkerColor(
-                                                                        context)),
-                                                      ))
-                                                  : const SizedBox.shrink(),
+                                                          color: ColorResources
+                                                              .getGreyBunkerColor(
+                                                                  context),
+                                                        ),
+                                                      ),
+                                                    )
+                                                  : SizedBox.shrink(),
                                             ],
                                           ),
 
@@ -199,7 +194,7 @@ class SearchScreen extends StatelessWidget {
                                                                                 searchProvider.historyList[index])));
                                                           },
                                                           child: Padding(
-                                                              padding: const EdgeInsets
+                                                              padding: EdgeInsets
                                                                   .all(Dimensions
                                                                       .PADDING_SIZE_SMALL),
                                                               child: Row(
@@ -211,14 +206,19 @@ class SearchScreen extends StatelessWidget {
                                                                         children: [
                                                                           Icon(
                                                                               Icons.history,
-                                                                              size: 17,
+                                                                              size: 17.sp,
                                                                               color: ColorResources.getHintColor(context)),
-                                                                          const SizedBox(
+                                                                          SizedBox(
                                                                               width: 13),
                                                                           Text(
                                                                             searchProvider.historyList[index],
                                                                             style:
-                                                                                TextStyle(color: ColorResources.getHintColor(context), fontSize: 17),
+                                                                                AppTextStyles.h7(
+                                                                              context,
+                                                                              fontSize: 17.sp,
+                                                                            ).copyWith(
+                                                                              color: ColorResources.getHintColor(context),
+                                                                            ),
                                                                           )
                                                                         ]),
                                                                     Icon(

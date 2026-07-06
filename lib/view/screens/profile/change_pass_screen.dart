@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wired_express/provider/theme_provider.dart';
 import 'package:wired_express/theme/dark_theme.dart';
 import 'package:wired_express/theme/light_theme.dart';
@@ -77,220 +78,215 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     return Scaffold(
       backgroundColor: ColorResources.getScaffoldBackgroundColor(context!),
       key: _scaffoldKey,
-      appBar: CustomAppBar(title: getTranslated('change_pass', context)),
-      body: _isLoggedIn!
-          ? Consumer<ProfileProvider>(
-              builder: (context, profileProvider, child) {
-                return profileProvider.userInfoModel != null
-                    ? Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 5.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Expanded(
-                              child: Scrollbar(
-                                child: SingleChildScrollView(
-                                  physics: BouncingScrollPhysics(),
-                                  padding: EdgeInsets.all(
-                                      Dimensions.PADDING_SIZE_SMALL),
-                                  child: Center(
-                                    child: SizedBox(
-                                      width: MediaQuery.of(context).size.width,
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Text(
-                                            getTranslated('password', context),
-                                            style: TextStyle(
-                                                color:
-                                                    ColorResources.getTextColor(
-                                                        context),
-                                                fontWeight: FontWeight.w500,
-                                                fontSize: 16),
+      body: Column(
+        children: [
+          CustomAppBar(title: 'change_pass', showBackButton: true),
+          Expanded(
+            child: _isLoggedIn!
+                ? Consumer<ProfileProvider>(
+                    builder: (context, profileProvider, child) {
+                      return profileProvider.userInfoModel != null
+                          ? Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 5.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Expanded(
+                                    child: Scrollbar(
+                                      child: SingleChildScrollView(
+                                        physics: BouncingScrollPhysics(),
+                                        padding: EdgeInsets.all(
+                                            Dimensions.PADDING_SIZE_SMALL),
+                                        child: Center(
+                                          child: SizedBox(
+                                            width: MediaQuery.of(context).size.width,
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Text(
+                                                  getTranslated('password', context),
+                                                  style: AppTextStyles.h4(context),
+                                                ),
+                                                SizedBox(
+                                                    height: Dimensions
+                                                        .PADDING_SIZE_SMALL),
+                                                CustomTextField(fill: true,
+                                                  fillColor: ColorResources
+                                                      .getTextFieldFillColor(context),
+                                                  hintText: getTranslated(
+                                                      'password_hint', context),
+                                                  isShowBorder: false,
+                                                  controller: _passwordController,
+                                                  focusNode: _passwordFocus,
+                                                  nextFocus: _confirmPasswordFocus,
+                                                  isPassword: true,
+                                                  isShowSuffixIcon: true,
+                                                ),
+                                                SizedBox(
+                                                    height: Dimensions
+                                                        .PADDING_SIZE_LARGE),
+                                                Text(
+                                                  getTranslated(
+                                                      'confirm_password', context),
+                                                  style: AppTextStyles.h4(context),
+                                                ),
+                                                SizedBox(
+                                                    height: Dimensions
+                                                        .PADDING_SIZE_SMALL),
+                                                CustomTextField(fill: true,
+                                                  fillColor: ColorResources
+                                                      .getTextFieldFillColor(context),
+                                                  hintText: getTranslated(
+                                                      'password_hint', context),
+                                                  isShowBorder: false,
+                                                  controller:
+                                                      _confirmPasswordController,
+                                                  focusNode: _confirmPasswordFocus,
+                                                  isPassword: true,
+                                                  isShowSuffixIcon: true,
+                                                  inputAction: TextInputAction.done,
+                                                ),
+                                                SizedBox(
+                                                    height: Dimensions
+                                                        .PADDING_SIZE_LARGE),
+                                              ],
+                                            ),
                                           ),
-                                          SizedBox(
-                                              height: Dimensions
-                                                  .PADDING_SIZE_SMALL),
-                                          CustomTextField(
-                                            fillColor: ColorResources
-                                                .getTextFieldFillColor(context),
-                                            hintText: getTranslated(
-                                                'password_hint', context),
-                                            isShowBorder: false,
-                                            controller: _passwordController,
-                                            focusNode: _passwordFocus,
-                                            nextFocus: _confirmPasswordFocus,
-                                            isPassword: true,
-                                            isShowSuffixIcon: true,
-                                          ),
-                                          SizedBox(
-                                              height: Dimensions
-                                                  .PADDING_SIZE_LARGE),
-                                          Text(
-                                            getTranslated(
-                                                'confirm_password', context),
-                                            style: TextStyle(
-                                                color:
-                                                    ColorResources.getTextColor(
-                                                        context),
-                                                fontWeight: FontWeight.w500,
-                                                fontSize: 16),
-                                          ),
-                                          SizedBox(
-                                              height: Dimensions
-                                                  .PADDING_SIZE_SMALL),
-                                          CustomTextField(
-                                            fillColor: ColorResources
-                                                .getTextFieldFillColor(context),
-                                            hintText: getTranslated(
-                                                'password_hint', context),
-                                            isShowBorder: false,
-                                            controller:
-                                                _confirmPasswordController,
-                                            focusNode: _confirmPasswordFocus,
-                                            isPassword: true,
-                                            isShowSuffixIcon: true,
-                                            inputAction: TextInputAction.done,
-                                          ),
-                                          SizedBox(
-                                              height: Dimensions
-                                                  .PADDING_SIZE_LARGE),
-                                        ],
+                                        ),
                                       ),
                                     ),
                                   ),
-                                ),
+                                  !profileProvider.isLoading
+                                      ? Center(
+                                          child: Container(
+                                            width: MediaQuery.of(context).size.width,
+                                            padding: EdgeInsets.all(10.r),
+                                            child: CustomButton(
+                                              text: getTranslated(
+                                                  'change_pass', context),
+                                              onTap: () async {
+                                                String _firstName =
+                                                    _firstNameController!.text.trim();
+                                                String _lastName =
+                                                    _lastNameController!.text.trim();
+                                                //  String _phoneNumber =
+                                                //  _phoneNumberController.text.trim();
+                                                String _password =
+                                                    _passwordController!.text.trim();
+                                                String _confirmPassword =
+                                                    _confirmPasswordController!.text
+                                                        .trim();
+                                                if (profileProvider
+                                                            .userInfoModel!.fName ==
+                                                        _firstName &&
+                                                    profileProvider
+                                                            .userInfoModel!.lName ==
+                                                        _lastName &&
+                                                    // profileProvider.userInfoModel.phone ==
+                                                    //   _phoneNumber
+                                                    // &&
+                                                    profileProvider
+                                                            .userInfoModel!.email ==
+                                                        _emailController!.text &&
+                                                    file == null &&
+                                                    data == null &&
+                                                    _password.isEmpty &&
+                                                    _confirmPassword.isEmpty) {
+                                                  showCustomSnackBar(
+                                                      getTranslated(
+                                                          'change_something_to_update',
+                                                          context),
+                                                      context);
+                                                } else if (_firstName.isEmpty) {
+                                                  showCustomSnackBar(
+                                                      getTranslated(
+                                                          "password_empty", context),
+                                                      context);
+                                                } else if (_lastName.isEmpty) {
+                                                  showCustomSnackBar(
+                                                      getTranslated(
+                                                          'enter_last_name', context),
+                                                      context);
+                                                } /*else if (_phoneNumber.isEmpty) {
+                                                  showCustomSnackBar(
+                                                      getTranslated(
+                                                          'enter_phone_number',
+                                                          context),
+                                                      context);
+                                                }*/
+                                                else if ((_password.isNotEmpty &&
+                                                        _password.length < 6) ||
+                                                    (_confirmPassword.isNotEmpty &&
+                                                        _confirmPassword.length <
+                                                            6)) {
+                                                  showCustomSnackBar(
+                                                      getTranslated(
+                                                          'password_should_be',
+                                                          context),
+                                                      context);
+                                                } else if (_password !=
+                                                    _confirmPassword) {
+                                                  showCustomSnackBar(
+                                                      getTranslated(
+                                                          'password_did_not_match',
+                                                          context),
+                                                      context);
+                                                } else {
+                                                  UserInfoModel updateUserInfoModel =
+                                                      UserInfoModel();
+                                                  updateUserInfoModel.fName =
+                                                      _firstName ?? "";
+                                                  updateUserInfoModel.lName =
+                                                      _lastName ?? "";
+                                                  //  updateUserInfoModel.phone = _phoneNumber ?? '';
+                                                  String _pass = _password ?? '';
+
+                                                  ResponseModel _responseModel =
+                                                      await profileProvider
+                                                          .updateUserInfo(
+                                                    updateUserInfoModel,
+                                                    _pass,
+                                                    Provider.of<CustomAuthProvider>(
+                                                            context,
+                                                            listen: false)
+                                                        .getUserToken()!,
+                                                  );
+
+                                                  if (_responseModel.isSuccess) {
+                                                    profileProvider
+                                                        .getUserInfo(context);
+                                                    showCustomSnackBar(
+                                                        getTranslated(
+                                                            'updated_successfully',
+                                                            context),
+                                                        context,
+                                                        isError: false);
+                                                    Navigator.pop(context);
+                                                  } else {
+                                                    showCustomSnackBar(
+                                                        _responseModel.message,
+                                                        context);
+                                                  }
+                                                  setState(() {});
+                                                }
+                                              },
+                                            ),
+                                          ),
+                                        )
+                                      : CustomCircularIndicator(),
+                                ],
                               ),
-                            ),
-                            !profileProvider.isLoading
-                                ? Center(
-                                    child: Container(
-                                      width: MediaQuery.of(context).size.width,
-                                      padding: EdgeInsets.all(
-                                          Dimensions.PADDING_SIZE_SMALL),
-                                      child: CustomButton(
-                                        text: getTranslated(
-                                            'change_pass', context),
-                                        onTap: () async {
-                                          String _firstName =
-                                              _firstNameController!.text.trim();
-                                          String _lastName =
-                                              _lastNameController!.text.trim();
-                                          //  String _phoneNumber =
-                                          //  _phoneNumberController.text.trim();
-                                          String _password =
-                                              _passwordController!.text.trim();
-                                          String _confirmPassword =
-                                              _confirmPasswordController!.text
-                                                  .trim();
-                                          if (profileProvider
-                                                      .userInfoModel!.fName ==
-                                                  _firstName &&
-                                              profileProvider
-                                                      .userInfoModel!.lName ==
-                                                  _lastName &&
-                                              // profileProvider.userInfoModel.phone ==
-                                              //   _phoneNumber
-                                              // &&
-                                              profileProvider
-                                                      .userInfoModel!.email ==
-                                                  _emailController!.text &&
-                                              file == null &&
-                                              data == null &&
-                                              _password.isEmpty &&
-                                              _confirmPassword.isEmpty) {
-                                            showCustomSnackBar(
-                                                getTranslated(
-                                                    'change_something_to_update',
-                                                    context),
-                                                context);
-                                          } else if (_firstName.isEmpty) {
-                                            showCustomSnackBar(
-                                                getTranslated(
-                                                    "password_empty", context),
-                                                context);
-                                          } else if (_lastName.isEmpty) {
-                                            showCustomSnackBar(
-                                                getTranslated(
-                                                    'enter_last_name', context),
-                                                context);
-                                          } /*else if (_phoneNumber.isEmpty) {
-                                            showCustomSnackBar(
-                                                getTranslated(
-                                                    'enter_phone_number',
-                                                    context),
-                                                context);
-                                          }*/
-                                          else if ((_password.isNotEmpty &&
-                                                  _password.length < 6) ||
-                                              (_confirmPassword.isNotEmpty &&
-                                                  _confirmPassword.length <
-                                                      6)) {
-                                            showCustomSnackBar(
-                                                getTranslated(
-                                                    'password_should_be',
-                                                    context),
-                                                context);
-                                          } else if (_password !=
-                                              _confirmPassword) {
-                                            showCustomSnackBar(
-                                                getTranslated(
-                                                    'password_did_not_match',
-                                                    context),
-                                                context);
-                                          } else {
-                                            UserInfoModel updateUserInfoModel =
-                                                UserInfoModel();
-                                            updateUserInfoModel.fName =
-                                                _firstName ?? "";
-                                            updateUserInfoModel.lName =
-                                                _lastName ?? "";
-                                            //  updateUserInfoModel.phone = _phoneNumber ?? '';
-                                            String _pass = _password ?? '';
-
-                                            ResponseModel _responseModel =
-                                                await profileProvider
-                                                    .updateUserInfo(
-                                              updateUserInfoModel,
-                                              _pass,
-                                              Provider.of<CustomAuthProvider>(
-                                                      context,
-                                                      listen: false)
-                                                  .getUserToken()!,
-                                            );
-
-                                            if (_responseModel.isSuccess) {
-                                              profileProvider
-                                                  .getUserInfo(context);
-                                              showCustomSnackBar(
-                                                  getTranslated(
-                                                      'updated_successfully',
-                                                      context),
-                                                  context,
-                                                  isError: false);
-                                              Navigator.pop(context);
-                                            } else {
-                                              showCustomSnackBar(
-                                                  _responseModel.message,
-                                                  context);
-                                            }
-                                            setState(() {});
-                                          }
-                                        },
-                                      ),
-                                    ),
-                                  )
-                                : CustomCircularIndicator(),
-                          ],
-                        ),
-                      )
-                    : CustomCircularIndicator();
-              },
-            )
-          : NotLoggedInScreen(),
+                            )
+                          : CustomCircularIndicator();
+                    },
+                  )
+                : NotLoggedInScreen(),
+          ),
+        ],
+      ),
     );
   }
 }

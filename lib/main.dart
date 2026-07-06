@@ -4,6 +4,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:wired_express/provider/contractor_request_provider.dart';
 import 'package:wired_express/provider/payment_provider.dart';
 import 'package:wired_express/provider/place_order_provider.dart';
 import 'package:wired_express/provider/subscription_provider.dart';
@@ -21,7 +23,7 @@ import 'package:wired_express/provider/category_provider.dart';
 import 'package:wired_express/provider/chat_provider.dart';
 import 'package:wired_express/provider/coupon_provider.dart';
 import 'package:wired_express/provider/localization_provider.dart';
-import 'package:wired_express/provider/main_provider.dart';
+import 'package:wired_express/provider/home_provider.dart';
 import 'package:wired_express/provider/notification_provider.dart';
 import 'package:wired_express/provider/order_provider.dart';
 import 'package:wired_express/provider/location_provider.dart';
@@ -42,6 +44,7 @@ import 'package:hive/hive.dart';
 import 'package:flutter_localizations/src/cupertino_localizations.dart';
 import 'package:flutter_localizations/src/widgets_localizations.dart';
 import 'package:flutter_localizations/src/material_localizations.dart';
+import 'package:timezone/data/latest.dart' as tz;
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
@@ -49,6 +52,8 @@ final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
 Future<void> main() async {
   // setPathUrlStrategy();
   WidgetsFlutterBinding.ensureInitialized();
+  tz.initializeTimeZones();
+
   await Firebase.initializeApp();
   await di.init();
   int? _orderID;
@@ -94,13 +99,28 @@ Future<void> main() async {
       ChangeNotifierProvider(create: (context) => di.sl<CouponProvider>()),
       ChangeNotifierProvider(create: (context) => di.sl<WishListProvider>()),
       ChangeNotifierProvider(create: (context) => di.sl<SearchProvider>()),
-      ChangeNotifierProvider(create: (context) => di.sl<MainProvider>()),
+      ChangeNotifierProvider(create: (context) => di.sl<HomeProvider>()),
       ChangeNotifierProvider(create: (context) => di.sl<PlaceOrderProvider>()),
       ChangeNotifierProvider(create: (context) => di.sl<SubscriptionProvider>()),
       ChangeNotifierProvider(create: (context) => di.sl<PaymentProvider>()),
+      ChangeNotifierProvider(create: (context) => di.sl<ContractorRequestProvider>()),
 
     ],
-    child: MyApp(isWeb: !kIsWeb),
+    child: ScreenUtilInit(
+      designSize: Size(448, 998),
+      minTextAdapt: true,
+      splitScreenMode: true,
+      builder: (context, child) {
+        print("Screen Width = ${ScreenUtil().screenWidth}");
+        print("Screen Height = ${ScreenUtil().screenHeight}");
+        print(
+          "Width: ${MediaQuery.of(context).size.width}, "
+              "Height: ${MediaQuery.of(context).size.height}, "
+              "TextScaleFactor: ${MediaQuery.of(context).textScaleFactor}",
+        );
+        return MyApp(isWeb: !kIsWeb);
+      },
+    ),
   ));
 }
 
@@ -166,7 +186,7 @@ class _MyAppState extends State<MyApp> {
                     : AppConstants.appName,
                 debugShowCheckedModeBanner: false,
                 navigatorKey: MyApp.navigatorKey,
-                theme: themeProvider.darkTheme ? dark : light,
+          theme: themeProvider.darkTheme ? dark : light,
                 locale: Provider.of<LocalizationProvider>(context).locale,
                 localizationsDelegates: [
                   AppLocalization.delegate,

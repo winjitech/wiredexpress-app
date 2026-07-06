@@ -5,6 +5,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:wired_express/data/model/body/place_order_body.dart';
 import 'package:wired_express/data/model/response/base/api_response.dart';
 import 'package:wired_express/data/model/response/base/error_response.dart';
+import 'package:wired_express/data/model/response/config_model.dart';
 import 'package:wired_express/data/model/response/delivery_man_model.dart';
 import 'package:wired_express/data/model/response/order_details_model.dart';
 import 'package:wired_express/data/model/response/response_model.dart';
@@ -58,7 +59,6 @@ class OrderProvider extends ChangeNotifier {
   bool _bottomHistoryOrderLoading = false;
   bool get bottomHistoryOrderLoading => _bottomHistoryOrderLoading;
 
-
   Future<List<OrderDetailsModel>> getOrderDetails(
       String orderID, BuildContext? context) async {
     _orderDetails = null;
@@ -72,8 +72,7 @@ class OrderProvider extends ChangeNotifier {
       _orderDetails = [];
       apiResponse.response!.data!.forEach((orderDetail) =>
           _orderDetails!.add(OrderDetailsModel.fromJson(orderDetail)));
-    } else {
-    }
+    } else {}
     notifyListeners();
     return _orderDetails!;
   }
@@ -83,8 +82,7 @@ class OrderProvider extends ChangeNotifier {
     if (apiResponse.response != null &&
         apiResponse.response!.statusCode == 200) {
       _deliveryManModel = DeliveryManModel.fromJson(apiResponse.response!.data);
-    } else {
-    }
+    } else {}
     notifyListeners();
   }
 
@@ -165,7 +163,6 @@ class OrderProvider extends ChangeNotifier {
     _isLoading = false;
     notifyListeners();
   }
-
 
   void clearPrevData() {
     _branchIndex = 0;
@@ -296,7 +293,6 @@ class OrderProvider extends ChangeNotifier {
     _timer?.cancel();
   }
 
-
   bool _lastDeliveryCoordinatesLoading = false;
   bool get lastDeliveryCoordinatesLoading => _lastDeliveryCoordinatesLoading;
 
@@ -349,19 +345,13 @@ class OrderProvider extends ChangeNotifier {
     return _responseModel;
   }
 
-  int? _selectedScheduledValue;
-  int? get selectedScheduledValue => _selectedScheduledValue;
+  bool? _isScheduledOrder = false;
+  bool? get isScheduledOrder => _isScheduledOrder;
 
-  void setSelectScheduledValue(int selectedScheduledValue) {
-    _selectedScheduledValue = selectedScheduledValue;
+  void setScheduledOrder(bool value) {
+    _isScheduledOrder = value;
     notifyListeners();
   }
-
-  void clearSelectScheduledValue() {
-    _selectedScheduledValue = null;
-    notifyListeners();
-  }
-
   DateTime? _selectedDeliveryDate;
   DateTime? get selectedDeliveryDate => _selectedDeliveryDate;
 
@@ -374,4 +364,19 @@ class OrderProvider extends ChangeNotifier {
     _selectedDeliveryDate = null;
     notifyListeners();
   }
+
+
+  OpeningHoursModel? _selectedOpeningHour;
+  OpeningHoursModel? get selectedOpeningHour => _selectedOpeningHour;
+
+  void setSelectedTime(OpeningHoursModel slot) {
+    _selectedOpeningHour = slot;
+    notifyListeners();
+  }
+  void clearSelectedTime() {
+    _selectedOpeningHour = null;
+    notifyListeners();
+  }
+
+
 }

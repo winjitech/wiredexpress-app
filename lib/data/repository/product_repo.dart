@@ -11,26 +11,18 @@ class ProductRepo {
 
   ProductRepo({@required this.dioClient});
 
-  Future<ApiResponse> getPopularProductList(String offset) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    var customer_id = await prefs.getInt('my_defined_user_id');
+  Future<ApiResponse> getFeaturedProducts(String offset,
+      {int? showEarlyAccess}) async {
     try {
-      final response = await dioClient!.get(
-          '${AppConstants.popularProductUrl}?limit=10&offset=$offset&customer_id=$customer_id');
-      return ApiResponse.withSuccess(response);
-    } catch (e) {
-      print('erorrr   $e');
-      return ApiResponse.withError(ApiErrorHandler.getMessage(e));
-    }
-  }
+      String url =
+          '${AppConstants.featuredProductsUrl}?limit=20&offset=$offset';
+      if (showEarlyAccess != null) {
+        url += '&show_early_access=$showEarlyAccess';
+      }
 
-  Future<ApiResponse> getProductList(String offset, int category_id) async {
-    try {
-      final response = await dioClient!.get(
-          '${AppConstants.productsListUrl}?limit=10&offset=$offset&category_id=$category_id');
+      final response = await dioClient!.get(url);
       return ApiResponse.withSuccess(response);
     } catch (e) {
-      print('erorrr   $e');
       return ApiResponse.withError(ApiErrorHandler.getMessage(e));
     }
   }

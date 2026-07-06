@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wired_express/data/model/response/signup_model.dart';
 import 'package:wired_express/localization/language_constrants.dart';
 import 'package:wired_express/provider/auth_provider.dart';
 import 'package:wired_express/provider/profile_provider.dart';
 import 'package:wired_express/utill/color_resources.dart';
 import 'package:wired_express/utill/dimensions.dart';
+import 'package:wired_express/utill/styles.dart';
 import 'package:wired_express/view/base/circular_indicator_widget.dart';
 import 'package:wired_express/view/base/custom_button.dart';
 import 'package:wired_express/view/base/custom_snackbar.dart';
@@ -40,36 +42,37 @@ class VerificationScreen extends StatelessWidget {
                       Center(
                         child: Text(
                           getTranslated('enter_auth_code', context),
-                          style: TextStyle(
-                              fontWeight: FontWeight.w500,
-                              fontSize: 23,
-                              color: ColorResources.getTextColor(context)),
+                          style: AppTextStyles.h2(
+                            context,
+                            fontSize: 23.sp,
+                          ),
                         ),
                       ),
-                      SizedBox(height: 30),
+                     SizedBox(height: 30.h),
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 15),
+                        padding: EdgeInsets.symmetric(horizontal: 15.w),
                         child: Center(
-                            child: Text(
-                          '${getTranslated('please_enter_4_digit_code', context)}',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                              color: ColorResources.getTextColor(context)
-                                  .withOpacity(0.5),
-                              fontSize: 21),
-                        )),
+                          child: Text(
+                            '${getTranslated('please_enter_4_digit_code', context)}',
+                            textAlign: TextAlign.center,
+                            style: AppTextStyles.h2(context, fontSize: 21.sp).copyWith(
+                              color: ColorResources.getTextColor(context).withOpacity(0.5),
+                            ),
+                          ),
+                        ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.symmetric(
+                        padding: EdgeInsets.symmetric(
                             horizontal: 24, vertical: 55),
-                        child: PinCodeTextField(
+                        child:PinCodeTextField(
                           length: 4,
                           appContext: context,
-                          textStyle: TextStyle(
-                            color: ColorResources.getTextColor(context),
-                            fontSize: 18,
+                          textStyle: AppTextStyles.h3(
+                            context,
+                          ).copyWith(
                             fontWeight: FontWeight.w600,
                           ),
+
                           obscureText: false,
                           keyboardType: TextInputType.number,
                           animationType: AnimationType.fade,
@@ -81,7 +84,7 @@ class VerificationScreen extends StatelessWidget {
                             fieldWidth:
                                 MediaQuery.of(context).size.width * 0.12,
                             borderWidth: 1.5,
-                            borderRadius: BorderRadius.circular(15),
+                            borderRadius: BorderRadius.circular(15.r),
                             selectedColor:
                                 ColorResources.getPrimaryColor(context),
                             selectedFillColor:
@@ -111,7 +114,7 @@ class VerificationScreen extends StatelessWidget {
                               profileProvider.isLoading == true
                           ? CustomCircularIndicator()
                           : Padding(
-                              padding: const EdgeInsets.symmetric(
+                              padding: EdgeInsets.symmetric(
                                   horizontal: Dimensions.PADDING_SIZE_LARGE),
                               child: CustomButton(
                                 text: getTranslated('continue', context),
@@ -177,7 +180,7 @@ class VerificationScreen extends StatelessWidget {
                               ),
                             ),
                       SizedBox(
-                        height: 30,
+                        height: 30.h,
                       ),
                       Center(
                         child: GestureDetector(
@@ -213,15 +216,12 @@ class VerificationScreen extends StatelessWidget {
                           child: Padding(
                             padding: EdgeInsets.all(
                                 Dimensions.PADDING_SIZE_EXTRA_SMALL),
-                            child: Text(
+                            child:Text(
                               getTranslated('resend_code', context),
-                              style: TextStyle(
-                                fontSize: 14,
+                              style: AppTextStyles.h6(context).copyWith(
                                 decoration: TextDecoration.underline,
-                                decorationColor:
-                                    ColorResources.getPrimaryColor(context),
+                                decorationColor: ColorResources.getPrimaryColor(context),
                                 color: ColorResources.getPrimaryColor(context),
-                                fontWeight: FontWeight.w500,
                               ),
                             ),
                           ),

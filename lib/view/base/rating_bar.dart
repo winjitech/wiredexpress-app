@@ -1,39 +1,46 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wired_express/utill/color_resources.dart';
 
 class RatingBar extends StatelessWidget {
   final double? rating;
   final double? size;
 
-  RatingBar({@required this.rating, this.size = 18});
+  RatingBar({@required this.rating, this.size});
 
   @override
   Widget build(BuildContext context) {
     List<Widget> _starList = [];
 
     int realNumber = rating!.floor();
-    int partNumber = ((rating !- realNumber) * 10).ceil();
+    int partNumber = ((rating! - realNumber) * 10).ceil();
 
     for (int i = 0; i < 5; i++) {
       if (i < realNumber) {
-        _starList.add(Icon(Icons.star, color: ColorResources.getPrimaryColor(context), size: size));
+        _starList.add(Icon(Icons.star,
+            color: ColorResources.getRatingColor(context),
+            size: size ?? 18.sp));
       } else if (i == realNumber) {
         _starList.add(SizedBox(
-          height: size,
-          width: size,
+          height: size ?? 18.sp,
+          width: size ?? 18.sp,
           child: Stack(
             fit: StackFit.expand,
             children: [
-              Icon(Icons.star, color: ColorResources.getPrimaryColor(context), size: size),
+              Icon(Icons.star,
+                  color: ColorResources.getRatingColor(context),
+                  size: size ?? 18.sp),
               ClipRect(
                 clipper: _Clipper(part: partNumber),
-                child: Icon(Icons.star, color: Colors.grey, size: size),
+                child:
+                    Icon(Icons.star, color: Colors.grey, size: size ?? 18.sp),
               )
             ],
           ),
         ));
       } else {
-        _starList.add(Icon(Icons.star, color: Colors.grey, size: size));
+        _starList
+            .add(Icon(Icons.star, color: Colors.grey, size: size ?? 18.sp));
       }
     }
 

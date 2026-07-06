@@ -1,3 +1,4 @@
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter/material.dart';
 import 'package:wired_express/provider/splash_provider.dart';
 import 'package:wired_express/utill/images.dart';
@@ -15,7 +16,7 @@ class MainAppBar extends StatelessWidget implements PreferredSizeWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: EdgeInsets.all(8.r),
                 child: GestureDetector(
                   onTap: () => Navigator.pop(context),
                   // Navigator.pushNamed(context, Routes.getMainRoute()),

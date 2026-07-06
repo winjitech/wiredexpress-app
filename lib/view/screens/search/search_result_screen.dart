@@ -1,139 +1,88 @@
 import 'package:flutter/material.dart';
-import 'package:wired_express/helper/responsive_helper.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wired_express/localization/language_constrants.dart';
 import 'package:wired_express/provider/search_provider.dart';
+import 'package:wired_express/utill/Images.dart';
 import 'package:wired_express/utill/color_resources.dart';
-import 'package:wired_express/utill/dimensions.dart';
-import 'package:wired_express/view/base/category_product_widget.dart';
-import 'package:wired_express/view/base/main_app_bar.dart';
-import 'package:wired_express/view/base/no_data_screen.dart';
-import 'package:wired_express/view/base/product_shimmer.dart';
-import 'package:wired_express/view/base/product_widget.dart';
+import 'package:wired_express/utill/styles.dart';
+import 'package:wired_express/view/base/no_data_found_view.dart';
 import 'package:provider/provider.dart';
+import 'package:wired_express/view/base/shimmer/product_shimmer.dart';
+import 'package:wired_express/view/screens/product/widget/product_widget.dart';
 
 class SearchResultScreen extends StatelessWidget {
-  final String? searchString;
-  final int? isServiceSearch;
-  SearchResultScreen(
-      {@required this.searchString, @required this.isServiceSearch});
+  final String searchString;
+  SearchResultScreen({required this.searchString});
 
   @override
   Widget build(BuildContext context) {
-    TextEditingController _searchController = TextEditingController();
+    TextEditingController searchController = TextEditingController();
     int atamp = 0;
     if (atamp == 0) {
-      _searchController.text = searchString!;
+      searchController.text = searchString!;
       atamp = 1;
     }
 
     return Scaffold(
       backgroundColor: ColorResources.getScaffoldBackgroundColor(context!),
-      appBar: ResponsiveHelper.isDesktop(context)
-          ? PreferredSize(
-              preferredSize: const Size.fromHeight(80), child: MainAppBar())
-          : null,
       body: SafeArea(
         child: Padding(
-            padding: const EdgeInsets.symmetric(
-                horizontal: Dimensions.PADDING_SIZE_SMALL),
+            padding: EdgeInsets.all(20.r),
             child: Consumer<SearchProvider>(
               builder: (context, searchProvider, child) => Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const SizedBox(height: 15),
-                  isServiceSearch == 0
-                      ? GestureDetector(
-                          onTap: () async {
-                            Navigator.of(context).pop();
-                          },
-                          child: Row(
-                            children: [
-                              Container(
-                                color:
-                                    ColorResources.getScaffoldBackgroundColor(
-                                        context),
-                                height: 45,
-                                child: Row(
-                                  children: [
-                                    const SizedBox(
-                                      width: 7,
-                                    ),
-                                    SizedBox(
-                                      width: 300,
-                                      child: Text(
-                                        '$searchString',
-                                        textAlign: TextAlign.start,
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 13,
-                                            color: ColorResources.getTextColor(
-                                                context)),
-                                      ),
-                                    ),
-                                    Container(
-                                        decoration: const BoxDecoration(
-                                            image: DecorationImage(
-                                                image: AssetImage(
-                                                    'assets/icon/search.png'))),
-                                        height: 20,
-                                        width: 20),
-                                    const SizedBox(width: 10),
-                                  ],
-                                ),
+                  GestureDetector(
+                    onTap: () async {
+                      Navigator.of(context).pop();
+                    },
+                    child: Container(
+                      padding: EdgeInsets.all(15.r),
+                      decoration: BoxDecoration(
+                          color: ColorResources.getCardColor(context),
+                          borderRadius: BorderRadius.circular(15.r)),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              '$searchString',
+                              textAlign: TextAlign.start,
+                              style: AppTextStyles.h7(
+                                context,
+                                fontSize: 13.sp,
+                              ).copyWith(
+                                fontWeight: FontWeight.bold,
                               ),
-                            ],
-                          ))
-                      : const SizedBox(),
-                  const SizedBox(height: 10),
-                  if (isServiceSearch == 0)
-                    searchProvider.searchProductList != null
-                        ? Center(
-                            child: SizedBox(
-                                width: MediaQuery.of(context).size.width,
-                                child: Text(
-                                    '${searchProvider.searchProductList!.length} ${getTranslated('product_found', context)}',
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodyMedium!
-                                        .copyWith(
-                                            fontSize: 16,
-                                            color: ColorResources
-                                                    .getGreyBunkerColor(context)
-                                                .withOpacity(0.2)))),
-                          )
-                        : const SizedBox.shrink()
-                  else
-                    Center(
-                      child: SizedBox(
-                        width: MediaQuery.of(context).size.width,
-                        child: Row(
-                          children: [
-                            IconButton(
-                              icon: const Icon(
-                                Icons.arrow_back_ios,
-                                size: 18,
-                              ),
-                              color: ColorResources.getGreyBunkerColor(context),
-                              onPressed: () => Navigator.pop(context),
                             ),
-                            const SizedBox(
-                              width: 5,
-                            ),
-                            Text(
-                              '${getTranslated('suggested_products', context)}',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyMedium!
-                                  .copyWith(
-                                      fontSize: 16,
-                                      color: ColorResources.getGreyBunkerColor(
-                                          context)),
-                            ),
-                          ],
-                        ),
+                          ),
+                          Image.asset(
+                              Images.search,
+                              height: 20.w,
+                              width: 20),
+                          SizedBox(width: 10.w),
+                        ],
                       ),
                     ),
-                  const SizedBox(height: 13),
+                  ),
+                  SizedBox(height: 10.h),
+                  searchProvider.searchProductList != null
+                      ? Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                '${searchProvider.searchProductList!.length} ${getTranslated('product_found', context)}',
+                                style: AppTextStyles.h4(context).copyWith(
+                                  fontWeight: FontWeight.w400,
+                                  color:
+                                      ColorResources.getGreyBunkerColor(context)
+                                          .withOpacity(0.2),
+                                ),
+                              ),
+                            ),
+                          ],
+                        )
+                      : SizedBox.shrink(),
+                  SizedBox(height: 15.h),
                   Expanded(
                     child: searchProvider.searchProductList != null
                         ? searchProvider.searchProductList!.length > 0
@@ -143,19 +92,8 @@ class SearchResultScreen extends StatelessWidget {
                                   physics: const BouncingScrollPhysics(),
                                   child: Center(
                                     child: Padding(
-                                      padding: const EdgeInsets.all(10),
-                                      child: GridView.builder(
-                                        gridDelegate:
-                                            SliverGridDelegateWithFixedCrossAxisCount(
-                                          crossAxisSpacing: 10,
-                                          mainAxisSpacing: 10,
-                                          mainAxisExtent: 100,
-                                          childAspectRatio: 4,
-                                          crossAxisCount:
-                                              ResponsiveHelper.isTab(context)
-                                                  ? 2
-                                                  : 1,
-                                        ),
+                                      padding: EdgeInsets.all(10.r),
+                                      child: ListView.builder(
                                         itemCount: searchProvider
                                             .searchProductList!.length,
                                         shrinkWrap: true,
@@ -163,7 +101,7 @@ class SearchResultScreen extends StatelessWidget {
                                             const NeverScrollableScrollPhysics(),
                                         padding: EdgeInsets.zero,
                                         itemBuilder: (context, index) =>
-                                            CategoryProductWidget(
+                                            ProductWidget(
                                                 product: searchProvider
                                                     .searchProductList![index]),
                                       ),
@@ -171,26 +109,9 @@ class SearchResultScreen extends StatelessWidget {
                                   ),
                                 ),
                               )
-                            : NoDataScreen()
-                        : GridView.builder(
-                            itemCount:
-                                10, //searchProvider.searchProductList.length,
-                            gridDelegate:
-                                SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisSpacing: 5,
-                              mainAxisSpacing: 5,
-                              childAspectRatio: 3,
-                              crossAxisCount:
-                                  ResponsiveHelper.isDesktop(context)
-                                      ? 4
-                                      : ResponsiveHelper.isTab(context)
-                                          ? 3
-                                          : 1,
-                            ),
-                            itemBuilder: (context, index) => ProductShimmer(
-                                isEnabled:
-                                    searchProvider.searchProductList == null),
-                          ),
+                            : NoDataFoundView(
+                                text: 'no_any_product_yet', showIcon: false)
+                        : ProductShimmer(),
                   )
                 ],
               ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wired_express/provider/order_provider.dart';
 import 'package:wired_express/provider/theme_provider.dart';
 import 'package:wired_express/utill/color_resources.dart';
@@ -12,7 +13,7 @@ class OrderShimmer extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListView.builder(
       itemCount: 10,
-      padding: EdgeInsets.all(15),
+      padding: EdgeInsets.all(15.r),
       physics: BouncingScrollPhysics(),
       itemBuilder: (context, index) {
         return Column(
@@ -23,7 +24,7 @@ class OrderShimmer extends StatelessWidget {
               child: Container(
                 width: MediaQuery.of(context).size.width,
                 height: 150,
-                padding: EdgeInsets.all(Dimensions.PADDING_SIZE_SMALL),
+                padding: EdgeInsets.all(10.r),
                 margin: EdgeInsets.only(bottom: Dimensions.PADDING_SIZE_SMALL),
                 decoration: BoxDecoration(
                   color: ColorResources.getScaffoldBackgroundColor(context),
@@ -35,7 +36,7 @@ class OrderShimmer extends StatelessWidget {
                       spreadRadius: 1,
                     )
                   ],
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(10.r),
                 ),
                 child: Row(children: [
                   Container(
@@ -46,7 +47,7 @@ class OrderShimmer extends StatelessWidget {
                             Provider.of<ThemeProvider>(context).darkTheme
                                 ? 900
                                 : 300]!,
-                        borderRadius: BorderRadius.circular(10)),
+                        borderRadius: BorderRadius.circular(10.r)),
                   ),
                   SizedBox(
                     width: 15,
@@ -63,17 +64,17 @@ class OrderShimmer extends StatelessWidget {
                                 Provider.of<ThemeProvider>(context).darkTheme
                                     ? 900
                                     : 300]!,
-                            borderRadius: BorderRadius.circular(40)),
+                            borderRadius: BorderRadius.circular(40.r)),
                       ),
                       Container(
                         height: 15,
-                        width: 100,
+                        width: 100.w,
                         decoration: BoxDecoration(
                             color: Colors.grey[
                                 Provider.of<ThemeProvider>(context).darkTheme
                                     ? 900
                                     : 300]!,
-                            borderRadius: BorderRadius.circular(40)),
+                            borderRadius: BorderRadius.circular(40.r)),
                       ),
                       Container(
                         height: 15,
@@ -83,7 +84,7 @@ class OrderShimmer extends StatelessWidget {
                                 Provider.of<ThemeProvider>(context).darkTheme
                                     ? 900
                                     : 300]!,
-                            borderRadius: BorderRadius.circular(40)),
+                            borderRadius: BorderRadius.circular(40.r)),
                       ),
                       Container(
                         height: 15,
@@ -93,10 +94,10 @@ class OrderShimmer extends StatelessWidget {
                                 Provider.of<ThemeProvider>(context).darkTheme
                                     ? 900
                                     : 300]!,
-                            borderRadius: BorderRadius.circular(40)),
+                            borderRadius: BorderRadius.circular(40.r)),
                       ),
                       Container(
-                        height: 30,
+                        height: 30.h,
                         width: 190,
                         decoration: BoxDecoration(
                             border: Border.all(
@@ -106,10 +107,10 @@ class OrderShimmer extends StatelessWidget {
                                         ? 900
                                         : 300]!,
                                 width: 1.6),
-                            borderRadius: BorderRadius.circular(40)),
+                            borderRadius: BorderRadius.circular(40.r)),
                         child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 40, vertical: 10),
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 40, vertical: 10.h),
                           child: Container(
                             height: 20,
                             width: 60,
@@ -119,7 +120,7 @@ class OrderShimmer extends StatelessWidget {
                                             .darkTheme
                                         ? 900
                                         : 300]!,
-                                borderRadius: BorderRadius.circular(40)),
+                                borderRadius: BorderRadius.circular(40.r)),
                           ),
                         ),
                       ),

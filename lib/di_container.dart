@@ -4,9 +4,10 @@ import 'package:wired_express/data/repository/banner_repo.dart';
 import 'package:wired_express/data/repository/cart_repo.dart';
 import 'package:wired_express/data/repository/category_repo.dart';
 import 'package:wired_express/data/repository/chat_repo.dart';
+import 'package:wired_express/data/repository/contractor_request_repo.dart';
 import 'package:wired_express/data/repository/coupon_repo.dart';
 import 'package:wired_express/data/repository/location_repo.dart';
-import 'package:wired_express/data/repository/main_repo.dart';
+import 'package:wired_express/data/repository/home_repo.dart';
 import 'package:wired_express/data/repository/notification_repo.dart';
 import 'package:wired_express/data/repository/order_repo.dart';
 import 'package:wired_express/data/repository/payment_repo.dart';
@@ -23,9 +24,10 @@ import 'package:wired_express/provider/banner_provider.dart';
 import 'package:wired_express/provider/cart_provider.dart';
 import 'package:wired_express/provider/category_provider.dart';
 import 'package:wired_express/provider/chat_provider.dart';
+import 'package:wired_express/provider/contractor_request_provider.dart';
 import 'package:wired_express/provider/coupon_provider.dart';
 import 'package:wired_express/provider/localization_provider.dart';
-import 'package:wired_express/provider/main_provider.dart';
+import 'package:wired_express/provider/home_provider.dart';
 import 'package:wired_express/provider/notification_provider.dart';
 import 'package:wired_express/provider/order_provider.dart';
 import 'package:wired_express/provider/location_provider.dart';
@@ -78,9 +80,10 @@ Future<void> init() async {
   sl.registerLazySingleton(() => NotificationRepo(dioClient: sl()));
   sl.registerLazySingleton(() => CouponRepo(dioClient: sl()));
   sl.registerLazySingleton(() => WishListRepo(dioClient: sl()));
-  sl.registerLazySingleton(() => MainRepo(dioClient: sl()));
+  sl.registerLazySingleton(() => HomeRepo(dioClient: sl()));
   sl.registerLazySingleton(() => SubscriptionRepo(dioClient: sl()));
   sl.registerLazySingleton(() => PaymentRepo(dioClient: sl(), sharedPreferences: sl()));
+  sl.registerLazySingleton(() => ContractorRequestRepo(dioClient: sl()));
 
   // Provider
   sl.registerFactory(() => ThemeProvider(sharedPreferences: sl()));
@@ -90,9 +93,9 @@ Future<void> init() async {
   sl.registerFactory(() => SplashProvider(splashRepo: sl()));
   sl.registerFactory(() => LocalizationProvider(sharedPreferences: sl()));
   sl.registerFactory(() => LanguageProvider(languageRepo: sl()));
-  sl.registerFactory(() => CategoryProvider(categoryRepo: sl()));
+  sl.registerFactory(() => CategoryProvider(repo: sl()));
   sl.registerFactory(() => BannerProvider(bannerRepo: sl()));
-  sl.registerFactory(() => ProductProvider(productRepo: sl()));
+  sl.registerFactory(() => ProductProvider(repo: sl()));
   sl.registerFactory(() => CartProvider(cartRepo: sl()));
   sl.registerFactory(() => OrderProvider(orderRepo: sl()));
   sl.registerFactory(() => ChatProvider(chatRepo: sl()));
@@ -105,9 +108,10 @@ Future<void> init() async {
       () => WishListProvider(wishListRepo: sl(), productRepo: sl()));
   sl.registerFactory(() => CouponProvider(couponRepo: sl()));
   sl.registerFactory(() => SearchProvider(searchRepo: sl()));
-  sl.registerFactory(() => MainProvider(mainRepo: sl()));
+  sl.registerFactory(() => HomeProvider(repo: sl()));
   sl.registerFactory(() => SubscriptionProvider(subscriptionRepo: sl()));
   sl.registerFactory(() => PaymentProvider(sharedPreferences: sl(),paymentRepo: sl()));
+  sl.registerFactory(() => ContractorRequestProvider(repo: sl()));
 
   // External
   final sharedPreferences = await SharedPreferences.getInstance();

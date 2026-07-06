@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wired_express/helper/responsive_helper.dart';
 import 'package:wired_express/localization/language_constrants.dart';
 import 'package:wired_express/provider/auth_provider.dart';
@@ -6,6 +7,7 @@ import 'package:wired_express/provider/location_provider.dart';
 import 'package:wired_express/provider/timer_provider.dart';
 import 'package:wired_express/utill/color_resources.dart';
 import 'package:wired_express/utill/images.dart';
+import 'package:wired_express/utill/styles.dart';
 import 'package:wired_express/view/base/circular_indicator_widget.dart';
 import 'package:wired_express/view/base/custom_button.dart';
 import 'package:wired_express/view/base/main_app_bar.dart';
@@ -50,17 +52,17 @@ class _VerifyPhoneCodeScreenState extends State<VerifyPhoneCodeScreen> {
                 child: GestureDetector(
                   onTap: () => Navigator.pop(context),
                   child: Container(
-                      margin: const EdgeInsets.only(top: 20, left: 20),
+                      margin: EdgeInsets.only(top: 20, left: 20.w),
                       decoration: BoxDecoration(
                           color: ColorResources.getTextColor(context)
                               .withOpacity(0.2),
-                          borderRadius: BorderRadius.circular(50)),
+                          borderRadius: BorderRadius.circular(50.r)),
                       child: Padding(
-                        padding: const EdgeInsets.all(14),
+                        padding: EdgeInsets.all(14.r),
                         child: Icon(
                           Icons.arrow_back_ios_new_outlined,
                           color: ColorResources.getTextColor(context),
-                          size: 19,
+                          size: 19.sp,
                         ),
                       )),
                 ),
@@ -72,7 +74,7 @@ class _VerifyPhoneCodeScreenState extends State<VerifyPhoneCodeScreen> {
                   child: SizedBox(
                     width: MediaQuery.of(context).size.width,
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 25),
+                      padding: EdgeInsets.symmetric(horizontal: 25),
                       child: Consumer2<CustomAuthProvider, TimerProvider>(
                         builder:
                             (context, authProvider, timerProvider, child) =>
@@ -89,28 +91,22 @@ class _VerifyPhoneCodeScreenState extends State<VerifyPhoneCodeScreen> {
                                 ),
                               ),
                               Center(
-                                  child: Text(
-                                getTranslated('verify_phone_num', context),
-                                style: TextStyle(
-                                    fontSize: 24,
-                                    color:
-                                        ColorResources.getTextColor(context)),
-                              )),
-                              SizedBox(height: 15),
+                                child: Text(
+                                  getTranslated('verify_phone_num', context),
+                                  style: AppTextStyles.h1(context),
+                                ),
+                              ),
+                              SizedBox(height: 15.h),
                               Text(
                                 '${getTranslated('please_enter_6_digit_code', context)} ${widget.phone}',
                                 textAlign: TextAlign.start,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyMedium!
-                                    .copyWith(
-                                        fontSize: 18,
-                                        color: ColorResources.getHintColor(
-                                            context)),
+                                style: AppTextStyles.h3(context).copyWith(
+                                  color: ColorResources.getHintColor(context),
+                                ),
                               ),
 
                               Padding(
-                                padding: const EdgeInsets.symmetric(
+                                padding: EdgeInsets.symmetric(
                                     horizontal: 5, vertical: 35),
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.start,
@@ -118,26 +114,18 @@ class _VerifyPhoneCodeScreenState extends State<VerifyPhoneCodeScreen> {
                                   children: [
                                     Text(
                                       getTranslated('enter_the_code', context),
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodyMedium!
-                                          .copyWith(
-                                              fontSize: 16,
-                                              color:
-                                                  ColorResources.getTextColor(
-                                                      context)),
+                                      style: AppTextStyles.h4(context),
                                     ),
-                                    SizedBox(height: 15),
+                                    SizedBox(height: 15.h),
                                     PinCodeTextField(
                                       controller: _smsCodeController,
                                       length: 6,
                                       appContext: context,
                                       obscureText: false,
                                       keyboardType: TextInputType.number,
-                                      textStyle: TextStyle(
-                                          color:
-                                              ColorResources.getScaffoldColor(
-                                                  context)),
+                                      textStyle: AppTextStyles.h8(context).copyWith(
+                                        color: ColorResources.getScaffoldBackgroundColor(context),
+                                      ),
                                       animationType: AnimationType.fade,
                                       pinTheme: PinTheme(
                                         shape: PinCodeFieldShape.box,
@@ -149,7 +137,8 @@ class _VerifyPhoneCodeScreenState extends State<VerifyPhoneCodeScreen> {
                                                 6 -
                                             (10 + 5),
                                         borderWidth: 1,
-                                        borderRadius: BorderRadius.circular(10),
+                                        borderRadius:
+                                            BorderRadius.circular(10.r),
                                         selectedColor:
                                             ColorResources.getGreyColor(
                                                 context),
@@ -183,9 +172,8 @@ class _VerifyPhoneCodeScreenState extends State<VerifyPhoneCodeScreen> {
                                         timerProvider.countDown > 0
                                             ? Text(
                                                 "${getTranslated('resend_code_in', context)} ${timerProvider.countDown} seconds",
-                                                style: TextStyle(
-                                                    color: ColorResources
-                                                        .getTextColor(context)),
+                                                style:
+                                                    AppTextStyles.h7(context),
                                               )
                                             : TextButton(
                                                 onPressed: () async {
@@ -199,10 +187,13 @@ class _VerifyPhoneCodeScreenState extends State<VerifyPhoneCodeScreen> {
                                                 child: Text(
                                                   getTranslated(
                                                       'resend_code', context),
-                                                  style: TextStyle(
-                                                      color: ColorResources
-                                                          .getScaffoldColor(
-                                                              context)),
+                                                  style:
+                                                      AppTextStyles.h7(context)
+                                                          .copyWith(
+                                                    color: ColorResources
+                                                        .getScaffoldBackgroundColor(
+                                                            context),
+                                                  ),
                                                 ),
                                               ),
                                       ],

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:wired_express/data/model/response/cart_model.dart';
 import 'package:wired_express/data/model/response/product_model.dart';
@@ -72,7 +73,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                 children: [
                   Expanded(child: ProductDetailsBodyView(product: product)),
                   Container(
-                    padding: EdgeInsets.all(15),
+                    padding: EdgeInsets.all(15.r),
                     color: ColorResources.getScaffoldBackgroundColor(context),
                     child: cartProvider.cartLoading == true
                         ? CustomCircularIndicator()

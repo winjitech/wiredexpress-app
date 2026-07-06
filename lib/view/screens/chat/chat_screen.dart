@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wired_express/localization/language_constrants.dart';
 import 'package:wired_express/provider/auth_provider.dart';
 import 'package:wired_express/provider/chat_provider.dart';
@@ -68,217 +69,221 @@ class _ChatScreenState extends State<ChatScreen> {
 
     return Scaffold(
       backgroundColor: ColorResources.getScaffoldBackgroundColor(context!),
-      appBar: CustomAppBar(title: getTranslated('message', context)),
-      body: _isLoggedIn
-          ? Consumer<ChatProvider>(
-              builder: (context, chat, child) {
-                print('status----${chat.status}');
-                return Column(children: [
-                  chat.status
-                      ? SizedBox()
-                      : Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Center(
-                              child: Text(
-                                  getTranslated('status_offline', context),
-                                  style: TextStyle(
-                                      color: Colors.red, fontSize: 14))),
-                        ),
-                  Expanded(
-                    child: RefreshIndicator(
-                      key: _refreshIndicatorKey,
-                      displacement: 0,
-                      color: ColorResources.getCardColor(context),
-                      backgroundColor: ColorResources.getPrimaryColor(context),
-                      onRefresh: () {
-                        return chat.refresh(context, true);
-                      },
-                      child: chat.chatList != null
-                          ? chat.chatList!.length > 0
-                              ? Scrollbar(
-                                  child: SingleChildScrollView(
+      body: Column(
+        children: [
+          CustomAppBar(title: 'chat', showBackButton: true),
+          Expanded(
+            child: _isLoggedIn
+                ? Consumer<ChatProvider>(
+                    builder: (context, chat, child) {
+                      print('status----${chat.status}');
+                      return Column(children: [
+                        chat.status
+                            ? SizedBox()
+                            : Padding(
+                                padding: EdgeInsets.all(8.r),
+                                child: Center(
+                                    child: Text(
+                                      getTranslated('status_offline', context),
+                                      style: AppTextStyles.h7(context).copyWith(
+                                        color: Colors.red,
+                                      ),
+                                    ),),
+                              ),
+                        Expanded(
+                          child: RefreshIndicator(
+                            key: _refreshIndicatorKey,
+                            displacement: 0,
+                            color: ColorResources.getCardColor(context),
+                            backgroundColor: ColorResources.getPrimaryColor(context),
+                            onRefresh: () {
+                              return chat.refresh(context, true);
+                            },
+                            child: chat.chatList != null
+                                ? chat.chatList!.length > 0
+                                    ? Scrollbar(
+                                        child: SingleChildScrollView(
+                                          reverse: true,
+                                          physics: BouncingScrollPhysics(),
+                                          child: Center(
+                                            child: SizedBox(
+                                              width: MediaQuery.of(context).size.width,
+                                              child: ListView.builder(
+                                                physics:
+                                                    NeverScrollableScrollPhysics(),
+                                                shrinkWrap: true,
+                                                padding: EdgeInsets.all(10.r),
+                                                itemCount: chat.chatList!.length,
+                                                reverse: true,
+                                                itemBuilder: (context, index) {
+                                                  return MessageBubble(
+                                                      chat: chat.chatList![index],
+                                                      addDate: chat.showDate![index]);
+                                                },
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      )
+                                    : SizedBox()
+                                : SingleChildScrollView(
                                     reverse: true,
                                     physics: BouncingScrollPhysics(),
                                     child: Center(
                                       child: SizedBox(
                                         width: MediaQuery.of(context).size.width,
                                         child: ListView.builder(
-                                          physics:
-                                              NeverScrollableScrollPhysics(),
+                                          physics: NeverScrollableScrollPhysics(),
                                           shrinkWrap: true,
-                                          padding: EdgeInsets.all(
-                                              Dimensions.PADDING_SIZE_SMALL),
-                                          itemCount: chat.chatList!.length,
+                                          padding: EdgeInsets.all(10.r),
+                                          itemCount: chat.savedChatList.length,
                                           reverse: true,
                                           itemBuilder: (context, index) {
                                             return MessageBubble(
-                                                chat: chat.chatList![index],
+                                                chat: chat.savedChatList[index],
                                                 addDate: chat.showDate![index]);
                                           },
                                         ),
                                       ),
                                     ),
                                   ),
-                                )
-                              : SizedBox()
-                          : SingleChildScrollView(
-                              reverse: true,
-                              physics: BouncingScrollPhysics(),
-                              child: Center(
-                                child: SizedBox(
-                                  width: MediaQuery.of(context).size.width,
-                                  child: ListView.builder(
-                                    physics: NeverScrollableScrollPhysics(),
-                                    shrinkWrap: true,
-                                    padding: EdgeInsets.all(
-                                        Dimensions.PADDING_SIZE_SMALL),
-                                    itemCount: chat.savedChatList.length,
-                                    reverse: true,
-                                    itemBuilder: (context, index) {
-                                      return MessageBubble(
-                                          chat: chat.savedChatList[index],
-                                          addDate: chat.showDate![index]);
-                                    },
-                                  ),
-                                ),
-                              ),
-                            ),
-                    ),
-                  ),
+                          ),
+                        ),
 
-                  // Bottom TextField
-                  Center(
-                    child: SizedBox(
-                      width: MediaQuery.of(context).size.width,
-                      child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            ConstrainedBox(
-                              constraints: BoxConstraints(maxHeight: 100),
-                              child: Ink(
-                                color:
-                                    ColorResources.getScaffoldBackgroundColor(
-                                        context),
-                                child: Row(children: [
-                                  // GestureDetector(
-                                  //   onTap: () async {
-                                  //     Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) =>
-                                  //         SendImage()));
-                                  //   },
-                                  //   child: Padding(
-                                  //     padding: EdgeInsets.symmetric(horizontal: Dimensions.PADDING_SIZE_DEFAULT),
-                                  //     child: Image.asset(Images.image, width: 25, height: 25, color: ColorResources.getGreyBunkerColor(context)),
-                                  //   ),
-                                  // ),
-                                  SizedBox(width: 20),
-                                  SizedBox(
-                                    height: 25,
-                                    child: VerticalDivider(
-                                        width: 0,
-                                        thickness: 1,
-                                        color:
-                                            ColorResources.getGreyBunkerColor(
-                                                context)),
-                                  ),
-                                  SizedBox(
-                                      width: Dimensions.PADDING_SIZE_DEFAULT),
-
-                                  Expanded(
-                                    child: TextField(
-                                      controller: _controller,
-                                      textCapitalization:
-                                          TextCapitalization.sentences,
-                                      style: rubikMedium.copyWith(
-                                          color: ColorResources.getTextColor(
+                        // Bottom TextField
+                        Center(
+                          child: SizedBox(
+                            width: MediaQuery.of(context).size.width,
+                            child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  ConstrainedBox(
+                                    constraints: BoxConstraints(maxHeight: 100),
+                                    child: Ink(
+                                      color:
+                                          ColorResources.getScaffoldBackgroundColor(
                                               context),
-                                          fontSize: Dimensions.FONT_SIZE_LARGE),
-                                      keyboardType: TextInputType.multiline,
-                                      maxLines: null,
-                                      decoration: InputDecoration(
-                                        hintText: getTranslated(
-                                            'type_message_here', context),
-                                        hintStyle: rubikRegular.copyWith(
-                                            color: ColorResources
-                                                .getGreyBunkerColor(context),
-                                            fontSize:
-                                                Dimensions.FONT_SIZE_LARGE),
-                                      ),
-                                      onChanged: (String newText) {
-                                        if (newText.isNotEmpty &&
-                                            !Provider.of<ChatProvider>(context,
-                                                    listen: false)
-                                                .isSendButtonActive!) {
-                                          Provider.of<ChatProvider>(context,
-                                                  listen: false)
-                                              .toggleSendButtonActivity();
-                                        } else if (newText.isEmpty &&
-                                            Provider.of<ChatProvider>(context,
-                                                    listen: false)
-                                                .isSendButtonActive!) {
-                                          Provider.of<ChatProvider>(context,
-                                                  listen: false)
-                                              .toggleSendButtonActivity();
-                                        }
-                                      },
-                                    ),
-                                  ),
+                                      child: Row(children: [
+                                        // GestureDetector(
+                                        //   onTap: () async {
+                                        //     Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) =>
+                                        //         SendImage()));
+                                        //   },
+                                        //   child: Padding(
+                                        //     padding: EdgeInsets.symmetric(horizontal: Dimensions.PADDING_SIZE_DEFAULT),
+                                        //     child: Image.asset(Images.image, width: 25.w, height: 25.h, color: ColorResources.getGreyBunkerColor(context)),
+                                        //   ),
+                                        // ),
+                                        SizedBox(width: 20.w),
+                                        SizedBox(
+                                          height: 25.h,
+                                          child: VerticalDivider(
+                                              width: 0,
+                                              thickness: 1,
+                                              color:
+                                                  ColorResources.getGreyBunkerColor(
+                                                      context)),
+                                        ),
+                                        SizedBox(
+                                            width: Dimensions.PADDING_SIZE_DEFAULT),
 
-                                  GestureDetector(
-                                    onTap: () async {
-                                      FocusScope.of(context).unfocus();
-                                      if (Provider.of<ChatProvider>(context,
-                                              listen: false)
-                                          .isSendButtonActive!) {
-                                        Provider.of<ChatProvider>(context,
-                                                listen: false)
-                                            .sendMessage(
-                                          _controller.text,
-                                          Provider.of<CustomAuthProvider>(
-                                                  context,
-                                                  listen: false)
-                                              .getUserToken()!,
-                                          Provider.of<ProfileProvider>(context,
-                                                  listen: false)
-                                              .userInfoModel!
-                                              .id
-                                              .toString(),
-                                          context,
-                                        );
-                                        _controller.text = '';
-                                      } else {
-                                        showCustomSnackBar(getTranslated('write_something', context), context);
-                                      }
-                                    },
-                                    child: Padding(
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal:
-                                              Dimensions.PADDING_SIZE_DEFAULT),
-                                      child: Image.asset(
-                                        Images.send,
-                                        width: 25,
-                                        height: 25,
-                                        color: Provider.of<ChatProvider>(
-                                                    context)
-                                                .isSendButtonActive!
-                                            ? ColorResources.getPrimaryColor(
-                                                context)
-                                            : ColorResources.getGreyBunkerColor(
-                                                context),
-                                      ),
+                                        Expanded(
+                                          child: TextField(
+                                            controller: _controller,
+                                            textCapitalization:
+                                                TextCapitalization.sentences,
+                                            style: AppTextStyles.h4(
+                                              context).copyWith(
+                                              color: ColorResources.getTextColor(context),
+                                            ),
+                                            keyboardType: TextInputType.multiline,
+                                            maxLines: null,
+                                            decoration: InputDecoration(
+                                              hintText: getTranslated(
+                                                  'type_message_here', context),
+                                              hintStyle: AppTextStyles.h7(context).copyWith(
+                                                color: ColorResources.getGreyBunkerColor(context),
+                                              ),
+                                            ),
+                                            onChanged: (String newText) {
+                                              if (newText.isNotEmpty &&
+                                                  !Provider.of<ChatProvider>(context,
+                                                          listen: false)
+                                                      .isSendButtonActive!) {
+                                                Provider.of<ChatProvider>(context,
+                                                        listen: false)
+                                                    .toggleSendButtonActivity();
+                                              } else if (newText.isEmpty &&
+                                                  Provider.of<ChatProvider>(context,
+                                                          listen: false)
+                                                      .isSendButtonActive!) {
+                                                Provider.of<ChatProvider>(context,
+                                                        listen: false)
+                                                    .toggleSendButtonActivity();
+                                              }
+                                            },
+                                          ),
+                                        ),
+
+                                        GestureDetector(
+                                          onTap: () async {
+                                            FocusScope.of(context).unfocus();
+                                            if (Provider.of<ChatProvider>(context,
+                                                    listen: false)
+                                                .isSendButtonActive!) {
+                                              Provider.of<ChatProvider>(context,
+                                                      listen: false)
+                                                  .sendMessage(
+                                                _controller.text,
+                                                Provider.of<CustomAuthProvider>(
+                                                        context,
+                                                        listen: false)
+                                                    .getUserToken()!,
+                                                Provider.of<ProfileProvider>(context,
+                                                        listen: false)
+                                                    .userInfoModel!
+                                                    .id
+                                                    .toString(),
+                                                context,
+                                              );
+                                              _controller.text = '';
+                                            } else {
+                                              showCustomSnackBar(getTranslated('write_something', context), context);
+                                            }
+                                          },
+                                          child: Padding(
+                                            padding: EdgeInsets.symmetric(
+                                                horizontal:
+                                                    Dimensions.PADDING_SIZE_DEFAULT),
+                                            child: Image.asset(
+                                              Images.send,
+                                              width: 25.w,
+                                              height: 25.h,
+                                              color: Provider.of<ChatProvider>(
+                                                          context)
+                                                      .isSendButtonActive!
+                                                  ? ColorResources.getPrimaryColor(
+                                                      context)
+                                                  : ColorResources.getGreyBunkerColor(
+                                                      context),
+                                            ),
+                                          ),
+                                        ),
+                                      ]),
                                     ),
                                   ),
                                 ]),
-                              ),
-                            ),
-                          ]),
-                    ),
-                  ),
+                          ),
+                        ),
 
-                  const SizedBox(height: 30)
-                ]);
-              },
-            )
-          : NotLoggedInScreen(),
+                        SizedBox(height: 30.h),
+                      ]);
+                    },
+                  )
+                : NotLoggedInScreen(),
+          ),
+        ],
+      ),
     );
   }
 }

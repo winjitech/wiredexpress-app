@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wired_express/localization/language_constrants.dart';
 import 'package:wired_express/provider/order_provider.dart';
 import 'package:wired_express/provider/place_order_provider.dart';
@@ -19,11 +20,11 @@ class OrderCancelDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     return Dialog(
       backgroundColor: ColorResources.getScaffoldBackgroundColor(context!),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.r)),
       child: Container(
         decoration: BoxDecoration(
             color: ColorResources.getScaffoldBackgroundColor(context),
-            borderRadius: BorderRadius.circular(15)),
+            borderRadius: BorderRadius.circular(15.r)),
         width: 300,
         child: Consumer2<OrderProvider, PlaceOrderProvider>(
           builder: (context, order, placeOrderProvider, child) {
@@ -31,11 +32,11 @@ class OrderCancelDialog extends StatelessWidget {
               Padding(
                 padding: EdgeInsets.symmetric(
                     horizontal: Dimensions.PADDING_SIZE_LARGE, vertical: 50),
-                child: Text(getTranslated('are_you_sure_to_cancel', context),
-                    style: rubikBold.copyWith(
-                        color:
-                            ColorResources.getTextColor(context)),
-                    textAlign: TextAlign.center),
+                child:Text(
+                  getTranslated('are_you_sure_to_cancel', context),
+                  style: AppTextStyles.h2(context),
+                  textAlign: TextAlign.center,
+                ),
               ),
               Divider(height: 0, color: ColorResources.getHintColor(context)),
               !order.isLoading
@@ -65,16 +66,15 @@ class OrderCancelDialog extends StatelessWidget {
                         },
                         child: Container(
                           padding:
-                              EdgeInsets.all(Dimensions.PADDING_SIZE_SMALL),
+                              EdgeInsets.all(10.r),
                           alignment: Alignment.center,
                           decoration: BoxDecoration(
                               borderRadius: BorderRadius.only(
                                   bottomLeft: Radius.circular(10))),
-                          child: Text(getTranslated('yes', context),
-                              style: rubikBold.copyWith(
-                                  color:
-                                      ColorResources.getTextColor(
-                                          context))),
+                          child: Text(
+                            getTranslated('yes', context),
+                            style: AppTextStyles.h2(context),
+                          ),
                         ),
                       )),
                       Expanded(
@@ -82,21 +82,24 @@ class OrderCancelDialog extends StatelessWidget {
                         onTap: () => Navigator.pop(context),
                         child: Container(
                           padding:
-                              EdgeInsets.all(Dimensions.PADDING_SIZE_SMALL),
+                              EdgeInsets.all(10.r),
                           alignment: Alignment.center,
                           decoration: BoxDecoration(
                               color: ColorResources.getTextColor(
                                   context),
                               borderRadius: BorderRadius.only(
                                   bottomRight: Radius.circular(10))),
-                          child: Text(getTranslated('no', context),
-                              style: rubikBold.copyWith(
-                                  color: ColorResources.getScaffoldColor(context))),
+                          child: Text(
+                            getTranslated('no', context),
+                            style: AppTextStyles.h2(context).copyWith(
+                              color: ColorResources.getScaffoldBackgroundColor(context),
+                            ),
+                          ),
                         ),
                       )),
                     ])
                   :  Padding(
-                padding: EdgeInsets.all(15),
+                padding: EdgeInsets.all(15.r),
                 child: CustomCircularIndicator(),
               ),
             ]);
