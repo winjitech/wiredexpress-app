@@ -12,10 +12,10 @@ import 'package:wired_express/utill/styles.dart';
 import 'package:wired_express/view/base/custom_app_bar.dart';
 import 'package:wired_express/view/screens/payment/widget/remove_card_bottom_sheet.dart';
 
-class UpdateCardSreen extends StatelessWidget {
+class UpdateCardScreen extends StatelessWidget {
   final bool? fromUpdate;
 
-  const UpdateCardSreen({super.key, this.fromUpdate = false});
+  const UpdateCardScreen({super.key, this.fromUpdate = false});
   @override
   Widget build(BuildContext context) {
     // Fetch the token from the provider

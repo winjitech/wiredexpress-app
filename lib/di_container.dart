@@ -103,7 +103,7 @@ Future<void> init() async {
   sl.registerFactory(
       () => LocationProvider(sharedPreferences: sl(), locationRepo: sl()));
   sl.registerFactory(() => ProfileProvider(profileRepo: sl()));
-  sl.registerFactory(() => NotificationProvider(notificationRepo: sl()));
+  sl.registerFactory(() => NotificationProvider(repo: sl()));
   sl.registerFactory(
       () => WishListProvider(wishListRepo: sl(), productRepo: sl()));
   sl.registerFactory(() => CouponProvider(couponRepo: sl()));

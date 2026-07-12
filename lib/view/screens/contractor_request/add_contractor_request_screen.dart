@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:wired_express/data/helper/helpers.dart';
 import 'package:wired_express/data/model/response/config_model.dart';
 import 'package:wired_express/data/model/response/contractor_request_model.dart';
+import 'package:wired_express/data/model/response/opening_hours_model.dart';
 import 'package:wired_express/helper/date_converter.dart';
 import 'package:wired_express/localization/language_constrants.dart';
 import 'package:wired_express/provider/contractor_request_provider.dart';

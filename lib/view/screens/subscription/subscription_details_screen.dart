@@ -388,7 +388,7 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
                                                                                                   Navigator.pop(context);
                                                                                                   if (paymentProvider.paymentCardList!.isEmpty) {
                                                                                                     paymentProvider.cardUpdateLink(context).then((value) {
-                                                                                                      Navigator.push(context, MaterialPageRoute(builder: (_) => UpdateCardSreen()));
+                                                                                                      Navigator.push(context, MaterialPageRoute(builder: (_) => UpdateCardScreen()));
                                                                                                     });
                                                                                                   } else {
                                                                                                     Navigator.pop(context);
@@ -528,7 +528,7 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
                                                                                                   Navigator.pop(context);
                                                                                                   if (paymentProvider.paymentCardList!.isEmpty) {
                                                                                                     paymentProvider.cardUpdateLink(context).then((value) {
-                                                                                                      Navigator.push(context, MaterialPageRoute(builder: (_) => UpdateCardSreen()));
+                                                                                                      Navigator.push(context, MaterialPageRoute(builder: (_) => UpdateCardScreen()));
                                                                                                     });
                                                                                                   } else {
                                                                                                     subscriptionProvider.stripeSubscriptionUser(context, plan.id!, paymentProvider.paymentCardList![0].id!).then((onValue) {
@@ -778,7 +778,7 @@ class _SubscriptionDetailsScreenState extends State<SubscriptionDetailsScreen> {
                                                                 context,
                                                                 MaterialPageRoute(
                                                                     builder: (_) =>
-                                                                        UpdateCardSreen()));
+                                                                        UpdateCardScreen()));
                                                           });
                                                         } else {
                                                           subscriptionProvider

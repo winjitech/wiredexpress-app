@@ -7,6 +7,9 @@ import 'package:wired_express/data/model/response/base/api_response.dart';
 import 'package:wired_express/data/model/response/base/error_response.dart';
 import 'package:wired_express/data/model/response/config_model.dart';
 import 'package:wired_express/data/model/response/delivery_man_model.dart';
+import 'package:wired_express/data/model/response/installment_calculation_result.dart';
+import 'package:wired_express/data/model/response/installment_plan_model.dart';
+import 'package:wired_express/data/model/response/opening_hours_model.dart';
 import 'package:wired_express/data/model/response/order_details_model.dart';
 import 'package:wired_express/data/model/response/response_model.dart';
 import 'package:wired_express/data/model/response/order_model.dart';
@@ -352,6 +355,7 @@ class OrderProvider extends ChangeNotifier {
     _isScheduledOrder = value;
     notifyListeners();
   }
+
   DateTime? _selectedDeliveryDate;
   DateTime? get selectedDeliveryDate => _selectedDeliveryDate;
 
@@ -365,7 +369,6 @@ class OrderProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-
   OpeningHoursModel? _selectedOpeningHour;
   OpeningHoursModel? get selectedOpeningHour => _selectedOpeningHour;
 
@@ -373,10 +376,143 @@ class OrderProvider extends ChangeNotifier {
     _selectedOpeningHour = slot;
     notifyListeners();
   }
+
   void clearSelectedTime() {
     _selectedOpeningHour = null;
     notifyListeners();
   }
 
+  InstallmentPlanModel? _selectedInstallmentPlan;
+  InstallmentPlanModel? get selectedInstallmentPlan => _selectedInstallmentPlan;
 
+  void setSelectedInstallmentPlan(InstallmentPlanModel value) {
+    if (_selectedInstallmentPlan?.months == value.months) return;
+
+    _selectedInstallmentPlan = value;
+    notifyListeners();
+  }
+
+  void clearSelectedInstallmentPlan() {
+    _selectedInstallmentPlan = null;
+    notifyListeners();
+  }
+
+  final TextEditingController downPaymentController =
+      TextEditingController(text: '0');
+  final FocusNode downPaymentFocus = FocusNode();
+  bool _calculatingInstallmentLoading = false;
+  bool get calculatingInstallmentLoading => _calculatingInstallmentLoading;
+
+  InstallmentCalculationResultModel? _installmentResult;
+  InstallmentCalculationResultModel? get installmentResult =>
+      _installmentResult;
+  Future<void> calculateInstallment({
+    required double amount,
+    required double downPayment,
+  }) async {
+    _calculatingInstallmentLoading = true;
+    notifyListeners();
+
+    await Future.delayed(const Duration(milliseconds: 800));
+
+    final plan = _selectedInstallmentPlan!;
+
+    final double financedAmount = amount - downPayment;
+
+    final double rate = (plan.interestRate ?? 0).toDouble();
+
+    final double total = financedAmount + (financedAmount * rate / 100);
+
+    final double monthly = total / plan.months!;
+    if (downPayment >= amount) {
+      _monthlyPayment = 0;
+      notifyListeners();
+      return;
+    }
+    _installmentResult = InstallmentCalculationResultModel(
+      amount: amount,
+      downPayment: downPayment,
+      financedAmount: financedAmount,
+      interestRate: rate,
+      months: plan.months!,
+      totalAmount: total,
+      monthlyPayment: monthly,
+    );
+    _monthlyPayment = monthly;
+    _downPayment = downPayment;
+    _calculatingInstallmentLoading = false;
+    notifyListeners();
+  }
+
+  bool _useInstallment = false;
+  bool get useInstallment => _useInstallment;
+
+  double _monthlyPayment = 0;
+  double get monthlyPayment => _monthlyPayment;
+
+  double _downPayment = 0;
+  double get downPayment => _downPayment;
+  void setUseInstallment(bool value) {
+    _useInstallment = value;
+
+    if (!value) {
+      _selectedInstallmentPlan = null;
+      _monthlyPayment = 0;
+      _downPayment = 0;
+      downPaymentController.text = "0";
+      _installmentResult = null;
+    }
+
+    notifyListeners();
+  }
+
+  String? _installmentError;
+  String? get installmentError => _installmentError;
+
+  bool validateInstallment({
+    required double orderAmount,
+    required String downPaymentText,
+  }) {
+    _installmentError = null;
+
+    if (!_useInstallment) {
+      notifyListeners();
+      return true;
+    }
+
+    if (_selectedInstallmentPlan == null) {
+      _installmentError = "select_installment_plan";
+      notifyListeners();
+      return false;
+    }
+
+    if (downPaymentText.trim().isEmpty) {
+      _installmentError = "enter_down_payment";
+      notifyListeners();
+      return false;
+    }
+
+    final downPayment = double.tryParse(downPaymentText);
+
+    if (downPayment == null) {
+      _installmentError = "invalid_down_payment";
+      notifyListeners();
+      return false;
+    }
+
+    if (downPayment < 0) {
+      _installmentError = "invalid_down_payment";
+      notifyListeners();
+      return false;
+    }
+
+    if (downPayment >= orderAmount) {
+      _installmentError = "down_payment_greater_than_order";
+      notifyListeners();
+      return false;
+    }
+
+    notifyListeners();
+    return true;
+  }
 }

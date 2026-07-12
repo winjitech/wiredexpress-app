@@ -366,7 +366,7 @@
 //                                                                                       Navigator.pop(context);
 //                                                                                       if (paymentProvider.paymentCardList!.isEmpty) {
 //                                                                                         paymentProvider.cardUpdateLink(context).then((value) {
-//                                                                                           Navigator.push(context, MaterialPageRoute(builder: (_) => UpdateCardSreen()));
+//                                                                                           Navigator.push(context, MaterialPageRoute(builder: (_) => UpdateCardScreen()));
 //                                                                                         });
 //                                                                                       } else {
 //                                                                                         Navigator.pop(context);
@@ -511,7 +511,7 @@
 //
 //                                                                                       if (paymentProvider.paymentCardList!.isEmpty) {
 //                                                                                         paymentProvider.cardUpdateLink(context).then((value) {
-//                                                                                           Navigator.push(context, MaterialPageRoute(builder: (_) => UpdateCardSreen()));
+//                                                                                           Navigator.push(context, MaterialPageRoute(builder: (_) => UpdateCardScreen()));
 //                                                                                         });
 //                                                                                       } else {
 //                                                                                         subscriptionProvider.stripeSubscriptionUser(context, plan.id!, paymentProvider.paymentCardList![0].id!).then((onValue) {
@@ -755,7 +755,7 @@
 //                                                         context,
 //                                                         MaterialPageRoute(
 //                                                             builder: (_) =>
-//                                                                 UpdateCardSreen()));
+//                                                                 UpdateCardScreen()));
 //                                                   });
 //                                                 } else {
 //                                                   Navigator.pop(context);

@@ -1,22 +1,15 @@
-import 'dart:async';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wired_express/data/model/response/wishlist_model.dart';
-import 'package:wired_express/helper/responsive_helper.dart';
 import 'package:wired_express/provider/profile_provider.dart';
-import 'package:wired_express/provider/theme_provider.dart';
 import 'package:wired_express/utill/color_resources.dart';
-
 import 'package:flutter/material.dart';
 import 'package:wired_express/localization/language_constrants.dart';
 import 'package:wired_express/provider/auth_provider.dart';
 import 'package:wired_express/provider/wishlist_provider.dart';
 import 'package:wired_express/utill/styles.dart';
 import 'package:wired_express/view/base/circular_indicator_widget.dart';
-import 'package:wired_express/view/base/custom_app_bar.dart';
-import 'package:wired_express/view/base/custom_main_appbar.dart';
 import 'package:wired_express/view/base/no_data_found_view.dart';
-import 'package:wired_express/view/base/no_data_screen.dart';
 import 'package:wired_express/view/base/not_logged_in_screen.dart';
 import 'package:wired_express/view/screens/product/widget/product_widget.dart';
 import 'package:provider/provider.dart';
@@ -31,24 +24,34 @@ class WishListScreen extends StatefulWidget {
 class _WishListScreenState extends State<WishListScreen> {
   TextEditingController _searchController = TextEditingController();
   List<WishlistModel> filteredWishList = [];
+
+  late WishListProvider wishListProvider;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    wishListProvider = Provider.of<WishListProvider>(
+      context,
+      listen: false,
+    );
+  }
+
   @override
   void initState() {
     super.initState();
-    Timer(const Duration(seconds: 0), () {
-      Provider.of<WishListProvider>(context, listen: false)
-          .initWishList(context);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<WishListProvider>().initWishList(context);
     });
   }
 
   @override
   void dispose() {
     _searchController.dispose();
-    filteredWishList =
-        Provider.of<WishListProvider>(context, listen: false).wishList;
+
+    filteredWishList = wishListProvider.wishList;
 
     super.dispose();
   }
-
   void filterWishList(String query) {
     setState(() {
       if (query.isEmpty) {

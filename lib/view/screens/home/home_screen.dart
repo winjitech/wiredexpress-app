@@ -17,15 +17,13 @@ import 'package:wired_express/provider/profile_provider.dart';
 import 'package:wired_express/provider/splash_provider.dart';
 import 'package:wired_express/utill/color_resources.dart';
 import 'package:wired_express/utill/styles.dart';
-import 'package:wired_express/view/base/circular_indicator_widget.dart';
-import 'package:wired_express/view/base/no_data_found_view.dart';
-import 'package:wired_express/view/screens/product/widget/product_widget.dart';
-import 'package:wired_express/view/base/shimmer/product_shimmer.dart';
 import 'package:wired_express/view/screens/categories/widget/categories_view.dart';
 import 'package:wired_express/view/screens/drawer/drawer_screen.dart';
 import 'package:wired_express/view/screens/home/widget/banner_view.dart';
 import 'package:wired_express/view/screens/home/widget/home_header_widget.dart';
+import 'package:wired_express/view/screens/installment/pending_installments_screen.dart';
 import 'package:wired_express/view/screens/nearby_electricians/nearby_electricians_screen.dart';
+import 'package:wired_express/view/screens/payment/awaiting_down_payment_screen.dart';
 import 'package:wired_express/view/screens/product/widget/featured_products_view.dart';
 import 'package:wired_express/view/screens/search/search_screen.dart';
 
@@ -111,12 +109,18 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Scaffold(
             backgroundColor: ColorResources.getScaffoldBackgroundColor(context),
             key: _scaffoldKey,
-            body: Consumer4<ProfileProvider, CustomAuthProvider, SplashProvider, ProductProvider>(
-                builder: (context, profileProv, auth,splashProv,productProv, child) {
+            body: Consumer4<ProfileProvider, CustomAuthProvider, SplashProvider, PlaceOrderProvider>(
+                builder: (context, profileProv, auth,splashProv,placeOrderProv, child) {
                   UserInfoModel? userInfo = profileProv.userInfoModel;
                   UserSubscriptionPlanModel? subscription = userInfo?.userSubscription;
                   SubscriptionPlanModel? subscriptionPlan = subscription?.plan;
-                  List<ProductModel>? featuredProducts = productProv.featuredProductsList??[];
+                  bool hasAwaitingDownPayment = placeOrderProv.awaitingDownPaymentOrderList?.isNotEmpty ?? false;
+                  int awaitingCount = placeOrderProv.awaitingDownPaymentOrderList?.length ?? 0;
+                  int pendingInstallmentCount =
+                      placeOrderProv.pendingInstallmentPayments.length;
+
+                  bool hasPendingInstallments =
+                      pendingInstallmentCount > 0;
                   return Column(
                     children: [
                       HomeHeaderWidget(onMenuPressed: () => showDrawer(),),
@@ -257,7 +261,103 @@ class _HomeScreenState extends State<HomeScreen> {
                                       ),
                                     ),
                                   ), ],
-
+                                if (auth.isLoggedIn()! && awaitingCount > 0) ...[
+                                  SizedBox(height: 20.h),
+                                  GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (_) => AwaitingDownPaymentScreen(),
+                                        ),
+                                      );
+                                    },
+                                    child: Container(
+                                      padding: EdgeInsets.all(15.r),
+                                      decoration: BoxDecoration(
+                                        color: Colors.orange.withOpacity(0.05),
+                                        borderRadius: BorderRadius.circular(10.r),
+                                        border: Border.all(color: Colors.orange),
+                                      ),
+                                      child: Row(
+                                        children: [
+                                          Icon(Icons.payments_outlined, color: Colors.orange),
+                                          SizedBox(width: 5.w),
+                                          Expanded(
+                                            child: Text(
+                                              awaitingCount == 1
+                                                  ? getTranslated('one_order_requires_down_payment', context)
+                                                  : getTranslated(
+                                                'multiple_orders_require_down_payment',
+                                                context,
+                                              )
+                                                  .replaceFirst('{count}', awaitingCount.toString()),
+                                              style: AppTextStyles.h6(context).copyWith(
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                            ),
+                                          ),
+                                          Icon(Icons.arrow_forward_ios, size: 16.sp , color: ColorResources.getTextColor(context),),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                                if (auth.isLoggedIn()! && hasPendingInstallments) ...[
+                                  SizedBox(height: 20.h),
+                                  GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (_) => PendingInstallmentsScreen(),
+                                        ),
+                                      );
+                                    },
+                                    child: Container(
+                                      padding: EdgeInsets.all(15.r),
+                                      decoration: BoxDecoration(
+                                        color: Colors.red.withOpacity(.05),
+                                        borderRadius: BorderRadius.circular(10.r),
+                                        border: Border.all(color: Colors.red),
+                                      ),
+                                      child: Row(
+                                        children: [
+                                          Icon(
+                                            Icons.event_note_outlined,
+                                            color: Colors.red,
+                                          ),
+                                          SizedBox(width: 5.w),
+                                          Expanded(
+                                            child: Text(
+                                              pendingInstallmentCount == 1
+                                                  ? getTranslated(
+                                                'one_installment_payment_pending',
+                                                context,
+                                              )
+                                                  : getTranslated(
+                                                'multiple_installment_payments_pending',
+                                                context,
+                                              )
+                                                  .replaceFirst(
+                                                '{count}',
+                                                pendingInstallmentCount.toString(),
+                                              ),
+                                              style: AppTextStyles.h6(context).copyWith(
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                            ),
+                                          ),
+                                          Icon(
+                                            Icons.arrow_forward_ios,
+                                            size: 16.sp,
+                                            color: ColorResources.getTextColor(context),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ],
                                 SizedBox(height: 20.h,),
                                 CategoriesView(),
                                 SizedBox(height: 20.h,),

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wired_express/data/model/body/place_order_body.dart';
 import 'package:wired_express/data/model/response/config_model.dart';
+import 'package:wired_express/data/model/response/opening_hours_model.dart';
 import 'package:wired_express/helper/date_converter.dart';
 import 'package:wired_express/localization/language_constrants.dart';
 import 'package:wired_express/provider/auth_provider.dart';
@@ -49,20 +50,20 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     super.initState();
     _isLoggedIn =
         Provider.of<CustomAuthProvider>(context, listen: false).isLoggedIn();
-    final orderProvider = Provider.of<OrderProvider>(context, listen: false);
+    final orderProv = Provider.of<OrderProvider>(context, listen: false);
     final profile = Provider.of<ProfileProvider>(context, listen: false);
     _weekStart = DateTime.now();
 
     Timer(Duration(seconds: 0), () async {
-      orderProvider.setScheduledOrder(false);
-      orderProvider.clearSelectDeliveryDate();
-      orderProvider.clearSelectedTime();
+      orderProv.setScheduledOrder(false);
+      orderProv.clearSelectDeliveryDate();
+      orderProv.clearSelectedTime();
       if (_isLoggedIn!) {
         if (profile.userInfoModel == null) {
           profile.getUserInfo(context);
         }
         Provider.of<PaymentProvider>(context, listen: false).getPaymentCardList(context, profile.userInfoModel!.id!);
-        orderProvider.clearPrevData();
+        orderProv.clearPrevData();
       }
     });
   }
@@ -79,7 +80,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             child: _isLoggedIn!
                 ? Consumer5<OrderProvider, CartProvider, ProfileProvider,
                     PaymentProvider, SplashProvider>(
-                    builder: (context, orderProvider, cartProvider, profileProvider,
+                    builder: (context, orderProv, cartProvider, profileProvider,
                         paymentProvider,splash , child) {
                       ConfigModel config = splash.configModel!;
                       final bool hasServiceOnCart = cartProvider.cartList.any(
@@ -88,7 +89,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
 
                       final bool isScheduled =
-                          hasServiceOnCart || (orderProvider.isScheduledOrder ?? false);
+                          hasServiceOnCart || (orderProv.isScheduledOrder ?? false);
 
                       final bool canChooseDeliveryType =
                           !hasServiceOnCart &&
@@ -98,9 +99,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                           hasServiceOnCart ||
                               (profileProvider.userInfoModel?.scheduledDelivery == 1);
                       if (hasServiceOnCart &&
-                          orderProvider.isScheduledOrder != true) {
+                          orderProv.isScheduledOrder != true) {
                         WidgetsBinding.instance.addPostFrameCallback((_) {
-                          orderProvider.setScheduledOrder(true);
+                          orderProv.setScheduledOrder(true);
                         });
                       }
                       List<OpeningHoursModel> workingHours = config.openingHours??[];
@@ -169,7 +170,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                                       Expanded(
                                                         child:_buildSchedulingOption(
                                                           context:context,
-                                                          orderProvider:orderProvider,
+                                                          orderProv:orderProv,
                                                           value:0,
                                                           textKey:'same_day',
                                                         ),
@@ -180,7 +181,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                                       Expanded(
                                                         child:_buildSchedulingOption(
                                                           context:context,
-                                                          orderProvider:orderProvider,
+                                                          orderProv:orderProv,
                                                           value:1,
                                                           textKey:'schedule',
                                                         ),
@@ -194,7 +195,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                                 if (isScheduled)
                                                   _buildScheduleWidget(
                                                     context,
-                                                    orderProvider,
+                                                    orderProv,
                                                     workingDays,
                                                     workingHours,
                                                   ),
@@ -251,7 +252,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                                                       MaterialPageRoute(
                                                                           builder:
                                                                               (_) =>
-                                                                                  UpdateCardSreen()));
+                                                                                  UpdateCardScreen()));
                                                                 });
                                                               },
                                                               child: Container(
@@ -395,7 +396,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                                                               )
                                                                             : GestureDetector(
                                                                                 onTap: () => paymentProvider.cardUpdateLink(context).then((value) {
-                                                                                  Navigator.push(context, MaterialPageRoute(builder: (_) => UpdateCardSreen()));
+                                                                                  Navigator.push(context, MaterialPageRoute(builder: (_) => UpdateCardScreen()));
                                                                                 }),
                                                                                 child: Padding(
                                                                                   padding: EdgeInsets.all(5.r),
@@ -419,46 +420,30 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                 width: MediaQuery.of(context).size.width,
                                 alignment: Alignment.center,
                                 padding: EdgeInsets.all(10.r),
-                                child: !orderProvider.isLoading
+                                child: !orderProv.isLoading
                                     ? Builder(
                                         builder: (context) => CustomButton(
                                             text: getTranslated(
                                                 'confirm_order', context),
                                           onTap: () {
-                                            log("Date: ${orderProvider.selectedDeliveryDate}");
-                                            log("Time: ${orderProvider.selectedOpeningHour?.start}");
-                                            log("Time End: ${orderProvider.selectedOpeningHour?.end}");
-
-                                            // Validate scheduled order
                                             if (isScheduled) {
-                                              if (orderProvider.selectedDeliveryDate == null) {
-                                                showCustomSnackBar(
-                                                  getTranslated('select_delivery_date_required', context),
-                                                  context,
-                                                );
+                                              if (orderProv.selectedDeliveryDate == null) {
+                                                showCustomSnackBar(getTranslated('select_delivery_date_required', context), context);
                                                 return;
                                               }
 
-                                              if (orderProvider.selectedOpeningHour == null) {
-                                                showCustomSnackBar(
-                                                  getTranslated('select_delivery_time_required', context),
-                                                  context,
-                                                );
+                                              if (orderProv.selectedOpeningHour == null) {
+                                                showCustomSnackBar(getTranslated('select_delivery_time_required', context), context);
                                                 return;
                                               }
                                             }
 
-                                            // Validate payment card
-                                            if (paymentProvider.paymentCardList == null ||
-                                                paymentProvider.paymentCardList!.isEmpty) {
-                                              showCustomSnackBar(
-                                                getTranslated('please_add_your_card_details', context),
-                                                context,
-                                              );
+                                            if ((paymentProvider.paymentCardList == null || paymentProvider.paymentCardList!.isEmpty) && !orderProv.useInstallment) {
+                                              showCustomSnackBar(getTranslated('please_add_your_card_details', context), context);
                                               return;
                                             }
 
-                                            final placeOrder = PlaceOrderBody(
+                                            PlaceOrderBody placeOrder = PlaceOrderBody(
                                               cart: widget.orderBody!.cart!,
                                               couponDiscountAmount: widget.orderBody!.couponDiscountAmount!,
                                               usePointsDiscountAmount: widget.orderBody!.usePointsDiscountAmount!,
@@ -470,27 +455,22 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                               orderType: widget.orderBody!.orderType!,
                                               paymentMethod: 'credit_card',
                                               orderNote: _noteController.text,
-                                              deliveryDate: isScheduled
-                                                  ? DateConverter.formatDate(
-                                                context,
-                                                orderProvider.selectedDeliveryDate!,
-                                              )
-                                                  : "",
-                                              deliveryTime: isScheduled
-                                                  ? "${orderProvider.selectedOpeningHour!.start}-${orderProvider.selectedOpeningHour!.end}"
-                                                  : "",
+                                              deliveryDate: isScheduled ? DateConverter.formatDate(context, orderProv.selectedDeliveryDate!,) : "",
+                                              deliveryTime: isScheduled ? "${orderProv.selectedOpeningHour!.start}-${orderProv.selectedOpeningHour!.end}" : "",
                                               usePoints: widget.orderBody!.usePoints!,
                                               remainingUserPoints: widget.orderBody!.remainingUserPoints!,
                                               deliveryCharge: widget.orderBody!.deliveryCharge!,
-                                              priorityDelivery:
-                                              profileProvider.userInfoModel!.priorityBulkOrderFulfillment ?? 0,
-                                              cardId: paymentProvider.paymentCardList!.first.id!,
-                                              // cardId: ""
+                                              priorityDelivery: profileProvider.userInfoModel!.priorityBulkOrderFulfillment ?? 0,
+                                              cardId: (paymentProvider.paymentCardList?.isNotEmpty ?? false)
+                                                  ? paymentProvider.paymentCardList!.first.id!
+                                                  : "",
+                                              useInstallment: orderProv.useInstallment,
+                                              months: orderProv.selectedInstallmentPlan?.months,
+                                              downPayment: orderProv.useInstallment ? orderProv.downPayment : null,
+                                              monthlyPayment: orderProv.useInstallment ? orderProv.monthlyPayment : null,
                                             );
-
                                             log("placeOrder == ${placeOrder.toJson()}");
-
-                                            orderProvider.placeOrder(placeOrder, _callback);
+                                            orderProv.placeOrder(placeOrder, _callback);
                                           },),
                                       )
                                     : CustomCircularIndicator(),
@@ -509,19 +489,19 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
   Widget _buildSchedulingOption(
       {required BuildContext context,
-      required OrderProvider orderProvider,
+      required OrderProvider orderProv,
       required int value,
       required String textKey}) {
-    bool selected = (orderProvider.isScheduledOrder ?? false) == (value == 1);
+    bool selected = (orderProv.isScheduledOrder ?? false) == (value == 1);
     return GestureDetector(
       onTap: () {
         if (value == 1) {
-          orderProvider.setScheduledOrder(true);
+          orderProv.setScheduledOrder(true);
         } else {
-          orderProvider.setScheduledOrder(false);
+          orderProv.setScheduledOrder(false);
 
-          orderProvider.clearSelectDeliveryDate();
-          orderProvider.clearSelectedTime();
+          orderProv.clearSelectDeliveryDate();
+          orderProv.clearSelectedTime();
         }
       },
       child: Row(
@@ -555,7 +535,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   }
   Widget _buildScheduleWidget(
       BuildContext context,
-      OrderProvider orderProvider,
+      OrderProvider orderProv,
       List<String> workingDays,
       List<OpeningHoursModel> workingHours,
       ) {
@@ -645,16 +625,16 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
             enabled = enabled && !isPastOrToday;
             bool selected =
-                orderProvider.selectedDeliveryDate != null &&
+                orderProv.selectedDeliveryDate != null &&
                     DateUtils.isSameDay(
-                      orderProvider.selectedDeliveryDate!,
+                      orderProv.selectedDeliveryDate!,
                       date,
                     );
 
             return GestureDetector(
               onTap: enabled
                   ? () {
-                orderProvider.setSelectDeliveryDate(date);
+                orderProv.setSelectDeliveryDate(date);
               }
                   : null,
               child: Opacity(
@@ -732,12 +712,12 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           itemBuilder: (context, index) {
 
             OpeningHoursModel slot = workingHours[index];
-            bool selected = orderProvider.selectedOpeningHour == slot;
+            bool selected = orderProv.selectedOpeningHour == slot;
 
 
             return GestureDetector(
               onTap: () {
-                orderProvider.setSelectedTime(slot);
+                orderProv.setSelectedTime(slot);
               },
               child: Container(
                 margin: EdgeInsets.only(bottom: 12.h),

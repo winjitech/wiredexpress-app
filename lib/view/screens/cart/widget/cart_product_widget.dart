@@ -36,7 +36,7 @@ class CartProductWidget extends StatelessWidget {
         ProfileProvider>(
       builder: (context, productProvider, cartProvider, splashProvider,
           profileProvider, child) {
-        print('cart here -- ${jsonEncode(cart)}');
+        // print('cart here -- ${jsonEncode(cart)}');
 
         ProductModel product = cart!.product!;
         int? quantity = cart!.quantity ?? 1;
@@ -76,23 +76,23 @@ class CartProductWidget extends StatelessWidget {
                     productPlanDiscountModel.discount!,
                     productPlanDiscountModel.discountType!)
                 : originalPrice;
-        print(
-            "priceAfterProductPlanDiscount -- $priceAfterProductPlanDiscount");
+        // print(
+        //     "priceAfterProductPlanDiscount -- $priceAfterProductPlanDiscount");
         double priceAfterNormalDiscountOnProduct =
             PriceConverter.convertWithDiscount(context, originalPrice,
                 product.discount!, product!.discountType!);
-        print(
-            "priceAfterNormalDiscountOnProduct -- $priceAfterNormalDiscountOnProduct");
+        // print(
+        //     "priceAfterNormalDiscountOnProduct -- $priceAfterNormalDiscountOnProduct");
 
         double priceAfterTiredPricing = PriceConverter.getProductFinalPrice(
                 context, tiredPricing, originalPrice, quantity ?? 1) ??
             0.0;
-        print("priceAfterTiredPricing -- $priceAfterTiredPricing");
+        // print("priceAfterTiredPricing -- $priceAfterTiredPricing");
         double finalPriceWithoutQuantity = min(
           priceAfterProductPlanDiscount,
           min(priceAfterNormalDiscountOnProduct, priceAfterTiredPricing),
         );
-        print("finalPriceWithoutQuantity -- $finalPriceWithoutQuantity");
+        // print("finalPriceWithoutQuantity -- $finalPriceWithoutQuantity");
         String discountMessage;
 
         if (finalPriceWithoutQuantity == priceAfterProductPlanDiscount &&
@@ -112,18 +112,18 @@ class CartProductWidget extends StatelessWidget {
           discountMessage = "none";
         }
 
-        print(discountMessage);
+        // print(discountMessage);
 
         double finalPriceWithQuantity = finalPriceWithoutQuantity * quantity!;
         double originalPriceWithQuantity = originalPrice * quantity!;
-        print('Final Price With Quantity: $finalPriceWithQuantity');
-        print('Original Price With Quantity: $originalPriceWithQuantity');
+        // print('Final Price With Quantity: $finalPriceWithQuantity');
+        // print('Original Price With Quantity: $originalPriceWithQuantity');
 
         String currency = splashProvider.configModel!.currencySymbol ?? '\$';
         bool haveDiscount = finalPriceWithQuantity != originalPriceWithQuantity;
         double taxAmount = PriceConverter.calculateTaxAmount(
             finalPriceWithoutQuantity, product!.tax!, product!.taxType!);
-        print("taxAmount == ${taxAmount * quantity}");
+        // print("taxAmount == ${taxAmount * quantity}");
         return GestureDetector(
           onTap: () => Navigator.push(
             context,
@@ -146,31 +146,22 @@ class CartProductWidget extends StatelessWidget {
                   ClipRRect(
                     borderRadius: BorderRadius.circular(10.r),
                     child: CachedNetworkImage(
-                      height: 100.h,
-                      width: 100.w,
+                      height: 80.h,
+                      width: 80.w,
                       fit: BoxFit.cover,
-                      imageUrl:
-                          '${splashProvider.baseUrls!.productImageUrl}/${product.image}',
-                      cacheKey:
-                          '${splashProvider.baseUrls!.productImageUrl}/${product.image}',
-                    ),
-                  ),
-                   SizedBox(width: 20.w),
-                  // Product Details
+                      imageUrl: '${splashProvider.baseUrls!.productImageUrl}/${product.image}',
+                      cacheKey: '${splashProvider.baseUrls!.productImageUrl}/${product.image}'),),
+                   SizedBox(width: 15.w),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Text(
-                          product.name!,
-                          maxLines: 2,
+                          product.name!, maxLines: 2,
                           overflow: TextOverflow.ellipsis,
-                          style: AppTextStyles.h2(context).copyWith(
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        SizedBox(height: 30.h),
+                          style: AppTextStyles.h2(context).copyWith(fontWeight: FontWeight.w600),),
+                        SizedBox(height: 5.h),
                         Align(
                           alignment: Alignment.bottomLeft,
                           child: Row(
@@ -220,21 +211,18 @@ class CartProductWidget extends StatelessWidget {
                                                   isError: false);
                                             },
                                             child: Container(
-                                              width: 25.w,
-                                              height: 25.h,
-                                              decoration: BoxDecoration(
-                                                  color: ColorResources
-                                                          .getTextColor(context)
-                                                      .withOpacity(0.2),
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          50)),
-                                              child: Icon(
-                                                Icons.delete,
-                                                size: 20.sp,
-                                                color:
-                                                    ColorResources.getTextColor(
-                                                        context),
+
+                                              padding: EdgeInsets.all(5.r),
+                                              decoration: BoxDecoration(color: ColorResources.getTextColor(context).withOpacity(0.2),
+                                                  shape: BoxShape.circle),
+                                              child: Center(
+                                                child: Icon(
+                                                  Icons.delete,
+                                                  size: 20.sp,
+                                                  color:
+                                                      ColorResources.getTextColor(
+                                                          context),
+                                                ),
                                               ),
                                             ),
                                           )
@@ -248,12 +236,10 @@ class CartProductWidget extends StatelessWidget {
                                                 if (quantity > 1) {
                                                   cartProvider.updateQuantity(
                                                       cartIndex!, quantity - 1);
-                                                  CartModel cartModel =
-                                                      CartModel(
+                                                  CartModel cartModel = CartModel(
                                                           id: cart!.id,
                                                           productId: product.id,
-                                                          quantity:
-                                                              quantity - 1,
+                                                          quantity: quantity - 1,
                                                           product: product);
 
                                                   cartProvider
@@ -271,21 +257,18 @@ class CartProductWidget extends StatelessWidget {
                                               }
                                             },
                                             child: Container(
-                                              width: 25.w,
-                                              height: 25.h,
-                                              decoration: BoxDecoration(
-                                                  color: ColorResources
-                                                          .getTextColor(context)
-                                                      .withOpacity(0.2),
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          50)),
-                                              child: Icon(
-                                                Icons.remove,
-                                                size: 20.sp,
-                                                color:
-                                                    ColorResources.getTextColor(
-                                                        context),
+
+                                              padding: EdgeInsets.all(5.r),
+                                              decoration: BoxDecoration(color: ColorResources.getTextColor(context).withOpacity(0.2),
+                                                  shape: BoxShape.circle),
+                                              child: Center(
+                                                child: Icon(
+                                                  Icons.remove,
+                                                  size: 20.sp,
+                                                  color:
+                                                      ColorResources.getTextColor(
+                                                          context),
+                                                ),
                                               ),
                                             ),
                                           ),
@@ -293,9 +276,8 @@ class CartProductWidget extends StatelessWidget {
                                       padding: EdgeInsets.symmetric(horizontal: 10.w,),
                                       child: Text(
                                         quantity.toString(),
-                                        style: AppTextStyles.h6(
+                                        style: AppTextStyles.h4(
                                           context,
-                                          fontSize: 25.sp,
                                         ),
                                       ),
                                     ),
@@ -317,16 +299,17 @@ class CartProductWidget extends StatelessWidget {
                                         });
                                       },
                                       child: Container(
-                                        width: 25.w,
-                                        height: 25.h,
-                                        decoration: BoxDecoration(
-                                          color: ColorResources.getTextColor(context).withOpacity(0.2),
-                                          borderRadius: BorderRadius.circular(50.r)),
-                                        child: Icon(
-                                          Icons.add,
-                                          size: 20.sp,
-                                          color: ColorResources.getTextColor(
-                                              context),
+
+                                        padding: EdgeInsets.all(5.r),
+                                        decoration: BoxDecoration(color: ColorResources.getTextColor(context).withOpacity(0.2),
+                                            shape: BoxShape.circle),
+                                        child: Center(
+                                          child: Icon(
+                                            Icons.add,
+                                            size: 20.sp,
+                                            color: ColorResources.getTextColor(
+                                                context),
+                                          ),
                                         ),
                                       ),
                                     ),

@@ -2,7 +2,9 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:wired_express/data/model/response/base/api_response.dart';
+import 'package:wired_express/data/model/response/base/error_response.dart';
 import 'package:wired_express/data/model/response/product_model.dart';
 import 'package:wired_express/data/model/response/response_model.dart';
 import 'package:wired_express/data/model/response/signup_model.dart';
@@ -11,6 +13,7 @@ import 'package:wired_express/data/repository/profile_repo.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:wired_express/provider/localization_provider.dart';
 import 'package:wired_express/utill/app_constants.dart';
 import 'package:async/src/delegate/stream.dart';
 
@@ -36,14 +39,26 @@ class ProfileProvider with ChangeNotifier {
   }
 
   Future<ResponseModel> getUserInfo(BuildContext? context) async {
+    final localizationProvider = Provider.of<LocalizationProvider>(
+      context!,
+      listen: false,
+    );
     ResponseModel _responseModel;
     ApiResponse apiResponse = await profileRepo!.getUserInfo();
     if (apiResponse.response != null &&
         apiResponse.response!.statusCode == 200) {
+
       _userInfoModel = UserInfoModel.fromJson(apiResponse.response!.data);
       SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setInt('my_defined_user_id', _userInfoModel!.id!);
       _responseModel = ResponseModel(true, 'successful');
+      updateUserLanguageCode(
+        localizationProvider.locale.languageCode,
+      );
+      updateUserPlatformType(
+        context,
+        Platform.isIOS ? "ios" : "android",
+      );
     } else {
       String _errorMessage;
       if (apiResponse.error is String) {
@@ -72,10 +87,8 @@ class ProfileProvider with ChangeNotifier {
   Future<http.StreamedResponse> updatePersonalInfo(
       String token, SignUpModel signUpdModel) async {
     _isLoading = true;
-    http.MultipartRequest request = http.MultipartRequest(
-        'POST',
-        Uri.parse(
-            '${AppConstants.baseUrl}${AppConstants.updateProfileUrl}'));
+    http.MultipartRequest request = http.MultipartRequest('POST',
+        Uri.parse('${AppConstants.baseUrl}${AppConstants.updateProfileUrl}'));
     _isLoading = true;
 
     request.headers
@@ -130,6 +143,78 @@ class ProfileProvider with ChangeNotifier {
       _responseModel = ResponseModel(
           false, '${response.statusCode} ${response.reasonPhrase}');
       print('${response.statusCode} ${response.reasonPhrase}');
+    }
+    notifyListeners();
+    return _responseModel;
+  }
+
+  bool? _updateUserLanguageCodeLoading = false;
+  bool? get updateUserLanguageCodeLoading => _updateUserLanguageCodeLoading;
+  Future<ResponseModel> updateUserLanguageCode(String userLanguageCode) async {
+    _updateUserLanguageCodeLoading = true;
+    notifyListeners();
+    ApiResponse apiResponse = await profileRepo!.updateUserLanguageCode(
+      userLanguageCode,
+    );
+
+    ResponseModel responseModel;
+    if (apiResponse.response != null &&
+        apiResponse.response!.statusCode == 200) {
+      _updateUserLanguageCodeLoading = false;
+      notifyListeners();
+      responseModel = ResponseModel(
+        true,
+        apiResponse.response!.data["message"],
+      );
+    } else {
+      _updateUserLanguageCodeLoading = false;
+      notifyListeners();
+      String? errorMessage;
+      if (apiResponse.error is String?) {
+        print(apiResponse.error.toString());
+        errorMessage = apiResponse.error.toString();
+      } else {
+        _updateUserLanguageCodeLoading = false;
+        notifyListeners();
+        ErrorResponse errorResponse = apiResponse.error;
+        // print(errorResponse.errors![0].message);
+        errorMessage = errorResponse.errors![0].message;
+      }
+      responseModel = ResponseModel(false, errorMessage!);
+    }
+    return responseModel;
+  }
+
+  bool _updateUserPlatformTypeLoading = false;
+  bool get updateUserPlatformTypeLoading => _updateUserPlatformTypeLoading;
+
+  Future<ResponseModel> updateUserPlatformType(
+    BuildContext? context,
+    String platformType,
+  ) async {
+    _updateUserPlatformTypeLoading = true;
+    notifyListeners();
+    ResponseModel _responseModel;
+    ApiResponse apiResponse = await profileRepo!.updateUserPlatformType(
+      platformType,
+    );
+    if (apiResponse.response != null &&
+        apiResponse.response!.statusCode == 200) {
+      _responseModel = ResponseModel(true, 'successful');
+      _updateUserPlatformTypeLoading = false;
+      notifyListeners();
+    } else {
+      String _errorMessage;
+      if (apiResponse.error is String) {
+        _errorMessage = apiResponse.error.toString();
+      } else {
+        _errorMessage = apiResponse.error.errors[0].message;
+      }
+      print(_errorMessage);
+      _responseModel = ResponseModel(false, _errorMessage);
+      _updateUserPlatformTypeLoading = false;
+      notifyListeners();
+      // ApiChecker.checkApi(context, apiResponse);
     }
     notifyListeners();
     return _responseModel;

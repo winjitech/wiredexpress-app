@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:wired_express/helper/responsive_helper.dart';
 import 'package:wired_express/localization/language_constrants.dart';
 import 'package:wired_express/provider/auth_provider.dart';
 import 'package:wired_express/provider/payment_provider.dart';
@@ -10,7 +9,6 @@ import 'package:wired_express/provider/theme_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:wired_express/provider/chat_provider.dart';
 import 'package:wired_express/provider/coupon_provider.dart';
-import 'package:wired_express/provider/notification_provider.dart';
 import 'package:wired_express/provider/splash_provider.dart';
 import 'package:wired_express/view/base/circular_indicator_widget.dart';
 import 'package:wired_express/view/base/custom_button.dart';
@@ -20,18 +18,17 @@ import 'package:wired_express/view/screens/auth/login_screen.dart';
 import 'package:wired_express/view/screens/chat/chat_screen.dart';
 import 'package:wired_express/view/screens/contractor_request/contractor_requests_screen.dart';
 import 'package:wired_express/view/screens/coupon/coupon_screen.dart';
+import 'package:wired_express/view/screens/installment/installment_calculator_screen.dart';
 import 'package:wired_express/view/screens/language/choose_language_screen.dart';
 import 'package:wired_express/view/screens/menu/widget/confirm_delete_account_bottom_sheet.dart';
 import 'package:wired_express/view/screens/notification/notification_screen.dart';
 import 'package:wired_express/view/screens/payment/payment_details_screen.dart';
-import 'package:wired_express/view/screens/payment/update_card_screen.dart';
 import 'package:wired_express/view/screens/profile/change_pass_screen.dart';
 import 'package:wired_express/view/screens/profile/profile_screen.dart';
 import 'package:wired_express/view/screens/subscription/subscription_screen.dart';
 import 'package:wired_express/view/screens/support/support_screen.dart';
 import 'package:wired_express/view/screens/terms/terms_screen.dart';
 import 'package:wired_express/provider/home_provider.dart';
-import 'package:wired_express/utill/dimensions.dart';
 import 'package:wired_express/utill/images.dart';
 import 'package:wired_express/utill/styles.dart';
 import 'package:wired_express/view/screens/menu/widget/sign_out_confirmation_dialog.dart';
@@ -164,9 +161,9 @@ class _MenuScreenState extends State<MenuScreen> {
                                       ),
                                     ],
                                   ),
-                                  activeColor:
-                                      ColorResources.getPrimaryColor(
-                                          context)),
+                                inactiveThumbColor: ColorResources.getTextColor(context),
+                                inactiveTrackColor: ColorResources.getTextFieldFillColor(context),
+                                activeColor: ColorResources.getPrimaryColor(context).withOpacity(1),),
                               ListTile(
                                   onTap: () => Navigator.push(
                                       context,
@@ -226,7 +223,7 @@ class _MenuScreenState extends State<MenuScreen> {
                                     //           context,
                                     //           MaterialPageRoute(
                                     //               builder: (_) =>
-                                    //                   UpdateCardSreen())));
+                                    //                   UpdateCardScreen())));
                                     // } else {
                                     //   paymentProvider
                                     //       .cardUpdateLink(context)
@@ -234,7 +231,7 @@ class _MenuScreenState extends State<MenuScreen> {
                                     //           context,
                                     //           MaterialPageRoute(
                                     //               builder: (_) =>
-                                    //                   UpdateCardSreen(
+                                    //                   UpdateCardScreen(
                                     //                       fromUpdate:
                                     //                           true))));
                                     // }
@@ -274,6 +271,30 @@ class _MenuScreenState extends State<MenuScreen> {
                                   title: Text(
                                     getTranslated(
                                         'contractor_zone_requests', context),
+                                    style: AppTextStyles.h4(context),
+                                  ),
+                                ),
+
+                              if (_isLoggedIn)
+                                ListTile(
+                                  onTap: () => Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (BuildContext?
+                                          context) =>
+                                              InstallmentCalculatorScreen())),
+                                  leading: Icon(  Icons.calculate_rounded,
+                                      color: ColorResources.getTextColor(
+                                          context)),
+                                  trailing: Icon(
+                                    Icons.arrow_forward_ios_rounded,
+                                    size: 17.sp,
+                                    color: ColorResources.getTextColor(
+                                        context),
+                                  ),
+                                  title: Text(
+                                    getTranslated(
+                                        'installment_calculator', context),
                                     style: AppTextStyles.h4(context),
                                   ),
                                 ),
@@ -384,16 +405,12 @@ class _MenuScreenState extends State<MenuScreen> {
                               ),
                               ListTile(
                                 onTap: () {
-                                  Provider.of<NotificationProvider>(
-                                          context,
-                                          listen: false)
-                                      .initNotificationList(context)
-                                      .then((value) => Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (BuildContext?
-                                                      context) =>
-                                                  NotificationScreen())));
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (BuildContext?
+                                          context) =>
+                                              NotificationsScreen()));
                                 },
                                 leading: Icon(
                                   Icons.notifications_none_rounded,

@@ -45,6 +45,7 @@ import 'package:flutter_localizations/src/cupertino_localizations.dart';
 import 'package:flutter_localizations/src/widgets_localizations.dart';
 import 'package:flutter_localizations/src/material_localizations.dart';
 import 'package:timezone/data/latest.dart' as tz;
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
@@ -131,7 +132,8 @@ class MyApp extends StatefulWidget {
   MyApp(
       {@required this.orderId, @required this.isWeb, @required this.screenId});
 
-  static final navigatorKey = GlobalKey<NavigatorState>();
+  static final GlobalKey<NavigatorState> navigatorKey =
+  GlobalKey<NavigatorState>();
 
   @override
   _MyAppState createState() => _MyAppState();
@@ -185,7 +187,7 @@ class _MyAppState extends State<MyApp> {
                     ? splashProvider.configModel!.storeName ?? ''
                     : AppConstants.appName,
                 debugShowCheckedModeBanner: false,
-                navigatorKey: MyApp.navigatorKey,
+          navigatorKey: navigatorKey,
           theme: themeProvider.darkTheme ? dark : light,
                 locale: Provider.of<LocalizationProvider>(context).locale,
                 localizationsDelegates: [

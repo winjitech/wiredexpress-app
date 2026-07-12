@@ -97,7 +97,7 @@ class _PaymentDetailsScreenState extends State<PaymentDetailsScreen> {
                                                                   context,
                                                                   MaterialPageRoute(
                                                                       builder: (_) =>
-                                                                          UpdateCardSreen()));
+                                                                          UpdateCardScreen()));
                                                             });
                                                           },
                                                           child: Container(
@@ -258,7 +258,7 @@ class _PaymentDetailsScreenState extends State<PaymentDetailsScreen> {
                                                                                   .then((value) {
                                                                                 Navigator.push(
                                                                                     context,
-                                                                                    MaterialPageRoute(builder: (_) => UpdateCardSreen()));
+                                                                                    MaterialPageRoute(builder: (_) => UpdateCardScreen()));
                                                                               }),
                                                                               child:
                                                                                   Padding(

@@ -50,4 +50,62 @@ class PlaceOrderRepo {
       return ApiResponse.withError(ApiErrorHandler.getMessage(e));
     }
   }
+
+  Future<ApiResponse> getAwaitingDownPaymentOrdersList() async {
+    try {
+      final response =
+          await dioClient!.get(AppConstants.awaitingDownPaymentOrderListUrl);
+      return ApiResponse.withSuccess(response);
+    } catch (e) {
+      return ApiResponse.withError(ApiErrorHandler.getMessage(e));
+    }
+  }
+
+  Future<ApiResponse> payPendingDownPayment({
+    required int orderId,
+    required double amount,
+    required String cardId,
+  }) async {
+    try {
+      final response = await dioClient!.post(
+        AppConstants.payDownPaymentUrl,
+        data: {
+          "order_id": orderId,
+          "down_payment": amount,
+          "card_id": cardId,
+        },
+      );
+
+      return ApiResponse.withSuccess(response);
+    } catch (e) {
+      return ApiResponse.withError(ApiErrorHandler.getMessage(e));
+    }
+  }
+  Future<ApiResponse> getPendingInstallmentPayments() async {
+    try {
+      final response = await dioClient!
+          .get(AppConstants.pendingInstallmentPaymentsUrl);
+
+      return ApiResponse.withSuccess(response);
+    } catch (e) {
+      return ApiResponse.withError(ApiErrorHandler.getMessage(e));
+    }
+  }Future<ApiResponse> payPendingInstallment({
+    required int installmentPaymentId,
+    required String cardId,
+  }) async {
+    try {
+      final response = await dioClient!.post(
+        AppConstants.payPendingInstallmentUrl,
+        data: {
+          "payment_id": installmentPaymentId,
+          "card_id": cardId,
+        },
+      );
+
+      return ApiResponse.withSuccess(response);
+    } catch (e) {
+      return ApiResponse.withError(ApiErrorHandler.getMessage(e));
+    }
+  }
 }

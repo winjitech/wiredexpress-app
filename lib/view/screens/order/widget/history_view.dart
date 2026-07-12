@@ -211,8 +211,7 @@ class _HistoryViewState extends State<HistoryView> {
                                                                             height:
                                                                                 1,
                                                                           ),
-                                                                          Text(
-                                                                            '${Helpers.formatTextStatus(order.orderStatus!)}',
+                                                                          Text(getTranslated(order.orderStatus!, context),
                                                                             maxLines:
                                                                                 1,
                                                                             overflow:
@@ -222,51 +221,7 @@ class _HistoryViewState extends State<HistoryView> {
                                                                               color: Helpers.statusColor(context, order.orderStatus!),
                                                                             ),
                                                                           ),
-                                                                          !orderProvider.showCancelled
-                                                                              ? order.orderStatus == 'pending'
-                                                                                  ? MaterialButton(
-                                                                                      elevation: 0,
-                                                                                      minWidth: MediaQuery.of(context).size.width,
-                                                                                      color: Colors.black12,
-                                                                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40.r)),
-                                                                                      onPressed: () {
-                                                                                        showDialog(
-                                                                                            context: context,
-                                                                                            barrierDismissible: false,
-                                                                                            builder: (context) => OrderCancelDialog(
-                                                                                                orderID: order.id.toString(),
-                                                                                                callback: (String message, bool isSuccess, String orderID) {
-                                                                                                  if (isSuccess) {
-                                                                                                    showCustomSnackBar('$message. Order ID: $orderID', context, isError: false);
-                                                                                                  } else {
-                                                                                                    showCustomSnackBar(message, context);
-                                                                                                  }
-                                                                                                }));
-                                                                                      },
-                                                                                      child: Text(
-                                                                                        getTranslated('cancel_order', context),
-                                                                                        style: AppTextStyles.h7(context).copyWith(
-                                                                                          color: Colors.black,
-                                                                                        ),
-                                                                                      ))
-                                                                                  : SizedBox()
-                                                                              : Center(
-                                                                                  child: Container(
-                                                                                  width: MediaQuery.of(context).size.width,
-                                                                                  height: 50,
-                                                                                  margin: EdgeInsets.all(10.r),
-                                                                                  alignment: Alignment.center,
-                                                                                  decoration: BoxDecoration(
-                                                                                    border: Border.all(width: 2, color: ColorResources.getScaffoldBackgroundColor(context)),
-                                                                                    borderRadius: BorderRadius.circular(10.r),
-                                                                                  ),
-                                                                                  child: Text(
-                                                                                    getTranslated('order_cancelled', context),
-                                                                                    style: AppTextStyles.h2(context).copyWith(
-                                                                                      color: ColorResources.getScaffoldBackgroundColor(context),
-                                                                                    ),
-                                                                                  ),
-                                                                                ))
+
                                                                         ]))
                                                                   ])))),
                                                   SizedBox(height: 10.h)

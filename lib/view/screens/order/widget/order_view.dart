@@ -6,19 +6,15 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wired_express/data/helper/helpers.dart';
 import 'package:wired_express/provider/place_order_provider.dart';
 import 'package:wired_express/provider/splash_provider.dart';
-import 'package:wired_express/provider/theme_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:wired_express/data/model/response/order_model.dart';
 import 'package:wired_express/localization/language_constrants.dart';
 import 'package:wired_express/provider/order_provider.dart';
 import 'package:wired_express/utill/color_resources.dart';
-import 'package:wired_express/utill/dimensions.dart';
-import 'package:wired_express/utill/images.dart';
 import 'package:wired_express/utill/styles.dart';
 import 'package:wired_express/view/base/Custom_button.dart';
 import 'package:wired_express/view/base/custom_snackbar.dart';
 import 'package:wired_express/view/base/no_data_found_view.dart';
-import 'package:wired_express/view/base/no_data_screen.dart';
 import 'package:wired_express/view/screens/order/order_details_screen.dart';
 import 'package:wired_express/view/screens/order/widget/order_cancel_dialog.dart';
 import 'package:wired_express/view/screens/order/widget/order_shimmer.dart';
@@ -83,6 +79,13 @@ class _OrderViewState extends State<OrderView> {
                                                 context)
                                             : ColorResources.getPrimaryColor(
                                                 context);
+
+                                    final bool canCancel =
+                                        order.orderStatus == 'pending' &&
+                                            order.paymentStatus == 'unpaid' &&
+                                            (order.isInstallment != true ||
+                                                order.installmentStatus ==
+                                                    'pending');
                                     return Column(children: [
                                       GestureDetector(
                                           onTap: () async {
@@ -112,6 +115,7 @@ class _OrderViewState extends State<OrderView> {
                                               child: Padding(
                                                   padding: EdgeInsets.all(10.r),
                                                   child: Row(children: [
+                                                    if(order.details!.isNotEmpty)
                                                     ClipRRect(
                                                       borderRadius:
                                                           BorderRadius.circular(
@@ -121,9 +125,9 @@ class _OrderViewState extends State<OrderView> {
                                                         width: 120.w,
                                                         fit: BoxFit.cover,
                                                         imageUrl:
-                                                            '${Provider.of<SplashProvider>(context, listen: false).baseUrls!.productImageUrl}/${order.details![0].productDetails!.image}',
+                                                            '${Provider.of<SplashProvider>(context, listen: false).baseUrls!.productImageUrl}/${order.details?[0].productDetails?.image}',
                                                         cacheKey:
-                                                            '${Provider.of<SplashProvider>(context, listen: false).baseUrls!.productImageUrl}/${order.details![0].productDetails!.image}',
+                                                            '${Provider.of<SplashProvider>(context, listen: false).baseUrls!.productImageUrl}/${order.details?[0].productDetails?.image}',
                                                       ),
                                                     ),
                                                     SizedBox(
@@ -228,9 +232,8 @@ class _OrderViewState extends State<OrderView> {
                                                                             0.5),
                                                                   ),
                                                                 ),
-                                                          SizedBox(height: 2),
-                                                          Text(
-                                                            '${Helpers.formatTextStatus(order.orderStatus!)}',
+                                                          SizedBox(height: 2.h),
+                                                          Text(getTranslated(order.orderStatus!, context),
                                                             maxLines: 1,
                                                             overflow:
                                                                 TextOverflow
@@ -283,8 +286,7 @@ class _OrderViewState extends State<OrderView> {
                                                             ),
                                                           !orderProvider
                                                                   .showCancelled
-                                                              ? order.orderStatus ==
-                                                                      'pending'
+                                                              ? canCancel
                                                                   ? CustomButton(
                                                                       text: getTranslated(
                                                                           'cancel_order',
@@ -302,21 +304,41 @@ class _OrderViewState extends State<OrderView> {
                                                                       borderColor:
                                                                           Colors
                                                                               .red,
-                                                                      onTap: () => showDialog(
-                                                                          context: context,
-                                                                          barrierDismissible: false,
-                                                                          builder: (context) => OrderCancelDialog(
-                                                                                orderID: order.id.toString(),
-                                                                                callback: (String message, bool isSuccess, String orderID) {
-                                                                                  if (isSuccess) {
-                                                                                    showCustomSnackBar('$message. Order ID: $orderID', context, isError: false);
-                                                                                  } else {
-                                                                                    showCustomSnackBar(message, context);
-                                                                                  }
-                                                                                },
-                                                                              )),
+                                                                      onTap: () =>
+                                                                          showDialog(
+                                                                        context:
+                                                                            context,
+                                                                        barrierDismissible:
+                                                                            false,
+                                                                        builder:
+                                                                            (context) =>
+                                                                                OrderCancelDialog(
+                                                                          orderID: order
+                                                                              .id
+                                                                              .toString(),
+                                                                          callback:
+                                                                              (
+                                                                            String
+                                                                                message,
+                                                                            bool
+                                                                                isSuccess,
+                                                                            String
+                                                                                orderID,
+                                                                          ) {
+                                                                            if (isSuccess) {
+                                                                              showCustomSnackBar(
+                                                                                '$message. Order ID: $orderID',
+                                                                                context,
+                                                                                isError: false,
+                                                                              );
+                                                                            } else {
+                                                                              showCustomSnackBar(message, context);
+                                                                            }
+                                                                          },
+                                                                        ),
+                                                                      ),
                                                                     )
-                                                                  : SizedBox()
+                                                                  : const SizedBox()
                                                               : Center(
                                                                   child:
                                                                       Container(
@@ -333,11 +355,14 @@ class _OrderViewState extends State<OrderView> {
                                                                             .center,
                                                                     decoration:
                                                                         BoxDecoration(
-                                                                      border: Border.all(
-                                                                          width:
-                                                                              2,
-                                                                          color:
-                                                                              ColorResources.getPrimaryColor(context)),
+                                                                      border:
+                                                                          Border
+                                                                              .all(
+                                                                        width:
+                                                                            2,
+                                                                        color: ColorResources.getPrimaryColor(
+                                                                            context),
+                                                                      ),
                                                                       borderRadius:
                                                                           BorderRadius.circular(
                                                                               10.r),
@@ -354,7 +379,7 @@ class _OrderViewState extends State<OrderView> {
                                                                       ),
                                                                     ),
                                                                   ),
-                                                                )
+                                                                ),
                                                         ]))
                                                   ])))),
                                       SizedBox(height: 10.h)

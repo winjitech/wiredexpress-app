@@ -12,6 +12,7 @@ import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 
 import 'package:open_file/open_file.dart';
+
 class Helpers {
   static double applyDiscount(CouponModel coupon, double orderAmount) {
     double? _discount = 0.0;
@@ -35,23 +36,21 @@ class Helpers {
   }
 
   static String formatTextWithNum(String text) {
-    return text
-        .replaceAllMapped(RegExp(r"-?\d+(\.\d+)?"), (match) {
+    return text.replaceAllMapped(RegExp(r"-?\d+(\.\d+)?"), (match) {
       final double num = double.tryParse(match.group(0) ?? '0') ?? 0;
 
       return num % 1 == 0 ? num.toInt().toString() : num.toStringAsFixed(2);
-    })
-        .replaceAllMapped(
+    }).replaceAllMapped(
       RegExp(r"(?:^| )(\w)"),
-          (match) => match.group(0)!.toUpperCase(),
+      (match) => match.group(0)!.toUpperCase(),
     );
   }
-  static String formatTextStatus(String text) {
-    return text.replaceAll("_", " ").replaceAllMapped(
-          RegExp(r"(?:^| )(\w)"),
-          (match) => match.group(0)!.toUpperCase(),
-        );
-  }
+  // static String formatTextStatus(String text) {
+  //   return text.replaceAll("_", " ").replaceAllMapped(
+  //         RegExp(r"(?:^| )(\w)"),
+  //         (match) => match.group(0)!.toUpperCase(),
+  //       );
+  // }
 
   static Color? statusColor(BuildContext context, String status) {
     if (status == 'pending' ||
@@ -59,7 +58,8 @@ class Helpers {
         status == 'out_for_delivery' ||
         status == 'requested' ||
         status == 'under_review' ||
-        status == 'contacted') {
+        status == 'contacted' ||
+        status == 'awaiting_down_payment') {
       return const Color(0xFFD5967F);
     }
 
@@ -117,7 +117,6 @@ class Helpers {
     }
   }
 
-
   static Future<void> downloadPdf(String fileName, String url) async {
     try {
       final directory = await getExternalStorageDirectory();
@@ -146,8 +145,8 @@ class Helpers {
   }
 
   static void chooseContractorRequestFile(
-      ContractorRequestProvider ticketProvider,
-      ) async {
+    ContractorRequestProvider ticketProvider,
+  ) async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
       allowedExtensions: ['jpg', 'jpeg', 'png', 'pdf'],
@@ -159,5 +158,4 @@ class Helpers {
       );
     }
   }
-
 }

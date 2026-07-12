@@ -54,8 +54,10 @@ class _DrawerScreenState extends State<DrawerScreen> {
         matchedAddress = null;
       }
 
-      return Padding(
-          padding:  EdgeInsets.all(30.r),
+      return SingleChildScrollView(
+        padding:  EdgeInsets.all(30.r),
+
+        child: SingleChildScrollView(
           child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -252,7 +254,9 @@ class _DrawerScreenState extends State<DrawerScreen> {
                               : ColorResources.getPrimaryColor(context),
                         ),
                     ) )
-              ]));
+              ]),
+        ),
+      );
     }));
   }
 }

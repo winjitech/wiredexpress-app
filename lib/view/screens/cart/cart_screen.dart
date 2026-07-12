@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_advanced_drawer/flutter_advanced_drawer.dart';
@@ -6,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wired_express/data/helper/helpers.dart';
 import 'package:wired_express/data/model/body/place_order_body.dart';
 import 'package:wired_express/data/model/response/cart_model.dart';
+import 'package:wired_express/data/model/response/config_model.dart';
 import 'package:wired_express/data/model/response/product_model.dart';
 import 'package:wired_express/data/model/response/product_plan_discount_model.dart';
 import 'package:wired_express/data/model/response/tiered_pricing_model.dart';
@@ -15,22 +15,21 @@ import 'package:wired_express/provider/auth_provider.dart';
 import 'package:wired_express/provider/cart_provider.dart';
 import 'package:wired_express/provider/coupon_provider.dart';
 import 'package:wired_express/provider/location_provider.dart';
+import 'package:wired_express/provider/order_provider.dart';
 import 'package:wired_express/provider/profile_provider.dart';
 import 'package:wired_express/provider/splash_provider.dart';
 import 'package:wired_express/utill/color_resources.dart';
-import 'package:wired_express/utill/dimensions.dart';
 import 'package:wired_express/utill/styles.dart';
 import 'package:wired_express/view/base/circular_indicator_widget.dart';
 import 'package:wired_express/view/base/custom_button.dart';
-import 'package:wired_express/view/base/custom_main_appbar.dart';
 import 'package:wired_express/view/base/custom_snackbar.dart';
 import 'package:wired_express/view/base/no_data_found_view.dart';
-import 'package:wired_express/view/base/no_data_screen.dart';
 import 'package:wired_express/view/base/not_logged_in_screen.dart';
 import 'package:wired_express/view/screens/cart/widget/cart_product_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:wired_express/view/screens/cart/widget/choose_delivery_address_view.dart';
 import 'package:wired_express/view/screens/cart/widget/discount_view.dart';
+import 'package:wired_express/view/screens/cart/widget/select_installment_view.dart';
 import 'package:wired_express/view/screens/checkout/checkout_screen.dart';
 import 'package:wired_express/view/screens/drawer/drawer_screen.dart';
 import 'package:wired_express/view/screens/home/widget/home_header_widget.dart';
@@ -43,20 +42,17 @@ class CartScreen extends StatefulWidget {
 class _CartScreenState extends State<CartScreen> {
   final advancedDrawerController = AdvancedDrawerController();
 
+
   @override
   void initState() {
     super.initState();
-    Timer(const Duration(seconds: 0), () {
-      final bool isLoggedIn =
-          Provider.of<CustomAuthProvider>(context, listen: false).isLoggedIn()!;
-      if (isLoggedIn) {
-        int? id = Provider.of<CustomAuthProvider>(context, listen: false)
-            .getUserAddressId();
-        print("--------------$id");
 
-        Provider.of<CartProvider>(context, listen: false).initCartList(context);
-        Provider.of<LocationProvider>(context, listen: false)
-            .initAddressList(context);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final authProvider = context.read<CustomAuthProvider>();
+      if (authProvider.isLoggedIn() ?? false) {
+        context.read<OrderProvider>().setUseInstallment(false);
+        context.read<CartProvider>().initCartList(context);
+        context.read<LocationProvider>().initAddressList(context);
       }
     });
   }
@@ -97,20 +93,17 @@ class _CartScreenState extends State<CartScreen> {
               child: isLoggedIn
                   ? Padding(
                       padding: EdgeInsets.all(5.r),
-                      child: Consumer5<ProfileProvider, CartProvider, SplashProvider,
-                          CustomAuthProvider, CouponProvider>(
+                      child: Consumer6<ProfileProvider, CartProvider, SplashProvider,
+                          CustomAuthProvider, CouponProvider, OrderProvider>(
                         builder: (context, profileProvider, cartProvider,
-                            splashProvider, authProvider, couponProvider, child) {
+                            splash, authProvider, couponProvider, orderProv , child) {
+                          ConfigModel config = splash.configModel!;
                           if (cartProvider.cartListLoading! ||
                               cartProvider.cartListIdsLoading!) {
                             return CustomCircularIndicator();
                           }
-                          bool hasServiceOnCart = false ;
-                          bool haveFreeDelivery =
-                              profileProvider.userInfoModel != null &&
-                                  profileProvider.userInfoModel!.freeDelivery == 1;
-                          String currency =
-                              splashProvider.configModel!.currencySymbol ?? '\$';
+                          bool haveFreeDelivery = profileProvider.userInfoModel != null && profileProvider.userInfoModel!.freeDelivery == 1;
+                          String currency = config.currencySymbol ?? '\$';
                           double totalUserPoints = double.parse(
                               Provider.of<ProfileProvider>(context, listen: false)
                                   .userInfoModel!
@@ -121,85 +114,41 @@ class _CartScreenState extends State<CartScreen> {
 
                           double totalOrderPrice = 0.0;
                           double subTotalOrderPrice = 0.0;
-
                           double couponDiscountAmount = 0.0;
                           double usePointsDiscountAmount = 0.0;
                           double totalTax = 0.0;
                           double totalTiredPricing = 0.0;
                           double totalDiscountOnProducts = 0.0;
-
-                          double officialDeliveryFees = double.parse(
-                              splashProvider.configModel!.deliveryCharge ?? "0.0");
-                          double deliveryCharge =
-                              haveFreeDelivery ? 0.0 : officialDeliveryFees;
-                          double ppuPurchase = double.parse(
-                              splashProvider.configModel!.ppuPurchase ?? "0.0");
-                          double ppuEarn = double.parse(
-                              splashProvider.configModel!.ppuEarn ?? "0.0");
-                          double totalPointsDiscountAmount =
-                              totalUserPoints * ppuPurchase;
-
-                          print("ppuPurchase == $ppuPurchase");
-                          print("ppuEarn == $ppuEarn");
-
-                          print(
-                              "totalPointsDiscountAmount == $totalPointsDiscountAmount");
+                          double officialDeliveryFees = double.parse(config.deliveryCharge ?? "0.0");
+                          double deliveryCharge = haveFreeDelivery ? 0.0 : officialDeliveryFees;
+                          double ppuPurchase = double.parse(config.ppuPurchase ?? "0.0");
+                          double ppuEarn = double.parse(config.ppuEarn ?? "0.0");
+                          double totalPointsDiscountAmount = totalUserPoints * ppuPurchase;
                           double remainingUserPoints = totalUserPoints;
-
                           cartProvider.cartList.forEach((cart) {
                             ProductModel product = cart.product!;
-
-                            List<TiredPricingModel> tiredPricing =
-                                product.tiredPricing ?? [];
-
-                            if(product.isService==1){
-                              hasServiceOnCart = true ;
-                            }
-
+                            List<TiredPricingModel> tiredPricing = product.tiredPricing ?? [];
                             TiredPricingModel? tiredPricingModel;
                             ProductPlanDiscountModel? productPlanDiscountModel;
-                            if (isLoggedIn &&
-                                profileProvider.userInfoModel != null &&
-                                profileProvider.userInfoModel!.exclusiveDiscounts ==
-                                    1) {
-                              List<ProductPlanDiscountModel> productPlanDiscount =
-                                  product.productPlanDiscount ?? [];
-
+                            if (isLoggedIn && profileProvider.userInfoModel != null && profileProvider.userInfoModel!.exclusiveDiscounts == 1) {
+                              List<ProductPlanDiscountModel> productPlanDiscount = product.productPlanDiscount ?? [];
                               try {
-                                productPlanDiscountModel =
-                                    productPlanDiscount.firstWhere(
-                                  (discount) =>
-                                      discount.planId ==
-                                      profileProvider
-                                          .userInfoModel!.userSubscription!.planId,
-                                  orElse: () => ProductPlanDiscountModel(),
-                                );
+                                productPlanDiscountModel = productPlanDiscount.firstWhere((discount) => discount.planId == profileProvider.userInfoModel!.userSubscription!.planId, orElse: () => ProductPlanDiscountModel(),);
                               } catch (e) {
-                                print("Error finding discount: $e");
                                 productPlanDiscountModel = ProductPlanDiscountModel();
                               }
                             }
                             double originalPrice = product.price!;
-
                             double priceAfterProductPlanDiscount =
-                                productPlanDiscountModel != null &&
-                                        productPlanDiscountModel.planId != null
-                                    ? PriceConverter.convertWithDiscount(
-                                        context,
-                                        originalPrice,
-                                        productPlanDiscountModel.discount!,
-                                        productPlanDiscountModel.discountType!)
+                                productPlanDiscountModel != null && productPlanDiscountModel.planId != null
+                                    ? PriceConverter.convertWithDiscount(context, originalPrice, productPlanDiscountModel.discount!, productPlanDiscountModel.discountType!)
                                     : originalPrice;
-                            print(
-                                "priceAfterProductPlanDiscount -- $priceAfterProductPlanDiscount");
                             double priceAfterNormalDiscountOnProduct =
                                 PriceConverter.convertWithDiscount(
                                     context,
                                     originalPrice,
                                     product.discount!,
                                     product.discountType!);
-                            print(
-                                "priceAfterNormalDiscountOnProduct -- $priceAfterNormalDiscountOnProduct");
 
                             double priceAfterTiredPricing =
                                 PriceConverter.getProductFinalPrice(
@@ -208,16 +157,12 @@ class _CartScreenState extends State<CartScreen> {
                                         originalPrice,
                                         cart.quantity ?? 1) ??
                                     0.0;
-                            print(
-                                "priceAfterTiredPricing -- $priceAfterTiredPricing");
                             double finalPriceWithoutQuantity = min(
                               priceAfterProductPlanDiscount,
                               min(priceAfterNormalDiscountOnProduct,
                                   priceAfterTiredPricing),
                             );
-                            print(
-                                "finalPriceWithoutQuantity -- $finalPriceWithoutQuantity");
-                            double finalPriceWithQuantity =
+                          double finalPriceWithQuantity =
                                 finalPriceWithoutQuantity * cart.quantity!;
                             double originalPriceWithQuantity =
                                 originalPrice * cart.quantity!;
@@ -255,8 +200,6 @@ class _CartScreenState extends State<CartScreen> {
 
                                 cart.quantity!;
 
-                            print(
-                                "finalPriceWithQuantity == $finalPriceWithQuantity");
 
                             totalProductsPrice =
                                 totalProductsPrice + finalPriceWithQuantity;
@@ -277,11 +220,9 @@ class _CartScreenState extends State<CartScreen> {
                           });
 
 
-                          print("hasServiceOnCart === $hasServiceOnCart");
                           subTotalOrderPrice = totalProductsPrice + totalTax;
                           if (couponProvider.couponDiscount == null &&
                               !couponProvider.useLoyaltyPoints!) {
-                            print("CASE 1");
                             subTotalOrderPrice = subTotalOrderPrice;
                           } else if (couponProvider.couponDiscount != null &&
                               !couponProvider.useLoyaltyPoints!) {
@@ -290,16 +231,13 @@ class _CartScreenState extends State<CartScreen> {
                                 (totalProductsPrice + totalTax));
                             subTotalOrderPrice =
                                 subTotalOrderPrice - couponDiscountAmount;
-                            print("CASE 2");
                           } else if (couponProvider.couponDiscount == null &&
                               couponProvider.useLoyaltyPoints!) {
                             usePointsDiscountAmount =
                                 couponProvider.useLoyaltyPointsAmount ?? 0.0;
                             subTotalOrderPrice =
                                 subTotalOrderPrice - usePointsDiscountAmount;
-                            print("CASE 3");
-                            print(
-                                "usePointsDiscountAmount == $usePointsDiscountAmount");
+
                           } else if (couponProvider.couponDiscount != null &&
                               couponProvider.useLoyaltyPoints!) {
                             usePointsDiscountAmount =
@@ -310,7 +248,6 @@ class _CartScreenState extends State<CartScreen> {
                             subTotalOrderPrice = subTotalOrderPrice -
                                 usePointsDiscountAmount -
                                 couponDiscountAmount;
-                            print("CASE 4");
                           }
 
                           totalOrderPrice =
@@ -328,11 +265,6 @@ class _CartScreenState extends State<CartScreen> {
                             }
                           }
 
-                          print("totalOrderPrice == $totalOrderPrice");
-                          print(
-                              "totalDiscountOnProducts == $totalDiscountOnProducts");
-                          print("remainingUserPoints == $remainingUserPoints");
-
                           return cartProvider.cartList.isNotEmpty
                               ? Column(
                                   children: [
@@ -341,311 +273,288 @@ class _CartScreenState extends State<CartScreen> {
                                         child: SingleChildScrollView(
                                           padding:  EdgeInsets.all(10.r),
                                           physics: const BouncingScrollPhysics(),
-                                          child: Center(
-                                            child: SizedBox(
-                                              width:
-                                                  MediaQuery.of(context).size.width,
-                                              child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  ListView.builder(
-                                                      padding: EdgeInsets.zero,
-                                                      physics:
-                                                          const NeverScrollableScrollPhysics(),
-                                                      shrinkWrap: true,
-                                                      itemCount: cartProvider
-                                                          .cartList.length,
-                                                      itemBuilder: (context, index) =>
-                                                          CartProductWidget(
-                                                              cart: cartProvider
-                                                                  .cartList[index],
-                                                              cartIndex: index)),
-                                                  ChooseDeliveryAddressView(),
-                                                  DiscountView(
-                                                      totalPointsDiscount:
-                                                          totalPointsDiscountAmount,
-                                                      couponDiscountAmount:
-                                                          couponDiscountAmount,
-                                                      totalOrderPrice:
-                                                          totalOrderPrice),
-                                                  _buildDetailRow(
-                                                      context,
-                                                      'items_price',
-                                                      '$currency${Helpers.formatTextWithNum(totalItemsPrice.toString())}'),
-                                                  _buildDetailRow(context, 'tax',
-                                                      '$currency${Helpers.formatTextWithNum(totalTax.toString())}'),
-                                                  _buildDetailRow(
-                                                      context,
-                                                      'delivery_fee',
-                                                      '(+) $currency$deliveryCharge'),
-                                                  Padding(
-                                                    padding:
-                                                        EdgeInsets.symmetric(
-                                                            horizontal: 15.w,
-                                                            vertical: 5.h),
-                                                    child: Divider(
-                                                      color:
-                                                          ColorResources.getTextColor(
-                                                                  context)
-                                                              .withOpacity(0.4),
-                                                    ),
-                                                  ),
-                                                  _buildDetailRow(
-                                                      context,
-                                                      'total_products_discount',
-                                                      '(-) $currency${Helpers.formatTextWithNum(totalDiscountOnProducts.toString())}'),
-                                                  _buildDetailRow(
-                                                      context,
-                                                      'tiered_pricing_discount',
-                                                      '(-) $currency${Helpers.formatTextWithNum(totalTiredPricing.toString())}'),
-                                                  if (couponDiscountAmount != 0.0)
-                                                    _buildDetailRow(
-                                                        context,
-                                                        'coupon_discount',
-                                                        '(-)  $currency${Helpers.formatTextWithNum(couponDiscountAmount.toString())}'),
-                                                  if (usePointsDiscountAmount != 0.0)
-                                                    _buildDetailRow(
-                                                        context,
-                                                        'loyalty_points_discount',
-                                                        '(-)  $currency${Helpers.formatTextWithNum(usePointsDiscountAmount.toString())}'),
-                                                  // if (haveFreeDelivery)
-                                                  //   _buildDetailRow(
-                                                  //       context,
-                                                  //       'free_delivery',
-                                                  //       '(-)  $currency${Helpers.formatTextWithNum(officialDeliveryFees.toString())}'),
-                                                  Padding(
-                                                    padding:
-                                                        EdgeInsets.symmetric(
-                                                            horizontal: 15.w,
-                                                            vertical: 5.h),
-                                                    child: Divider(
-                                                      color:
-                                                          ColorResources.getTextColor(
-                                                                  context)
-                                                              .withOpacity(0.4),
-                                                    ),
-                                                  ),
-                                                  _buildDetailRow(
-                                                      context,
-                                                      'total_price',
-                                                      '$currency${Helpers.formatTextWithNum(totalOrderPrice.toString())}',
-                                                      color: ColorResources
-                                                          .getPrimaryColor(context)),
-                                                  if (couponProvider
-                                                      .useLoyaltyPoints!)
-                                                    Center(
-                                                      child: Padding(
-                                                        padding: EdgeInsets
-                                                            .symmetric(vertical: 10.h),
-                                                        child:Text(
-                                                          '"${getTranslated('you_have', context)} ${Helpers.formatTextWithNum(totalUserPoints.toString())} ${getTranslated('points', context)}, ($currency${Helpers.formatTextWithNum(usePointsDiscountAmount.toString())} ${getTranslated('off', context)}), ${getTranslated('remaining_points:', context)} ${Helpers.formatTextWithNum((remainingUserPoints).toString())}"',
-                                                          textAlign: TextAlign.center,
-                                                          style: AppTextStyles.h6(context).copyWith(
-                                                            color: ColorResources.getSecondaryColor(context),
-                                                          ),
-                                                        ),
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              ListView.builder(
+                                                  padding: EdgeInsets.zero,
+                                                  physics: const NeverScrollableScrollPhysics(),
+                                                  shrinkWrap: true,
+                                                  itemCount: cartProvider.cartList.length,
+                                                  itemBuilder: (context, index) =>
+                                                      CartProductWidget(
+                                                          cart: cartProvider.cartList[index],
+                                                          cartIndex: index)),
+                                              ChooseDeliveryAddressView(),
+                                              DiscountView(totalPointsDiscount: totalPointsDiscountAmount, couponDiscountAmount: couponDiscountAmount, totalOrderPrice: totalOrderPrice),
+                                              SelectInstallmentView(totalOrderPrice: totalOrderPrice,),
+
+
+                                              _buildDetailRow(
+                                                  context,
+                                                  'items_price',
+                                                  '$currency${Helpers.formatTextWithNum(totalItemsPrice.toString())}'),
+                                              _buildDetailRow(context, 'tax',
+                                                  '$currency${Helpers.formatTextWithNum(totalTax.toString())}'),
+                                              _buildDetailRow(
+                                                  context,
+                                                  'delivery_fee',
+                                                  '(+) $currency$deliveryCharge'),
+                                              Padding(
+                                                padding:
+                                                    EdgeInsets.symmetric(
+                                                        horizontal: 15.w,
+                                                        vertical: 5.h),
+                                                child: Divider(
+                                                  color:
+                                                      ColorResources.getTextColor(
+                                                              context)
+                                                          .withOpacity(0.4),
+                                                ),
+                                              ),
+                                              _buildDetailRow(
+                                                  context,
+                                                  'total_products_discount',
+                                                  '(-) $currency${Helpers.formatTextWithNum(totalDiscountOnProducts.toString())}'),
+                                              _buildDetailRow(
+                                                  context,
+                                                  'tiered_pricing_discount',
+                                                  '(-) $currency${Helpers.formatTextWithNum(totalTiredPricing.toString())}'),
+                                              if (couponDiscountAmount != 0.0)
+                                                _buildDetailRow(
+                                                    context,
+                                                    'coupon_discount',
+                                                    '(-)  $currency${Helpers.formatTextWithNum(couponDiscountAmount.toString())}'),
+                                              if (usePointsDiscountAmount != 0.0)
+                                                _buildDetailRow(
+                                                    context,
+                                                    'loyalty_points_discount',
+                                                    '(-)  $currency${Helpers.formatTextWithNum(usePointsDiscountAmount.toString())}'),
+                                              // if (haveFreeDelivery)
+                                              //   _buildDetailRow(
+                                              //       context,
+                                              //       'free_delivery',
+                                              //       '(-)  $currency${Helpers.formatTextWithNum(officialDeliveryFees.toString())}'),
+                                              Padding(padding: EdgeInsets.symmetric(horizontal: 15.w, vertical: 5.h),
+                                                child: Divider(color: ColorResources.getTextColor(context).withOpacity(0.4),),),
+                                              _buildDetailRow(
+                                                  context,
+                                                  'total_price',
+                                                  '$currency${Helpers.formatTextWithNum(totalOrderPrice.toString())}',
+                                                  color: ColorResources
+                                                      .getPrimaryColor(context)),
+                                              if (couponProvider
+                                                  .useLoyaltyPoints!)
+                                                Center(
+                                                  child: Padding(
+                                                    padding: EdgeInsets
+                                                        .symmetric(vertical: 10.h),
+                                                    child:Text(
+                                                      '"${getTranslated('you_have', context)} ${Helpers.formatTextWithNum(totalUserPoints.toString())} ${getTranslated('points', context)}, ($currency${Helpers.formatTextWithNum(usePointsDiscountAmount.toString())} ${getTranslated('off', context)}), ${getTranslated('remaining_points:', context)} ${Helpers.formatTextWithNum((remainingUserPoints).toString())}"',
+                                                      textAlign: TextAlign.center,
+                                                      style: AppTextStyles.h6(context).copyWith(
+                                                        color: ColorResources.getSecondaryColor(context),
                                                       ),
                                                     ),
-                                                ],
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    Container(
-                                      width: MediaQuery.of(context).size.width,
-                                      padding: EdgeInsets.all(10.r),
-                                      child: CustomButton(
-                                        text: getTranslated('place_order', context),
-                                        onTap: () {
-                                          if (authProvider.getUserAddressId() == 0) {
-                                            showCustomSnackBar(
-                                                getTranslated(
-                                                    'select_address_required',
-                                                    context),
-                                                context);
-                                            return;
-                                          }
-                                          List<CartModel>? cartList =
-                                              cartProvider.cartList;
-                                          List<ProductCart> carts =
-                                              cartList.map((cart) {
-                                            ProductModel product = cart.product!;
-                                            List<TiredPricingModel> tiredPricing =
-                                                product.tiredPricing ?? [];
+                                                  ),
+                                                ),
 
-                                            TiredPricingModel? tiredPricingModel;
-                                            ProductPlanDiscountModel?
-                                                productPlanDiscountModel;
-                                            if (isLoggedIn &&
-                                                profileProvider.userInfoModel !=
-                                                    null &&
-                                                profileProvider.userInfoModel!
-                                                        .exclusiveDiscounts ==
-                                                    1) {
-                                              List<ProductPlanDiscountModel>
-                                                  productPlanDiscount =
-                                                  product.productPlanDiscount ?? [];
+                                              SizedBox(height: 10.h,),
+                                              CustomButton(
+                                                text: getTranslated('buy_now', context),
+                                                onTap: () {
+                                                  if (authProvider.getUserAddressId() == 0) {
+                                                    showCustomSnackBar(
+                                                        getTranslated(
+                                                            'select_address_required',
+                                                            context),
+                                                        context);
+                                                    return;
+                                                  }
+                                                  List<CartModel>? cartList =
+                                                      cartProvider.cartList;
+                                                  List<ProductCart> carts =
+                                                  cartList.map((cart) {
+                                                    ProductModel product = cart.product!;
+                                                    List<TiredPricingModel> tiredPricing =
+                                                        product.tiredPricing ?? [];
 
-                                              try {
-                                                productPlanDiscountModel =
-                                                    productPlanDiscount.firstWhere(
-                                                  (discount) =>
-                                                      discount.planId ==
-                                                      profileProvider.userInfoModel!
-                                                          .userSubscription!.planId,
-                                                  orElse: () =>
-                                                      ProductPlanDiscountModel(),
-                                                );
-                                              } catch (e) {
-                                                print("Error finding discount: $e");
-                                                productPlanDiscountModel =
-                                                    ProductPlanDiscountModel();
-                                              }
-                                            }
-                                            double originalPrice = product.price!;
+                                                    TiredPricingModel? tiredPricingModel;
+                                                    ProductPlanDiscountModel?
+                                                    productPlanDiscountModel;
+                                                    if (isLoggedIn &&
+                                                        profileProvider.userInfoModel !=
+                                                            null &&
+                                                        profileProvider.userInfoModel!
+                                                            .exclusiveDiscounts ==
+                                                            1) {
+                                                      List<ProductPlanDiscountModel>
+                                                      productPlanDiscount =
+                                                          product.productPlanDiscount ?? [];
 
-                                            double priceAfterProductPlanDiscount =
-                                                productPlanDiscountModel != null &&
+                                                      try {
+                                                        productPlanDiscountModel =
+                                                            productPlanDiscount.firstWhere(
+                                                                  (discount) =>
+                                                              discount.planId ==
+                                                                  profileProvider.userInfoModel!
+                                                                      .userSubscription!.planId,
+                                                              orElse: () =>
+                                                                  ProductPlanDiscountModel(),
+                                                            );
+                                                      } catch (e) {
+                                                        print("Error finding discount: $e");
+                                                        productPlanDiscountModel =
+                                                            ProductPlanDiscountModel();
+                                                      }
+                                                    }
+                                                    double originalPrice = product.price!;
+
+                                                    double priceAfterProductPlanDiscount =
+                                                    productPlanDiscountModel != null &&
                                                         productPlanDiscountModel
-                                                                .planId !=
+                                                            .planId !=
                                                             null
-                                                    ? PriceConverter
+                                                        ? PriceConverter
                                                         .convertWithDiscount(
-                                                            context,
-                                                            originalPrice,
-                                                            productPlanDiscountModel
-                                                                .discount!,
-                                                            productPlanDiscountModel
-                                                                .discountType!)
-                                                    : originalPrice;
-                                            print(
-                                                "priceAfterProductPlanDiscount -- $priceAfterProductPlanDiscount");
-                                            double priceAfterNormalDiscountOnProduct =
-                                                PriceConverter.convertWithDiscount(
-                                                    context,
-                                                    originalPrice,
-                                                    product.discount!,
-                                                    product.discountType!);
-                                            print(
-                                                "priceAfterNormalDiscountOnProduct -- $priceAfterNormalDiscountOnProduct");
-
-                                            double priceAfterTiredPricing =
-                                                PriceConverter.getProductFinalPrice(
                                                         context,
-                                                        tiredPricing,
                                                         originalPrice,
-                                                        cart.quantity ?? 1) ??
-                                                    0.0;
-                                            print(
-                                                "priceAfterTiredPricing -- $priceAfterTiredPricing");
-                                            double finalPriceWithoutQuantity = min(
-                                              priceAfterProductPlanDiscount,
-                                              min(priceAfterNormalDiscountOnProduct,
-                                                  priceAfterTiredPricing),
-                                            );
-                                            print(
-                                                "finalPriceWithoutQuantity -- $finalPriceWithoutQuantity");
-                                            double finalPriceWithQuantity =
-                                                finalPriceWithoutQuantity *
-                                                    cart.quantity!;
-                                            double originalPriceWithQuantity =
-                                                originalPrice * cart.quantity!;
-                                            double discountAmount = 0.0;
-                                            if (finalPriceWithoutQuantity ==
-                                                priceAfterTiredPricing) {
-                                              tiredPricingModel = PriceConverter
-                                                  .getMatchedTieredPricingModel(
-                                                      context,
-                                                      tiredPricing,
-                                                      cart.quantity ?? 1);
-                                            } else if (finalPriceWithoutQuantity ==
-                                                priceAfterProductPlanDiscount) {
-                                              discountAmount = PriceConverter
-                                                      .calculateDiscountAmount(
+                                                        productPlanDiscountModel
+                                                            .discount!,
+                                                        productPlanDiscountModel
+                                                            .discountType!)
+                                                        : originalPrice;
+                                                    // print(
+                                                    //     "priceAfterProductPlanDiscount -- $priceAfterProductPlanDiscount");
+                                                    double priceAfterNormalDiscountOnProduct =
+                                                    PriceConverter.convertWithDiscount(
+                                                        context,
+                                                        originalPrice,
+                                                        product.discount!,
+                                                        product.discountType!);
+                                                    // print(
+                                                    //     "priceAfterNormalDiscountOnProduct -- $priceAfterNormalDiscountOnProduct");
+
+                                                    double priceAfterTiredPricing =
+                                                        PriceConverter.getProductFinalPrice(
+                                                            context,
+                                                            tiredPricing,
+                                                            originalPrice,
+                                                            cart.quantity ?? 1) ??
+                                                            0.0;
+                                                    // print(
+                                                    //     "priceAfterTiredPricing -- $priceAfterTiredPricing");
+                                                    double finalPriceWithoutQuantity = min(
+                                                      priceAfterProductPlanDiscount,
+                                                      min(priceAfterNormalDiscountOnProduct,
+                                                          priceAfterTiredPricing),
+                                                    );
+                                                    // print(
+                                                    //     "finalPriceWithoutQuantity -- $finalPriceWithoutQuantity");
+                                                    double finalPriceWithQuantity =
+                                                        finalPriceWithoutQuantity *
+                                                            cart.quantity!;
+                                                    double originalPriceWithQuantity =
+                                                        originalPrice * cart.quantity!;
+                                                    double discountAmount = 0.0;
+                                                    if (finalPriceWithoutQuantity ==
+                                                        priceAfterTiredPricing) {
+                                                      tiredPricingModel = PriceConverter
+                                                          .getMatchedTieredPricingModel(
+                                                          context,
+                                                          tiredPricing,
+                                                          cart.quantity ?? 1);
+                                                    } else if (finalPriceWithoutQuantity ==
+                                                        priceAfterProductPlanDiscount) {
+                                                      discountAmount = PriceConverter
+                                                          .calculateDiscountAmount(
                                                           context,
                                                           originalPrice,
                                                           productPlanDiscountModel!
-                                                                  .discount ??
+                                                              .discount ??
                                                               0.0,
                                                           productPlanDiscountModel
-                                                                  .discountType ??
+                                                              .discountType ??
                                                               "amount") *
-                                                  cart.quantity!;
-                                            } else if (finalPriceWithoutQuantity ==
-                                                priceAfterNormalDiscountOnProduct) {
-                                              discountAmount = PriceConverter
-                                                      .calculateDiscountAmount(
+                                                          cart.quantity!;
+                                                    } else if (finalPriceWithoutQuantity ==
+                                                        priceAfterNormalDiscountOnProduct) {
+                                                      discountAmount = PriceConverter
+                                                          .calculateDiscountAmount(
                                                           context,
                                                           originalPrice,
                                                           product.discount ?? 0.0,
                                                           product.discountType ??
                                                               "amount") *
-                                                  cart.quantity!;
-                                            }
-                                            double taxAmount = double.parse(Helpers
-                                                    .formatTextWithNum(PriceConverter
-                                                            .convertPercentageToAmount(
-                                                                finalPriceWithQuantity,
-                                                                product.tax!)
+                                                          cart.quantity!;
+                                                    }
+                                                    double taxAmount = double.parse(Helpers
+                                                        .formatTextWithNum(PriceConverter
+                                                        .convertPercentageToAmount(
+                                                        finalPriceWithQuantity,
+                                                        product.tax!)
                                                         .toString())) *
-                                                cart.quantity!;
+                                                        cart.quantity!;
 
-                                            return ProductCart(
-                                              productId: product.id.toString(),
-                                              price:
-                                                  finalPriceWithQuantity.toString(),
-                                              discountAmount: discountAmount,
-                                              quantity: cart.quantity!,
-                                              taxAmount: taxAmount,
-                                              tieredPricing: tiredPricingModel,
-                                            );
-                                          }).toList();
+                                                    return ProductCart(
+                                                      productId: product.id.toString(),
+                                                      price:
+                                                      finalPriceWithQuantity.toString(),
+                                                      discountAmount: discountAmount,
+                                                      quantity: cart.quantity!,
+                                                      taxAmount: taxAmount,
+                                                      tieredPricing: tiredPricingModel,
+                                                    );
+                                                  }).toList();
+                                                  if (!orderProv.validateInstallment(orderAmount: totalOrderPrice, downPaymentText: orderProv.downPaymentController.text)) {
+                                                    showCustomSnackBar(getTranslated(orderProv.installmentError!, context), context);
+                                                    return;
+                                                  }
+                                                  PlaceOrderBody placeOrder = PlaceOrderBody(
+                                                      cart: carts,
+                                                      couponDiscountAmount: couponDiscountAmount,
+                                                      usePointsDiscountAmount: usePointsDiscountAmount,
+                                                      couponDiscountTitle: '',
+                                                      couponCode: couponProvider.couponDiscount?.code ?? "",
+                                                      totalTaxAmount: totalTax.toString(),
+                                                      orderAmount: totalOrderPrice,
+                                                      deliveryAddressId: authProvider.getUserAddressId()!,
+                                                      orderType: 'cart',
+                                                      paymentMethod: '',
+                                                      orderNote: "",
+                                                      usePoints: couponProvider.useLoyaltyPoints! ? 1 : 0,
+                                                      remainingUserPoints: remainingUserPoints,
+                                                      deliveryCharge: deliveryCharge,
+                                                      priorityDelivery: profileProvider.userInfoModel!.priorityBulkOrderFulfillment ?? 0,
+                                                      cardId: '',
+                                                      deliveryDate: '',
+                                                      deliveryTime: '',
+                                                      useInstallment: orderProv.useInstallment,
+                                                    months: orderProv.selectedInstallmentPlan?.months,
+                                                    downPayment: orderProv.useInstallment ? orderProv.downPayment : null,
+                                                    monthlyPayment: orderProv.useInstallment ? orderProv.monthlyPayment : null,
+                                                  );
 
-                                          PlaceOrderBody placeOrder = PlaceOrderBody(
-                                              cart: carts,
-                                              couponDiscountAmount:
-                                                  couponDiscountAmount,
-                                              usePointsDiscountAmount:
-                                                  usePointsDiscountAmount,
-                                              couponDiscountTitle: '',
-                                              couponCode: couponProvider
-                                                      .couponDiscount?.code ??
-                                                  "",
-                                              totalTaxAmount: totalTax.toString(),
-                                              orderAmount: totalOrderPrice,
-                                              deliveryAddressId:
-                                                  authProvider.getUserAddressId()!,
-                                              orderType: 'cart',
-                                              paymentMethod: '',
-                                              orderNote: "",
-                                              usePoints:
-                                                  couponProvider.useLoyaltyPoints!
-                                                      ? 1
-                                                      : 0,
-                                              remainingUserPoints:
-                                                  remainingUserPoints,
-                                              deliveryCharge: deliveryCharge,
-                                              priorityDelivery: profileProvider
-                                                      .userInfoModel!
-                                                      .priorityBulkOrderFulfillment ??
-                                                  0, cardId: '', deliveryDate: '', deliveryTime: '');
+                                                  print("placeOrder == ${placeOrder.toJson()}");
 
-                                          print(
-                                              "placeOrder == ${placeOrder.toJson()}");
+                                                  Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                        builder: (BuildContext context) =>
+                                                            CheckoutScreen(
+                                                                orderBody: placeOrder)),
+                                                  );
+                                                },
+                                              ),
+                                              SizedBox(height: 10.h,),
 
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (BuildContext context) =>
-                                                    CheckoutScreen(
-                                                        orderBody: placeOrder)),
-                                          );
-                                        },
+                                            ],
+                                          ),
+                                        ),
                                       ),
                                     ),
+
+
                                   ],
                                 )
                               : NoDataFoundView(text: 'cart_is_empty', showIcon: false);
@@ -663,7 +572,7 @@ class _CartScreenState extends State<CartScreen> {
   Widget _buildDetailRow(BuildContext context, String labelKey, String value,
       {Color? color}) {
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: 5.h),
+      padding: EdgeInsets.symmetric(vertical: 2.h),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [

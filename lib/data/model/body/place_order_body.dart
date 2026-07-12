@@ -22,6 +22,10 @@ class PlaceOrderBody {
   String? _cardId;
   String? _deliveryDate;
   String? _deliveryTime;
+  bool? _useInstallment;
+  int? _months;
+  double? _downPayment;
+  double? _monthlyPayment;
   PlaceOrderBody({
     required List<ProductCart> cart,
     required double couponDiscountAmount,
@@ -42,6 +46,10 @@ class PlaceOrderBody {
     required double deliveryCharge,
     required int priorityDelivery,
     required String cardId,
+    required  bool useInstallment,
+    int? months,
+    double? downPayment,
+    double? monthlyPayment,
   }) {
     this._cart = cart;
     this._couponDiscountAmount = couponDiscountAmount;
@@ -63,6 +71,10 @@ class PlaceOrderBody {
     this._deliveryCharge = deliveryCharge;
     this._priorityDelivery = priorityDelivery;
     this._cardId = cardId;
+    _useInstallment = useInstallment;
+    _months = months;
+    _downPayment = downPayment;
+    _monthlyPayment = monthlyPayment;
   }
 
   List<ProductCart>? get cart => _cart;
@@ -84,7 +96,10 @@ class PlaceOrderBody {
   double? get deliveryCharge => _deliveryCharge;
   int? get priorityDelivery => _priorityDelivery;
   String? get cardId => _cardId;
-
+  bool? get useInstallment => _useInstallment;
+  int? get months => _months;
+  double? get downPayment => _downPayment;
+  double? get monthlyPayment => _monthlyPayment;
   PlaceOrderBody.fromJson(Map<String?, dynamic> json) {
     if (json['cart'] != null) {
       _cart = [];
@@ -110,6 +125,10 @@ class PlaceOrderBody {
     _cardId = json['card_id'];
     _deliveryDate = json['delivery_date'];
     _deliveryTime = json['delivery_time'];
+    _useInstallment = json['use_installment'];
+    _months = json['months'];
+    _downPayment = json['down_payment']?.toDouble();
+    _monthlyPayment = json['monthly_payment']?.toDouble();
   }
 
   Map<String?, dynamic> toJson() {
@@ -135,6 +154,10 @@ class PlaceOrderBody {
     data['card_id'] = _cardId;
     data['delivery_date'] = _deliveryDate;
     data['delivery_time'] = _deliveryTime;
+    data['use_installment'] = _useInstallment;
+    data['months'] = _months;
+    data['down_payment'] = _downPayment;
+    data['monthly_payment'] = _monthlyPayment;
     return data;
   }
 }

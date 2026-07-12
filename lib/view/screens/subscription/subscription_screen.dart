@@ -14,6 +14,7 @@ import 'package:wired_express/utill/color_resources.dart';
 import 'package:wired_express/utill/styles.dart';
 import 'package:wired_express/view/base/custom_app_bar.dart';
 import 'package:wired_express/view/base/circular_indicator_widget.dart';
+import 'package:wired_express/view/screens/subscription/subscription_details_screen.dart';
 import 'package:wired_express/view/screens/subscription/widget/subscription_bottom_sheet.dart';
 
 class SubscriptionScreen extends StatefulWidget {

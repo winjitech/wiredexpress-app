@@ -44,7 +44,28 @@ class ProfileRepo {
       return ApiResponse.withError(ApiErrorHandler.getMessage(e));
     }
   }
+  Future<ApiResponse> updateUserLanguageCode(String languageCode) async {
+    try {
+      Response response = await dioClient!.post(
+        AppConstants.updateUserLanguageCodeUrl,
+        data: {"language_code": languageCode},
+      );
+      return ApiResponse.withSuccess(response);
+    } catch (e) {
+      return ApiResponse.withError(ApiErrorHandler.getMessage(e));
+    }
+  }
 
+  Future<ApiResponse> updateUserPlatformType(String platformType) async {
+    try {
+      final response = await dioClient!.post(
+        '${AppConstants.updateUserPlatformUrl}?platform_type=$platformType',
+      );
+      return ApiResponse.withSuccess(response);
+    } catch (e) {
+      return ApiResponse.withError(ApiErrorHandler.getMessage(e));
+    }
+  }
   Future<http.StreamedResponse> updateProfile(
       UserInfoModel userInfoModel, String password, String token) async {
     http.MultipartRequest request = http.MultipartRequest(

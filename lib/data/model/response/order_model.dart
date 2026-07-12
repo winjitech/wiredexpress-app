@@ -1,3 +1,4 @@
+import 'package:wired_express/data/model/response/order_installment_model.dart';
 import 'package:wired_express/data/model/response/product_model.dart';
 
 class OrdersItems {
@@ -79,6 +80,9 @@ class OrderModel {
   String? _deliveryTime;
   int? _usePoints;
   double? _loyaltyPointsDiscountAmount;
+  bool? _isInstallment;
+  String? _installmentStatus;
+  OrderInstallmentModel? _installment;
 
   OrderModel({
     int? id,
@@ -106,6 +110,9 @@ class OrderModel {
     String? deliveryTime,
     int? usePoints,
     double? loyaltyPointsDiscountAmount,
+    bool? isInstallment,
+    String? installmentStatus,
+    OrderInstallmentModel? installment,
   }) {
     _id = id;
     _userId = userId;
@@ -132,6 +139,10 @@ class OrderModel {
     _deliveryTime = deliveryTime;
     _usePoints = usePoints;
     _loyaltyPointsDiscountAmount = loyaltyPointsDiscountAmount;
+    _loyaltyPointsDiscountAmount = loyaltyPointsDiscountAmount;
+    _isInstallment = isInstallment;
+    _installmentStatus = installmentStatus;
+    _installment = installment;
   }
 
   int? get id => _id;
@@ -160,6 +171,9 @@ class OrderModel {
   String? get deliveryTime => _deliveryTime;
   int? get usePoints => _usePoints;
   double? get loyaltyPointsDiscountAmount => _loyaltyPointsDiscountAmount;
+  bool? get isInstallment => _isInstallment;
+  String? get installmentStatus => _installmentStatus;
+  OrderInstallmentModel? get installment => _installment;
 
   OrderModel.fromJson(Map<String?, dynamic> json) {
     _id = json['id'];
@@ -201,6 +215,14 @@ class OrderModel {
     _deliveryAddress = json['delivery_address'] != null
         ? DeliveryAddress.fromJson(json['delivery_address'])
         : null;
+    _isInstallment = json['is_installment'] == null
+        ? null
+        : json['is_installment'] == true || json['is_installment'] == 1;
+
+    _installmentStatus = json['installment_status'];
+    _installment = json['installment'] != null
+        ? OrderInstallmentModel.fromJson(json['installment'])
+        : null;
   }
 
   Map<String?, dynamic> toJson() {
@@ -236,6 +258,11 @@ class OrderModel {
     }
     if (_deliveryAddress != null) {
       data['delivery_address'] = _deliveryAddress!.toJson();
+    }
+    data['is_installment'] = _isInstallment;
+    data['installment_status'] = _installmentStatus;
+    if (_installment != null) {
+      data['installment'] = _installment!.toJson();
     }
     return data;
   }

@@ -108,6 +108,9 @@ class HomeProvider extends ChangeNotifier {
             matchedAddress.longitude!,
           );
         }
+        placeOrder.getPendingInstallmentPayments(context);
+
+        placeOrder.getAwaitingDownPaymentOrderList(context);
       }
 
       subscriptionProvider.getSubscriptionPlans(context);

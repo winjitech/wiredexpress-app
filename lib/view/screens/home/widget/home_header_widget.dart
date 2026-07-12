@@ -64,7 +64,7 @@ class HomeHeaderWidget extends StatelessWidget {
                   onTap: () => Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (_) => NotificationScreen(),
+                      builder: (_) => NotificationsScreen(),
                     ),
                   ),
                   child: SizedBox(

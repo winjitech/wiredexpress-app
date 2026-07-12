@@ -44,7 +44,10 @@ class AppConstants {
   static const String couponApplyUrl = '/api/v1/coupon/apply?code=';
   static const String historyOrderListUrl = '/api/v1/customer/order/history-list';
   static const String runningOrderListUrl = '/api/v1/customer/order/running-list';
-
+  static const String awaitingDownPaymentOrderListUrl = '/api/v1/customer/order/awaiting-down-payment';
+  static const String payDownPaymentUrl = '/api/v1/customer/order/pay-down-payment';
+  static const String pendingInstallmentPaymentsUrl = '/api/v1/customer/order/pending-installment-payments';
+  static const String payPendingInstallmentUrl = '/api/v1/customer/order/pay-pending-installment';
   static const String orderCancelUrl = '/api/v1/customer/order/cancel';
   static const String updateMethodUrl = '/api/v1/customer/order/payment-method';
   static const String orderDetailsUrl = '/api/v1/customer/order/details?order_id=';
@@ -53,11 +56,14 @@ class AppConstants {
 
   static const String addToWishListUrl = '/api/v1/customer/wish-list/add-to-wishlist';
   static const String removeFromWishListUrl = '/api/v1/customer/wish-list/remove?product_id=';
-  static const String notificationUrl = '/api/v1/notifications';
+  static const String notificationsUrl = '/api/v1/customer/notification/list';
+  static const String markAsRead = '/api/v1/customer/notification/mark-read';
+
   static const String updateProfileUrl = '/api/v1/customer/update-profile';
 
   static const String featuredProductsUrl = '/api/v1/products/featured';
-
+  static const String updateUserLanguageCodeUrl = '/api/v1/customer/update-language-code';
+  static const String updateUserPlatformUrl = '/api/v1/customer/update-platform-type';
   static const String searchUrl = '/api/v1/products/search';
   static const String sendSearchUrl = '/api/v1/customer/search';
   static const String reviewUrl = '/api/v1/products/reviews/submit';

@@ -9,9 +9,25 @@ class NotificationRepo {
 
   NotificationRepo({@required this.dioClient});
 
-  Future<ApiResponse> getNotificationList() async {
+
+  Future<ApiResponse> fetchNotifications(String offset) async {
     try {
-      final response = await dioClient!.get('${AppConstants.notificationUrl}');
+      String url = '${AppConstants.notificationsUrl}?limit=20&offset=$offset';
+
+      print("url -- $url");
+      final response = await dioClient!.get(url);
+      return ApiResponse.withSuccess(response);
+    } catch (e) {
+      return ApiResponse.withError(ApiErrorHandler.getMessage(e));
+    }
+  }
+
+  Future<ApiResponse> markAsRead(int notificationId) async {
+    try {
+      String url = '${AppConstants.markAsRead}?notification_id=$notificationId';
+
+      print("url -- $url");
+      final response = await dioClient!.post(url);
       return ApiResponse.withSuccess(response);
     } catch (e) {
       return ApiResponse.withError(ApiErrorHandler.getMessage(e));

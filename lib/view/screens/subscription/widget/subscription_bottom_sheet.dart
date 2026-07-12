@@ -67,7 +67,7 @@ class _SubscriptionBottomSheetState extends State<SubscriptionBottomSheet> {
                       ),
                       Center(
                         child: CircleAvatar(
-                          radius: 30,
+                          radius: 30.r,
                           backgroundColor:
                               ColorResources.getPrimaryColor(context),
                           child: Icon(
@@ -80,61 +80,74 @@ class _SubscriptionBottomSheetState extends State<SubscriptionBottomSheet> {
                         ),
                       ),
                       SizedBox(
-                        height: 20,
+                        height: 20.h,
                       ),
                       ListView.builder(
                         itemCount: features.length,
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
                         itemBuilder: (context, index) {
-                          SubscriptionFeatureModel feature = features[index];
-                          return Column(
-                            children: [
-                              Container(
-                                padding: EdgeInsets.all(15.r),
-                                child: Row(
-                                  children: [
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            feature.name ?? "",
-                                            maxLines: 1,
-                                            overflow: TextOverflow.ellipsis,
-                                            style: AppTextStyles.h7(
-                                              context,
-                                              fontSize: 15.sp,
-                                            ).copyWith(
-                                              fontWeight: FontWeight.w600,
-                                            ),
-                                          ),
-                                          SizedBox(height: 2.h),
-                                          Text(
-                                            feature.description ?? '',
-                                            textAlign: TextAlign.justify,
-                                            style: AppTextStyles.h7(
-                                              context,
-                                              fontSize: 15.sp,
-                                            ).copyWith(
-                                              fontWeight: FontWeight.w500,
-                                              color:
-                                                  ColorResources.getTextColor(
-                                                          context)
-                                                      .withOpacity(0.6),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
+                          final feature = features[index];
+
+                          return Container(
+                            margin: EdgeInsets.only(bottom: 10.h),
+                            padding: EdgeInsets.all(15.r),
+                            decoration: BoxDecoration(
+                              color: ColorResources.getCardColor(context),
+                              borderRadius: BorderRadius.circular(15.r),
+                              border: Border.all(
+                                color: ColorResources.getBorderColor(context),
                               ),
-                              SizedBox(height: 15.h),
-                            ],
+                            ),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Icon(
+                                  Icons.check_circle_rounded,
+                                  color: ColorResources.getPrimaryColor(context),
+                                  size: 22.sp,
+                                ),
+                                SizedBox(width: 12.w),
+
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        feature.name ?? '',
+                                        style: AppTextStyles.h7(
+                                          context,
+                                          fontSize: 16.sp,
+                                        ).copyWith(
+                                          fontWeight: FontWeight.w700,
+                                          color: ColorResources.getTextColor(context),
+                                        ),
+                                      ),
+
+                                      SizedBox(height: 4.h),
+
+                                      Text(
+                                        feature.description ?? '',
+                                        style: AppTextStyles.h7(
+                                          context,
+                                          fontSize: 13.sp,
+                                        ).copyWith(
+                                          fontWeight: FontWeight.w400,
+                                          height: 1.5,
+                                          color: ColorResources.getTextColor(context)
+                                              .withOpacity(0.65),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
                           );
                         },
+                      ),
+                      SizedBox(
+                        height: 20.h,
                       ),
                       if (subscriptionProvider.cancelSubscriptionLoading ==
                               true ||
@@ -266,10 +279,10 @@ class _SubscriptionBottomSheetState extends State<SubscriptionBottomSheet> {
                                                               subscriptionProvider
                                                                       .subscribeUserLoading ==
                                                                   true
-                                                          ? const Padding(
+                                                          ?  Padding(
                                                               padding:
                                                                   EdgeInsets
-                                                                      .all(15),
+                                                                      .all(15.r),
                                                               child:
                                                                   CustomCircularIndicator(),
                                                             )
@@ -294,7 +307,7 @@ class _SubscriptionBottomSheetState extends State<SubscriptionBottomSheet> {
                                                                               .cardUpdateLink(context)
                                                                               .then((value) {
                                                                             Navigator.push(context,
-                                                                                MaterialPageRoute(builder: (_) => UpdateCardSreen()));
+                                                                                MaterialPageRoute(builder: (_) => UpdateCardScreen()));
                                                                           });
                                                                         } else {
                                                                           Navigator.pop(
@@ -393,7 +406,7 @@ class _SubscriptionBottomSheetState extends State<SubscriptionBottomSheet> {
                                                                         //               Navigator.pop(context);
                                                                         //               if (paymentProvider.paymentCardList!.isEmpty) {
                                                                         //                 paymentProvider.cardUpdateLink(context).then((value) {
-                                                                        //                   Navigator.push(context, MaterialPageRoute(builder: (_) => UpdateCardSreen()));
+                                                                        //                   Navigator.push(context, MaterialPageRoute(builder: (_) => UpdateCardScreen()));
                                                                         //                 });
                                                                         //               } else {
                                                                         //                 Navigator.pop(context);
@@ -466,7 +479,7 @@ class _SubscriptionBottomSheetState extends State<SubscriptionBottomSheet> {
                                                                               .cardUpdateLink(context)
                                                                               .then((value) {
                                                                             Navigator.push(context,
-                                                                                MaterialPageRoute(builder: (_) => UpdateCardSreen()));
+                                                                                MaterialPageRoute(builder: (_) => UpdateCardScreen()));
                                                                           });
                                                                         } else {
                                                                           subscriptionProvider
@@ -559,7 +572,7 @@ class _SubscriptionBottomSheetState extends State<SubscriptionBottomSheet> {
                                                                         //
                                                                         //               if (paymentProvider.paymentCardList!.isEmpty) {
                                                                         //                 paymentProvider.cardUpdateLink(context).then((value) {
-                                                                        //                   Navigator.push(context, MaterialPageRoute(builder: (_) => UpdateCardSreen()));
+                                                                        //                   Navigator.push(context, MaterialPageRoute(builder: (_) => UpdateCardScreen()));
                                                                         //                 });
                                                                         //               } else {
                                                                         //                 subscriptionProvider.stripeSubscriptionUser(context, plan.id!, paymentProvider.paymentCardList![0].id!).then((onValue) {
@@ -670,7 +683,7 @@ class _SubscriptionBottomSheetState extends State<SubscriptionBottomSheet> {
                                           context,
                                           MaterialPageRoute(
                                               builder: (_) =>
-                                                  UpdateCardSreen()));
+                                                  UpdateCardScreen()));
                                     });
                                   } else {
                                     Navigator.pop(context);
@@ -832,7 +845,7 @@ class _SubscriptionBottomSheetState extends State<SubscriptionBottomSheet> {
                                   //                       context,
                                   //                       MaterialPageRoute(
                                   //                           builder: (_) =>
-                                  //                               UpdateCardSreen()));
+                                  //                               UpdateCardScreen()));
                                   //                 });
                                   //               } else {
                                   //                 Navigator.pop(context);

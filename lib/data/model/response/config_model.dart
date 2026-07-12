@@ -1,5 +1,9 @@
 import 'dart:convert';
 
+import 'package:wired_express/data/model/response/base_urls_model.dart';
+import 'package:wired_express/data/model/response/installment_plan_model.dart';
+import 'package:wired_express/data/model/response/opening_hours_model.dart';
+
 class ConfigModel {
   String? _storeName;
   String? _storeOpenTime;
@@ -26,7 +30,7 @@ class ConfigModel {
   String? _ppuEarn;
   String? _ppuPurchase;
   List<String>? _workingDays;
-
+  List<InstallmentPlanModel>? _installmentPlans;
   ConfigModel({
     String? storeName,
     String? storeOpenTime,
@@ -50,7 +54,7 @@ class ConfigModel {
     String? serviceMessages,
     String? ppuEarn,
     String? ppuPurchase,
-    List<String>? workingDays,
+    List<String>? workingDays,List<InstallmentPlanModel>? installmentPlans,
   }) {
     this._storeName = storeName;
     this._storeOpenTime = storeOpenTime;
@@ -74,7 +78,7 @@ class ConfigModel {
     this._serviceMessages = serviceMessages;
     this._ppuEarn = ppuEarn;
     this._ppuPurchase = ppuPurchase;
-    this._workingDays = workingDays;
+    this._workingDays = workingDays; this._installmentPlans = installmentPlans;
   }
 
   String? get storeName => _storeName;
@@ -99,7 +103,7 @@ class ConfigModel {
   String? get serviceMessages => _serviceMessages;
   String? get ppuEarn => _ppuEarn;
   String? get ppuPurchase => _ppuPurchase;
-  List<String>? get workingDays => _workingDays;
+  List<String>? get workingDays => _workingDays;List<InstallmentPlanModel>? get installmentPlans => _installmentPlans;
   ConfigModel.fromJson(Map<String?, dynamic> json) {
     _storeName = json['store_name'];
     _storeOpenTime = json['store_open_time'];
@@ -134,6 +138,11 @@ class ConfigModel {
     }
     if (json['working_days'] != null) {
       _workingDays = List<String>.from(json['working_days']);
+    }if (json['installment_plans'] != null) {
+      _installmentPlans = [];
+      json['installment_plans'].forEach((v) {
+        _installmentPlans!.add(InstallmentPlanModel.fromJson(v));
+      });
     }
   }
 
@@ -167,155 +176,12 @@ class ConfigModel {
       data['opening_hours'] =
           this._openingHours!.map((v) => v.toJson()).toList();
     }
-    data['working_days'] = _workingDays;
+    data['working_days'] = _workingDays;if (_installmentPlans != null) {
+      data['installment_plans'] =
+          _installmentPlans!.map((e) => e.toJson()).toList();
+    }
     return data;
   }
 }
 
-class OpeningHoursModel {
-  String? _start;
-  String? _end;
 
-  OpeningHoursModel({String? start, String? end}) {
-    this._start = start;
-    this._end = end;
-  }
-
-  String? get start => _start;
-  String? get end => _end;
-
-  OpeningHoursModel.fromJson(Map<String?, dynamic> json) {
-    _start = json['start'];
-    _end = json['end'];
-  }
-
-  Map<String?, dynamic> toJson() {
-    final Map<String?, dynamic> data = new Map<String?, dynamic>();
-    data['start'] = this._start;
-    data['end'] = this._end;
-
-    return data;
-  }
-}
-
-class BaseUrls {
-  String? _productImageUrl;
-  String? _customerImageUrl;
-  String? _bannerImageUrl;
-  String? _categoryImageUrl;
-  String? _reviewImageUrl;
-  String? _notificationImageUrl;
-  String? _storeImageUrl;
-  String? _contestImageUrl;
-  String? _deliveryManImageUrl;
-  String? _chatImageUrl;
-  String? _electricianImageUrl;
-  String? _contractorRequestAttachmentsUrl;
-
-  BaseUrls({
-    String? productImageUrl,
-    String? customerImageUrl,
-    String? bannerImageUrl,
-    String? categoryImageUrl,
-    String? reviewImageUrl,
-    String? notificationImageUrl,
-    String? storeImageUrl,
-    String? contestImageUrl,
-    String? deliveryManImageUrl,
-    String? chatImageUrl,
-    String? electricianImageUrl,
-    String? contractorRequestAttachmentsUrl,
-  }) {
-    _productImageUrl = productImageUrl;
-    _customerImageUrl = customerImageUrl;
-    _bannerImageUrl = bannerImageUrl;
-    _categoryImageUrl = categoryImageUrl;
-    _reviewImageUrl = reviewImageUrl;
-    _notificationImageUrl = notificationImageUrl;
-    _storeImageUrl = storeImageUrl;
-    _contestImageUrl = contestImageUrl;
-    _deliveryManImageUrl = deliveryManImageUrl;
-    _chatImageUrl = chatImageUrl;
-    _electricianImageUrl = electricianImageUrl;
-    _contractorRequestAttachmentsUrl = contractorRequestAttachmentsUrl;
-  }
-
-  String? get productImageUrl => _productImageUrl;
-  String? get customerImageUrl => _customerImageUrl;
-  String? get bannerImageUrl => _bannerImageUrl;
-  String? get categoryImageUrl => _categoryImageUrl;
-  String? get reviewImageUrl => _reviewImageUrl;
-  String? get notificationImageUrl => _notificationImageUrl;
-  String? get storeImageUrl => _storeImageUrl;
-  String? get contestImageUrl => _contestImageUrl;
-  String? get deliveryManImageUrl => _deliveryManImageUrl;
-  String? get chatImageUrl => _chatImageUrl;
-  String? get electricianImageUrl => _electricianImageUrl;
-  String? get contractorRequestAttachmentsUrl =>
-      _contractorRequestAttachmentsUrl;
-
-  BaseUrls.fromJson(Map<String?, dynamic> json) {
-    _productImageUrl = json['product_image_url'];
-    _customerImageUrl = json['customer_image_url'];
-    _bannerImageUrl = json['banner_image_url'];
-    _categoryImageUrl = json['category_image_url'];
-    _reviewImageUrl = json['review_image_url'];
-    _notificationImageUrl = json['notification_image_url'];
-    _storeImageUrl = json['store_image_url'];
-    _contestImageUrl = json['contest_image_url'];
-    _deliveryManImageUrl = json['delivery_man_image_url'];
-    _chatImageUrl = json['chat_image_url'];
-    _electricianImageUrl = json['electrician_image_url'];
-    _contractorRequestAttachmentsUrl =
-    json['contractor_request_attachments_url'];
-  }
-
-  Map<String?, dynamic> toJson() {
-    final Map<String?, dynamic> data = <String?, dynamic>{};
-    data['product_image_url'] = _productImageUrl;
-    data['customer_image_url'] = _customerImageUrl;
-    data['banner_image_url'] = _bannerImageUrl;
-    data['category_image_url'] = _categoryImageUrl;
-    data['review_image_url'] = _reviewImageUrl;
-    data['notification_image_url'] = _notificationImageUrl;
-    data['store_image_url'] = _storeImageUrl;
-    data['contest_image_url'] = _contestImageUrl;
-    data['delivery_man_image_url'] = _deliveryManImageUrl;
-    data['chat_image_url'] = _chatImageUrl;
-    data['electrician_image_url'] = _electricianImageUrl;
-    data['contractor_request_attachments_url'] =
-        _contractorRequestAttachmentsUrl;
-    return data;
-  }
-}
-class StoreLocationCoverage {
-  String? _longitude;
-  String? _latitude;
-  double? _coverage;
-
-  StoreLocationCoverage(
-      {String? longitude, String? latitude, double? coverage}) {
-    this._longitude = longitude;
-    this._latitude = latitude;
-    this._coverage = coverage;
-  }
-
-  String? get longitude => _longitude;
-  String? get latitude => _latitude;
-  double? get coverage => _coverage;
-
-  StoreLocationCoverage.fromJson(Map<String?, dynamic> json) {
-    _longitude = json['longitude'];
-    _latitude = json['latitude'];
-
-    _coverage = (json['coverage'] as num).toDouble();
-  }
-
-  Map<String?, dynamic> toJson() {
-    final Map<String?, dynamic> data = new Map<String?, dynamic>();
-    data['longitude'] = this._longitude;
-    data['latitude'] = this._latitude;
-    data['coverage'] = this._coverage;
-    return data;
-  }
-}

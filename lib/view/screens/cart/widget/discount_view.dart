@@ -6,7 +6,6 @@ import 'package:wired_express/provider/coupon_provider.dart';
 import 'package:wired_express/provider/splash_provider.dart';
 import 'package:wired_express/utill/color_resources.dart';
 import 'package:wired_express/utill/styles.dart';
-import 'package:wired_express/view/base/circular_indicator_widget.dart';
 import 'package:wired_express/view/base/custom_snackbar.dart';
 import 'package:wired_express/view/base/custom_text_field.dart';
 
@@ -29,9 +28,11 @@ class DiscountView extends StatelessWidget {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(height: 15.h),
           if (totalPointsDiscount > 0)
             SwitchListTile(
+              inactiveThumbColor: ColorResources.getTextColor(context),
+              inactiveTrackColor: ColorResources.getTextFieldFillColor(context),
+              activeColor: ColorResources.getPrimaryColor(context).withOpacity(1),
               contentPadding: EdgeInsets.zero,
               value: couponProvider.useLoyaltyPoints!,
               onChanged: (bool isActive) {
@@ -49,86 +50,99 @@ class DiscountView extends StatelessWidget {
                   ),
                 ],
               ),
-              activeColor:
-                  ColorResources.getPrimaryColor(context).withOpacity(1),
             ),
-          SizedBox(height: 15.h),
           Text(
             getTranslated('promo_code', context),
-            style: AppTextStyles.h2(
-              context,
-              fontSize: 20.sp,
-            ).copyWith(
-              fontWeight: FontWeight.w600,
-            ),
-          ),
+            style: AppTextStyles.h4(context),),
           SizedBox(height: 10.h),
+
           Row(
             children: [
               Expanded(
                 child: CustomTextField(
+                  controller: couponController,
                   hintText: getTranslated('enter_promo_code', context),
-                  controller: couponController,fill: true,
+                  fill: true,
                   fillColor: ColorResources.getTextFieldFillColor(context),
                   inputType: TextInputType.text,
                 ),
               ),
-              SizedBox(
-                width: 20,
-              ),
-              MaterialButton(
-                height: 50,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(40.r)),
-                onPressed: () {
+              SizedBox(width: 15.w),
+
+              InkWell(
+                borderRadius: BorderRadius.circular(15.r),
+                onTap: () {
                   FocusScope.of(context).unfocus();
+
                   if (couponController.text.isNotEmpty &&
                       (!couponProvider.applyCouponLoading! ||
                           !couponProvider.removeCouponLoading!)) {
-                    print('couponDiscountAmount 1=> $couponDiscountAmount');
+
                     if (couponDiscountAmount < 1) {
-                      print('couponDiscountAmount 2=> $couponDiscountAmount');
                       couponProvider
                           .applyCoupon(couponController.text, totalOrderPrice)
                           .then((discount) {
                         if (discount > 0) {
                           showCustomSnackBar(
-                              '${getTranslated('you_got', context)} ${getTranslated('description', context) == "Description" ? currency : currency}$discount ${getTranslated('discount', context)}',
-                              context,
-                              isError: false);
+                            '${getTranslated('you_got', context)} '
+                                '$currency$discount '
+                                '${getTranslated('discount', context)}',
+                            context,
+                            isError: false,
+                          );
                         } else {
                           showCustomSnackBar(
-                              getTranslated('invalid_code_or', context),
-                              context);
+                            getTranslated('invalid_code_or', context),
+                            context,
+                          );
                         }
                       });
                     } else {
-                      print('couponDiscountAmount 3=> $couponDiscountAmount');
                       couponProvider.removeCouponData(true);
                     }
+
                   } else if (couponController.text.isEmpty) {
                     showCustomSnackBar(
-                        getTranslated('enter_a_Coupon_code', context), context);
+                      getTranslated('enter_a_Coupon_code', context),
+                      context,
+                    );
                   }
                 },
-                color: ColorResources.getPrimaryColor(context),
-                child: couponProvider.couponDiscountAmount! <= 0
-                    ? !couponProvider.applyCouponLoading! ||
-                            !couponProvider.removeCouponLoading!
-                        ? Text(
-                            getTranslated('apply', context),
-                            style: AppTextStyles.h6(context).copyWith(
-                              color: Colors.white,
-                            ),
-                          )
-                        : CustomCircularIndicator(
-                           color: Colors.white,)
-                    : Icon(Icons.clear,
-                      color: Colors.white,),
+                child: Container(
+                  height: 50.h,
+                  padding: EdgeInsets.symmetric(horizontal: 18.w),
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: ColorResources.getPrimaryColor(context),
+                    borderRadius: BorderRadius.circular(15.r),
+                  ),
+                  child: couponProvider.couponDiscountAmount! <= 0
+                      ? (!couponProvider.applyCouponLoading! &&
+                      !couponProvider.removeCouponLoading!)
+                      ? Text(
+                    getTranslated('apply', context),
+                    style: AppTextStyles.h5(context).copyWith(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  )
+                      : SizedBox(
+                    width: 22.w,
+                    height: 22.w,
+                    child: const CircularProgressIndicator(
+                      strokeWidth: 2.5,
+                      valueColor:
+                      AlwaysStoppedAnimation<Color>(Colors.white),
+                    ),
+                  )
+                      : const Icon(
+                    Icons.clear_rounded,
+                    color: Colors.white,
+                  ),
+                ),
               ),
             ],
-          ),
-          SizedBox(height: 15.h),
+          )
         ],
       );
     });

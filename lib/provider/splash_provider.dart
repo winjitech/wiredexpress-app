@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:wired_express/data/model/response/base/api_response.dart';
+import 'package:wired_express/data/model/response/base_urls_model.dart';
 import 'package:wired_express/data/model/response/config_model.dart';
 import 'package:wired_express/data/model/response/electrician_model.dart';
 import 'package:wired_express/data/model/response/response_model.dart';
