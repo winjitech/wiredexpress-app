@@ -182,7 +182,6 @@ class _LoginWithPhoneScreenState extends State<LoginWithPhoneScreen> {
                                           ColorResources.getTextFieldFillColor(
                                               context),
                                       isShowBorder: false,
-                                      isCountryPicker: true,
                                       focusNode: _phoneNumberFocus,
                                       controller: _phoneController,
                                       inputType: TextInputType.phone,
