@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wired_express/data/model/body/place_order_body.dart';
 import 'package:wired_express/data/model/response/config_model.dart';
-import 'package:wired_express/data/model/response/opening_hours_model.dart';
+
 import 'package:wired_express/data/model/response/working_hours_model.dart';
 import 'package:wired_express/helper/date_converter.dart';
 import 'package:wired_express/localization/language_constrants.dart';

@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:wired_express/data/model/response/base_urls_model.dart';
 import 'package:wired_express/data/model/response/installment_plan_model.dart';
-import 'package:wired_express/data/model/response/opening_hours_model.dart';
+
 import 'package:wired_express/data/model/response/working_hours_model.dart';
 
 class ConfigModel {

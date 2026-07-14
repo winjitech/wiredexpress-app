@@ -9,7 +9,7 @@ import 'package:wired_express/data/model/response/config_model.dart';
 import 'package:wired_express/data/model/response/delivery_man_model.dart';
 import 'package:wired_express/data/model/response/installment_calculation_result.dart';
 import 'package:wired_express/data/model/response/installment_plan_model.dart';
-import 'package:wired_express/data/model/response/opening_hours_model.dart';
+
 import 'package:wired_express/data/model/response/order_details_model.dart';
 import 'package:wired_express/data/model/response/response_model.dart';
 import 'package:wired_express/data/model/response/order_model.dart';
