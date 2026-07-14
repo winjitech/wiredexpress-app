@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wired_express/data/model/body/place_order_body.dart';
 import 'package:wired_express/data/model/response/config_model.dart';
 import 'package:wired_express/data/model/response/opening_hours_model.dart';
+import 'package:wired_express/data/model/response/working_hours_model.dart';
 import 'package:wired_express/helper/date_converter.dart';
 import 'package:wired_express/localization/language_constrants.dart';
 import 'package:wired_express/provider/auth_provider.dart';
@@ -104,8 +105,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                           orderProv.setScheduledOrder(true);
                         });
                       }
-                      List<OpeningHoursModel> workingHours = config.openingHours??[];
-                      List<String> workingDays = config.workingDays??[];
+                      Map<String, WorkingHoursModel> workingHours = config.workingHours ?? {};
                       return Column(
                             children: [
                               Expanded(
@@ -196,7 +196,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                                   _buildScheduleWidget(
                                                     context,
                                                     orderProv,
-                                                    workingDays,
                                                     workingHours,
                                                   ),
                                               ],
@@ -536,9 +535,20 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   Widget _buildScheduleWidget(
       BuildContext context,
       OrderProvider orderProv,
-      List<String> workingDays,
-      List<OpeningHoursModel> workingHours,
-      ) {
+      Map<String, WorkingHoursModel> workingHours,
+      ){
+    List<WorkingHourRangeModel> selectedDayHours = [];
+
+    if (orderProv.selectedDeliveryDate != null) {
+
+      final selectedDay = DateConverter.dateToWeekDay(
+        context,
+        orderProv.selectedDeliveryDate!,
+      );
+
+      selectedDayHours =
+          workingHours[selectedDay]?.hours ?? [];
+    }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -611,9 +621,11 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           ),
           itemBuilder: (context, index) {
             DateTime date = _weekStart.add(Duration(days: index));
-            String dayName = DateConverter.dateToWeekDay(context ,date);
+            String dayName = DateConverter.dateToWeekDay(context, date);
 
-            bool enabled = workingDays.contains(dayName);
+            final dayConfig = workingHours[dayName];
+
+            bool enabled = dayConfig?.enabled == true;
             final DateTime today = DateTime(
               DateTime.now().year,
               DateTime.now().month,
@@ -708,12 +720,12 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           padding: EdgeInsets.zero,
-          itemCount: workingHours.length,
+          itemCount: selectedDayHours.length,
           itemBuilder: (context, index) {
 
-            OpeningHoursModel slot = workingHours[index];
-            bool selected = orderProv.selectedOpeningHour == slot;
-
+            final slot = selectedDayHours[index];
+            bool selected =
+                orderProv.selectedOpeningHour == slot;
 
             return GestureDetector(
               onTap: () {

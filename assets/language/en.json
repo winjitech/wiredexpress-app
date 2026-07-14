@@ -598,5 +598,8 @@
   "requested_at": "Requested At",
   "admin_note": "Admin Note",
 "notifications": "Notifications",
-  "no_any_notification_yet": "No any notification yet"
+  "no_any_notification_yet": "No any notification yet",
+  "project_details": "Project Details",
+  "project_details_hint": "Describe the materials, electrical work, welding service, or custom fabrication needed. Include quantities, measurements, and specifications. ",
+  "submit_request": "Submit Request"
 }

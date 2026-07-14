@@ -7,7 +7,6 @@ import 'package:provider/provider.dart';
 import 'package:wired_express/data/helper/helpers.dart';
 import 'package:wired_express/data/model/response/config_model.dart';
 import 'package:wired_express/data/model/response/contractor_request_model.dart';
-import 'package:wired_express/data/model/response/opening_hours_model.dart';
 import 'package:wired_express/helper/date_converter.dart';
 import 'package:wired_express/localization/language_constrants.dart';
 import 'package:wired_express/provider/contractor_request_provider.dart';
@@ -19,7 +18,7 @@ import 'package:wired_express/view/base/circular_indicator_widget.dart';
 import 'package:wired_express/view/base/custom_app_bar.dart';
 import 'package:wired_express/view/base/custom_snackbar.dart';
 import 'package:wired_express/view/base/custom_text_field.dart';
-
+import 'package:wired_express/data/model/response/working_hours_model.dart';
 class AddContractorRequestScreen extends StatefulWidget {
   @override
   State<AddContractorRequestScreen> createState() =>
@@ -61,8 +60,10 @@ class _AddContractorRequestScreenState
                 ConfigModel config = splash.configModel!;
                 String storePhone = config.storePhone??"" ;
                 String storeEmail = config.storeEmail??"" ;
-                List<OpeningHoursModel> workingHours = config.openingHours??[];
-                List<String> workingDays = config.workingDays??[];
+                Map<String, WorkingHoursModel>? workingHours = config.workingHours ?? {};
+                List<MapEntry<String, WorkingHoursModel>> enabledDays = workingHours.entries
+                    .where((e) => e.value.enabled)
+                    .toList();
                 return Scrollbar(
                     child: SingleChildScrollView(
                         padding: EdgeInsets.all(25.r),
@@ -145,7 +146,7 @@ class _AddContractorRequestScreenState
                               ),
                               SizedBox(height: 15.h),
                               Text(
-                                getTranslated('materials_needed', context),
+                                getTranslated('project_details', context),
                                 style: AppTextStyles.h4(context),
                               ),
 
@@ -153,7 +154,7 @@ class _AddContractorRequestScreenState
 
                               CustomTextField(
                                 hintText: getTranslated(
-                                  'list_all_material_quantities_and_specifications',
+                                  'project_details_hint',
                                   context,
                                 ),
                                 isShowBorder: true,
@@ -197,7 +198,7 @@ class _AddContractorRequestScreenState
 
                               prov.saveContractorRequestLoading!?
                                   CustomCircularIndicator()
-                                  :CustomButton(text: getTranslated('submit_quote_request', context),
+                                  :CustomButton(text: getTranslated('submit_request', context),
                                 onTap: (){
                                   FocusScope.of(context).unfocus();
                                   if(_descriptionController.text.isEmpty){
@@ -441,36 +442,54 @@ class _AddContractorRequestScreenState
                                     ),
                                     SizedBox(height: 10.h),
 
-                                    if (workingDays.isNotEmpty)
-                                        Text(
-                                          "${getTranslated('working_days', context)}: "
-                                              "${workingDays.map((day) => DateConverter.localizeWeekDay(context, day)).join(', ')}",
-                                          style: AppTextStyles.h6(context),
-                                        ),
+                                    if (enabledDays.isNotEmpty) ...[
+                                      ...enabledDays.map(
+                                            (dayEntry) => Padding(
+                                          padding: EdgeInsets.only(bottom: 12.h),
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
 
-                                    SizedBox(height: 10.h),
-
-                                    ...workingHours.map(
-                                          (hour) => Padding(
-                                        padding: EdgeInsets.only(bottom: 6.h),
-                                        child: Row(
-                                          children: [
-                                            Icon(
-                                              Icons.access_time,
-                                              size: 18.sp,
-                                              color: ColorResources.getPrimaryColor(context),
-                                            ),
-                                            SizedBox(width: 6.w),
-                                            Text(
-                                              "${DateConverter.convertTimeToTime(hour.start!)} - ${DateConverter.convertTimeToTime(hour.end!)}",
-                                              style: AppTextStyles.h6(context).copyWith(
-                                                color: ColorResources.getPrimaryColor(context),
+                                              Text(
+                                                DateConverter.localizeWeekDay(context, dayEntry.key),
+                                                style: AppTextStyles.h5(context).copyWith(
+                                                  fontWeight: FontWeight.bold,
+                                                ),
                                               ),
-                                            ),
-                                          ],
+
+                                              SizedBox(height: 6.h),
+
+                                              ...dayEntry.value.hours.map(
+                                                    (range) => Padding(
+                                                  padding: EdgeInsets.only(bottom: 5.h),
+                                                  child: Row(
+                                                    children: [
+
+                                                      Icon(
+                                                        Icons.access_time,
+                                                        size: 18.sp,
+                                                        color: ColorResources.getPrimaryColor(context),
+                                                      ),
+
+                                                      SizedBox(width: 6.w),
+
+                                                      Text(
+                                                        "${DateConverter.convertTimeToTime(range.start)}"
+                                                            " - "
+                                                            "${DateConverter.convertTimeToTime(range.end)}",
+                                                        style: AppTextStyles.h6(context).copyWith(
+                                                          color: ColorResources.getPrimaryColor(context),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
                                         ),
                                       ),
-                                    ),
+                                    ]
                                   ],
                                 ),
                               ),

@@ -13,6 +13,7 @@ import 'package:wired_express/data/model/response/opening_hours_model.dart';
 import 'package:wired_express/data/model/response/order_details_model.dart';
 import 'package:wired_express/data/model/response/response_model.dart';
 import 'package:wired_express/data/model/response/order_model.dart';
+import 'package:wired_express/data/model/response/working_hours_model.dart';
 import 'package:wired_express/data/repository/order_repo.dart';
 import 'package:wired_express/view/screens/track/directions.dart';
 import 'package:wired_express/data/model/response/delivery_coordinate_history_model.dart';
@@ -368,11 +369,11 @@ class OrderProvider extends ChangeNotifier {
     _selectedDeliveryDate = null;
     notifyListeners();
   }
+  WorkingHourRangeModel? _selectedOpeningHour;
 
-  OpeningHoursModel? _selectedOpeningHour;
-  OpeningHoursModel? get selectedOpeningHour => _selectedOpeningHour;
+  WorkingHourRangeModel? get selectedOpeningHour => _selectedOpeningHour;
 
-  void setSelectedTime(OpeningHoursModel slot) {
+  void setSelectedTime(WorkingHourRangeModel slot) {
     _selectedOpeningHour = slot;
     notifyListeners();
   }

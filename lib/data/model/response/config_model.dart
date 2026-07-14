@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:wired_express/data/model/response/base_urls_model.dart';
 import 'package:wired_express/data/model/response/installment_plan_model.dart';
 import 'package:wired_express/data/model/response/opening_hours_model.dart';
+import 'package:wired_express/data/model/response/working_hours_model.dart';
 
 class ConfigModel {
   String? _storeName;
@@ -13,7 +14,6 @@ class ConfigModel {
   String? _storePhone;
   String? _storeEmail;
   BaseUrls? _baseUrls;
-  List<OpeningHoursModel>? _openingHours;
 
   String? _currencySymbol;
   String? _deliveryCharge;
@@ -29,7 +29,7 @@ class ConfigModel {
   String? _serviceMessages;
   String? _ppuEarn;
   String? _ppuPurchase;
-  List<String>? _workingDays;
+  Map<String, WorkingHoursModel>? _workingHours;
   List<InstallmentPlanModel>? _installmentPlans;
   ConfigModel({
     String? storeName,
@@ -38,7 +38,6 @@ class ConfigModel {
     String? storeLogo,
     String? storeAddress,
     String? storePhone,
-    List<OpeningHoursModel>? openTime,
     String? storeEmail,
     BaseUrls? baseUrls,
     String? currencySymbol,
@@ -54,7 +53,8 @@ class ConfigModel {
     String? serviceMessages,
     String? ppuEarn,
     String? ppuPurchase,
-    List<String>? workingDays,List<InstallmentPlanModel>? installmentPlans,
+    List<InstallmentPlanModel>? installmentPlans,
+    Map<String, WorkingHoursModel>? workingHours,
   }) {
     this._storeName = storeName;
     this._storeOpenTime = storeOpenTime;
@@ -62,7 +62,6 @@ class ConfigModel {
     this._storeLogo = storeLogo;
     this._storeAddress = storeAddress;
     this._storePhone = storePhone;
-    this._openingHours = openTime;
     this._storeEmail = storeEmail;
     this._baseUrls = baseUrls;
     this._currencySymbol = currencySymbol;
@@ -78,7 +77,8 @@ class ConfigModel {
     this._serviceMessages = serviceMessages;
     this._ppuEarn = ppuEarn;
     this._ppuPurchase = ppuPurchase;
-    this._workingDays = workingDays; this._installmentPlans = installmentPlans;
+    this._installmentPlans = installmentPlans;
+    _workingHours = workingHours;
   }
 
   String? get storeName => _storeName;
@@ -93,7 +93,6 @@ class ConfigModel {
   String? get deliveryCharge => _deliveryCharge;
   String? get cashOnDelivery => _cashOnDelivery;
   String? get digitalPayment => _digitalPayment;
-  List<OpeningHoursModel>? get openingHours => _openingHours;
   String? get termsAndConditions => _termsAndConditions;
   String? get aboutUs => _aboutUs;
   String? get privacyPolicy => _privacyPolicy;
@@ -103,7 +102,8 @@ class ConfigModel {
   String? get serviceMessages => _serviceMessages;
   String? get ppuEarn => _ppuEarn;
   String? get ppuPurchase => _ppuPurchase;
-  List<String>? get workingDays => _workingDays;List<InstallmentPlanModel>? get installmentPlans => _installmentPlans;
+  List<InstallmentPlanModel>? get installmentPlans => _installmentPlans;
+  Map<String, WorkingHoursModel>? get workingHours => _workingHours;
   ConfigModel.fromJson(Map<String?, dynamic> json) {
     _storeName = json['store_name'];
     _storeOpenTime = json['store_open_time'];
@@ -130,18 +130,18 @@ class ConfigModel {
     _serviceMessages = json['service_messages'];
     _ppuEarn = json['ppu_earn'];
     _ppuPurchase = json['ppu_purchase'];
-    if (json['opening_hours'] != null) {
-      _openingHours = [];
-      json['opening_hours'].forEach((v) {
-        _openingHours!.add(new OpeningHoursModel.fromJson(v));
-      });
-    }
-    if (json['working_days'] != null) {
-      _workingDays = List<String>.from(json['working_days']);
-    }if (json['installment_plans'] != null) {
+
+    if (json['installment_plans'] != null) {
       _installmentPlans = [];
       json['installment_plans'].forEach((v) {
         _installmentPlans!.add(InstallmentPlanModel.fromJson(v));
+      });
+    }
+    if (json['working_hours'] != null) {
+      _workingHours = {};
+
+      (json['working_hours'] as Map<String, dynamic>).forEach((key, value) {
+        _workingHours![key] = WorkingHoursModel.fromJson(value);
       });
     }
   }
@@ -172,16 +172,16 @@ class ConfigModel {
     data['phone_otp'] = this.phoneOTP;
     data['ppu_earn'] = _ppuEarn;
     data['ppu_purchase'] = _ppuPurchase;
-    if (this._openingHours != null) {
-      data['opening_hours'] =
-          this._openingHours!.map((v) => v.toJson()).toList();
+    if (_workingHours != null) {
+      data['working_hours'] = _workingHours!.map(
+        (key, value) => MapEntry(key, value.toJson()),
+      );
     }
-    data['working_days'] = _workingDays;if (_installmentPlans != null) {
+
+    if (_installmentPlans != null) {
       data['installment_plans'] =
           _installmentPlans!.map((e) => e.toJson()).toList();
     }
     return data;
   }
 }
-
-

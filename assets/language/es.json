@@ -594,7 +594,10 @@
   "requested_at": "Solicitado el",
   "admin_note": "Nota del administrador",
   "notifications": "Notificaciones",
-  "no_any_notification_yet": "Aún no hay notificaciones"
+  "no_any_notification_yet": "Aún no hay notificaciones",
+  "project_details": "Detalles del proyecto",
+  "project_details_hint": "Describa los materiales, trabajos eléctricos, servicios de soldadura o fabricación personalizada que necesita. Incluya cantidades, medidas y especificaciones.",
+  "submit_request": "Enviar solicitud"
 
 
 }
