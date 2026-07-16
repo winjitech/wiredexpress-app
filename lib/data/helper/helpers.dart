@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:wired_express/data/model/response/coupon_model.dart';
 import 'package:wired_express/data/model/response/product_model.dart';
 import 'package:wired_express/provider/contractor_request_provider.dart';
@@ -97,6 +98,27 @@ class Helpers {
     }
 
     return Colors.grey;
+  }
+
+  static Future<void> launchURL(String url) async {
+    try {
+      Uri uri = Uri.parse(url);
+
+      if (!uri.hasScheme) {
+        uri = Uri.parse('https://$url');
+      }
+
+      if (await canLaunchUrl(uri)) {
+        await launchUrl(
+          uri,
+          mode: LaunchMode.externalApplication,
+        );
+      } else {
+        debugPrint('Could not launch $url');
+      }
+    } catch (e) {
+      debugPrint('Launch URL Error: $e');
+    }
   }
 
   static Color? selectColor(String color) {

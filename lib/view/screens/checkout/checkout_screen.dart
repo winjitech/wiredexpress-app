@@ -93,12 +93,16 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                           hasServiceOnCart || (orderProv.isScheduledOrder ?? false);
 
                       final bool canChooseDeliveryType =
-                          !hasServiceOnCart &&
-                              (profileProvider.userInfoModel?.scheduledDelivery == 1);
+                          !hasServiceOnCart
+                              // &&
+                              // (profileProvider.userInfoModel?.scheduledDelivery == 1)
+                      ;
 
                       final bool showScheduleSection =
-                          hasServiceOnCart ||
-                              (profileProvider.userInfoModel?.scheduledDelivery == 1);
+                          hasServiceOnCart
+                              // ||
+                              // (profileProvider.userInfoModel?.scheduledDelivery == 1)
+                      ;
                       if (hasServiceOnCart &&
                           orderProv.isScheduledOrder != true) {
                         WidgetsBinding.instance.addPostFrameCallback((_) {

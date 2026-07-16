@@ -601,5 +601,17 @@
   "no_any_notification_yet": "No any notification yet",
   "project_details": "Project Details",
   "project_details_hint": "Describe the materials, electrical work, welding service, or custom fabrication needed. Include quantities, measurements, and specifications. ",
-  "submit_request": "Submit Request"
+  "submit_request": "Submit Request",
+  "view_financial_options": "View financial options",
+  "choose_financing_provider": "Choose a financing provider",
+  "apply_directly_with_selected_provider": "You will apply directly with your selected provider.",
+  "popular": "Popular",
+  "learn_more": "Learn More",
+  "financing_providers": "Financing Providers",
+  "apply_now": "Apply Now",
+  "apply_with": "Apply with",
+  "back_to_providers": "Back to providers",
+  "benefits": "Benefits",
+  "how_it_works": "How it works",
+  "financing_provider_disclaimer": "Financing, loan approval, interest rates, terms, monthly payments and funding are determined by the selected financing provider. Wired Express is not a lender and does not approve or fund any loans."
 }

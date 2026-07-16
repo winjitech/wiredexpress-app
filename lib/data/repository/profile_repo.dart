@@ -77,13 +77,13 @@ class ProfileRepo {
     Map<String, String> _fields = Map();
     if (password.isEmpty) {
       _fields.addAll(<String, String>{
-        '_method': 'put',
+        '_method': 'post',
         'f_name': userInfoModel.fName!,
         'l_name': userInfoModel.lName!,
       });
     } else {
       _fields.addAll(<String, String>{
-        '_method': 'put',
+        '_method': 'post',
         'f_name': userInfoModel.fName!,
         'l_name': userInfoModel.lName!,
         'password': password

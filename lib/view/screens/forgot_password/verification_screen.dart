@@ -62,15 +62,13 @@ class VerificationScreen extends StatelessWidget {
                         ),
                       ),
                       Padding(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 24, vertical: 55),
-                        child:PinCodeTextField(
+                        padding:  EdgeInsets.symmetric(
+                            horizontal: 24.w, vertical: 55.h),
+                        child: PinCodeTextField(
                           length: 4,
                           appContext: context,
-                          textStyle: AppTextStyles.h3(
-                            context,
-                          ).copyWith(
-                            fontWeight: FontWeight.w600,
+                          textStyle: AppTextStyles.h3(context).copyWith(
+                            color: ColorResources.getTextColor(context),
                           ),
 
                           obscureText: false,
@@ -80,31 +78,38 @@ class VerificationScreen extends StatelessWidget {
                           pinTheme: PinTheme(
                             shape: PinCodeFieldShape.box,
                             fieldHeight:
-                                MediaQuery.of(context).size.width * 0.14,
+                            MediaQuery.of(context).size.width * 0.14,
                             fieldWidth:
-                                MediaQuery.of(context).size.width * 0.12,
+                            MediaQuery.of(context).size.width * 0.12,
                             borderWidth: 1.5,
-                            borderRadius: BorderRadius.circular(15.r),
+                            borderRadius: BorderRadius.circular(12.r),
+
                             selectedColor:
-                                ColorResources.getPrimaryColor(context),
+                            ColorResources.getPrimaryColor(context),
                             selectedFillColor:
-                                ColorResources.getScaffoldBackgroundColor(
-                                    context),
+                            ColorResources.getScaffoldBackgroundColor(
+                                context),
                             inactiveFillColor:
-                                ColorResources.getScaffoldBackgroundColor(
-                                    context),
+                            ColorResources.getScaffoldBackgroundColor(
+                                context),
                             inactiveColor: Colors.grey[300],
                             activeColor:
-                                ColorResources.getPrimaryColor(context),
+                            ColorResources.getPrimaryColor(context),
                             activeFillColor:
-                                ColorResources.getScaffoldBackgroundColor(
-                                    context),
+                            ColorResources.getScaffoldBackgroundColor(
+                                context),
                           ),
-                          animationDuration: const Duration(milliseconds: 200),
+                          animationDuration:
+                          const Duration(milliseconds: 200),
                           backgroundColor: Colors.transparent,
                           enableActiveFill: true,
                           onChanged: authProvider.updateVerificationCode,
-                          beforeTextPaste: (text) => true,
+                          beforeTextPaste: (text) {
+                            return true;
+                          },
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+
+
                         ),
                       ),
                       SizedBox(height: 150),

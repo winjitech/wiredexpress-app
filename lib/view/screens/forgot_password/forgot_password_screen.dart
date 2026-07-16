@@ -24,159 +24,203 @@ class ForgotPasswordScreen extends StatefulWidget {
 }
 
 class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
+  TextEditingController _emailController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
-    TextEditingController _emailController = TextEditingController();
-
     return Scaffold(
-      backgroundColor: ColorResources.getScaffoldBackgroundColor(context!),
-      body: Scrollbar(
-        child: Consumer<CustomAuthProvider>(
-          builder: (context, auth, child) {
-            return Center(
-              child: SafeArea(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(height: 40),
-                    Padding(
-                      padding: EdgeInsets.only(left: 50),
-                      child: Text(
-                        getTranslated('forget_pass', context),
-                        style: AppTextStyles.h3(
-                          context,
-                          fontSize: 20.sp,
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 30.h),
-                    Padding(
-                      padding: EdgeInsets.only(left: 20.w, right: 20.w),
-                      child: Center(
-                          child: Text(
-                            getTranslated('please_enter_your_number_to', context),
-                            textAlign: TextAlign.center,
-                            style: AppTextStyles.h5(context).copyWith(
-                              color: ColorResources.getTextColor(context).withOpacity(0.5),
-                            ),
-                          ),),
-                    ),
-                    Padding(
-                      padding:
-                          EdgeInsets.all(20.r),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          SizedBox(height: 80),
-                          Text(
-                            getTranslated('email', context),
-                            style: AppTextStyles.h3(
-                              context,
-                              fontSize: 19.sp,
-                            ),
-                          ),
-                          SizedBox(
-                              height: Dimensions.PADDING_SIZE_SMALL),
-                          CustomTextField(
-                            hintText: 'your Email',fill: true,
-                            fillColor:
-                                ColorResources.getTextFieldFillColor(context),
-                            isShowBorder: false,
-                            controller: _emailController,
-                            inputType: TextInputType.emailAddress,
-                            inputAction: TextInputAction.done,
-                          ),
-                          SizedBox(height: 50),
-                          !auth.isForgotPasswordLoading!
-                              ? CustomButton(
-                                  text: getTranslated('send', context),
-                                  onTap: () {
-                                    FocusScope.of(context).unfocus();
+      backgroundColor: ColorResources.getScaffoldBackgroundColor(context),
+      body: SafeArea(
+        child: Column(
+          children: [
+            _buildHeader(context),
+            _buildContent(context),
+            _buildFooter(context),
+          ],
+        ),
+      ),
+    );
+  }
 
-                                    if (_emailController.text.isEmpty) {
-                                      showCustomSnackBar(
-                                          getTranslated(
-                                              'enter_email_address', context),
-                                          context);
-                                    } else if (!_emailController.text
-                                        .contains('@')) {
-                                      showCustomSnackBar(
-                                          getTranslated(
-                                              'enter_valid_email', context),
-                                          context);
-                                    } else {
-                                      Provider.of<CustomAuthProvider>(context,
-                                              listen: false)
-                                          .forgetPassword(
-                                              _emailController.text)
-                                          .then((value) {
-                                        if (value.isSuccess) {
-                                          Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder: (_) =>
-                                                      VerificationScreen(
-                                                        emailAddress:
-                                                            _emailController
-                                                                .text,
-                                                      )));
-                                        } else {
-                                          showCustomSnackBar(
-                                              value.message, context);
-                                        }
-                                      });
-                                    }
-                                  },
-                                )
-                              : CustomCircularIndicator(
-                                  color: ColorResources.getPrimaryColor(
-                                      context)),
-                        ],
-                      ),
-                    ),
-                    Align(
-                      alignment: Alignment.bottomCenter,
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            getTranslated('remember_pass', context),
-                            style: AppTextStyles.h7(
-                              context,
-                              fontSize: 15.sp,
+  Widget _buildHeader(BuildContext context) {
+    return Padding(
+      padding:  EdgeInsets.symmetric(horizontal: 18.w, vertical: 15.h),
+      child: Row(
+        children: [
+          GestureDetector(
+            onTap: () => Navigator.pop(context),
+            child: Container(
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+
+                color: ColorResources.getScaffoldBackgroundColor(context),
+              ),
+              child: Padding(
+                padding: EdgeInsets.all(10.r),
+                child: Icon(
+                  Icons.arrow_back_ios_new_outlined,
+                  size: 18.sp,
+                  color: ColorResources.getTextColor(context),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildContent(BuildContext context) {
+    return Expanded(
+      child: Center(
+        child: Scrollbar(
+          child: SingleChildScrollView(
+            child: Center(
+              child: Consumer<CustomAuthProvider>(
+                builder: (context, auth, child) {
+                  return SafeArea(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(height: 25),
+                        Center(
+                          child: Text(
+                            getTranslated('forget_password', context),
+                            style: AppTextStyles.h2(context).copyWith(
+                              color: ColorResources.getTextColor(context),
                             ),
                           ),
-                          TextButton(
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (BuildContext context) => LoginScreen(),
-                                ),
-                              );
-                            },
+                        ),
+                        SizedBox(height: 2),
+                        Center(
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 20.w) ,
                             child: Text(
-                              getTranslated('login', context),
-                              style: AppTextStyles.h2(
-                                context,
-                                fontSize: 17.sp,
-                              ).copyWith(
-                                color: ColorResources.getPrimaryColor(context),
-                                decoration: TextDecoration.underline,
+                              getTranslated('please_enter_your_number_to', context),
+                              textAlign: TextAlign.center,
+                              style: AppTextStyles.h6(context).copyWith(
+                                color: ColorResources.getTextColor(context).withOpacity(0.6),
                               ),
                             ),
                           ),
-                        ],
+                        ),
+                        Padding(
+                          padding:  EdgeInsets.all(25.r,),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SizedBox(height: 40),
+                              Text(
+                                getTranslated('email', context),
+                                style: AppTextStyles.h4(context).copyWith(
+                                  color: ColorResources.getTextColor(context).withOpacity(0.8),
+                                ),
+                              ),
+                              SizedBox(height: 10.h),
+                              CustomTextField(
+                                hintText: getTranslated('email', context),
+                                isShowBorder: true,
+                                controller: _emailController,
+                                inputType: TextInputType.emailAddress,
+                                inputAction: TextInputAction.done,
+                              ),
+                              SizedBox(height: 50),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFooter(BuildContext context) {
+    return Padding(
+      padding:  EdgeInsets.all(35.r),
+      child: Consumer<CustomAuthProvider>(
+        builder: (context, auth, child) {
+          return Align(
+            alignment: Alignment.bottomCenter,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                auth.isForgotPasswordLoading!
+                    ? CustomCircularIndicator()
+                    : Row(
+                  children: [
+                    Expanded(
+                      child: CustomButton(
+                        backgroundColor:
+                        ColorResources.getScaffoldBackgroundColor(
+                            context),
+                        radius: 15,
+                        text: getTranslated('cancel', context),
+                        textSize: 17,
+                        textColor:
+                        ColorResources.getPrimaryColor(context),
+                        borderColor:
+                        ColorResources.getPrimaryColor(context),
+                        onTap: () {
+                          FocusScope.of(context).unfocus();
+                          Navigator.pop(context);
+                        },
                       ),
                     ),
+                    SizedBox(width: 15.w,),
+                    Expanded(
+                      child: CustomButton(
+                        backgroundColor:
+                        ColorResources.getPrimaryColor(context),
+                        radius: 15,
+                        text: getTranslated('send', context),
+                        textSize: 17,
+                        onTap: () {
+                          FocusScope.of(context).unfocus();
 
+                          if (_emailController.text.isEmpty) {
+                            showCustomSnackBar(
+                              getTranslated('enter_email_address', context),
+                              context,
+                            );
+                          } else if (!_emailController.text.contains('@')) {
+                            showCustomSnackBar(
+                              getTranslated('enter_valid_email', context),
+                              context,
+                            );
+                          } else {
+                            auth
+                                .forgetPassword(_emailController.text)
+                                .then((value) {
+                              if (value.isSuccess) {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => VerificationScreen(
+                                      emailAddress: _emailController.text,
+                                    ),
+                                  ),
+                                );
+                              } else {
+                                showCustomSnackBar(getTranslated('something_went_wrong',  context), context);
+                              }
+                            });
+                          }
+                        },
+                      ),
+                    ),
                   ],
                 ),
-              ),
-            );
-          },
-        ),
+              ],
+            ),
+          );
+        },
       ),
     );
   }

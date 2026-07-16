@@ -131,11 +131,10 @@ class _AddNewAddressScreenState extends State<AddNewAddressScreen> {
                                   //   physics: BouncingScrollPhysics(),
                                   children: [
                                     Container(
-                                      height: 126,
+                                      height: 150.h,
                                       width: MediaQuery.of(context).size.width,
                                       child: ClipRRect(
-                                        borderRadius: BorderRadius.circular(
-                                            Dimensions.PADDING_SIZE_SMALL),
+                                        borderRadius: BorderRadius.circular(15.r),
                                         child: Stack(
                                           clipBehavior: Clip.none,
                                           children: [
@@ -220,7 +219,7 @@ class _AddNewAddressScreenState extends State<AddNewAddressScreen> {
                                                 child: Image.asset(
                                                   Images.marker,
                                                   width: 25.w,
-                                                  height: 35,
+                                                  height: 35.h,
                                                 )),
                                             Positioned(
                                               bottom: 10.h,
@@ -232,14 +231,13 @@ class _AddNewAddressScreenState extends State<AddNewAddressScreen> {
                                                             locationProvider
                                                                 .mapController),
                                                 child: Container(
-                                                  width: 30,
-                                                  height: 30.h,
+
                                                   margin: EdgeInsets.only(
-                                                      right: Dimensions
-                                                          .PADDING_SIZE_LARGE),
+                                                      right: 15.w),
+                                                  padding: EdgeInsets.all(5.r) ,
                                                   decoration: BoxDecoration(
                                                     borderRadius:
-                                                        BorderRadius.circular(10.r),
+                                                        BorderRadius.circular(5.r),
                                                     color: ColorResources
                                                         .getScaffoldBackgroundColor(
                                                             context),
@@ -247,7 +245,7 @@ class _AddNewAddressScreenState extends State<AddNewAddressScreen> {
                                                   child: Icon(
                                                     Icons.my_location,
                                                     color: ColorResources
-                                                        .getScaffoldBackgroundColor(
+                                                        .getTextColor(
                                                             context),
                                                     size: 20.sp,
                                                   ),
@@ -284,58 +282,63 @@ class _AddNewAddressScreenState extends State<AddNewAddressScreen> {
                                       ),
                                     ),
 
-                                    Container(
-                                      height: 50,
-                                      child: ListView.builder(
-                                        shrinkWrap: true,
-                                        scrollDirection: Axis.horizontal,
-                                        // physics: BouncingScrollPhysics(),
-                                        itemCount:
-                                            locationProvider.getAllAddressType.length,
-                                        itemBuilder: (context, index) =>
-                                            GestureDetector(
-                                          onTap: () => locationProvider
-                                              .updateAddressIndex(index),
-                                          child: Container(
-                                            padding: EdgeInsets.symmetric(
-                                                vertical:
-                                                    Dimensions.PADDING_SIZE_DEFAULT,
-                                                horizontal:
-                                                    Dimensions.PADDING_SIZE_LARGE),
-                                            margin: EdgeInsets.only(right: 17),
-                                            decoration: BoxDecoration(
-                                                borderRadius: BorderRadius.circular(10.r),
-                                                border: Border.all(
+                                    Center(
+                                      child: SizedBox(
+                                        height: 50.h,
+                                        child: ListView.builder(
+                                          shrinkWrap: true,
+                                          scrollDirection: Axis.horizontal,
+                                          // physics: BouncingScrollPhysics(),
+                                          itemCount:
+                                              locationProvider.getAllAddressType.length,
+                                          itemBuilder: (context, index) =>
+                                              GestureDetector(
+                                            onTap: () => locationProvider
+                                                .updateAddressIndex(index),
+                                            child: Container(
+                                              padding: EdgeInsets.symmetric(
+                                                  vertical:4.h,
+                                                  horizontal:15.w),
+                                              margin: EdgeInsets.only(right: 5.w),
+                                              decoration: BoxDecoration(
+                                                  borderRadius: BorderRadius.circular(10.r),
+                                                  border: Border.all(
+                                                      color: locationProvider
+                                                                  .selectAddressIndex ==
+                                                              index
+                                                          ? ColorResources
+                                                              .getScaffoldBackgroundColor(
+                                                                  context)
+                                                          : ColorResources
+                                                              .BORDER_COLOR),
+                                                  color: locationProvider
+                                                              .selectAddressIndex ==
+                                                          index
+                                                      ? ColorResources
+                                                          .getPrimaryColor(
+                                                              context)
+                                                      : ColorResources
+                                                          .getScaffoldBackgroundColor(
+                                                              context)),
+                                              child: Center(
+                                                child: Text(
+                                                  locationProvider
+                                                      .getAllAddressType[index],
+                                                  style:
+                                                      AppTextStyles.h7(context).copyWith(
                                                     color: locationProvider
                                                                 .selectAddressIndex ==
                                                             index
-                                                        ? ColorResources
-                                                            .getScaffoldBackgroundColor(
-                                                                context)
-                                                        : ColorResources
-                                                            .BORDER_COLOR),
-                                                color: locationProvider
+                                                        ? Colors.white
+                                                        : ColorResources.getTextColor(
+                                                            context),
+                                                        fontWeight: locationProvider
                                                             .selectAddressIndex ==
-                                                        index
-                                                    ? ColorResources
-                                                        .getScaffoldBackgroundColor(
-                                                            context)
-                                                    : ColorResources
-                                                        .getScaffoldBackgroundColor(
-                                                            context)),
-                                            child: Text(
-                                              locationProvider
-                                                  .getAllAddressType[index],
-                                              style:
-                                                  AppTextStyles.h7(context).copyWith(
-                                                color: locationProvider
-                                                            .selectAddressIndex ==
-                                                        index
-                                                    ? ColorResources
-                                                        .getScaffoldBackgroundColor(
-                                                            context)
-                                                    : ColorResources.getTextColor(
-                                                        context),
+                                                            index
+                                                            ? FontWeight.bold
+                                                            : null
+                                                  ),
+                                                ),
                                               ),
                                             ),
                                           ),
@@ -345,7 +348,7 @@ class _AddNewAddressScreenState extends State<AddNewAddressScreen> {
 
                                     Padding(
                                       padding:
-                                          EdgeInsets.symmetric(vertical: 24.h),
+                                          EdgeInsets.symmetric(vertical: 15.h),
                                       child: Text(
                                         getTranslated('delivery_address', context),
                                         style: AppTextStyles.h4(context).copyWith(
@@ -355,14 +358,13 @@ class _AddNewAddressScreenState extends State<AddNewAddressScreen> {
                                       ),
                                     ),
 
-            // For Address Field
                                     Text(
                                       getTranslated('address_line_01', context),
                                       style: AppTextStyles.h7(context).copyWith(
                                         color: ColorResources.getHintColor(context),
                                       ),
                                     ),
-                                    SizedBox(height: 8.h),
+                                    SizedBox(height: 5.h),
                                     CustomTextField(fill: true,
                                       fillColor: ColorResources.getTextFieldFillColor(
                                           context),
@@ -384,7 +386,7 @@ class _AddNewAddressScreenState extends State<AddNewAddressScreen> {
                                         color: ColorResources.getHintColor(context),
                                       ),
                                     ),
-                                    SizedBox(height: 8.h),
+                                    SizedBox(height: 5.h),
                                     CustomTextField(fill: true,
                                       fillColor: ColorResources.getTextFieldFillColor(
                                           context),
@@ -407,7 +409,7 @@ class _AddNewAddressScreenState extends State<AddNewAddressScreen> {
                                         color: ColorResources.getHintColor(context),
                                       ),
                                     ),
-                                    SizedBox(height: 8.h),
+                                    SizedBox(height: 5.h),
                                     CustomTextField(fill: true,
                                       fillColor: ColorResources.getTextFieldFillColor(
                                           context),

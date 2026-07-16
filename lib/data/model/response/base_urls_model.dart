@@ -11,6 +11,7 @@ class BaseUrls {
   String? _chatImageUrl;
   String? _electricianImageUrl;
   String? _contractorRequestAttachmentsUrl;
+  String? _financingImageUrl; // NEW
 
   BaseUrls({
     String? productImageUrl,
@@ -25,6 +26,7 @@ class BaseUrls {
     String? chatImageUrl,
     String? electricianImageUrl,
     String? contractorRequestAttachmentsUrl,
+    String? financingImageUrl, // NEW
   }) {
     _productImageUrl = productImageUrl;
     _customerImageUrl = customerImageUrl;
@@ -38,6 +40,7 @@ class BaseUrls {
     _chatImageUrl = chatImageUrl;
     _electricianImageUrl = electricianImageUrl;
     _contractorRequestAttachmentsUrl = contractorRequestAttachmentsUrl;
+    _financingImageUrl = financingImageUrl; // NEW
   }
 
   String? get productImageUrl => _productImageUrl;
@@ -53,6 +56,7 @@ class BaseUrls {
   String? get electricianImageUrl => _electricianImageUrl;
   String? get contractorRequestAttachmentsUrl =>
       _contractorRequestAttachmentsUrl;
+  String? get financingImageUrl => _financingImageUrl; // NEW
 
   BaseUrls.fromJson(Map<String?, dynamic> json) {
     _productImageUrl = json['product_image_url'];
@@ -68,6 +72,7 @@ class BaseUrls {
     _electricianImageUrl = json['electrician_image_url'];
     _contractorRequestAttachmentsUrl =
     json['contractor_request_attachments_url'];
+    _financingImageUrl = json['financing_image_url']; // NEW
   }
 
   Map<String?, dynamic> toJson() {
@@ -85,6 +90,7 @@ class BaseUrls {
     data['electrician_image_url'] = _electricianImageUrl;
     data['contractor_request_attachments_url'] =
         _contractorRequestAttachmentsUrl;
+    data['financing_image_url'] = _financingImageUrl; // NEW
     return data;
   }
 }

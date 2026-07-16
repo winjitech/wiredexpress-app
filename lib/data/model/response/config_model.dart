@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:wired_express/data/model/response/base_urls_model.dart';
+import 'package:wired_express/data/model/response/financing_provider_model.dart';
 import 'package:wired_express/data/model/response/installment_plan_model.dart';
 
 import 'package:wired_express/data/model/response/working_hours_model.dart';
@@ -14,7 +15,7 @@ class ConfigModel {
   String? _storePhone;
   String? _storeEmail;
   BaseUrls? _baseUrls;
-
+  List<FinancingProviderModel>? _financingProviders;
   String? _currencySymbol;
   String? _deliveryCharge;
   String? _cashOnDelivery;
@@ -46,6 +47,7 @@ class ConfigModel {
     String? digitalPayment,
     String? termsAndConditions,
     String? privacyPolicy,
+    List<FinancingProviderModel>? financingProviders,
     String? aboutUs,
     double? minimumOrderValue,
     String? appVersion,
@@ -73,6 +75,7 @@ class ConfigModel {
     this._privacyPolicy = privacyPolicy;
     this._minimumOrderValue = minimumOrderValue;
     this._appVersion = appVersion;
+    this._financingProviders = financingProviders;
     this._phoneOTP = phoneOTP;
     this._serviceMessages = serviceMessages;
     this._ppuEarn = ppuEarn;
@@ -102,6 +105,7 @@ class ConfigModel {
   String? get serviceMessages => _serviceMessages;
   String? get ppuEarn => _ppuEarn;
   String? get ppuPurchase => _ppuPurchase;
+  List<FinancingProviderModel>? get financingProviders => _financingProviders;
   List<InstallmentPlanModel>? get installmentPlans => _installmentPlans;
   Map<String, WorkingHoursModel>? get workingHours => _workingHours;
   ConfigModel.fromJson(Map<String?, dynamic> json) {
@@ -130,7 +134,12 @@ class ConfigModel {
     _serviceMessages = json['service_messages'];
     _ppuEarn = json['ppu_earn'];
     _ppuPurchase = json['ppu_purchase'];
-
+    if (json['financing_providers'] != null) {
+      _financingProviders = [];
+      json['financing_providers'].forEach((v) {
+        _financingProviders!.add(FinancingProviderModel.fromJson(v));
+      });
+    }
     if (json['installment_plans'] != null) {
       _installmentPlans = [];
       json['installment_plans'].forEach((v) {
@@ -167,7 +176,10 @@ class ConfigModel {
     data['about_us'] = this.aboutUs;
 
     data['minimum_order_value'] = this._minimumOrderValue;
-
+    if (_financingProviders != null) {
+      data['financing_providers'] =
+          _financingProviders!.map((e) => e.toJson()).toList();
+    }
     data['app_version'] = this.appVersion;
     data['phone_otp'] = this.phoneOTP;
     data['ppu_earn'] = _ppuEarn;
