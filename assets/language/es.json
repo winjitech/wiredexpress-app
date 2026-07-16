@@ -597,7 +597,18 @@
   "no_any_notification_yet": "Aún no hay notificaciones",
   "project_details": "Detalles del proyecto",
   "project_details_hint": "Describa los materiales, trabajos eléctricos, servicios de soldadura o fabricación personalizada que necesita. Incluya cantidades, medidas y especificaciones.",
-  "submit_request": "Enviar solicitud"
+  "submit_request": "Enviar solicitud",
 
-
+  "view_financial_options": "Ver opciones de financiamiento",
+  "choose_financing_provider": "Elige un proveedor de financiamiento",
+  "apply_directly_with_selected_provider": "Solicitarás el financiamiento directamente con el proveedor seleccionado.",
+  "popular": "Popular",
+  "learn_more": "Más información",
+  "financing_providers": "Proveedores de financiamiento",
+  "apply_now": "Solicitar ahora",
+  "apply_with": "Solicitar con",
+  "back_to_providers": "Volver a los proveedores",
+  "benefits": "Beneficios",
+  "how_it_works": "Cómo funciona",
+  "financing_provider_disclaimer": "El financiamiento, la aprobación del préstamo, las tasas de interés, los términos, los pagos mensuales y el desembolso de los fondos son determinados por el proveedor de financiamiento seleccionado. Wired Express no es un prestamista y no aprueba ni financia préstamos."
 }
