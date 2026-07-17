@@ -75,7 +75,7 @@ class InstallmentResultDialog extends StatelessWidget {
 
             _buildItem(
               context,
-              getTranslated('amount_to_finance', context),
+              getTranslated('project_amount', context),
               result.amount.toString(),isPrice: true
             ),
 
@@ -99,7 +99,7 @@ class InstallmentResultDialog extends StatelessWidget {
 
             _buildItem(
               context,
-              getTranslated('payment_period', context),
+              getTranslated('financing_term', context),
               "${result.months}",isMonth:true
             ),
 

@@ -48,7 +48,7 @@ class _InstallmentCalculatorScreenState
       backgroundColor: ColorResources.getScaffoldBackgroundColor(context),
       body: Column(
         children: [
-          CustomAppBar(title: 'installment_calculator', showBackButton: true),
+          CustomAppBar(title: 'payment_calculator', showBackButton: true),
           Expanded(
             child: Consumer2<OrderProvider , SplashProvider>(
               builder: (context, prov,splash , _) {
@@ -64,7 +64,7 @@ class _InstallmentCalculatorScreenState
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             Text(
-                              getTranslated('installment_calculator', context),
+                              getTranslated('payment_calculator', context),
                               style: AppTextStyles.h2(context),
                             ),
                             SizedBox(height: 4.h),
@@ -83,7 +83,7 @@ class _InstallmentCalculatorScreenState
                             SizedBox(height: 30.h),
 
                             Text(
-                              getTranslated('amount_to_finance', context),
+                              getTranslated('project_amount', context),
                               style: AppTextStyles.h5(context),
                             ),
                             SizedBox(height: 10.h),
@@ -94,7 +94,7 @@ class _InstallmentCalculatorScreenState
                               nextFocus: _downPaymentFocus,radius: 15,
                               inputType: const TextInputType.numberWithOptions(decimal: true),
                               inputAction: TextInputAction.next,
-                              hintText: getTranslated('enter_amount_to_finance', context),
+                              hintText: getTranslated('enter_project_amount', context),
                               fill: true,fillColor: ColorResources.getTextFieldFillColor(context),
                             ),
 
@@ -118,7 +118,7 @@ class _InstallmentCalculatorScreenState
 
                             SizedBox(height: 20.h),
                             Text(
-                              getTranslated('payment_period', context),
+                              getTranslated('financing_term', context),
                               style: AppTextStyles.h5(context),
                             ),
                             SizedBox(height: 10.h),
@@ -138,7 +138,7 @@ class _InstallmentCalculatorScreenState
                                         value: prov.selectedInstallmentPlan,
                                         dropdownColor: ColorResources.getCardColor(context),
                                         borderRadius: BorderRadius.circular(15.r),
-                                        hint: Text(getTranslated('select_period', context,),
+                                        hint: Text(getTranslated('select_financing_term', context,),
                                           style: AppTextStyles.h6(context).copyWith(
                                             color: Color(isDark ? 0xBFFFFFFF : 0xFF8391A1,),),),
                                         onChanged: (InstallmentPlanModel? newValue) {
@@ -203,15 +203,83 @@ class _InstallmentCalculatorScreenState
                                 ],
                               ),
                             ),
+
+                            SizedBox(height: 20.h),
+
+                            Text(
+                              getTranslated('estimated_apr', context),
+                              style: AppTextStyles.h5(context),
+                            ),
+
+                            SizedBox(height: 10.h),
+
+                            Container(
+                              padding: EdgeInsets.symmetric(horizontal: 10.w),
+                              decoration: BoxDecoration(
+                                color: ColorResources.getCardColor(context),
+                                borderRadius: BorderRadius.circular(15.r),
+                              ),
+                              child: Row(
+                                children: [
+
+                                  SizedBox(width: 15.w),
+
+                                  Expanded(
+                                    child: DropdownButtonHideUnderline(
+                                      child: DropdownButton<InterestRateModel>(
+                                        isExpanded: true,
+                                        value: prov.selectedInterestRate,
+                                        dropdownColor: ColorResources.getCardColor(context),
+                                        borderRadius: BorderRadius.circular(15.r),
+
+                                        hint: Text(
+                                          getTranslated('select_estimated_apr', context),
+                                          style: AppTextStyles.h6(context).copyWith(
+                                            color: Color(
+                                              isDark ? 0xBFFFFFFF : 0xFF8391A1,
+                                            ),
+                                          ),
+                                        ),
+
+                                        onChanged: prov.selectedInstallmentPlan == null
+                                            ? null
+                                            : (InterestRateModel? value) {
+                                          if (value != null) {
+                                            prov.setSelectedInterestRate(value);
+                                          }
+                                        },
+
+                                        items: (prov.selectedInstallmentPlan?.interestRates ?? [])
+                                            .map((rate) {
+                                          return DropdownMenuItem<InterestRateModel>(
+                                            value: rate,
+                                            child: Text(
+                                              "${rate.rate}%",
+                                              style: AppTextStyles.h6(context),
+                                            ),
+                                          );
+                                        }).toList(),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+
                             SizedBox(height: 20.h,),
                             prov.calculatingInstallmentLoading?CustomCircularIndicator():CustomButton(text: getTranslated('calculate', context) ,
                             onTap: () async {
                               if(_amountController.text.isEmpty){
-                                showCustomSnackBar(getTranslated('enter_amount_to_finance', context), context);
+                                showCustomSnackBar(getTranslated('enter_project_amount', context), context);
                               }else if(_downPaymentController.text.isEmpty){
                                 showCustomSnackBar(getTranslated('enter_down_payment', context), context);
                               }else if(prov.selectedInstallmentPlan == null){
                                 showCustomSnackBar(getTranslated('select_plan', context), context);
+                              }else if(prov.selectedInterestRate == null){
+                                showCustomSnackBar(
+                                  getTranslated('select_estimated_apr', context),
+                                  context,
+                                );
                               }else{
                                 await prov.calculateInstallment(
                                   amount: double.parse(_amountController.text),

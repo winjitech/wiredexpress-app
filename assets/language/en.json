@@ -531,10 +531,8 @@
   "pick_a_date": "Pick a Date",
   "choose_a_time": "Choose a Time",
   "select_delivery_time_required": "Select delivery time required",
-  "installment_calculator": "Installment calculator",
   "calculate_your_monthly_installment_before_applying_for_financing": "Estimate your monthly payment before applying for financing.",
-  "amount_to_finance": "Amount to Finance",
-  "enter_amount_to_finance": "Enter the amount you want to finance",
+
   "installment_plan": "Installment Plan",
   "select_installment_plan": "Select installment plan",
   "down_payment": "Down Payment",
@@ -547,8 +545,6 @@
   "subscriptions": "Subscriptions",
   "buy_now": "Buy Now",
   "pay_in_installments": "Pay in Installments",
-  "payment_period": "Payment Period",
-  "select_period": "Select Payment Period",
   "estimated_monthly_payment": "Estimated Monthly Payment",
   "financed_amount": "Financed Amount",
   "interest": "Interest",
@@ -613,5 +609,18 @@
   "back_to_providers": "Back to providers",
   "benefits": "Benefits",
   "how_it_works": "How it works",
-  "financing_provider_disclaimer": "Financing, loan approval, interest rates, terms, monthly payments and funding are determined by the selected financing provider. Wired Express is not a lender and does not approve or fund any loans."
+  "financing_provider_disclaimer": "Financing, loan approval, interest rates, terms, monthly payments and funding are determined by the selected financing provider. Wired Express is not a lender and does not approve or fund any loans.",
+  "payment_calculator": "Payment Calculator",
+  "project_amount": "Project Amount",
+  "enter_project_amount": "Enter project amount",
+
+  "financing_term": "Financing Term",
+  "select_financing_term": "Select financing term",
+
+  "estimated_apr": "Estimated APR",
+  "select_estimated_apr": "Select estimated APR",
+
+  "select_interest_rate": "Please select an estimated APR",
+  "select_plan": "Please select a financing term"
+
 }

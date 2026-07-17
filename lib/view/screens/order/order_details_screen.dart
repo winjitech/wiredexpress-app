@@ -393,7 +393,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
 
                                             SizedBox(height: 10.h),
                                             _buildRow(context, getTranslated('status', context), getTranslated(order.installment!.status!, context)),
-                                            _buildRow(context, getTranslated('payment_period', context), "${order.installment!.months} ${getTranslated('month/s', context)}",),
+                                            _buildRow(context, getTranslated('financing_term', context), "${order.installment!.months} ${getTranslated('month/s', context)}",),
                                             _buildRow(context, getTranslated('down_payment', context), PriceConverter.convertPrice(context, order.installment!.downPayment),),
                                             _buildRow(context, getTranslated('financed_amount', context), PriceConverter.convertPrice(context, order.installment!.financedAmount),),
                                             _buildRow(context, getTranslated('monthly_payment', context), PriceConverter.convertPrice(context, order.installment!.monthlyPayment),),

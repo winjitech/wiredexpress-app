@@ -294,7 +294,7 @@ class _MenuScreenState extends State<MenuScreen> {
                                   ),
                                   title: Text(
                                     getTranslated(
-                                        'installment_calculator', context),
+                                        'payment_calculator', context),
                                     style: AppTextStyles.h4(context),
                                   ),
                                 ),

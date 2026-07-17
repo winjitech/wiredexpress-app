@@ -390,6 +390,8 @@ class OrderProvider extends ChangeNotifier {
     if (_selectedInstallmentPlan?.months == value.months) return;
 
     _selectedInstallmentPlan = value;
+    _selectedInterestRate = null;
+
     notifyListeners();
   }
 
@@ -397,7 +399,14 @@ class OrderProvider extends ChangeNotifier {
     _selectedInstallmentPlan = null;
     notifyListeners();
   }
+  InterestRateModel? _selectedInterestRate;
 
+  InterestRateModel? get selectedInterestRate => _selectedInterestRate;
+
+  void setSelectedInterestRate(InterestRateModel value) {
+    _selectedInterestRate = value;
+    notifyListeners();
+  }
   final TextEditingController downPaymentController =
       TextEditingController(text: '0');
   final FocusNode downPaymentFocus = FocusNode();
@@ -420,8 +429,8 @@ class OrderProvider extends ChangeNotifier {
 
     final double financedAmount = amount - downPayment;
 
-    final double rate = (plan.interestRate ?? 0).toDouble();
-
+    final double rate =
+    (_selectedInterestRate?.rate ?? 0).toDouble();
     final double total = financedAmount + (financedAmount * rate / 100);
 
     final double monthly = total / plan.months!;
@@ -486,7 +495,11 @@ class OrderProvider extends ChangeNotifier {
       notifyListeners();
       return false;
     }
-
+    if (_selectedInterestRate == null) {
+      _installmentError = "select_interest_rate";
+      notifyListeners();
+      return false;
+    }
     if (downPaymentText.trim().isEmpty) {
       _installmentError = "enter_down_payment";
       notifyListeners();

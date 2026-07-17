@@ -1,30 +1,57 @@
 class InstallmentPlanModel {
   int? _months;
-  double? _interestRate;
+  List<InterestRateModel>? _interestRates;
 
   InstallmentPlanModel({
     int? months,
-    double? interestRate,
+    List<InterestRateModel>? interestRates,
   }) {
     _months = months;
-    _interestRate = interestRate;
+    _interestRates = interestRates;
   }
 
   int? get months => _months;
-  double? get interestRate => _interestRate;
+
+  List<InterestRateModel>? get interestRates => _interestRates;
 
   InstallmentPlanModel.fromJson(Map<String, dynamic> json) {
-    _months = int.parse(json['months'].toString());
+    _months = int.tryParse(json['months'].toString());
 
-    if (json['interest_rate'] != null) {
-      _interestRate =double.parse(json['interest_rate']?.toString()??"0");
+    if (json['interest_rates'] != null) {
+      _interestRates = [];
+      json['interest_rates'].forEach((v) {
+        _interestRates!.add(InterestRateModel.fromJson(v));
+      });
     }
   }
 
   Map<String, dynamic> toJson() {
     return {
       'months': _months,
-      'interest_rate': _interestRate,
+      'interest_rates':
+      _interestRates?.map((e) => e.toJson()).toList(),
+    };
+  }
+}
+
+class InterestRateModel {
+  double? _rate;
+
+  InterestRateModel({
+    double? rate,
+  }) {
+    _rate = rate;
+  }
+
+  double? get rate => _rate;
+
+  InterestRateModel.fromJson(Map<String, dynamic> json) {
+    _rate = double.tryParse(json['rate'].toString());
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'rate': _rate,
     };
   }
 }

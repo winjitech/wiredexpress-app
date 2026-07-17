@@ -71,7 +71,7 @@ class SelectInstallmentView extends StatelessWidget{
         //
         //   SizedBox(height: 20.h),
         //   Text(
-        //     getTranslated('payment_period', context),
+        //     getTranslated('financing_term', context),
         //     style: AppTextStyles.h5(context),
         //   ),
         //   SizedBox(height: 10.h),
@@ -90,7 +90,7 @@ class SelectInstallmentView extends StatelessWidget{
         //               value: orderProv.selectedInstallmentPlan,
         //               dropdownColor: ColorResources.getCardColor(context),
         //               borderRadius: BorderRadius.circular(15.r),
-        //               hint: Text(getTranslated('select_period', context,),
+        //               hint: Text(getTranslated('select_financing_term', context,),
         //                 style: AppTextStyles.h6(context).copyWith(
         //                   color: Color(isDark ? 0xBFFFFFFF : 0xFF8391A1,),),),
         //               onChanged: (InstallmentPlanModel? newValue) {

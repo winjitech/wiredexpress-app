@@ -528,10 +528,8 @@
   "pick_a_date": "Seleccione una fecha",
   "choose_a_time": "Seleccione una hora",
   "select_delivery_time_required": "Es necesario seleccionar la hora de entrega",
-  "installment_calculator": "Calculadora de cuotas",
   "calculate_your_monthly_installment_before_applying_for_financing": "Calcule su cuota mensual antes de solicitar financiación.",
-  "amount_to_finance": "Importe a financiar",
-  "enter_amount_to_finance": "Introduzca el importe que desea financiar",
+
   "installment_plan": "Plan de cuotas",
   "select_installment_plan": "Seleccione un plan de cuotas",
   "down_payment": "Pago inicial",
@@ -544,8 +542,6 @@
   "subscriptions": "Suscripciones",
   "buy_now": "Comprar ahora",
   "pay_in_installments": "Pagar en cuotas",
-  "payment_period": "Período de pago",
-  "select_period": "Seleccione el período de pago",
   "estimated_monthly_payment": "Pago mensual estimado",
   "financed_amount": "Importe financiado",
   "interest": "Interés",
@@ -610,5 +606,18 @@
   "back_to_providers": "Volver a los proveedores",
   "benefits": "Beneficios",
   "how_it_works": "Cómo funciona",
-  "financing_provider_disclaimer": "El financiamiento, la aprobación del préstamo, las tasas de interés, los términos, los pagos mensuales y el desembolso de los fondos son determinados por el proveedor de financiamiento seleccionado. Wired Express no es un prestamista y no aprueba ni financia préstamos."
+  "financing_provider_disclaimer": "El financiamiento, la aprobación del préstamo, las tasas de interés, los términos, los pagos mensuales y el desembolso de los fondos son determinados por el proveedor de financiamiento seleccionado. Wired Express no es un prestamista y no aprueba ni financia préstamos.",
+  "payment_calculator": "Calculadora de pagos",
+  "project_amount": "Monto del proyecto",
+  "enter_project_amount": "Ingrese el monto del proyecto",
+
+  "financing_term": "Plazo de financiamiento",
+  "select_financing_term": "Seleccione el plazo de financiamiento",
+
+  "estimated_apr": "APR estimado",
+  "select_estimated_apr": "Seleccione el APR estimado",
+
+  "select_interest_rate": "Seleccione un APR estimado",
+  "select_plan": "Seleccione un plazo de financiamiento"
+
 }
