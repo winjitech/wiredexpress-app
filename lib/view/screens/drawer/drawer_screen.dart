@@ -17,6 +17,7 @@ import 'package:wired_express/utill/styles.dart';
 import 'package:wired_express/view/base/custom_snackbar.dart';
 import 'package:wired_express/view/screens/auth/login_screen.dart';
 import 'package:wired_express/view/screens/dashboard/dashboard_screen.dart';
+import 'package:wired_express/view/screens/financing_provider/financing_providers_screen.dart';
 import 'package:wired_express/view/screens/menu/widget/sign_out_confirmation_dialog.dart';
 import 'package:wired_express/view/screens/support/support_screen.dart';
 import 'package:wired_express/view/screens/terms/terms_screen.dart';
@@ -134,6 +135,19 @@ class _DrawerScreenState extends State<DrawerScreen> {
                                   DashboardScreen(pageIndex: 0)));
                     },
                     child: Text(getTranslated('shopping', context),
+                      style: AppTextStyles.h3(
+                        context,
+                        fontSize: 20.sp,
+                      ),)),
+                TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (BuildContext context) =>
+                                  FinancingProvidersScreen()));
+                    },
+                    child: Text(getTranslated('financing_providers', context),
                       style: AppTextStyles.h3(
                         context,
                         fontSize: 20.sp,
