@@ -8,7 +8,7 @@
 PRODUCT_NAME = wired_express
 
 // The application's bundle identifier
-PRODUCT_BUNDLE_IDENTIFIER = com.wiredexpress.app.wiredExpress
+PRODUCT_BUNDLE_IDENTIFIER = com.wiredexpress01.app.wiredExpress
 
 // The copyright displayed in application information
-PRODUCT_COPYRIGHT = Copyright © 2024 com.wiredexpress.app. All rights reserved.
+PRODUCT_COPYRIGHT = Copyright © 2024 com.wiredexpress01.app. All rights reserved.

@@ -7,17 +7,17 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:677234146606:android:41f18f6e2cf54069730ebf",
+        "mobilesdk_app_id": "1:677234146606:android:badc470bef4a06d8730ebf",
         "android_client_info": {
-          "package_name": "com.wiredexpress.app"
+          "package_name": "com.wiredexpress01.app"
         }
       },
       "oauth_client": [
         {
-          "client_id": "677234146606-pj8aho22gl5pm39m1sbqmtqah3eie27e.apps.googleusercontent.com",
+          "client_id": "677234146606-dk5r3qbmpcpejc5qpt4s14p0c6mbq2kn.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.wiredexpress.app",
+            "package_name": "com.wiredexpress01.app",
             "certificate_hash": "6ec9140f45e8560030b944d0dde790be53fc7f25"
           }
         },

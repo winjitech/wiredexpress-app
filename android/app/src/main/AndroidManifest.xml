@@ -1,6 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.wiredexpress.app">
+    package="com.wiredexpress01.app">
 
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
@@ -38,7 +38,7 @@
             android:value="@integer/google_play_services_version" />
 
         <activity
-            android:name="com.wiredexpress.app.MainActivity"
+            android:name="com.wiredexpress01.app.MainActivity"
             android:exported="true"
             android:launchMode="singleTop"
             android:theme="@style/LaunchTheme"

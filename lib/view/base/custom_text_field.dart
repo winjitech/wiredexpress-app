@@ -108,7 +108,8 @@ class _CustomTextFieldState extends State<CustomTextField> {
                 ? ''
                 : widget.inputType == TextInputType.phone &&
                         widget.putDefaultCountryCode!
-                    ? '+251 '
+                    // ? '+251 '
+        ?''
                     : '',
         contentPadding: EdgeInsets.symmetric(vertical: 16.h, horizontal: 22.w),
         border: OutlineInputBorder(
